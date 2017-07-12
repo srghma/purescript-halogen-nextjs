@@ -1,0 +1,4 @@
+- https://github.com/bouzuya/tamaru/blob/master/src/Bouzuya/Halogen/StringRenderer.purs
+- https://github.com/bouzuya/fwt/blob/648b2e8b2bdf4e52718c108ba2e8c113c2faac4d/src/View.purs#L114
+- https://github.com/natefaubion/slamdata/blob/8d7534b0a8e9819b2719ca088c620cf098630c80/src/SlamData/Workspace/Card/Setups/Geo/Heatmap/Eval.purs#L158
+- https://github.com/nwolverson/purescript-weekchart/blob/fbc6223ff9f80ba6bc936c923b38ee1b11d53af3/src/Main.purs#L63
