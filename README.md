@@ -41,8 +41,8 @@ argument)
 If there is a file in the `app/pages/` directory ending with `.deps.js` (e.g. `app/pages/Foo.deps.js`) - it will be
 required before the page is loaded
 
-(Check [createClientPagesEntrypoints.js](https://github.com/srghma/purescript-halogen-nextjs/blob/master/webpack/config/createClientPagesEntrypoints.js#L71)
-and [isomorphic-client-pages-loader](https://github.com/srghma/purescript-halogen-nextjs/blob/master/webpack/lib/isomorphic-client-pages-loader.js#L30-L33)
+(Check [createClientPagesEntrypoints.js](https://github.com/srghma/purescript-halogen-nextjs/blob/0e26569df6452dc1e7983d6f629448e70e4e6f2c/webpack/config/createClientPagesEntrypoints.js#L71)
+and [isomorphic-client-pages-loader](https://github.com/srghma/purescript-halogen-nextjs/blob/0e26569df6452dc1e7983d6f629448e70e4e6f2c/webpack/lib/isomorphic-client-pages-loader.js#L30-L33)
 to see how it works)
 
 You can use `app/pages/Foo.deps.js` to add per page css files (it's just for splitting css, the css is global, i.e.
@@ -62,7 +62,7 @@ In the `client.entry.css` and `client.entry.js`
 3. Move reusable parts into the separate package, publish to pursuit and npm
 4. Finish https://github.com/srghma/generate-halogen-css-modules to generate FFI for css files ending with `.module.css`
 
-The [css modules](https://webpack.js.org/loaders/css-loader/#modules) are enabled only for files ending with `.module.css` [here](https://github.com/srghma/purescript-halogen-nextjs/blob/master/webpack/config/rules.js#L20)
+The [css modules](https://webpack.js.org/loaders/css-loader/#modules) are enabled only for files ending with `.module.css` [here](https://github.com/srghma/purescript-halogen-nextjs/blob/0e26569df6452dc1e7983d6f629448e70e4e6f2c/webpack/config/rules.js#L20)
 
 5. https://www.npmjs.com/package/livereload and custom https://www.npmjs.com/package/webpack-livereload-plugin for dev
 
