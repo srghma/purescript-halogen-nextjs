@@ -70,7 +70,6 @@ main = do
 
   Effect.Aff.launchAff_ do
     rootElement <- Halogen.Aff.Util.awaitElement (Web.DOM.ParentNode.QuerySelector "#root")
-    rootElementFirstChild <- Halogen.Aff.Util.findElementFirstChildOrThrow rootElement
 
     (clientPagesManifest :: Nextjs.Manifest.ClientPagesManifest.ClientPagesManifest) <- Nextjs.Manifest.ClientPagesManifest.getBuildManifest
 
@@ -112,6 +111,6 @@ main = do
 
     let component = H.hoist (runAppM env) Nextjs.Router.clientComponent
 
-    halogenIO <- Halogen.VDom.Driver.hydrateUI component initialState rootElement rootElementFirstChild
+    halogenIO <- Halogen.VDom.Driver.hydrateUI component initialState rootElement
 
     void $ liftEffect $ Routing.PushState.matchesWith (Routing.Duplex.parse Nextjs.Route.routeCodec) (navigate halogenIO) pushStateInterface

@@ -31,7 +31,7 @@ require('webpack-spago-loader/watcher-job')({
 
     // start webpack
 
-    const commonSettings = { production: true }
+    const commonSettings = { production: false }
 
     const configs = await Promise.all([
       createConfig(R.mergeAll([commonSettings, { browser: true }])),

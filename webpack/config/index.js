@@ -18,7 +18,6 @@ export default async function ({
   watch,
   production,
   serverPort,
-  spagoLoaderPlugin,
 }) {
   const distDir = path.resolve(root, production ? '.dist' : '.dist-dev')
   const distOutputDir = path.resolve(distDir, browser ? 'client' : 'server')
@@ -158,8 +157,6 @@ export default async function ({
         ] :
         []
       ),
-
-      (!production ? new spagoLoaderPlugin() : null), // only in dev should not be null
 
       // TODO: fix for dev
       // (
