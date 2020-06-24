@@ -29,14 +29,14 @@ or
 yarn build && yarn serve
 ```
 
-1. Where pages are stored?
+2. Where pages are stored?
 
 Page is a top level purescript file in the `app/pages` directory (e.g. `app/pages/Foo.purs`)
 
 Page should export the `page :: Page` object (which is a `PageSpec` object, but with existentially hidden `input` type
 argument)
 
-1. What is a meaning of `.deps.js` files?
+3. What is a meaning of `.deps.js` files?
 
 If there is a file in the `app/pages/` directory ending with `.deps.js` (e.g. `app/pages/Foo.deps.js`) - it will be
 required before the page is loaded
@@ -50,7 +50,7 @@ the `<link rel="stylesheet" ...>` element is not removed after you go to the som
 
 Or You can use it for adding per page js dependencies (like ace npm package, that will be loaded only for `Ace.purs` page)
 
-1. Where can I define global css and js?
+4. Where can I define global css and js?
 
 In the `client.entry.css` and `client.entry.js`
 
@@ -65,5 +65,6 @@ In the `client.entry.css` and `client.entry.js`
 The [css modules](https://webpack.js.org/loaders/css-loader/#modules) are enabled only for files ending with `.module.css` [here](https://github.com/srghma/purescript-halogen-nextjs/blob/0e26569df6452dc1e7983d6f629448e70e4e6f2c/webpack/config/rules.js#L20)
 
 5. https://www.npmjs.com/package/livereload and custom https://www.npmjs.com/package/webpack-livereload-plugin for dev
+6. update "title" on client when user visits new page
 
 ![example](https://i.imgur.com/VF5UY5s.png)
