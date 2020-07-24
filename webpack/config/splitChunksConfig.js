@@ -14,6 +14,10 @@ module.exports.dev = {
 module.exports.prod = function({ totalPages }) {
   return {
     chunks: 'all',
+    // chunks: 'async',
+    // minChunks: 1,
+    // minSize: 30000,
+    // name: true,
 
     cacheGroups: {
       // only output is added

@@ -31,8 +31,7 @@ export default async function ({
 
     target: browser ? 'web' : 'node',
 
-    // mode: production ? 'production' : 'development',
-    mode: 'development',
+    mode: production ? 'production' : 'development',
 
     // devServer: {
     //   // writeToDisk: true,
@@ -215,27 +214,24 @@ export default async function ({
         : false,
 
       // minimize: production && browser,
-      // minimizer: [
-      //   // Minify JavaScript
-      //   new TerserPlugin({
-      //     extractComments: false,
-      //     cache: path.join(distDir, 'cache', 'next-minifier'),
-      //     parallel: config.experimental.cpus || true,
-      //     terserOptions,
-      //   }),
+
+      // minimizer: production ? [
+      //   new (require('terser-webpack-plugin'))(),
+
       //   // Minify CSS
-      //   new CssMinimizerPlugin({
-      //     postcssOptions: {
-      //       map: {
-      //         // `inline: false` generates the source map in a separate file.
-      //         // Otherwise, the CSS file is needlessly large.
-      //         inline: false,
-      //         // `annotation: false` skips appending the `sourceMappingURL`
-      //         // to the end of the CSS file. Webpack already handles this.
-      //         annotation: false,
-      //       },
-      //     },
-      //   }),
+      //   // new CssMinimizerPlugin({
+      //   //   postcssOptions: {
+      //   //     map: {
+      //   //       // `inline: false` generates the source map in a separate file.
+      //   //       // Otherwise, the CSS file is needlessly large.
+      //   //       inline: false,
+      //   //       // `annotation: false` skips appending the `sourceMappingURL`
+      //   //       // to the end of the CSS file. Webpack already handles this.
+      //   //       annotation: false,
+      //   //     },
+      //   //   },
+      //   // }),
+      // ] : [],
     },
   }
 }
