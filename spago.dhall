@@ -16,7 +16,6 @@
   , "generics-rep"
   , "halogen"
   , "halogen-css"
-  -- , "halogen-realworld"
   , "halogen-select"
   , "halogen-storybook"
   , "halogen-hooks"
@@ -38,6 +37,7 @@
   , "web-socket"
   , "yarn"
   , "web-intersection-observer"
+  , "aff-promise"
   ]
 , packages = ./packages.dhall
 , sources =
