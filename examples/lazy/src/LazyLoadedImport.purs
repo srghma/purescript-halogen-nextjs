@@ -1,19 +1,23 @@
 module Example.Lazy.LazyLoadedImport where
 
+import Data.Const
 import Protolude
 
+import Control.Promise (Promise)
+import Control.Promise as Promise
+import Data.Time.Duration (Milliseconds(..))
 import Data.Maybe (Maybe(..))
+import Data.Symbol (SProxy(..))
+import Effect.Aff (delay)
 import Halogen as H
 import Halogen.HTML as HH
-import Halogen.HTML.Events as HE
 import Halogen.HTML.Elements.Keyed as HK
+import Halogen.HTML.Events as HE
 import Halogen.HTML.Properties as HP
-import Data.Const
-import Data.Symbol (SProxy(..))
-import Control.Promise as Promise
-import Control.Promise (Promise)
 
 foreign import lazyLoadedImport_ :: forall q i o m . Effect (Promise { component :: H.Component q i o m })
 
 lazyLoadedImport :: forall q i o m . Aff (H.Component q i o m)
-lazyLoadedImport = Promise.toAffE lazyLoadedImport_ <#> _.component
+lazyLoadedImport = do
+  delay (Milliseconds 3000.0)
+  Promise.toAffE lazyLoadedImport_ <#> _.component
