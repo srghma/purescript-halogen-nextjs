@@ -58,5 +58,6 @@
   , "examples/deeply-nested/**/*.purs"
   , "examples/text-nodes/**/*.purs"
   , "examples/dynamic-input/**/*.purs"
+  , "examples/lazy/**/*.purs"
   ]
 }

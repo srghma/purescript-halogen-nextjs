@@ -1,10 +1,30 @@
 let upstream =
-      https://github.com/purescript/package-sets/releases/download/psc-0.13.8-20200615/packages.dhall sha256:5d0cfad9408c84db0a3fdcea2d708f9ed8f64297e164dc57a7cf6328706df93a
+      https://github.com/purescript/package-sets/releases/download/psc-0.13.8-20200716/packages.dhall sha256:c4683b4c4da0fd33e0df86fc24af035c059270dd245f68b79a7937098f6c6542
 
 let overrides =
       { halogen =
               upstream.halogen
           //  { repo = "https://github.com/srghma/purescript-halogen.git"
+              , version = "hydration-wip-2"
+              }
+      , halogen-hooks =
+              upstream.halogen-hooks
+          //  { repo = "https://github.com/srghma/purescript-halogen-hooks.git"
+              , version = "master"
+              }
+      , halogen-storybook =
+              upstream.halogen-storybook
+          //  { repo = "https://github.com/srghma/purescript-halogen-storybook.git"
+              , version = "master"
+              }
+      , halogen-select =
+              upstream.halogen-select
+          //  { repo = "https://github.com/srghma/purescript-halogen-select.git"
+              , version = "master"
+              }
+      , halogen-formless =
+              upstream.halogen-formless
+          //  { repo = "https://github.com/srghma/purescript-halogen-formless.git"
               , version = "master"
               }
       , node-http =
@@ -34,17 +54,32 @@ let overrides =
               }
       , argonaut-codecs =
               upstream.argonaut-codecs
-          //  { repo = "https://github.com/purescript-contrib/purescript-argonaut-codecs.git"
+          //  { repo =
+                  "https://github.com/purescript-contrib/purescript-argonaut-codecs.git"
               , version = "master"
               }
       , argonaut-generic =
-          upstream.argonaut-generic // { repo = "https://github.com/srghma/purescript-argonaut-generic.git", version = "master" }
+              upstream.argonaut-generic
+          //  { repo =
+                  "https://github.com/srghma/purescript-argonaut-generic.git"
+              , version = "master"
+              }
       , argonaut-traversals =
-          upstream.argonaut-traversals // { repo = "https://github.com/srghma/purescript-argonaut-traversals.git", version = "master" }
+              upstream.argonaut-traversals
+          //  { repo =
+                  "https://github.com/srghma/purescript-argonaut-traversals.git"
+              , version = "master"
+              }
       , argonaut =
-          upstream.argonaut // { repo = "https://github.com/srghma/purescript-argonaut.git", version = "patch-1" }
+              upstream.argonaut
+          //  { repo = "https://github.com/srghma/purescript-argonaut.git"
+              , version = "patch-1"
+              }
       , slug =
-          upstream.slug // { repo = "https://github.com/srghma/purescript-slug.git", version = "master" }
+              upstream.slug
+          //  { repo = "https://github.com/srghma/purescript-slug.git"
+              , version = "master"
+              }
       }
 
 let additions =
@@ -53,18 +88,6 @@ let additions =
         , repo = "ssh://git@github.com/garyb/purescript-codec.git"
         , version = "master"
         }
-      -- , codec-argonaut =
-      --   { dependencies =
-      --     [ "argonaut-core"
-      --     , "codec"
-      --     , "generics-rep"
-      --     , "variant"
-      --     , "ordered-collections"
-      --     , "type-equality"
-      --     ]
-      --   , repo = "ssh://git@github.com/garyb/purescript-codec-argonaut.git"
-      --   , version = "master"
-      --   }
       , halogen-vdom-string-renderer =
         { dependencies =
           [ "prelude", "halogen-vdom", "ordered-collections", "foreign" ]
@@ -149,40 +172,8 @@ let additions =
         , repo = "ssh://git@github.com/srghma/purescript-halogen-vdom.git"
         , version = "master"
         }
-      , halogen-realworld =
-        { dependencies =
-          [ "prelude"
-          , "console"
-          , "effect"
-          , "variant"
-          , "nonempty"
-          , "aff"
-          , "halogen"
-          , "halogen-formless"
-          , "remotedata"
-          , "routing"
-          , "formatters"
-          , "routing-duplex"
-          , "now"
-          , "affjax"
-          , "slug"
-          , "precise-datetime"
-          , "typelevel-prelude"
-          , "argonaut-core"
-          , "argonaut-codecs"
-          , "aff-bus"
-          , "struct"
-          , "tolerant-argonaut"
-          ]
-        , repo =
-            "ssh://git@github.com/thomashoneyman/purescript-halogen-realworld.git"
-        , version = "master"
-        }
       , web-intersection-observer =
-        { dependencies =
-          [ "prelude"
-          , "web-dom"
-          ]
+        { dependencies = [ "prelude", "web-dom" ]
         , repo =
             "ssh://git@github.com/srghma/purescript-web-intersection-observer.git"
         , version = "master"

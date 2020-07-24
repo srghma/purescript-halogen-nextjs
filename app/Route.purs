@@ -27,6 +27,7 @@ data Route
   | DeeplyNested
   | DynamicInput
   | TextNodes
+  | Lazy
 
 derive instance genericRoute :: Generic Route _
 derive instance eqRoute :: Eq Route
@@ -56,6 +57,7 @@ routeCodec = Routing.Duplex.root $ Routing.Duplex.sum
   , "DynamicInput":          "DynamicInput" / Routing.Duplex.noArgs
   , "DeeplyNested":          "DeeplyNested" / Routing.Duplex.noArgs
   , "TextNodes":             "TextNodes" / Routing.Duplex.noArgs
+  , "Lazy":                  "Lazy" / Routing.Duplex.noArgs
   }
 
 type PagesRec a =
@@ -74,6 +76,7 @@ type PagesRec a =
   , "DynamicInput" :: a
   , "DeeplyNested" :: a
   , "TextNodes" :: a
+  , "Lazy" :: a
   }
 
 extractFromPagesRec :: forall a . Route -> PagesRec a -> a
@@ -92,3 +95,4 @@ extractFromPagesRec Lifecycle             = _."Lifecycle"
 extractFromPagesRec DynamicInput          = _."DynamicInput"
 extractFromPagesRec DeeplyNested          = _."DeeplyNested"
 extractFromPagesRec TextNodes             = _."TextNodes"
+extractFromPagesRec Lazy                  = _."Lazy"

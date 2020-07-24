@@ -30,6 +30,7 @@ allRoutes =
   , DynamicInput
   , DeeplyNested
   , TextNodes
+  , Lazy
   ]
 
 component :: forall q i o . H.Component q i o AppM

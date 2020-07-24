@@ -15,6 +15,7 @@ import Nextjs.Pages.Lifecycle             as Nextjs.Pages.Lifecycle
 import Nextjs.Pages.DeeplyNested          as Nextjs.Pages.DeeplyNested
 import Nextjs.Pages.DynamicInput          as Nextjs.Pages.DynamicInput
 import Nextjs.Pages.TextNodes             as Nextjs.Pages.TextNodes
+import Nextjs.Pages.Lazy                  as Nextjs.Pages.Lazy
 
 import Nextjs.Route    as Nextjs.Route
 import Nextjs.Lib.Page as Nextjs.Lib.Page
@@ -36,6 +37,7 @@ pagesRec =
   , "DeeplyNested":          Nextjs.Pages.DeeplyNested.page
   , "DynamicInput":          Nextjs.Pages.DynamicInput.page
   , "TextNodes":             Nextjs.Pages.TextNodes.page
+  , "Lazy":                  Nextjs.Pages.Lazy.page
   }
 
 routeToPage :: Nextjs.Route.Route -> Nextjs.Lib.Page.Page
