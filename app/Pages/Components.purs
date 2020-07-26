@@ -1,9 +1,8 @@
 module Nextjs.Pages.Components (page) where
 
-import Protolude
+import Protolude (Unit, liftAff, unit, ($))
 import Example.Components.Container as Example.Components.Container
-import Halogen.HTML as Halogen.HTML
-import Nextjs.Lib.Page
+import Nextjs.Lib.Page (Page, PageData(..), PageSpec, mkPage)
 import Halogen as H
 
 pageSpec :: PageSpec Unit

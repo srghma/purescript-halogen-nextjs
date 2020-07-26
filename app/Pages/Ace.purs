@@ -1,11 +1,10 @@
 module Nextjs.Pages.Ace (page) where
 
-import Nextjs.Lib.Page
-import Protolude
+import Nextjs.Lib.Page (Page, PageData(..), PageSpec, mkPage)
+import Protolude (Unit, liftAff, unit, ($))
 import Halogen as H
 
 import Example.Ace.Container as Example.Ace.Container
-import Halogen.HTML as Halogen.HTML
 
 pageSpec :: PageSpec Unit
 pageSpec =

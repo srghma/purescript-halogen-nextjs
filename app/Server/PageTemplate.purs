@@ -9,7 +9,6 @@ import Halogen.HTML as Halogen.HTML
 import Halogen.HTML.Elements as Halogen.HTML.Elements
 import Halogen.HTML.Properties as Halogen.HTML.Properties
 import Nextjs.Lib.HalogenElements as Nextjs.Lib.HalogenElements
-import Nextjs.Lib.Page as Nextjs.Lib.Page
 import Nextjs.Lib.RenderHtmlWithRawTextSupport as Nextjs.Lib.RenderHtmlWithRawTextSupport
 import Nextjs.Manifest.PageManifest as Nextjs.Manifest.PageManifest
 import Nextjs.Manifest.ClientPagesManifest as Nextjs.Manifest.ClientPagesManifest

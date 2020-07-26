@@ -1,14 +1,11 @@
 module Example.DeeplyNested.D (component) where
 
-import Prelude
+import Prelude (Unit, Void, absurd, const, unit)
 
-import Data.Maybe (Maybe(..))
 import Halogen as H
 import Halogen.HTML as HH
-import Halogen.HTML.Events as HE
-import Halogen.HTML.Properties as HP
 import Example.DeeplyNested.F as F
-import Data.Const
+import Data.Const (Const)
 import Data.Symbol (SProxy(..))
 
 type State = Unit

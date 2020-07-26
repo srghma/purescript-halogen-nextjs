@@ -1,15 +1,11 @@
 module Example.TextNodes.Elem (component) where
 
-import Protolude
+import Protolude (Unit, not, (<>))
 
-import Data.Maybe (Maybe(..))
 import Halogen as H
 import Halogen.HTML as HH
 import Halogen.HTML.Events as HE
-import Halogen.HTML.Elements.Keyed as HK
 import Halogen.HTML.Properties as HP
-import Data.Const
-import Data.Symbol (SProxy(..))
 import Example.TextNodes.Test (mkTest)
 
 type State = { enabled :: Boolean }

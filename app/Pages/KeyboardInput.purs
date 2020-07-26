@@ -1,9 +1,8 @@
 module Nextjs.Pages.KeyboardInput (page) where
 
-import Protolude
+import Protolude (Unit, liftAff, unit, ($))
 import Example.KeyboardInput.Main as Example.KeyboardInput.Main
-import Halogen.HTML as Halogen.HTML
-import Nextjs.Lib.Page
+import Nextjs.Lib.Page (Page, PageData(..), PageSpec, mkPage)
 import Halogen as H
 
 pageSpec :: PageSpec Unit

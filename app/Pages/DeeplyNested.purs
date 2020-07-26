@@ -1,9 +1,8 @@
 module Nextjs.Pages.DeeplyNested (page) where
 
-import Protolude
+import Protolude (Unit, liftAff, unit, ($))
 import Example.DeeplyNested.A as Example.DeeplyNested.A
-import Halogen.HTML as Halogen.HTML
-import Nextjs.Lib.Page
+import Nextjs.Lib.Page (Page, PageData(..), PageSpec, mkPage)
 import Halogen as H
 
 pageSpec :: PageSpec Unit

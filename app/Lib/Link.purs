@@ -17,7 +17,6 @@ import Web.IntersectionObserverEntry as Web.IntersectionObserverEntry
 import FRP.Event as FRP.Event
 import Web.HTML as Web.HTML
 import Web.HTML.HTMLElement as Web.HTML.HTMLElement
-import Web.DOM as Web.DOM
 import Nextjs.Manifest.PageManifest as Nextjs.Manifest.PageManifest
 import Nextjs.Manifest.ClientPagesManifest as Nextjs.Manifest.ClientPagesManifest
 import Nextjs.PageLoader as Nextjs.PageLoader
@@ -60,6 +59,7 @@ finalizeIntersectionObserver
   -> H.HalogenM State Action () Void m Unit
 finalizeIntersectionObserver intersectionObserver element = H.liftEffect $ Web.IntersectionObserver.unobserve intersectionObserver (Web.HTML.HTMLElement.toElement element)
 
+elementLabel :: RefLabel
 elementLabel = H.RefLabel "link"
 
 handleAction

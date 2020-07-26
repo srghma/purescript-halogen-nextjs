@@ -3,8 +3,6 @@ module Nextjs.PageLoader where
 import Protolude
 
 import Data.Array as Array
-import Data.Traversable (or)
-import Effect.Aff (supervise)
 import Effect.Aff as Aff
 import Effect.Uncurried as EFn
 import FRP.Event as Event

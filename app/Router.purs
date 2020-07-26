@@ -1,24 +1,15 @@
 module Nextjs.Router where
 
-import Protolude
+import Protolude (Const, Either(..), Maybe(..), SProxy(..), Void, absurd, bind, discard, identity, pure, spy, when, ($), (/=), (>>=))
 
-import Data.Argonaut as ArgonautCore
-import Data.Argonaut as ArgonautCodecs
-import Data.Either (hush)
-import Data.Foldable (elem)
-import Data.Maybe (Maybe(..), fromMaybe, isJust)
-import Data.Symbol (SProxy(..))
-import Effect.Aff.Class (class MonadAff)
-import Halogen (liftEffect)
 import Halogen as H
 import Halogen.HTML as HH
 import Nextjs.Lib.Page as Nextjs.Lib.Page
 import Nextjs.PageLoader as Nextjs.PageLoader
 import Nextjs.Route as Nextjs.Route
-import Nextjs.AppM
+import Nextjs.AppM (AppM)
 import Nextjs.Lib.Api as Nextjs.Lib.Api
 import Nextjs.Manifest.ClientPagesManifest as Nextjs.Manifest.ClientPagesManifest
-import Web.DOM as Web.DOM
 import Web.HTML as Web.HTML
 import Type.Row (type (+))
 

@@ -1,15 +1,7 @@
 module Example.TextNodes.Test (mkTest) where
 
-import Protolude
 
-import Data.Maybe (Maybe(..))
-import Halogen as H
 import Halogen.HTML as HH
-import Halogen.HTML.Events as HE
-import Halogen.HTML.Elements.Keyed as HK
-import Halogen.HTML.Properties as HP
-import Data.Const
-import Data.Symbol (SProxy(..))
 
 mkTest :: forall w i . (Array (HH.HTML w i) -> HH.HTML w i) -> Array (HH.HTML w i)
 mkTest contaner =

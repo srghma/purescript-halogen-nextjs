@@ -1,6 +1,6 @@
 module Nextjs.Client where
 
-import Protolude
+import Protolude (Aff, Effect, Maybe(..), Unit, bind, error, launchAff_, liftEffect, maybe, pure, throwError, void, when, ($), (/=), (<$>), (<<<), (>>=), (\/))
 
 import Data.Argonaut.Core (Json) as ArgonautCore
 import Data.Argonaut.Decode as ArgonautCodecs
@@ -19,16 +19,13 @@ import Nextjs.Route as Nextjs.Route
 import Nextjs.Router as Nextjs.Router
 import Routing.Duplex as Routing.Duplex
 import Routing.PushState as Routing.PushState
-import Web.DOM as Web.DOM
 import Web.DOM.ParentNode as Web.DOM.ParentNode
 import Web.HTML as Web.HTML
-import Web.HTML.HTMLDocument as Web.HTML.HTMLDocument
 import Web.HTML.Window as Web.HTML.Window
 import Web.IntersectionObserver as Web.IntersectionObserver
 import Web.IntersectionObserverEntry as Web.IntersectionObserverEntry
 import FRP.Event as FRP.Event
-import Web.HTML.HTMLHeadElement as Web.HTML.HTMLHeadElement
-import Nextjs.WebShared
+import Nextjs.WebShared (getHtmlEntities)
 
 navigate :: forall output . H.HalogenIO Nextjs.Router.Query output Aff -> Maybe Nextjs.Route.Route -> Nextjs.Route.Route -> Effect Unit
 navigate halogenIO oldRoute newRoute = when (oldRoute /= Just newRoute) do

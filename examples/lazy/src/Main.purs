@@ -1,17 +1,11 @@
 module Example.Lazy.Main (component) where
 
-import Data.Const
-import Protolude
+import Protolude (Aff, Const, Maybe(..), SProxy(..), Unit, Void, absurd, bind, const, discard, unit, ($))
 
-import Data.Maybe (Maybe(..))
-import Data.Symbol (SProxy(..))
 import Effect.Class.Console (log)
 import Example.Lazy.LazyLoadedImport as Example.Lazy.LazyLoadedImport
 import Halogen as H
 import Halogen.HTML as HH
-import Halogen.HTML.Elements.Keyed as HK
-import Halogen.HTML.Events as HE
-import Halogen.HTML.Properties as HP
 
 type ChildSlots =
   ( lazyChild :: H.Slot (Const Void) Void Unit

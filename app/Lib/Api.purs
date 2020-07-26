@@ -3,13 +3,8 @@ module Nextjs.Lib.Api where
 import Protolude
 
 import Affjax as Affjax
-import Affjax.RequestBody as Affjax.RequestBody
-import Affjax.ResponseFormat as Affjax.ResponseFormat
-import Control.Monad.Except.Trans (runExceptT, throwError) as Transformers
-import Control.Monad.Trans.Class (lift) as Transformers
 import Data.Argonaut.Core as ArgonautCore
-import Data.Argonaut.Decode as ArgonautCodecs
-import Data.Argonaut.Encode as ArgonautCodecs
+import Data.Argonaut.Decode (JsonDecodeError, printJsonDecodeError) as ArgonautCodecs
 
 data ApiError
   = ApiAffjaxError Affjax.Error

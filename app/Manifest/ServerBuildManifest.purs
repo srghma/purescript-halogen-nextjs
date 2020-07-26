@@ -1,26 +1,13 @@
 module Nextjs.Manifest.ServerBuildManifest where
 
-import Data.Argonaut.Core
-import Options.Applicative
-import Protolude
+import Protolude (Effect, Either, bind, ($), (>>=))
 
-import Ansi.Codes (Color(..)) as Ansi
-import Ansi.Output (foreground, withGraphics) as Ansi
-import Data.Argonaut.Decode (class DecodeJson, JsonDecodeError)
-import Data.Argonaut.Decode as ArgonautCodecs
-import Data.Argonaut.Decode.Generic.Rep (genericDecodeJson)
-import Data.Argonaut.Decode.Parser as ArgonautCodecs
-import Data.Argonaut.Encode (class EncodeJson)
-import Data.Argonaut.Encode.Generic.Rep (genericEncodeJson)
-import Data.Argonaut.Parser as Data.Argonaut.Parser
-import Data.Generic.Rep.Show (genericShow)
-import Data.Int as Integers
-import Data.Map (Map)
-import Effect.Class.Console as Console
+import Data.Argonaut.Decode (JsonDecodeError)
+import Data.Argonaut.Decode (decodeJson) as ArgonautCodecs
+import Data.Argonaut.Decode.Parser (parseJson) as ArgonautCodecs
 import Nextjs.Route as Nextjs.Route
 import Nextjs.Server.Config as Nextjs.Server.Config
 import Node.Encoding as Node.Encoding
-import Node.FS.Sync as Node.FS.Sync
 import Node.FS.Sync as Node.FS.Sync
 import Node.Path as Node.Path
 import Nextjs.Manifest.PageManifest as Nextjs.Manifest.PageManifest

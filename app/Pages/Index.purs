@@ -1,10 +1,8 @@
 module Nextjs.Pages.Index (page) where
 
-import Protolude
+import Protolude (Unit, unit)
 import Lib.Pages.Index.Default as Lib.Pages.Index.Default
-import Halogen.HTML as Halogen.HTML
-import Nextjs.Lib.Page
-import Halogen as H
+import Nextjs.Lib.Page (Page, PageData(..), PageSpec, mkPage)
 
 pageSpec :: PageSpec Unit
 pageSpec =

@@ -1,15 +1,9 @@
 module Example.TextNodes.Main (component) where
 
-import Protolude
+import Protolude (Const, SProxy(..), Unit, Void, absurd, const, unit)
 
-import Data.Maybe (Maybe(..))
 import Halogen as H
 import Halogen.HTML as HH
-import Halogen.HTML.Events as HE
-import Halogen.HTML.Elements.Keyed as HK
-import Halogen.HTML.Properties as HP
-import Data.Const
-import Data.Symbol (SProxy(..))
 import Example.TextNodes.Elem as Example.TextNodes.Elem
 import Example.TextNodes.Keyed as Example.TextNodes.Keyed
 

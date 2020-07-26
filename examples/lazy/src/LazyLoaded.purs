@@ -1,15 +1,9 @@
 module Example.Lazy.LazyLoaded (component) where
 
-import Protolude
+import Protolude (Unit, const, unit)
 
-import Data.Maybe (Maybe(..))
 import Halogen as H
 import Halogen.HTML as HH
-import Halogen.HTML.Events as HE
-import Halogen.HTML.Elements.Keyed as HK
-import Halogen.HTML.Properties as HP
-import Data.Const
-import Data.Symbol (SProxy(..))
 
 component :: forall q i o m. H.Component q i o m
 component =

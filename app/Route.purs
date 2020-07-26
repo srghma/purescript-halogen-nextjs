@@ -7,8 +7,8 @@ import Data.Argonaut.Decode.Generic.Rep (genericDecodeJson)
 import Data.Argonaut.Encode (class EncodeJson)
 import Data.Argonaut.Encode.Generic.Rep (genericEncodeJson)
 import Data.Generic.Rep.Show (genericShow)
-import Routing.Duplex as Routing.Duplex
-import Routing.Duplex.Generic as Routing.Duplex
+import Routing.Duplex (RouteDuplex', root) as Routing.Duplex
+import Routing.Duplex.Generic (noArgs, sum) as Routing.Duplex
 import Routing.Duplex.Generic.Syntax ((/))
 
 data Route

@@ -1,16 +1,14 @@
 module Nextjs.Lib.Page where
 
-import Nextjs.AppM
-import Protolude
+import Nextjs.AppM (AppM)
+import Protolude (type (\/), Aff, Const, Either(..), Void, bind, pure, ($), (<#>))
 
 import Affjax as Affjax
 import Data.Argonaut.Core as ArgonautCore
-import Data.Argonaut.Decode as ArgonautCodecs
-import Data.Argonaut.Encode as ArgonautCodecs
+import Data.Argonaut.Decode (class DecodeJson, JsonDecodeError, decodeJson) as ArgonautCodecs
+import Data.Argonaut.Encode (class EncodeJson, encodeJson) as ArgonautCodecs
 import Halogen as Halogen
 import Nextjs.Lib.Api as Nextjs.Lib.Api
-import Record.Builder (build, merge)
-import Type.Row (type (+))
 import Unsafe.Coerce (unsafeCoerce)
 
 -- in next.js pages have be 3 types

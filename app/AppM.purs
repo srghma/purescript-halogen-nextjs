@@ -1,12 +1,10 @@
 module Nextjs.AppM where
 
-import Protolude
+import Protolude (class Applicative, class Apply, class Bind, class Functor, class Monad, class MonadAff, class MonadAsk, class MonadEffect, type (~>), Aff, ask, bind, liftEffect, unit, ($))
 
-import Control.Monad.Reader
-import Nextjs.Capability.Navigate
+import Control.Monad.Reader (ReaderT, asks, runReaderT)
+import Nextjs.Capability.Navigate (class Navigate)
 
-import Data.Array as Array
-import Halogen as H
 import Foreign as Foreign
 import Nextjs.Route as Nextjs.Route
 import Routing.Duplex as Routing.Duplex
@@ -15,9 +13,6 @@ import Type.Equality (class TypeEquals, from)
 import Web.IntersectionObserver as Web.IntersectionObserver
 import Web.IntersectionObserverEntry as Web.IntersectionObserverEntry
 import FRP.Event as FRP.Event
-import Web.HTML.HTMLElement as Web.HTML.HTMLElement
-import Halogen.VDom.Util as Halogen.VDom.Util
-import Data.Function.Uncurried as Fn
 import Nextjs.Manifest.ClientPagesManifest as Nextjs.Manifest.ClientPagesManifest
 import Web.HTML as Web.HTML
 
