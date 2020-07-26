@@ -28,6 +28,7 @@ import Web.IntersectionObserver as Web.IntersectionObserver
 import Web.IntersectionObserverEntry as Web.IntersectionObserverEntry
 import FRP.Event as FRP.Event
 import Web.HTML.HTMLHeadElement as Web.HTML.HTMLHeadElement
+import Nextjs.WebShared
 
 navigate :: forall output . H.HalogenIO Nextjs.Router.Query output Aff -> Maybe Nextjs.Route.Route -> Nextjs.Route.Route -> Effect Unit
 navigate halogenIO oldRoute newRoute = when (oldRoute /= Just newRoute) do
@@ -58,12 +59,7 @@ intersectionObserverOptions = Web.IntersectionObserver.defaultIntersectionObserv
 
 main :: Effect Unit
 main = do
-  (window :: Web.HTML.Window.Window) <- Web.HTML.window
-  (document :: Web.HTML.HTMLDocument) <- Web.HTML.Window.document window
-  (body :: Web.HTML.HTMLElement) <- Web.HTML.HTMLDocument.body document >>= maybe (throwError $ error "Cannot find body") pure
-  (head :: Web.HTML.HTMLHeadElement) <- do
-     (head :: Web.HTML.HTMLElement) <- Web.HTML.HTMLDocument.head document >>= maybe (throwError $ error "Cannot find head") pure
-     Web.HTML.HTMLHeadElement.fromHTMLElement head # maybe (throwError $ error "not head") pure
+  { window, document, body, head } <- getHtmlEntities
 
   { intersectionObserverEvent, intersectionObserverCallback } <- intersectionObserverEventAndCallback
   (intersectionObserver :: Web.IntersectionObserver.IntersectionObserver) <- Web.IntersectionObserver.create intersectionObserverCallback intersectionObserverOptions

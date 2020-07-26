@@ -1,4 +1,4 @@
-import "./client.entry.css";
+import "./index.css";
 import { main } from "./Client.purs"
 
 main()

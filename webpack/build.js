@@ -9,8 +9,8 @@ import webpackGetError from './lib/webpackGetError'
   const commonSettings = { production: true }
 
   const configs = await Promise.all([
-    createConfig(R.mergeAll([commonSettings, { browser: true }])),
-    createConfig(R.mergeAll([commonSettings, { browser: false }]))
+    createConfig(R.mergeAll([commonSettings, { target: 'browser' }])),
+    createConfig(R.mergeAll([commonSettings, { target: 'server' }]))
   ])
 
   // console.log('configs', require('util').inspect(configs, { depth: null, maxArrayLength: Infinity, colors: true }))

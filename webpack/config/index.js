@@ -13,15 +13,28 @@ const CLIENT_STATIC_FILES_RUNTIME_WEBPACK = 'webpack'
 
 const totalPages = 5 // TODO
 
+const onTarget = ({ target, onBrowser, onServer, onMobile }) => {
+  switch (target) {
+    case 'browser':
+      if (onBrowser) { return onBrowser() };
+      break;
+    case 'server':
+      if (onServer) { return onServer() };
+      break;
+    case 'mobile':
+      if (onMobile) { return onMobile() };
+      break;
+    default:
+      throw new Error('unknown target', target);
+  }
+}
+
 export default async function ({
-  browser,
+  target,
   watch,
   production,
   serverPort,
 }) {
-  const distDir = path.resolve(root, production ? '.dist' : '.dist-dev')
-  const distOutputDir = path.resolve(distDir, browser ? 'client' : 'server')
-
   return {
     watch: watch,
 
@@ -29,13 +42,27 @@ export default async function ({
     //   ignored: ['.purs', 'node_modules']
     // },
 
-    target: browser ? 'web' : 'node',
+    target: onTarget({
+      target,
+      onBrowser: () => 'web',
+      onServer: () => 'node',
+      onMobile: () => 'web',
+    }),
 
     mode: production ? 'production' : 'development',
 
-    devServer: {
-      hot: false,
-    },
+    ...(
+      onTarget({
+        target,
+        onBrowser: () => undefined,
+        onServer: () => undefined,
+        onMobile: () => ({
+          devServer: {
+            hot: false,
+          },
+        }),
+      })
+    ),
 
     // devServer: {
     //   // writeToDisk: true,
@@ -53,11 +80,19 @@ export default async function ({
     // },
 
     output: {
-      path: distOutputDir,
+      path: onTarget({
+        target,
+        onBrowser: () => path.resolve(root, production ? '.dist' : '.dist-dev', 'client'),
+        onServer: () => path.resolve(root, production ? '.dist' : '.dist-dev', 'server' ),
+        onMobile: () => path.resolve(root, 'www'),
+      }),
 
-      filename: browser ?
-        (production ? '[name]-[contenthash].js' : '[name].js') :
-        '[name].js',
+      filename: onTarget({
+        target,
+        onBrowser: () => production ? '[name]-[contenthash].js' : '[name].js',
+        onServer: () => '[name].js',
+        onMobile: () => 'index.bundle.js',
+      }),
 
       publicPath: '/',
 
@@ -70,23 +105,40 @@ export default async function ({
       // hotUpdateChunkFilename: '[id].[hash].hot-update.js',
       // hotUpdateMainFilename: '[hash].hot-update.json',
 
-      libraryTarget: browser ? 'var' : 'commonjs2',
+      libraryTarget: onTarget({
+        target,
+        onBrowser: () => 'var',
+        onServer: () => 'commonjs2',
+        onMobile: () => 'var',
+      }),
 
       // This saves chunks with the name given via `import()`
-      chunkFilename: browser
-        ? `chunks/${production ? '[name]-[contenthash]' : '[name]'}.js`
-        : undefined,
+      chunkFilename: onTarget({
+        target,
+        onBrowser: () => `chunks/${production ? '[name]-[contenthash]' : '[name]'}.js`,
+        onServer: () => undefined,
+        onMobile: () => undefined,
+      }),
     },
 
-    entry: browser ?
-      R.mergeAll([await createClientPagesEntrypoints(), { main: path.resolve(root, "app", "client.entry.js") }]) :
-      { main: path.resolve(root, "app", "server.entry.js") },
+    entry: onTarget({
+      target,
+      onBrowser: async () => R.mergeAll([
+        await createClientPagesEntrypoints(),
+        { main: path.resolve(root, "app", "client.entry.js") }]
+      ),
+      onServer: () => ({ main: path.resolve(root, "app", "server.entry.js") }),
+      onMobile: () => ({ main: path.resolve(root, "app", "mobile.entry.js") }),
+    }),
 
-    node: browser ?
-      false :
-      {
+    node: onTarget({
+      target,
+      onBrowser: () => false,
+      onServer: () => ({
         __dirname: false // possible values: false - runtime, true - during complilation, "mock" - "/"
-      },
+      }),
+      onMobile: () => false,
+    }),
 
     bail: true,
     profile: false,
@@ -98,7 +150,12 @@ export default async function ({
 
     context: root,
 
-    devtool: browser ? (production ? false : 'eval') : false,
+    devtool: onTarget({
+      target,
+      onBrowser: () => production ? false : 'eval',
+      onServer: () => false,
+      onMobile: () => production ? false : 'eval',
+    }),
 
     module: {
       rules: require('./rules')()
@@ -114,56 +171,64 @@ export default async function ({
         'node_modules',
       ],
 
-      alias: R.pipe(
-        R.map(loader => [loader, path.join(root, 'webpack', 'lib', loader)]),
-        R.fromPairs,
-      )([
-        'isomorphic-client-pages-loader',
-      ]),
+      alias: onTarget({
+        target,
+        onBrowser: () => ({
+          'isomorphic-client-pages-loader': path.join(root, 'webpack', 'lib', 'isomorphic-client-pages-loader')
+        }),
+        onServer: () => undefined,
+        onMobile: () => undefined,
+      }),
     },
 
     plugins: RA.compact([
-      // browser ? new MiniCssExtractPlugin() : null, // inline css doesnt work with ssr
+      // target === 'browser' ? new MiniCssExtractPlugin() : null, // inline css doesnt work with ssr
       // TODO: per page https://github.com/webpack-contrib/mini-css-extract-plugin#extracting-css-based-on-entry
       new MiniCssExtractPlugin({
         // Options similar to the same options in webpackOptions.output
         // both options are optional
-        filename: production ? 'css/[name].[hash].css' : 'css/[name].css',
-        chunkFilename: production ? 'css/[id].[hash].css' : 'css/[id].css',
-      }), // inline css doesnt work with ssr
+        filename: onTarget({
+          target,
+          onBrowser: () => production ? 'css/[name].[hash].css' : 'css/[name].css',
+          onServer: () => production ? 'css/[name].[hash].css' : 'css/[name].css',
+          onMobile: () => 'css/index.css',
+        }),
+
+        chunkFilename: onTarget({
+          target,
+          onBrowser: () => production ? 'css/[id].[hash].css' : 'css/[id].css',
+          onServer: () => production ? 'css/[id].[hash].css' : 'css/[id].css',
+          onMobile: () => false,
+        }),
+      }),
 
       new webpack.DefinePlugin({
         'process.env.NODE_ENV': JSON.stringify(production ? "production" : "development"),
         'process.production': JSON.stringify(production),
-        'process.browser': browser,
+        'process.target': target,
 
         ...(
-          browser ? {} : {
-            'ace': false, // for purescript-ace on node environment: dont throw 'undefined' exception, just make `var ace = false`
-          }
+          target === 'server' ?
+            {
+              'ace': false, // for purescript-ace on node environment: dont throw 'undefined' exception, just make `var ace = false`
+            } :
+            undefined
         )
       }),
 
       (
-        browser ?
-        null :
+        target === 'server' ?
         new webpack.ProvidePlugin({
           'XMLHttpRequest': 'xhr2', // on node - use 'xhr2' package
-        })
+        }) :
+        undefined
       ),
 
-      ...(
-        (browser && !production) ?
-        [
-          new webpack.HotModuleReplacementPlugin(),
-          new webpack.NoEmitOnErrorsPlugin()
-        ] :
-        []
-      ),
+      new webpack.NoEmitOnErrorsPlugin(),
 
       // TODO: fix for dev
       // (
-      //   browser ?
+      //   target === 'browser' ?
       //   new (require('webpack-livereload-plugin'))({
       //     delay: 100,
       //     appendScriptTag: true,
@@ -172,19 +237,19 @@ export default async function ({
       // ),
 
       (
-        production ?
+        production && target !== 'mobile' ?
         new (require('clean-webpack-plugin').CleanWebpackPlugin)() :
         null
       ),
 
       (
-        (process.env.BUNDLE_ANALYZE === "true" && browser) ?
+        (process.env.BUNDLE_ANALYZE === "true" && target === 'browser') ?
         new (require('webpack-bundle-analyzer').BundleAnalyzerPlugin)({ analyzerPort: 8888 }) :
         null
       ),
 
       (
-        browser ?
+        target === 'browser' ?
         new (require('../lib/build-manifest-plugin'))() :
         null
       ),
@@ -207,17 +272,17 @@ export default async function ({
     optimization: {
       noEmitOnErrors: true,
 
-      splitChunks: browser ?
+      splitChunks: target === 'browser' ?
         (production ? require('./splitChunksConfig').prod({ totalPages }) : require('./splitChunksConfig').dev) :
         false,
 
       nodeEnv: false,
 
-      runtimeChunk: browser // extract webpack runtime to separate module, e.g. "/runtime/webpack-xxxxx.js"
+      runtimeChunk: target === 'browser' // extract webpack runtime to separate module, e.g. "/runtime/webpack-xxxxx.js"
         ? { name: CLIENT_STATIC_FILES_RUNTIME_WEBPACK }
         : false,
 
-      // minimize: production && browser,
+      // minimize: production && target === 'browser',
 
       // minimizer: production ? [
       //   new (require('terser-webpack-plugin'))(),
