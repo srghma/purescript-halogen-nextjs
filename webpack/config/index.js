@@ -33,6 +33,10 @@ export default async function ({
 
     mode: production ? 'production' : 'development',
 
+    devServer: {
+      hot: false,
+    },
+
     // devServer: {
     //   // writeToDisk: true,
     //   // hot: true,

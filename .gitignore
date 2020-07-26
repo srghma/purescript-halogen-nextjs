@@ -11,3 +11,6 @@
 /yarn-error.log
 .dist/
 .dist-dev/
+/plugins/cordova-plugin-webpack/
+/plugins/cordova-plugin-whitelist/
+/platforms/android/

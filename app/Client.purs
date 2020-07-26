@@ -69,8 +69,6 @@ main = do
   (intersectionObserver :: Web.IntersectionObserver.IntersectionObserver) <- Web.IntersectionObserver.create intersectionObserverCallback intersectionObserverOptions
 
   Effect.Aff.launchAff_ do
-    rootElement <- Halogen.Aff.Util.awaitElement (Web.DOM.ParentNode.QuerySelector "#root")
-
     (clientPagesManifest :: Nextjs.Manifest.ClientPagesManifest.ClientPagesManifest) <- Nextjs.Manifest.ClientPagesManifest.getBuildManifest
 
     pageRegisteredEvent <- liftEffect Nextjs.PageLoader.createPageRegisteredEvent
@@ -111,6 +109,7 @@ main = do
 
     let component = H.hoist (runAppM env) Nextjs.Router.clientComponent
 
+    rootElement <- Halogen.Aff.Util.awaitElement (Web.DOM.ParentNode.QuerySelector "#root")
     halogenIO <- Halogen.VDom.Driver.hydrateUI component initialState rootElement
 
     void $ liftEffect $ Routing.PushState.matchesWith (Routing.Duplex.parse Nextjs.Route.routeCodec) (navigate halogenIO) pushStateInterface
