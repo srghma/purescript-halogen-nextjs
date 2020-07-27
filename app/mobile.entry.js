@@ -1,1 +1,4 @@
-require('./Nextjs/Entries/Mobile.purs').main();
+import "./index.css";
+import { main } from "./Nextjs/Entries/Mobile.purs"
+
+main()
