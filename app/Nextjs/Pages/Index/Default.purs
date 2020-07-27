@@ -43,13 +43,19 @@ component =
     , eval: H.mkEval $ H.defaultEval
     }
 
-render :: forall action . HH.ComponentHTML action ( mylink :: Slot (Const Void) Void Route ) AppM
-render state =
+render
+  :: forall action state
+   . state
+  -> HH.ComponentHTML action ( mylink :: Slot (Const Void) Void Route ) AppM
+render _ =
   HH.ul_ $
     allRoutes <#> (\route ->
       HH.li_ $
-        let route' = show route
-        in
-          [ HH.slot (SProxy :: SProxy "mylink") route Nextjs.Link.Default.component { route, text: route' } absurd
-          ]
+        [ HH.slot
+          (SProxy :: SProxy "mylink")
+          route
+          Nextjs.Link.Default.component
+          { route, text: show route }
+          absurd
+        ]
       )

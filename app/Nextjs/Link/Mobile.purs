@@ -21,16 +21,10 @@ import Web.IntersectionObserver as Web.IntersectionObserver
 import Web.IntersectionObserverEntry as Web.IntersectionObserverEntry
 import Web.UIEvent.MouseEvent as Web.UIEvent.MouseEvent
 
-type RestAction = Void
-
-mkLinkHandleActions :: EnvLinkHandleActions
-mkLinkHandleActions = mkEnvLinkHandleActions mkLinkHandleActionsSpec
-
-mkLinkHandleActionsSpec
-  :: forall r
-  . EnvLinkHandleActionsSpec RestAction
-mkLinkHandleActionsSpec =
+mkLinkHandleActions
+  :: EnvLinkHandleActions
+mkLinkHandleActions =
   { handleInitialize: pure unit
   , handleFinalize: pure unit
-  , handleRestAction: absurd
+  , handleLinkIsInViewport: \_ -> pure unit
   }

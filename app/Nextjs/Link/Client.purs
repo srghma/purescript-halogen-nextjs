@@ -23,6 +23,7 @@ import Web.IntersectionObserver as Web.IntersectionObserver
 import Web.IntersectionObserverEntry as Web.IntersectionObserverEntry
 import Web.UIEvent.MouseEvent as Web.UIEvent.MouseEvent
 import Nextjs.Link.Types
+import Nextjs.Link.Lib
 
 type Context =
   { intersectionObserver      :: Web.IntersectionObserver.IntersectionObserver
@@ -31,8 +32,6 @@ type Context =
   , document                  :: Web.HTML.HTMLDocument
   , head                      :: Web.HTML.HTMLHeadElement
   }
-
-data RestAction = LinkIsInViewport H.SubscriptionId
 
 finalizeIntersectionObserver
   :: forall m action
@@ -46,13 +45,10 @@ finalizeIntersectionObserver intersectionObserver element =
     intersectionObserver
     (Web.HTML.HTMLElement.toElement element)
 
-mkLinkHandleActions :: Context -> EnvLinkHandleActions
-mkLinkHandleActions = mkLinkHandleActionsSpec >>> mkEnvLinkHandleActions
-
-mkLinkHandleActionsSpec
+mkLinkHandleActions
   :: Context
-  -> EnvLinkHandleActionsSpec RestAction
-mkLinkHandleActionsSpec context =
+  -> EnvLinkHandleActions
+mkLinkHandleActions context =
   { handleInitialize: H.getHTMLElementRef elementLabel >>= traverse_ \element -> do
       H.liftEffect $ Web.IntersectionObserver.observe context.intersectionObserver (Web.HTML.HTMLElement.toElement element)
       H.subscribe' \sid ->
@@ -63,7 +59,7 @@ mkLinkHandleActionsSpec context =
   , handleFinalize: H.getHTMLElementRef elementLabel >>= traverse_ \element -> do
       -- unsubscribe from observer on finalize too, TODO: maybe ignore it?
       finalizeIntersectionObserver context.intersectionObserver element
-  , handleRestAction: \(LinkIsInViewport sid) -> do
+  , handleLinkIsInViewport: \sid -> do
       -- | traceM { message: "I'm in viewport" }
 
       -- once we know the link is in viewport

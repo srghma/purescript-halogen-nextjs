@@ -55,7 +55,7 @@ main = do
 
   let (env :: Env) =
         { navigate: Nextjs.Navigate.Mobile.navigate newRouteEventIO
-        , link: Nextjs.Link.Mobile.component
+        , linkHandleActions: Nextjs.Link.Mobile.mkLinkHandleActions
         }
 
   onDeviceReady document $ Effect.Aff.launchAff_ do

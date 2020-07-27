@@ -2,14 +2,15 @@ module Nextjs.Link.Types where
 
 import Protolude
 
-import Web.UIEvent.MouseEvent as Web.UIEvent.MouseEvent
+import Halogen (SubscriptionId) as H
 import Nextjs.Route as Nextjs.Route
+import Web.UIEvent.MouseEvent as Web.UIEvent.MouseEvent
 
-data Action linkActionRest
+data Action
   = Initialize
   | Finalize
   | Navigate Web.UIEvent.MouseEvent.MouseEvent
-  | RestAction linkActionRest
+  | LinkIsInViewport H.SubscriptionId
 
 type State =
   { route :: Nextjs.Route.Route

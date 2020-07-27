@@ -18,28 +18,11 @@ import Web.HTML as Web.HTML
 import Web.IntersectionObserver as Web.IntersectionObserver
 import Web.IntersectionObserverEntry as Web.IntersectionObserverEntry
 
-type EnvLinkHandleActionsSpec linkActionRest =
-  { handleInitialize :: H.HalogenM Nextjs.Link.Types.State (Nextjs.Link.Types.Action linkActionRest) () Void AppM Unit
-  , handleFinalize   :: H.HalogenM Nextjs.Link.Types.State (Nextjs.Link.Types.Action linkActionRest) () Void AppM Unit
-  , handleRestAction :: linkActionRest -> H.HalogenM Nextjs.Link.Types.State (Nextjs.Link.Types.Action linkActionRest) () Void AppM Unit
+type EnvLinkHandleActions =
+  { handleInitialize       :: H.HalogenM Nextjs.Link.Types.State Nextjs.Link.Types.Action () Void AppM Unit
+  , handleFinalize         :: H.HalogenM Nextjs.Link.Types.State Nextjs.Link.Types.Action () Void AppM Unit
+  , handleLinkIsInViewport :: H.SubscriptionId -> H.HalogenM Nextjs.Link.Types.State Nextjs.Link.Types.Action () Void AppM Unit
   }
-
-newtype EnvLinkHandleActions = EnvLinkHandleActions (forall linkActionRest. EnvLinkHandleActionsSpec linkActionRest)
-
-mkEnvLinkHandleActions
-  :: forall linkActionRest
-   . EnvLinkHandleActionsSpec linkActionRest
-  -> EnvLinkHandleActions
-mkEnvLinkHandleActions = unsafeCoerce
-
-unEnvLinkHandleActions
-  :: forall r
-   . (forall linkActionRest. EnvLinkHandleActionsSpec linkActionRest -> r)
-  -> EnvLinkHandleActions
-  -> r
-unEnvLinkHandleActions f (EnvLinkHandleActions r) = f r
-
--------------------
 
 type Env =
   { navigate :: Nextjs.Route.Route -> Effect Unit

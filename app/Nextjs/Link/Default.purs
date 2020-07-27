@@ -23,11 +23,10 @@ import Web.IntersectionObserver as Web.IntersectionObserver
 import Web.IntersectionObserverEntry as Web.IntersectionObserverEntry
 import Web.UIEvent.MouseEvent as Web.UIEvent.MouseEvent
 import Nextjs.Link.Types
+import Nextjs.Link.Lib
 
-component
-  :: forall m r
-   . H.Component (Const Void) State Void AppM
-component context =
+component :: H.Component (Const Void) State Void AppM
+component =
   H.mkComponent
     { initialState: identity
     , render
@@ -38,10 +37,7 @@ component context =
       }
     }
 
-elementLabel :: H.RefLabel
-elementLabel = H.RefLabel "link"
-
-render :: forall m linkActionRest. State -> H.ComponentHTML (Action linkActionRest) () m
+render :: State -> H.ComponentHTML Action () AppM
 render state =
   HH.a
     [ HP.href (Routing.Duplex.print Nextjs.Route.routeCodec state.route) -- TODO: can cache
@@ -52,9 +48,9 @@ render state =
     ]
 
 handleActionNavigate
-  :: forall linkActionRest slot r
+  :: forall slot r
    . Web.UIEvent.MouseEvent.MouseEvent
-  -> H.HalogenM State (Action linkActionRest) slot Void AppM Unit
+  -> H.HalogenM State Action slot Void AppM Unit
 handleActionNavigate mouseEvent = do
   -- TODO: ignore newtab clicks https://github.com/vercel/next.js/blob/8dd3d2a8e2b266611a60b9550d2ecac02f14fd57/packages/next/client/link.tsx#L171-L182
   H.liftEffect $ Web.Event.Event.preventDefault (Web.UIEvent.MouseEvent.toEvent mouseEvent)
@@ -63,16 +59,12 @@ handleActionNavigate mouseEvent = do
   Nextjs.Navigate.navigate state.route
 
 handleAction
-  :: forall linkActionRest r
-  . Action linkActionRest
-  -> H.HalogenM State (Action linkActionRest) () Void AppM Unit
+  :: forall r
+  . Action
+  -> H.HalogenM State Action () Void AppM Unit
 handleAction action = ask >>= \env ->
-  unEnvLinkHandleActions
-  (\linkHandleActions ->
     case action of
          Navigate mouseEvent -> handleActionNavigate mouseEvent
-         Initialize -> linkHandleActions.handleInitialize
-         Finalize -> linkHandleActions.handleFinalize
-         RestAction linkActionRest -> linkHandleActions.handleRestAction linkActionRest
-  )
-  env.linkHandleActions
+         Initialize -> env.linkHandleActions.handleInitialize
+         Finalize -> env.linkHandleActions.handleFinalize
+         LinkIsInViewport subscriptionId -> env.linkHandleActions.handleLinkIsInViewport subscriptionId

@@ -79,7 +79,7 @@ main = do
 
     let (env :: Env) =
           { navigate: Nextjs.Navigate.Client.navigate pushStateInterface
-          , link: Nextjs.Link.Client.component
+          , linkHandleActions: Nextjs.Link.Client.mkLinkHandleActions
             { intersectionObserver
             , intersectionObserverEvent
             , clientPagesManifest
