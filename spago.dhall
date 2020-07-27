@@ -42,7 +42,7 @@
 , packages = ./packages.dhall
 , sources =
   [ "app/**/*.purs"
-  -- , "src/**/*.purs"
+  , "src/**/*.purs"
   , "test/**/*.purs"
   , "examples/ace/**/*.purs"
   , "examples/basic/**/*.purs"

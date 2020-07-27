@@ -22,15 +22,18 @@ import Nextjs.Manifest.ClientPagesManifest as Nextjs.Manifest.ClientPagesManifes
 import Nextjs.PageLoader as Nextjs.PageLoader
 
 type Env r =
-  { intersectionObserver :: Web.IntersectionObserver.IntersectionObserver
+  { intersectionObserver      :: Web.IntersectionObserver.IntersectionObserver
   , intersectionObserverEvent :: FRP.Event.Event (Array Web.IntersectionObserverEntry.IntersectionObserverEntry)
-  , clientPagesManifest :: Nextjs.Manifest.ClientPagesManifest.ClientPagesManifest
-  , document :: Web.HTML.HTMLDocument
-  , head :: Web.HTML.HTMLHeadElement
+  , clientPagesManifest       :: Nextjs.Manifest.ClientPagesManifest.ClientPagesManifest
+  , document                  :: Web.HTML.HTMLDocument
+  , head                      :: Web.HTML.HTMLHeadElement
   | r
   }
 
-type State = { route :: Nextjs.Route.Route, text :: String }
+type State =
+  { route :: Nextjs.Route.Route
+  , text :: String
+  }
 
 data Action
   = Initialize
@@ -59,7 +62,7 @@ finalizeIntersectionObserver
   -> H.HalogenM State Action () Void m Unit
 finalizeIntersectionObserver intersectionObserver element = H.liftEffect $ Web.IntersectionObserver.unobserve intersectionObserver (Web.HTML.HTMLElement.toElement element)
 
-elementLabel :: RefLabel
+elementLabel :: H.RefLabel
 elementLabel = H.RefLabel "link"
 
 handleAction
@@ -100,7 +103,7 @@ handleAction Finalize = do
 render :: forall m. State -> H.ComponentHTML Action () m
 render state =
   HH.a
-    [ HP.href (Routing.Duplex.print Nextjs.Route.routeCodec state.route)
+    [ HP.href (Routing.Duplex.print Nextjs.Route.routeCodec state.route) -- TODO: can cache
     , HE.onClick Navigate
     , HP.ref elementLabel
     ]

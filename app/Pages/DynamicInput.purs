@@ -1,8 +1,5 @@
 module Nextjs.Pages.DynamicInput (page) where
 
-import Nextjs.Lib.Page (Page, PageData(..), PageSpec, mkCodec, mkPage)
-import Protolude (Aff, Either, Maybe(..), liftAff, ($))
-
 import Affjax as Affjax
 import Affjax.RequestBody (json) as Affjax.RequestBody
 import Affjax.ResponseFormat (json) as Affjax.ResponseFormat
@@ -10,6 +7,8 @@ import Data.Argonaut as ArgonautCore
 import Data.Argonaut.Encode (encodeJson) as ArgonautCodecs
 import Example.DynamicInput.Container as Example.DynamicInput.Container
 import Halogen as H
+import Nextjs.Lib.Page (Page, PageData(..), PageSpec, mkCodec, mkPage)
+import Protolude (Aff, Either, Maybe(..), liftAff, ($))
 
 requestGraphql :: String -> Aff (Either Affjax.Error (Affjax.Response ArgonautCore.Json))
 requestGraphql query =
@@ -21,7 +20,7 @@ requestGraphql query =
   where
     graphqlUrl = "https://graphql.anilist.co/"
 
-type PageData =
+type ThisPageData =
   { data ::
     { "MediaTagCollection" :: Array
       { id :: Int
@@ -30,7 +29,7 @@ type PageData =
     }
   }
 
-pageSpec :: PageSpec PageData
+pageSpec :: PageSpec ThisPageData
 pageSpec =
   { pageData: DynamicPageData
     { codec: mkCodec

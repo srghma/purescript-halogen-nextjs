@@ -1,11 +1,10 @@
 module Nextjs.Client where
 
-import Protolude (Aff, Effect, Maybe(..), Unit, bind, error, launchAff_, liftEffect, maybe, pure, throwError, void, when, ($), (/=), (<$>), (<<<), (>>=), (\/))
-
 import Data.Argonaut.Core (Json) as ArgonautCore
 import Data.Argonaut.Decode as ArgonautCodecs
 import Data.Either (hush)
 import Effect.Aff as Effect.Aff
+import FRP.Event as FRP.Event
 import Halogen as H
 import Halogen.Aff.Util as Halogen.Aff.Util
 import Halogen.VDom.Driver as Halogen.VDom.Driver
@@ -16,16 +15,18 @@ import Nextjs.Lib.Utils (findJsonFromScriptElement, getPathWithoutOrigin)
 import Nextjs.Manifest.ClientPagesManifest as Nextjs.Manifest.ClientPagesManifest
 import Nextjs.PageLoader as Nextjs.PageLoader
 import Nextjs.Route as Nextjs.Route
-import Nextjs.Router as Nextjs.Router
+import Nextjs.Router.Client as Nextjs.Router
+import Nextjs.Router.Shared as Nextjs.Router
+import Nextjs.WebShared (getHtmlEntities)
+import Protolude (Aff, Effect, Maybe(..), Unit, bind, error, launchAff_, liftEffect, maybe, pure, throwError, void, when, ($), (/=), (<$>), (<<<), (>>=), (\/))
 import Routing.Duplex as Routing.Duplex
 import Routing.PushState as Routing.PushState
 import Web.DOM.ParentNode as Web.DOM.ParentNode
+import Web.HTML (window)
 import Web.HTML as Web.HTML
 import Web.HTML.Window as Web.HTML.Window
 import Web.IntersectionObserver as Web.IntersectionObserver
 import Web.IntersectionObserverEntry as Web.IntersectionObserverEntry
-import FRP.Event as FRP.Event
-import Nextjs.WebShared (getHtmlEntities)
 
 navigate :: forall output . H.HalogenIO Nextjs.Router.Query output Aff -> Maybe Nextjs.Route.Route -> Nextjs.Route.Route -> Effect Unit
 navigate halogenIO oldRoute newRoute = when (oldRoute /= Just newRoute) do
@@ -90,10 +91,13 @@ main = do
 
     let initialState =
           { pageRegisteredEvent
-          , document
-          , body
-          , head
           , clientPagesManifest
+          , htmlContextInfo:
+            { window
+            , document
+            , body
+            , head
+            }
           , currentPageInfo: Just
             { pageSpecWithInputBoxed
             , route

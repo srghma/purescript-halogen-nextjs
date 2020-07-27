@@ -1,12 +1,21 @@
 module Lib.Pages.Index.Default (component) where
 
-import Protolude (SProxy(..), absurd, const, show, unit, ($), (<#>))
-
+import Control.Monad.Reader (class MonadAsk)
+import Data.Const (Const(..))
+import Effect.Class (class MonadEffect)
+import FRP.Event (Event)
+import Halogen (ComponentSlot, Slot)
 import Halogen as H
 import Halogen.HTML as HH
 import Lib.Link as Lib.Link
-import Nextjs.Route (Route(..))
 import Nextjs.AppM (AppM)
+import Nextjs.Capability.Navigate (class Navigate)
+import Nextjs.Route (Route(..))
+import Prelude (Void)
+import Protolude (SProxy(..), absurd, const, show, unit, ($), (<#>))
+import Web.HTML (HTMLDocument, HTMLHeadElement)
+import Web.IntersectionObserver (IntersectionObserver)
+import Web.IntersectionObserverEntry (IntersectionObserverEntry)
 
 allRoutes :: Array Route
 allRoutes =
@@ -94,7 +103,7 @@ render :: forall t1 t15 t18 t26 t4.
                                        }
                                        t18
                                       => t1
-                                         -> HTML
+                                         -> HH.HTML
                                               (ComponentSlot
                                                  ( mylink :: Slot (Const Void) Void Route
                                                  | t15

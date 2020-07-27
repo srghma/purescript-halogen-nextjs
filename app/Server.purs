@@ -31,7 +31,8 @@ import Protolude.Node as Protolude.Node
 import Routing.Duplex (parse) as Routing.Duplex
 import Routing.Duplex.Parser (RouteError) as Routing.Duplex
 import Nextjs.Manifest.ClientPagesManifest as Nextjs.Manifest.ClientPagesManifest
-import Nextjs.Router as Nextjs.Router
+import Nextjs.Router.Server as Nextjs.Router
+import Nextjs.Router.Shared as Nextjs.Router
 
 data StaticOrDynamicPageData input
   = StaticPageData input
@@ -75,7 +76,7 @@ renderPage route clientPagesManifest pageManifest page = IndexedMonad.do
         ]
     Right pageData -> IndexedMonad.do
       let
-        routerInput :: input -> Nextjs.Router.ServerState ()
+        routerInput :: input -> Nextjs.Router.ServerState
         routerInput input =
           { currentPageInfo: Just { route, pageSpecWithInputBoxed: Nextjs.Lib.Page.mkPageSpecWithInputBoxed { input, component: page.component, title: page.title } }
           }
