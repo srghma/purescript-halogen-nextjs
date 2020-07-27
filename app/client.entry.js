@@ -1,5 +1,5 @@
 import "./index.css";
-import { main } from "./Client.purs"
+import { main } from "./Nextjs/Entries/Client.purs"
 
 main()
 

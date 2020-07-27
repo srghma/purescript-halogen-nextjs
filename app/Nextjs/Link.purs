@@ -1,0 +1,1 @@
+module Nextjs.Link where

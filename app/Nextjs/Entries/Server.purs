@@ -1,4 +1,4 @@
-module Nextjs.Server where
+module Nextjs.Entries.Server where
 
 import Protolude
 

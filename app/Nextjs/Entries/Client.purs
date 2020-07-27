@@ -1,4 +1,4 @@
-module Nextjs.Client where
+module Nextjs.Entries.Client where
 
 import Data.Argonaut.Core (Json) as ArgonautCore
 import Data.Argonaut.Decode as ArgonautCodecs
@@ -11,13 +11,12 @@ import Halogen.VDom.Driver as Halogen.VDom.Driver
 import Nextjs.AppM (Env, runAppM)
 import Nextjs.Constants as Nextjs.Constants
 import Nextjs.Lib.Page as Nextjs.Lib.Page
-import Nextjs.Lib.Utils (findJsonFromScriptElement, getPathWithoutOrigin)
+import Nextjs.Lib.Utils (findJsonFromScriptElement, getPathWithoutOrigin, getHtmlEntities)
 import Nextjs.Manifest.ClientPagesManifest as Nextjs.Manifest.ClientPagesManifest
 import Nextjs.PageLoader as Nextjs.PageLoader
 import Nextjs.Route as Nextjs.Route
 import Nextjs.Router.Client as Nextjs.Router
 import Nextjs.Router.Shared as Nextjs.Router
-import Nextjs.WebShared (getHtmlEntities)
 import Protolude (Aff, Effect, Maybe(..), Unit, bind, error, launchAff_, liftEffect, maybe, pure, throwError, void, when, ($), (/=), (<$>), (<<<), (>>=), (\/))
 import Routing.Duplex as Routing.Duplex
 import Routing.PushState as Routing.PushState

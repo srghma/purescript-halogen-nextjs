@@ -1,4 +1,4 @@
-module Lib.Link (component) where
+module Nextjs.Link.IntersectionObservable where
 
 import Protolude
 
@@ -20,26 +20,22 @@ import Web.HTML.HTMLElement as Web.HTML.HTMLElement
 import Nextjs.Manifest.PageManifest as Nextjs.Manifest.PageManifest
 import Nextjs.Manifest.ClientPagesManifest as Nextjs.Manifest.ClientPagesManifest
 import Nextjs.PageLoader as Nextjs.PageLoader
+import Nextjs.Link.Shared as Nextjs.Link.Shared
 
-type Env r =
+type Env =
   { intersectionObserver      :: Web.IntersectionObserver.IntersectionObserver
   , intersectionObserverEvent :: FRP.Event.Event (Array Web.IntersectionObserverEntry.IntersectionObserverEntry)
   , clientPagesManifest       :: Nextjs.Manifest.ClientPagesManifest.ClientPagesManifest
   , document                  :: Web.HTML.HTMLDocument
   , head                      :: Web.HTML.HTMLHeadElement
-  | r
   }
 
-type State =
-  { route :: Nextjs.Route.Route
-  , text :: String
-  }
-
-data Action
+data OtherAction
   = Initialize
   | Finalize
   | LinkIsInViewport H.SubscriptionId
-  | Navigate Web.UIEvent.MouseEvent.MouseEvent
+
+data Action = Nextjs.Link.Shared.Action OtherAction
 
 component
   :: forall m r
@@ -61,9 +57,6 @@ finalizeIntersectionObserver
   -> Web.HTML.HTMLElement
   -> H.HalogenM State Action () Void m Unit
 finalizeIntersectionObserver intersectionObserver element = H.liftEffect $ Web.IntersectionObserver.unobserve intersectionObserver (Web.HTML.HTMLElement.toElement element)
-
-elementLabel :: H.RefLabel
-elementLabel = H.RefLabel "link"
 
 handleAction
   :: forall m r
@@ -99,13 +92,3 @@ handleAction (Navigate mouseEvent) = do
 handleAction Finalize = do
   env <- ask
   H.getHTMLElementRef elementLabel >>= traverse_ \element -> finalizeIntersectionObserver env.intersectionObserver element -- unsubscribe from observer on finalize too, TODO: maybe ignore it?
-
-render :: forall m. State -> H.ComponentHTML Action () m
-render state =
-  HH.a
-    [ HP.href (Routing.Duplex.print Nextjs.Route.routeCodec state.route) -- TODO: can cache
-    , HE.onClick Navigate
-    , HP.ref elementLabel
-    ]
-    [ HH.text state.text
-    ]

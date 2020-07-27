@@ -1,1 +1,1 @@
-require('./Server.purs').main();
+require('./Nextjs/Entries/Server.purs').main();

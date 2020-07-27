@@ -7,7 +7,7 @@ import FRP.Event (Event)
 import Halogen (ComponentSlot, Slot)
 import Halogen as H
 import Halogen.HTML as HH
-import Lib.Link as Lib.Link
+import Nextjs.Link as Nextjs.Link
 import Nextjs.AppM (AppM)
 import Nextjs.Capability.Navigate (class Navigate)
 import Nextjs.Route (Route(..))
@@ -118,7 +118,6 @@ render state =
       HH.li_ $
         let route' = show route
         in
-          [ HH.slot (SProxy :: SProxy
- "mylink") route Lib.Link.component { route, text: route' } absurd
+          [ HH.slot (SProxy :: SProxy "mylink") route Lib.Link.component { route, text: route' } absurd
           ]
       )
