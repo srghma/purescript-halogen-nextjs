@@ -13,10 +13,11 @@ import Nextjs.Constants as Nextjs.Constants
 import Nextjs.Lib.Page as Nextjs.Lib.Page
 import Nextjs.Lib.Utils (findJsonFromScriptElement, getPathWithoutOrigin, getHtmlEntities)
 import Nextjs.Manifest.ClientPagesManifest as Nextjs.Manifest.ClientPagesManifest
+import Nextjs.Navigate.Client as Nextjs.Navigate.Client
 import Nextjs.PageLoader as Nextjs.PageLoader
 import Nextjs.Route as Nextjs.Route
-import Nextjs.Router.Client as Nextjs.Router
-import Nextjs.Router.Shared as Nextjs.Router
+import Nextjs.Router.Client as Nextjs.Router.Client
+import Nextjs.Router.Shared as Nextjs.Router.Shared
 import Protolude (Aff, Effect, Maybe(..), Unit, bind, error, launchAff_, liftEffect, maybe, pure, throwError, void, when, ($), (/=), (<$>), (<<<), (>>=), (\/))
 import Routing.Duplex as Routing.Duplex
 import Routing.PushState as Routing.PushState
@@ -26,10 +27,7 @@ import Web.HTML as Web.HTML
 import Web.HTML.Window as Web.HTML.Window
 import Web.IntersectionObserver as Web.IntersectionObserver
 import Web.IntersectionObserverEntry as Web.IntersectionObserverEntry
-
-navigate :: forall output . H.HalogenIO Nextjs.Router.Query output Aff -> Maybe Nextjs.Route.Route -> Nextjs.Route.Route -> Effect Unit
-navigate halogenIO oldRoute newRoute = when (oldRoute /= Just newRoute) do
-  launchAff_ $ halogenIO.query $ H.mkTell $ Nextjs.Router.Navigate newRoute
+import Nextjs.Link.Client as Nextjs.Link.Client
 
 getPrerenderedJson :: Aff ArgonautCore.Json
 getPrerenderedJson = findJsonFromScriptElement (Web.DOM.ParentNode.QuerySelector Nextjs.Constants.pagesDataId)
@@ -61,14 +59,14 @@ main = do
   { intersectionObserverEvent, intersectionObserverCallback } <- intersectionObserverEventAndCallback
   (intersectionObserver :: Web.IntersectionObserver.IntersectionObserver) <- Web.IntersectionObserver.create intersectionObserverCallback intersectionObserverOptions
 
+  pageRegisteredEvent <- Nextjs.PageLoader.createPageRegisteredEvent
+
+  -- https://github.com/slamdata/purescript-routing/blob/v8.0.0/GUIDE.md
+  -- https://github.com/natefaubion/purescript-routing-duplex/blob/v0.2.0/README.md
+  pushStateInterface <- Routing.PushState.makeInterface
+
   Effect.Aff.launchAff_ do
     (clientPagesManifest :: Nextjs.Manifest.ClientPagesManifest.ClientPagesManifest) <- Nextjs.Manifest.ClientPagesManifest.getBuildManifest
-
-    pageRegisteredEvent <- liftEffect Nextjs.PageLoader.createPageRegisteredEvent
-
-    -- https://github.com/slamdata/purescript-routing/blob/v8.0.0/GUIDE.md
-    -- https://github.com/natefaubion/purescript-routing-duplex/blob/v0.2.0/README.md
-    pushStateInterface <- liftEffect Routing.PushState.makeInterface
 
     -- first we'll get the route the user landed on
     route <- getInitialRouteFromLocation
@@ -80,12 +78,14 @@ main = do
       (throwError <<< error <<< ArgonautCodecs.printJsonDecodeError) \/ pure
 
     let (env :: Env) =
-          { pushStateInterface
-          , intersectionObserver
-          , intersectionObserverEvent
-          , document
-          , head
-          , clientPagesManifest
+          { navigate: Nextjs.Navigate.Client.navigate pushStateInterface
+          , link: Nextjs.Link.Client.component
+            { intersectionObserver
+            , intersectionObserverEvent
+            , clientPagesManifest
+            , document
+            , head
+            }
           }
 
     let initialState =
@@ -103,9 +103,10 @@ main = do
             }
           }
 
-    let component = H.hoist (runAppM env) Nextjs.Router.clientComponent
+    let component = H.hoist (runAppM env) Nextjs.Router.Client.component
 
     rootElement <- Halogen.Aff.Util.awaitElement (Web.DOM.ParentNode.QuerySelector "#root")
+
     halogenIO <- Halogen.VDom.Driver.hydrateUI component initialState rootElement
 
-    void $ liftEffect $ Routing.PushState.matchesWith (Routing.Duplex.parse Nextjs.Route.routeCodec) (navigate halogenIO) pushStateInterface
+    void $ liftEffect $ Routing.PushState.matchesWith (Routing.Duplex.parse Nextjs.Route.routeCodec) (Nextjs.Router.Shared.callNavigateQueryIfNew halogenIO) pushStateInterface

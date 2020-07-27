@@ -63,3 +63,10 @@ render { currentPageInfo } =
   case currentPageInfo of
        Nothing -> HH.div_ [ HH.text "Oh no! That page wasn't found." ]
        Just currentPageInfo' -> renderPage currentPageInfo'
+
+callNavigateQueryIfNew :: forall output . H.HalogenIO Query output Aff -> Maybe Nextjs.Route.Route -> Nextjs.Route.Route -> Effect Unit
+callNavigateQueryIfNew halogenIO oldRoute newRoute = when (oldRoute /= Just newRoute) do
+  launchAff_ $ halogenIO.query $ H.mkTell $ Navigate newRoute
+
+callNavigateQuery :: forall output . H.HalogenIO Query output Aff -> Nextjs.Route.Route -> Effect Unit
+callNavigateQuery halogenIO newRoute = launchAff_ $ halogenIO.query $ H.mkTell $ Navigate newRoute

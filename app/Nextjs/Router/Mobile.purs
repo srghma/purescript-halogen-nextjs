@@ -14,16 +14,16 @@ import Web.HTML as Web.HTML
 import Nextjs.Router.Shared
 import Nextjs.RouteToPage
 
-mobileComponent
+component
   :: H.Component Query MobileState Void AppM
-mobileComponent = H.mkComponent
+component = H.mkComponent
   { initialState: identity
   , render: \{ currentPageInfo } -> renderPage currentPageInfo
   , eval: H.mkEval $ H.defaultEval
   }
 
-mobileHandleQuery :: forall next action. Query next -> H.HalogenM MobileState action ChildSlots Void AppM (Maybe next)
-mobileHandleQuery = case _ of
+handleQuery :: forall next action. Query next -> H.HalogenM MobileState action ChildSlots Void AppM (Maybe next)
+handleQuery = case _ of
   Navigate destRoute a -> do
     currentState <- H.get
     -- don't re-render unnecessarily if the route is unchanged

@@ -13,18 +13,18 @@ import Nextjs.Manifest.ClientPagesManifest as Nextjs.Manifest.ClientPagesManifes
 import Web.HTML as Web.HTML
 import Nextjs.Router.Shared
 
-clientComponent
+component
   :: H.Component Query ClientState Void AppM
-clientComponent = H.mkComponent
+component = H.mkComponent
   { initialState: identity
   , render
   , eval: H.mkEval $ H.defaultEval
-      { handleQuery = clientHandleQuery
+      { handleQuery = handleQuery
       }
   }
 
-clientHandleQuery :: forall next action. Query next -> H.HalogenM ClientState action ChildSlots Void AppM (Maybe next)
-clientHandleQuery = case _ of
+handleQuery :: forall next action. Query next -> H.HalogenM ClientState action ChildSlots Void AppM (Maybe next)
+handleQuery = case _ of
   Navigate destRoute a -> do
     currentState <- H.get
     -- don't re-render unnecessarily if the route is unchanged

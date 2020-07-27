@@ -1,5 +1,6 @@
 module Lib.Pages.Index.Default (component) where
 
+import Protolude
 import Control.Monad.Reader (class MonadAsk)
 import Data.Const (Const(..))
 import Effect.Class (class MonadEffect)
@@ -7,12 +8,10 @@ import FRP.Event (Event)
 import Halogen (ComponentSlot, Slot)
 import Halogen as H
 import Halogen.HTML as HH
-import Nextjs.Link as Nextjs.Link
 import Nextjs.AppM (AppM)
-import Nextjs.Capability.Navigate (class Navigate)
+import Nextjs.Link as Nextjs.Link
+import Nextjs.Navigate (navigate)
 import Nextjs.Route (Route(..))
-import Prelude (Void)
-import Protolude (SProxy(..), absurd, const, show, unit, ($), (<#>))
 import Web.HTML (HTMLDocument, HTMLHeadElement)
 import Web.IntersectionObserver (IntersectionObserver)
 import Web.IntersectionObserverEntry (IntersectionObserverEntry)
@@ -44,80 +43,35 @@ component =
     , eval: H.mkEval $ H.defaultEval
     }
 
-render :: forall t1 t15 t18 t26 t4.
-  MonadEffect t18 => Navigate t18 => MonadAsk
-                                       { clientPagesManifest :: { "Ace" :: { css :: Array String
-                                                                           , js :: Array String
-                                                                           }
-                                                                , "Basic" :: { css :: Array String
-                                                                             , js :: Array String
-                                                                             }
-                                                                , "Components" :: { css :: Array String
-                                                                                  , js :: Array String
-                                                                                  }
-                                                                , "ComponentsInputs" :: { css :: Array String
-                                                                                        , js :: Array String
-                                                                                        }
-                                                                , "ComponentsMultitype" :: { css :: Array String
-                                                                                           , js :: Array String
-                                                                                           }
-                                                                , "DeeplyNested" :: { css :: Array String
-                                                                                    , js :: Array String
-                                                                                    }
-                                                                , "DynamicInput" :: { css :: Array String
-                                                                                    , js :: Array String
-                                                                                    }
-                                                                , "EffectsAffAjax" :: { css :: Array String
-                                                                                      , js :: Array String
-                                                                                      }
-                                                                , "EffectsEffectRandom" :: { css :: Array String
-                                                                                           , js :: Array String
-                                                                                           }
-                                                                , "HigherOrderComponents" :: { css :: Array String
-                                                                                             , js :: Array String
-                                                                                             }
-                                                                , "Index" :: { css :: Array String
-                                                                             , js :: Array String
-                                                                             }
-                                                                , "Interpret" :: { css :: Array String
-                                                                                 , js :: Array String
-                                                                                 }
-                                                                , "KeyboardInput" :: { css :: Array String
-                                                                                     , js :: Array String
-                                                                                     }
-                                                                , "Lazy" :: { css :: Array String
-                                                                            , js :: Array String
-                                                                            }
-                                                                , "Lifecycle" :: { css :: Array String
-                                                                                 , js :: Array String
-                                                                                 }
-                                                                , "TextNodes" :: { css :: Array String
-                                                                                 , js :: Array String
-                                                                                 }
-                                                                }
-                                       , document :: HTMLDocument
-                                       , head :: HTMLHeadElement
-                                       , intersectionObserver :: IntersectionObserver
-                                       , intersectionObserverEvent :: Event (Array IntersectionObserverEntry)
-                                       | t26
-                                       }
-                                       t18
-                                      => t1
-                                         -> HH.HTML
-                                              (ComponentSlot
-                                                 ( mylink :: Slot (Const Void) Void Route
-                                                 | t15
-                                                 )
-                                                 t18
-                                                 t4
-                                              )
-                                              t4
-render state =
-  HH.ul_ $
-    allRoutes <#> (\route ->
-      HH.li_ $
-        let route' = show route
-        in
-          [ HH.slot (SProxy :: SProxy "mylink") route Lib.Link.component { route, text: route' } absurd
-          ]
-      )
+render state = HH.div_ [HH.text "asdf"]
+
+-- | render
+-- |   :: forall t1 t15 m t26 t4
+-- |    . MonadEffect m
+-- |   => MonadAsk
+-- |       { clientPagesManifest :: (Nextjs.Route.PagesRec { css :: Array String , js :: Array String })
+-- |       , document :: HTMLDocument
+-- |       , head :: HTMLHeadElement
+-- |       , intersectionObserver :: IntersectionObserver
+-- |       , intersectionObserverEvent :: Event (Array IntersectionObserverEntry)
+-- |       | t26
+-- |       }
+-- |       m
+-- |   -> HH.HTML
+-- |       (ComponentSlot
+-- |           ( mylink :: Slot (Const Void) Void Route
+-- |           | t15
+-- |           )
+-- |           AppM
+-- |           t4
+-- |       )
+-- |       t4
+-- | render state =
+-- |   HH.ul_ $
+-- |     allRoutes <#> (\route ->
+-- |       HH.li_ $
+-- |         let route' = show route
+-- |         in
+-- |           [ HH.slot (SProxy :: SProxy "mylink") route Lib.Link.component { route, text: route' } absurd
+-- |           ]
+-- |       )
