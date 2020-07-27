@@ -20,11 +20,7 @@ import * as RA from 'ramda-adjunct'
 import firstline from 'firstline'
 import { stringify } from 'querystring'
 
-const pagesDir = path.resolve(root, "app", "Pages")
-
-async function getFileModule(fileName) {
-  const filePath = path.join(pagesDir, fileName)
-
+async function getFileModule(filePath) {
   const firstLine = await firstline(filePath)
 
   let moduleName
@@ -42,29 +38,33 @@ async function getFileModule(fileName) {
   return moduleName
 }
 
-async function entryPair(fileName) { // e.g. Foo.purs
-  const moduleName = await getFileModule(fileName) // e.g. Nextjs.Pages.Foo
-  const absoluteCompiledPagePursPath = path.resolve(root, "output", moduleName, "index.js") // e.g. ".../output/Foo/index.js"
-  const pageName = path.parse(fileName).name // e.g. Foo
+const entryPair =
+  pagesDir =>
+  async (fileName) => // e.g. Foo.purs
+  {
+    const filePath = path.join(pagesDir, fileName)
+    const moduleName = await getFileModule(filePath) // moduleName = e.g. Nextjs.Pages.Foo
+    const absoluteCompiledPagePursPath = path.resolve(root, "output", moduleName, "index.js") // e.g. ".../output/Foo/index.js"
+    const pageName = path.parse(fileName).name // e.g. Foo
 
-  const absoluteJsDepsPath = path.join(pagesDir, `${pageName}.deps.js`)
-  const absoluteJsDepsPath_ = fs.existsSync(absoluteJsDepsPath) ? absoluteJsDepsPath : null
+    const absoluteJsDepsPath = path.join(pagesDir, `${pageName}.deps.js`)
+    const absoluteJsDepsPath_ = fs.existsSync(absoluteJsDepsPath) ? absoluteJsDepsPath : null
 
-  const pageLoader = {
-    pageName,
-    absoluteCompiledPagePursPath,
-    absoluteJsDepsPath: absoluteJsDepsPath_,
+    const pageLoader = {
+      pageName,
+      absoluteCompiledPagePursPath,
+      absoluteJsDepsPath: absoluteJsDepsPath_,
+    }
+
+    return [pageName, pageLoader]
   }
 
-  return [pageName, pageLoader]
-}
-
-export default async function() {
+export default async function(pagesDir) {
   const allTopFiles = await fse.readdir(pagesDir) // e.g. ["Foo.deps.js", "Foo.purs", "global-deps.js"]
 
   const pageFiles = R.filter(R.test(/\.purs$/), allTopFiles)
 
-  const moduleNames = await Promise.all(R.map(entryPair, pageFiles))
+  const moduleNames = await Promise.all(R.map(entryPair(pagesDir), pageFiles))
 
   const modulesInPath = R.fromPairs(moduleNames)
 
