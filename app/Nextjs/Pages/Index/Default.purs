@@ -9,7 +9,7 @@ import Halogen (ComponentSlot, Slot)
 import Halogen as H
 import Halogen.HTML as HH
 import Nextjs.AppM (AppM)
-import Nextjs.Link as Nextjs.Link
+import Nextjs.Link.Default as Nextjs.Link.Default
 import Nextjs.Navigate (navigate)
 import Nextjs.Route (Route(..))
 import Web.HTML (HTMLDocument, HTMLHeadElement)
@@ -43,35 +43,13 @@ component =
     , eval: H.mkEval $ H.defaultEval
     }
 
-render state = HH.div_ [HH.text "asdf"]
-
--- | render
--- |   :: forall t1 t15 m t26 t4
--- |    . MonadEffect m
--- |   => MonadAsk
--- |       { clientPagesManifest :: (Nextjs.Route.PagesRec { css :: Array String , js :: Array String })
--- |       , document :: HTMLDocument
--- |       , head :: HTMLHeadElement
--- |       , intersectionObserver :: IntersectionObserver
--- |       , intersectionObserverEvent :: Event (Array IntersectionObserverEntry)
--- |       | t26
--- |       }
--- |       m
--- |   -> HH.HTML
--- |       (ComponentSlot
--- |           ( mylink :: Slot (Const Void) Void Route
--- |           | t15
--- |           )
--- |           AppM
--- |           t4
--- |       )
--- |       t4
--- | render state =
--- |   HH.ul_ $
--- |     allRoutes <#> (\route ->
--- |       HH.li_ $
--- |         let route' = show route
--- |         in
--- |           [ HH.slot (SProxy :: SProxy "mylink") route Lib.Link.component { route, text: route' } absurd
--- |           ]
--- |       )
+render :: forall action . HH.ComponentHTML action ( mylink :: Slot (Const Void) Void Route ) AppM
+render state =
+  HH.ul_ $
+    allRoutes <#> (\route ->
+      HH.li_ $
+        let route' = show route
+        in
+          [ HH.slot (SProxy :: SProxy "mylink") route Nextjs.Link.Default.component { route, text: route' } absurd
+          ]
+      )

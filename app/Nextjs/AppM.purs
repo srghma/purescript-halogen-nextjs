@@ -6,21 +6,44 @@ import Control.Monad.Reader (ReaderT, asks, runReaderT)
 import Effect (Effect)
 import FRP.Event as FRP.Event
 import Foreign as Foreign
-import Halogen (Component) as H
-import Nextjs.Link.Shared as Link
+import Halogen as H
+import Nextjs.Link.Types as Nextjs.Link.Types
 import Nextjs.Manifest.ClientPagesManifest as Nextjs.Manifest.ClientPagesManifest
 import Nextjs.Route as Nextjs.Route
 import Routing.Duplex as Routing.Duplex
 import Routing.PushState as Routing.PushState
 import Type.Equality (class TypeEquals, from)
+import Unsafe.Coerce (unsafeCoerce)
 import Web.HTML as Web.HTML
 import Web.IntersectionObserver as Web.IntersectionObserver
 import Web.IntersectionObserverEntry as Web.IntersectionObserverEntry
-import Nextjs.Link.Shared as Link
+
+type EnvLinkHandleActionsSpec linkActionRest =
+  { handleInitialize :: H.HalogenM Nextjs.Link.Types.State (Nextjs.Link.Types.Action linkActionRest) () Void AppM Unit
+  , handleFinalize   :: H.HalogenM Nextjs.Link.Types.State (Nextjs.Link.Types.Action linkActionRest) () Void AppM Unit
+  , handleRestAction :: linkActionRest -> H.HalogenM Nextjs.Link.Types.State (Nextjs.Link.Types.Action linkActionRest) () Void AppM Unit
+  }
+
+newtype EnvLinkHandleActions = EnvLinkHandleActions (forall linkActionRest. EnvLinkHandleActionsSpec linkActionRest)
+
+mkEnvLinkHandleActions
+  :: forall linkActionRest
+   . EnvLinkHandleActionsSpec linkActionRest
+  -> EnvLinkHandleActions
+mkEnvLinkHandleActions = unsafeCoerce
+
+unEnvLinkHandleActions
+  :: forall r
+   . (forall linkActionRest. EnvLinkHandleActionsSpec linkActionRest -> r)
+  -> EnvLinkHandleActions
+  -> r
+unEnvLinkHandleActions f (EnvLinkHandleActions r) = f r
+
+-------------------
 
 type Env =
   { navigate :: Nextjs.Route.Route -> Effect Unit
-  , link :: H.Component (Const Void) Link.State Void AppM
+  , linkHandleActions :: EnvLinkHandleActions
   }
 
 newtype AppM a = AppM (ReaderT Env Aff a)
