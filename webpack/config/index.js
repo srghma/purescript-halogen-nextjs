@@ -121,7 +121,7 @@ export default async function ({
       }),
     },
 
-    entry: onTarget({
+    entry: await onTarget({
       target,
       onBrowser: async () => R.mergeAll([
         await createClientPagesEntrypoints(path.resolve(root, "app", "Nextjs", "Pages")),
