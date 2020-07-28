@@ -56,7 +56,6 @@ handleActionNavigate mouseEvent = do
   H.liftEffect $ Web.Event.Event.preventDefault (Web.UIEvent.MouseEvent.toEvent mouseEvent)
 
   state <- H.get
-  traceM { message: "navigating", route: state.route }
   Nextjs.Navigate.navigate state.route
 
 handleAction :: Action -> H.HalogenM State Action () Void AppM Unit

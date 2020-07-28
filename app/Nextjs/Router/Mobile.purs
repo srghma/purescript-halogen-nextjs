@@ -19,6 +19,8 @@ component = H.mkComponent
   { initialState: identity
   , render: \{ currentPageInfo } -> renderPage currentPageInfo
   , eval: H.mkEval $ H.defaultEval
+    { handleQuery = handleQuery
+    }
   }
 
 handleQuery :: forall next action. Query next -> H.HalogenM MobileState action ChildSlots Void AppM (Maybe next)

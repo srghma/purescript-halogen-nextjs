@@ -52,6 +52,12 @@ let overrides =
           //  { repo = "https://github.com/srghma/purescript-dom-indexed.git"
               , version = "patch-1"
               }
+      , argonaut-core =
+              upstream.argonaut-core
+          //  { repo =
+                  "https://github.com/srghma/purescript-argonaut-core.git"
+              , version = "master"
+              }
       , argonaut-codecs =
               upstream.argonaut-codecs
           //  { repo =

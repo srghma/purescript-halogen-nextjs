@@ -2,6 +2,7 @@ module Nextjs.Router.Shared where
 
 import Protolude
 
+import Data.Argonaut.Core as ArgonautCore
 import Halogen as H
 import Halogen.HTML as HH
 import Nextjs.AppM (AppM(..))
@@ -9,6 +10,7 @@ import Nextjs.Lib.Page as Nextjs.Lib.Page
 import Nextjs.Manifest.ClientPagesManifest as Nextjs.Manifest.ClientPagesManifest
 import Nextjs.PageLoader as Nextjs.PageLoader
 import Nextjs.Route as Nextjs.Route
+import Unsafe.Coerce (unsafeCoerce)
 import Web.HTML as Web.HTML
 
 type CurrentPageInfo =
@@ -70,5 +72,5 @@ callNavigateQueryIfNew halogenIO oldRoute newRoute = when (oldRoute /= Just newR
 
 callNavigateQuery :: forall output . H.HalogenIO Query output Aff -> Nextjs.Route.Route -> Effect Unit
 callNavigateQuery halogenIO newRoute = do
-  traceM { message: "newRoute", newRoute }
+  -- | traceM (ArgonautCore.stringifyWithSpace 2 (unsafeCoerce { message: "newRoute", newRoute: show newRoute }))
   launchAff_ $ halogenIO.query $ H.mkTell $ Navigate newRoute

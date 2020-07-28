@@ -1,6 +1,7 @@
 module Nextjs.Entries.Mobile where
 
 import Protolude
+
 import Cordova.EventTypes as Cordova
 import Data.Argonaut.Core (Json) as ArgonautCore
 import Data.Argonaut.Decode as ArgonautCodecs
@@ -26,21 +27,24 @@ import Nextjs.Router.Shared as Nextjs.Router.Shared
 import Routing.Duplex as Routing.Duplex
 import Routing.PushState as Routing.PushState
 import Web.DOM.ParentNode as Web.DOM.ParentNode
+import Web.Event.Event (EventType(..))
 import Web.Event.EventTarget (addEventListener, eventListener)
 import Web.HTML as Web.HTML
 import Web.HTML.HTMLDocument as Web.HTML.HTMLDocument
+import Web.HTML.History (back)
 import Web.HTML.Window as Web.HTML.Window
 import Web.IntersectionObserver as Web.IntersectionObserver
 import Web.IntersectionObserverEntry as Web.IntersectionObserverEntry
 
-onDeviceReady
+onDocumentEvent
   :: forall m e
-   . Web.HTML.HTMLDocument
+   . EventType
+  -> Web.HTML.HTMLDocument
   -> Effect Unit
   -> Effect Unit
-onDeviceReady document callback = do
+onDocumentEvent eventType document callback = do
   eventListener' <- eventListener \_ -> callback
-  addEventListener Cordova.deviceready eventListener' false (Web.HTML.HTMLDocument.toEventTarget document)
+  addEventListener eventType eventListener' false (Web.HTML.HTMLDocument.toEventTarget document)
 
 main :: Effect Unit
 main = do
@@ -58,7 +62,7 @@ main = do
         , linkHandleActions: Nextjs.Link.Mobile.mkLinkHandleActions
         }
 
-  onDeviceReady document $ Effect.Aff.launchAff_ do
+  onDocumentEvent Cordova.deviceready document $ Effect.Aff.launchAff_ do
     (pageSpecWithInputBoxed :: Nextjs.Lib.Page.PageSpecWithInputBoxed) <-
       Nextjs.Lib.Page.pageToPageSpecWithInputBoxed page >>=
       (Nextjs.Lib.Api.throwApiError) \/ pure
@@ -83,3 +87,5 @@ main = do
     halogenIO <- Halogen.VDom.Driver.runUI component initialState rootElement
 
     void $ liftEffect $ FRP.Event.subscribe newRouteEventIO.event \newRoute -> Nextjs.Router.Shared.callNavigateQuery halogenIO newRoute
+
+    void $ liftEffect $ onDocumentEvent Cordova.backbutton document (Nextjs.Router.Shared.callNavigateQuery halogenIO Nextjs.Route.Index)
