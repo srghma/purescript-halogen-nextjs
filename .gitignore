@@ -14,3 +14,6 @@
 /plugins/cordova-plugin-webpack/
 /plugins/cordova-plugin-whitelist/
 /platforms/android/
+/core
+/www/
+!/www/index.html
