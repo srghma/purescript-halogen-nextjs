@@ -255,6 +255,16 @@ export default async function ({
         null
       ),
 
+      // from https://medium.com/@glennreyes/how-to-disable-code-splitting-in-webpack-1c0b1754a3c5
+      // disables chunks completely for mobile , disables lazy loaded files `import('./file.js')`
+      (
+        target === 'mobile' ?
+        new webpack.optimize.LimitChunkCountPlugin({
+          maxChunks: 1,
+        }) :
+        null
+      ),
+
       // TODO: fix for dev
       // (
       //   target === 'browser' ?
