@@ -18,7 +18,6 @@ import * as fse from 'fs-extra'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 import firstline from 'firstline'
-import { stringify } from 'querystring'
 
 async function getFileModule(filePath) {
   const firstLine = await firstline(filePath)

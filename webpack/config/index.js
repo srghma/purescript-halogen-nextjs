@@ -3,6 +3,7 @@ import * as RA from 'ramda-adjunct'
 import MiniCssExtractPlugin from 'mini-css-extract-plugin'
 import * as path from 'path'
 import * as webpack from 'webpack'
+import * as querystring from 'querystring'
 
 import root from '../lib/root'
 import createClientPagesEntrypoints from '../config/createClientPagesEntrypoints'
@@ -126,7 +127,7 @@ export default async function ({
       onBrowser: async () => {
         const entrypointsObject = await createClientPagesEntrypoints(pagesPath)
 
-        const isomorphicEntrypointsObject = R.map(entrypoint => `isomorphic-client-pages-loader?${stringify(entrypoint)}!`, entrypointsObject)
+        const isomorphicEntrypointsObject = R.map(entrypoint => `isomorphic-client-pages-loader?${querystring.stringify(entrypoint)}!`, entrypointsObject)
 
         return R.mergeAll([isomorphicEntrypointsObject, { main: path.resolve(root, "app", "client.entry.js") }])
       },
