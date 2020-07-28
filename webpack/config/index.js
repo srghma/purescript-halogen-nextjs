@@ -94,7 +94,12 @@ export default async function ({
         onMobile: () => 'index.bundle.js',
       }),
 
-      publicPath: '/',
+      publicPath: onTarget({
+        target,
+        onBrowser: () => '/',
+        onServer: () => '/',
+        onMobile: () => '', // from https://github.com/jantimon/html-webpack-plugin/issues/488
+      }),
 
       // publicPath: `http://localhost:${serverPort}/`,
       // hotUpdateMainFilename: `http://0.0.0.0:${hmrPort}/[hash].hot-update.json`
@@ -226,21 +231,7 @@ export default async function ({
 
       new webpack.NoEmitOnErrorsPlugin(),
 
-      // TODO: fix for dev
-      // (
-      //   target === 'browser' ?
-      //   new (require('webpack-livereload-plugin'))({
-      //     delay: 100,
-      //     appendScriptTag: true,
-      //   }) :
-      //   null
-      // ),
-
-      (
-        production && target !== 'mobile' ?
-        new (require('clean-webpack-plugin').CleanWebpackPlugin)() :
-        null
-      ),
+      new (require('clean-webpack-plugin').CleanWebpackPlugin)(),
 
       (
         (process.env.BUNDLE_ANALYZE === "true" && target === 'browser') ?
@@ -254,6 +245,26 @@ export default async function ({
         null
       ),
 
+      (
+        target === 'mobile' ?
+        new (require('html-webpack-plugin'))({
+          title: 'Purescript Nextjs',
+          template: path.resolve(root, 'cordova-template-index.html'),
+          minify: false,
+        }) :
+        null
+      ),
+
+      // TODO: fix for dev
+      // (
+      //   target === 'browser' ?
+      //   new (require('webpack-livereload-plugin'))({
+      //     delay: 100,
+      //     appendScriptTag: true,
+      //   }) :
+      //   null
+      // ),
+
       // new (require('write-file-webpack-plugin'))({
       //   // exclude hot-update files
       //   test: /^(?!.*(hot)).*/,
@@ -262,10 +273,6 @@ export default async function ({
 
       // new webpack.LoaderOptionsPlugin({
       //   debug: true
-      // }),
-
-      // new (require('html-webpack-plugin'))({
-      //   title: 'purescript-webpack-example',
       // }),
     ]),
 
