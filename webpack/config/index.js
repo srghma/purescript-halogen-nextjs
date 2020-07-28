@@ -98,7 +98,7 @@ export default async function ({
         target,
         onBrowser: () => '/',
         onServer: () => '/',
-        onMobile: () => '', // from https://github.com/jantimon/html-webpack-plugin/issues/488
+        onMobile: () => './', // from https://github.com/jantimon/html-webpack-plugin/issues/488
       }),
 
       // publicPath: `http://localhost:${serverPort}/`,
