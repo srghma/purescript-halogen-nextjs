@@ -67,10 +67,7 @@ render { currentPageInfo } =
        Just currentPageInfo' -> renderPage currentPageInfo'
 
 callNavigateQueryIfNew :: forall output . H.HalogenIO Query output Aff -> Maybe Nextjs.Route.Route -> Nextjs.Route.Route -> Effect Unit
-callNavigateQueryIfNew halogenIO oldRoute newRoute = when (oldRoute /= Just newRoute) do
-  launchAff_ $ halogenIO.query $ H.mkTell $ Navigate newRoute
+callNavigateQueryIfNew halogenIO oldRoute newRoute = when (oldRoute /= Just newRoute) (callNavigateQuery halogenIO newRoute)
 
 callNavigateQuery :: forall output . H.HalogenIO Query output Aff -> Nextjs.Route.Route -> Effect Unit
-callNavigateQuery halogenIO newRoute = do
-  -- | traceM (ArgonautCore.stringifyWithSpace 2 (unsafeCoerce { message: "newRoute", newRoute: show newRoute }))
-  launchAff_ $ halogenIO.query $ H.mkTell $ Navigate newRoute
+callNavigateQuery halogenIO newRoute = launchAff_ $ halogenIO.query $ H.mkTell $ Navigate newRoute

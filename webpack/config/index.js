@@ -53,33 +53,26 @@ export default async function ({
 
     mode: production ? 'production' : 'development',
 
-    ...(
-      onTarget({
-        target,
-        onBrowser: () => undefined,
-        onServer: () => undefined,
-        onMobile: () => ({
-          devServer: {
-            hot: false,
-          },
-        }),
-      })
-    ),
-
-    // devServer: {
-    //   // writeToDisk: true,
-    //   // hot: true,
-    //   // contentBase: path.join(root, '.dist-asdfadf'),
-    //   // port: 4008,
-    //   // stats: 'verbose', // doesnt work if webpack-dev-middleware is used
-    //   // stats: 'errors-only', // doesnt work if webpack-dev-middleware is used
-    //   // disableHostCheck: true, // That solved it
-    //   // host: `localhost`,
-    //   // port: hmrPort,
-    //   // noInfo: true,
-    //   // quiet: true,
-    //   // clientLogLevel: 'silent'
-    // },
+    devServer: onTarget({
+      target,
+      onBrowser: () => undefined,
+      onServer: () => undefined,
+      onMobile: () => ({
+        hot: false,
+        // writeToDisk: true,
+        // hot: true,
+        // contentBase: path.join(root, '.dist-asdfadf'),
+        // port: 4008,
+        // stats: 'verbose', // doesnt work if webpack-dev-middleware is used
+        // stats: 'errors-only', // doesnt work if webpack-dev-middleware is used
+        // disableHostCheck: true, // That solved it
+        // host: `localhost`,
+        // port: hmrPort,
+        // noInfo: true,
+        // quiet: true,
+        // clientLogLevel: 'silent'
+      }),
+    }),
 
     output: {
       path: onTarget({
@@ -277,9 +270,7 @@ export default async function ({
       // disables chunks completely for mobile , disables lazy loaded files `import('./file.js')`
       (
         target === 'mobile' ?
-        new webpack.optimize.LimitChunkCountPlugin({
-          maxChunks: 1,
-        }) :
+        new webpack.optimize.LimitChunkCountPlugin({ maxChunks: 1 }) :
         null
       ),
 
