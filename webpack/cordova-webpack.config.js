@@ -10,6 +10,8 @@ module.exports = async function(env) {
 
   const production = env.mode === 'production'
 
+  await require('webpack-spago-loader/build-job')(require('./lib/spago-options'))
+
   const config = await createConfig({ production, target: 'mobile' })
 
   console.log(config)

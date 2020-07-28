@@ -48,7 +48,7 @@ render state =
     ]
 
 handleActionNavigate
-  :: forall slot r
+  :: forall slot
    . Web.UIEvent.MouseEvent.MouseEvent
   -> H.HalogenM State Action slot Void AppM Unit
 handleActionNavigate mouseEvent = do
@@ -56,12 +56,10 @@ handleActionNavigate mouseEvent = do
   H.liftEffect $ Web.Event.Event.preventDefault (Web.UIEvent.MouseEvent.toEvent mouseEvent)
 
   state <- H.get
+  traceM { message: "navigating", route: state.route }
   Nextjs.Navigate.navigate state.route
 
-handleAction
-  :: forall r
-  . Action
-  -> H.HalogenM State Action () Void AppM Unit
+handleAction :: Action -> H.HalogenM State Action () Void AppM Unit
 handleAction action = ask >>= \env ->
     case action of
          Navigate mouseEvent -> handleActionNavigate mouseEvent

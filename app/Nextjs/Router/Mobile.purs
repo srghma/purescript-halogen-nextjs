@@ -14,8 +14,7 @@ import Web.HTML as Web.HTML
 import Nextjs.Router.Shared
 import Nextjs.RouteToPage
 
-component
-  :: H.Component Query MobileState Void AppM
+component :: H.Component Query MobileState Void AppM
 component = H.mkComponent
   { initialState: identity
   , render: \{ currentPageInfo } -> renderPage currentPageInfo

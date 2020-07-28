@@ -60,13 +60,13 @@ const entryPair =
   }
 
 export default async function(pagesDir) {
-  const allTopFiles = await fse.readdir(pagesDir) // e.g. ["Foo.deps.js", "Foo.purs", "global-deps.js"]
+  const allTopFiles = await fse.readdir(pagesDir) // e.g. ["Foo.deps.js", "Foo.purs"]
 
   const pageFiles = R.filter(R.test(/\.purs$/), allTopFiles)
 
-  const moduleNames = await Promise.all(R.map(entryPair(pagesDir), pageFiles))
+  const entryPairs_ = await Promise.all(R.map(entryPair(pagesDir), pageFiles))
 
-  const modulesInPath = R.fromPairs(moduleNames)
+  const entryPairsObject = R.fromPairs(entryPairs_)
 
-  return R.map(pageSpec => `isomorphic-client-pages-loader?${stringify(pageSpec)}!`, modulesInPath)
+  return entryPairsObject
 }

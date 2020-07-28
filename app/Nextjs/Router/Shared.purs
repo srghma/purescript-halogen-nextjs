@@ -69,4 +69,6 @@ callNavigateQueryIfNew halogenIO oldRoute newRoute = when (oldRoute /= Just newR
   launchAff_ $ halogenIO.query $ H.mkTell $ Navigate newRoute
 
 callNavigateQuery :: forall output . H.HalogenIO Query output Aff -> Nextjs.Route.Route -> Effect Unit
-callNavigateQuery halogenIO newRoute = launchAff_ $ halogenIO.query $ H.mkTell $ Navigate newRoute
+callNavigateQuery halogenIO newRoute = do
+  traceM { message: "newRoute", newRoute }
+  launchAff_ $ halogenIO.query $ H.mkTell $ Navigate newRoute

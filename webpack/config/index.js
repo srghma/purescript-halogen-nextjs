@@ -29,6 +29,8 @@ const onTarget = ({ target, onBrowser, onServer, onMobile }) => {
   }
 }
 
+const pagesPath = path.resolve(root, "app", "Nextjs", "Pages")
+
 export default async function ({
   target,
   watch,
@@ -91,7 +93,7 @@ export default async function ({
         target,
         onBrowser: () => production ? '[name]-[contenthash].js' : '[name].js',
         onServer: () => '[name].js',
-        onMobile: () => 'index.bundle.js',
+        onMobile: () => 'index.js',
       }),
 
       publicPath: onTarget({
@@ -128,12 +130,29 @@ export default async function ({
 
     entry: await onTarget({
       target,
-      onBrowser: async () => R.mergeAll([
-        await createClientPagesEntrypoints(path.resolve(root, "app", "Nextjs", "Pages")),
-        { main: path.resolve(root, "app", "client.entry.js") }]
-      ),
+      onBrowser: async () => {
+        const entrypointsObject = await createClientPagesEntrypoints(pagesPath)
+
+        const isomorphicEntrypointsObject = R.map(entrypoint => `isomorphic-client-pages-loader?${stringify(entrypoint)}!`, entrypointsObject)
+
+        return R.mergeAll([isomorphicEntrypointsObject, { main: path.resolve(root, "app", "client.entry.js") }])
+      },
       onServer: () => ({ main: path.resolve(root, "app", "server.entry.js") }),
-      onMobile: () => ({ main: path.resolve(root, "app", "mobile.entry.js") }),
+      onMobile: async () => {
+        const entrypointsObject = await createClientPagesEntrypoints(pagesPath)
+
+        const absoluteJsDepsPaths = R.pipe(
+          R.values,
+          R.map(R.prop('absoluteJsDepsPath')),
+          RA.compact
+        )(entrypointsObject)
+
+        const mainPath = path.resolve(root, "app", "mobile.entry.js")
+
+        const mainPathWithJsDeps = [...absoluteJsDepsPaths, mainPath]
+
+        return { main: mainPathWithJsDeps }
+      },
     }),
 
     node: onTarget({
@@ -196,21 +215,20 @@ export default async function ({
           target,
           onBrowser: () => production ? 'css/[name].[hash].css' : 'css/[name].css',
           onServer: () => production ? 'css/[name].[hash].css' : 'css/[name].css',
-          onMobile: () => 'css/index.css',
+          onMobile: () => 'index.css',
         }),
 
         chunkFilename: onTarget({
           target,
           onBrowser: () => production ? 'css/[id].[hash].css' : 'css/[id].css',
           onServer: () => production ? 'css/[id].[hash].css' : 'css/[id].css',
-          onMobile: () => false,
+          onMobile: () => 'index.css',
         }),
       }),
 
       new webpack.DefinePlugin({
-        'process.env.NODE_ENV': JSON.stringify(production ? "production" : "development"),
         'process.production': JSON.stringify(production),
-        'process.target': target,
+        'process.target': JSON.stringify(target),
 
         ...(
           target === 'server' ?
