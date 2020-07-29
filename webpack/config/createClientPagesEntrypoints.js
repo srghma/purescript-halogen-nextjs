@@ -18,6 +18,7 @@ import * as fse from 'fs-extra'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 import firstline from 'firstline'
+import * as rra from 'recursive-readdir-async'
 
 async function getFileModule(filePath) {
   const firstLine = await firstline(filePath)
@@ -37,35 +38,82 @@ async function getFileModule(filePath) {
   return moduleName
 }
 
-const entryPair =
-  pagesDir =>
-  async (fileName) => // e.g. Foo.purs
+const entryPair = async (pagesDir, fileName) => // e.g. Foo.purs
   {
     const filePath = path.join(pagesDir, fileName)
-    const moduleName = await getFileModule(filePath) // moduleName = e.g. Nextjs.Pages.Foo
-    const absoluteCompiledPagePursPath = path.resolve(root, "output", moduleName, "index.js") // e.g. ".../output/Foo/index.js"
     const pageName = path.parse(fileName).name // e.g. Foo
 
-    const absoluteJsDepsPath = path.join(pagesDir, `${pageName}.deps.js`)
-    const absoluteJsDepsPath_ = fs.existsSync(absoluteJsDepsPath) ? absoluteJsDepsPath : null
-
-    const pageLoader = {
-      pageName,
-      absoluteCompiledPagePursPath,
-      absoluteJsDepsPath: absoluteJsDepsPath_,
-    }
-
-    return [pageName, pageLoader]
   }
 
+// { name :: String, path :: String, ..... } -> Object String { absoluteCompiledPagePursPath: ..., absoluteJsDepsPath: Nullable ... }])
+async function processTreeItem(treeItem) {
+  if (treeItem.isDirectory) {
+    const pagesObject = await processTree(treeItem.content)
+    const pagesObject_ = RA.renameKeysWith(R.concat(treeItem.name + "."), pagesObject)
+
+    return pagesObject_
+  } else {
+    const moduleName = await getFileModule(treeItem.fullname) // moduleName = e.g. Nextjs.Pages.Foo
+    const absoluteCompiledPagePursPath = path.resolve(root, "output", moduleName, "index.js") // e.g. ".../output/Foo/index.js"
+
+    const fullpathWithoutPurs = R.replace('.purs', '', treeItem.fullname)
+    const absoluteJsDepsPath = `${fullpathWithoutPurs}.deps.js`
+
+    const pageName = R.replace('.purs', '', treeItem.name)
+
+    return {
+      [pageName]: {
+        absoluteCompiledPagePursPath,
+        absoluteJsDepsPath: fs.existsSync(absoluteJsDepsPath) ? absoluteJsDepsPath : null,
+      }
+    }
+  }
+}
+
+// Array { name :: String, path :: String, ..... } -> Object String { absoluteCompiledPagePursPath: ..., absoluteJsDepsPath: Nullable ... }
+async function processTree(tree) {
+  // e.g. [
+  //   { 'Basic': { ... } },
+  //   { 'Buttons.Buttons': { ... } }
+  // ]
+  const entryPairList = await Promise.all(R.map(processTreeItem, tree))
+
+  return R.mergeAll(entryPairList)
+}
+
 export default async function(pagesDir) {
-  const allTopFiles = await fse.readdir(pagesDir) // e.g. ["Foo.deps.js", "Foo.purs"]
+  // e.g. returns
+  // {
+  //   name: 'Basic.purs',
+  //   path: '/home/srghma/projects/purescript-halogen-nextjs/app/Nextjs/Pages',
+  //   fullname: '/home/srghma/projects/purescript-halogen-nextjs/app/Nextjs/Pages/Basic.purs',
+  //   isDirectory: false
+  // },
+  // {
+  //   name: 'Buttons',
+  //   path: '/home/srghma/projects/purescript-halogen-nextjs/app/Nextjs/Pages',
+  //   fullname: '/home/srghma/projects/purescript-halogen-nextjs/app/Nextjs/Pages/Buttons',
+  //   isDirectory: true,
+  //   content: [
+  //     {
+  //       name: 'Buttons.purs',
+  //       path: '/home/srghma/projects/purescript-halogen-nextjs/app/Nextjs/Pages/Buttons',
+  //       fullname: '/home/srghma/projects/purescript-halogen-nextjs/app/Nextjs/Pages/Buttons/Buttons.purs',
+  //       isDirectory: false
+  //     },
+  //   ]
+  // },
 
-  const pageFiles = R.filter(R.test(/\.purs$/), allTopFiles)
+  const tree = await rra.list(
+    pagesDir,
+    {
+      mode: rra.TREE,
+      recursive: true,
+      include: [".purs"],
+    }
+  )
 
-  const entryPairs_ = await Promise.all(R.map(entryPair(pagesDir), pageFiles))
-
-  const entryPairsObject = R.fromPairs(entryPairs_)
+  const entryPairsObject = await processTree(tree)
 
   return entryPairsObject
 }

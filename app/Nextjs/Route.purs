@@ -77,29 +77,51 @@ routeCodec = Routing.Duplex.root $ Routing.Duplex.sum
   , "Buttons":               "Buttons" / buttonsRouteCodec
   }
 
+-- where the key is an id of the page in the page manifest
+-- pagesManifestRec
 type PagesRec a =
-  { "Index" :: a
-  , "Ace" :: a
-  , "Basic" :: a
-  , "Components" :: a
-  , "ComponentsInputs" :: a
-  , "ComponentsMultitype" :: a
-  , "EffectsAffAjax" :: a
-  , "EffectsEffectRandom" :: a
+  { "Index"                 :: a
+  , "Ace"                   :: a
+  , "Basic"                 :: a
+  , "Components"            :: a
+  , "ComponentsInputs"      :: a
+  , "ComponentsMultitype"   :: a
+  , "EffectsAffAjax"        :: a
+  , "EffectsEffectRandom"   :: a
   , "HigherOrderComponents" :: a
-  , "Interpret" :: a
-  , "KeyboardInput" :: a
-  , "Lifecycle" :: a
-  , "DynamicInput" :: a
-  , "DeeplyNested" :: a
-  , "TextNodes" :: a
-  , "Lazy" :: a
-  , "Buttons" ::
-    { "Buttons"     :: a
-    , "Fabs"        :: a
-    , "IconButtons" :: a
-    }
+  , "Interpret"             :: a
+  , "KeyboardInput"         :: a
+  , "Lifecycle"             :: a
+  , "DynamicInput"          :: a
+  , "DeeplyNested"          :: a
+  , "TextNodes"             :: a
+  , "Lazy"                  :: a
+  , "Buttons.Buttons"       :: a
+  , "Buttons.Fabs"          :: a
+  , "Buttons.IconButtons"   :: a
   }
+
+routeToPageManifestId :: forall a . Route -> String
+routeToPageManifestId Index                 = "Index"
+routeToPageManifestId Ace                   = "Ace"
+routeToPageManifestId Basic                 = "Basic"
+routeToPageManifestId Components            = "Components"
+routeToPageManifestId ComponentsInputs      = "ComponentsInputs"
+routeToPageManifestId ComponentsMultitype   = "ComponentsMultitype"
+routeToPageManifestId EffectsAffAjax        = "EffectsAffAjax"
+routeToPageManifestId EffectsEffectRandom   = "EffectsEffectRandom"
+routeToPageManifestId HigherOrderComponents = "HigherOrderComponents"
+routeToPageManifestId Interpret             = "Interpret"
+routeToPageManifestId KeyboardInput         = "KeyboardInput"
+routeToPageManifestId Lifecycle             = "Lifecycle"
+routeToPageManifestId DynamicInput          = "DynamicInput"
+routeToPageManifestId DeeplyNested          = "DeeplyNested"
+routeToPageManifestId TextNodes             = "TextNodes"
+routeToPageManifestId Lazy                  = "Lazy"
+routeToPageManifestId (Buttons route)       = case route of
+  ButtonsRoute__Buttons -> "Buttons.Buttons"
+  ButtonsRoute__Fabs -> "Buttons.Fabs"
+  ButtonsRoute__IconButtons -> "Buttons.IconButtons"
 
 extractFromPagesRec :: forall a . Route -> PagesRec a -> a
 extractFromPagesRec Index                 = _."Index"
@@ -118,8 +140,7 @@ extractFromPagesRec DynamicInput          = _."DynamicInput"
 extractFromPagesRec DeeplyNested          = _."DeeplyNested"
 extractFromPagesRec TextNodes             = _."TextNodes"
 extractFromPagesRec Lazy                  = _."Lazy"
-extractFromPagesRec (Buttons route)       = _."Buttons" >>>
-    case route of
-        ButtonsRoute__Buttons -> _."Buttons"
-        ButtonsRoute__Fabs -> _."Fabs"
-        ButtonsRoute__IconButtons -> _."IconButtons"
+extractFromPagesRec (Buttons route)       = case route of
+  ButtonsRoute__Buttons -> _."Buttons.Buttons"
+  ButtonsRoute__Fabs -> _."Buttons.Fabs"
+  ButtonsRoute__IconButtons -> _."Buttons.IconButtons"

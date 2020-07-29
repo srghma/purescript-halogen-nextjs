@@ -127,7 +127,7 @@ export default async function ({
       onBrowser: async () => {
         const entrypointsObject = await createClientPagesEntrypoints(pagesPath)
 
-        const isomorphicEntrypointsObject = R.map(entrypoint => `isomorphic-client-pages-loader?${querystring.stringify(entrypoint)}!`, entrypointsObject)
+        const isomorphicEntrypointsObject = R.mapObjIndexed((val, key) => `isomorphic-client-pages-loader?${querystring.stringify({ ...val, pageName: key })}!`, entrypointsObject)
 
         return R.mergeAll([isomorphicEntrypointsObject, { main: path.resolve(root, "app", "client.entry.js") }])
       },

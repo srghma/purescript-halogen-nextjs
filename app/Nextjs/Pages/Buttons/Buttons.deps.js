@@ -1,1 +1,1 @@
-import './Buttons.css'
+import '@rmwc/button/styles'

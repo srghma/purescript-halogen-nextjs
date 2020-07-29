@@ -36,9 +36,7 @@ foreign import _setRegisterEventOnPageCacheBus :: EFn.EffectFn1 (EFn.EffectFn1 P
 foreign import supportedPrefetchRel :: String
 
 findPageInCache :: Nextjs.Route.Route -> PageCache -> Maybe PageInfo
-findPageInCache route = Array.find (\info -> info.pageName == route')
-  where
-    route' = show route
+findPageInCache route = Array.find (\info -> info.pageName == Nextjs.Route.routeToPageManifestId route)
 
 -- should be called only once
 createPageRegisteredEvent :: Effect PageRegisteredEvent
