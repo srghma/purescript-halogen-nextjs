@@ -13,6 +13,7 @@ const serverPort = 3000
 let serverProcessState
 
 require('webpack-spago-loader/watcher-job')({
+  additionalWatchGlobs: ['app/**/*.css', 'src/**/*.css'],
   options: require('./lib/spago-options'),
   onStart: () => {
     // stop webpack if it is running (you cannot)

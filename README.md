@@ -57,15 +57,12 @@ In the `client.entry.css` and `client.entry.js`
 
 ### TODO:
 
-1. PWA with service worker https://pursuit.purescript.org/packages/purescript-workers/
-2. An example with cookies authentication and secure page
-3. Move reusable parts into the separate package, publish to pursuit and npm
-4. Finish https://github.com/srghma/generate-halogen-css-modules to generate FFI for css files ending with `.module.css`
-
-The [css modules](https://webpack.js.org/loaders/css-loader/#modules) are enabled only for files ending with `.module.css` [here](https://github.com/srghma/purescript-halogen-nextjs/blob/0e26569df6452dc1e7983d6f629448e70e4e6f2c/webpack/config/rules.js#L20)
-
-5. https://www.npmjs.com/package/livereload and custom https://www.npmjs.com/package/webpack-livereload-plugin for dev
-6. update "title" on client when user visits new page
-7. `yarn dev` should also reaload when css file in `app` dir changes
+[x] Finish https://github.com/srghma/generate-halogen-css-modules to generate FFI for css files ending with `.module.css`
+[ ] PWA with service worker https://pursuit.purescript.org/packages/purescript-workers/
+[ ] An example with cookies authentication and secure page
+[ ] Move reusable parts into the separate package, publish to pursuit and npm
+[ ] https://www.npmjs.com/package/livereload and custom https://www.npmjs.com/package/webpack-livereload-plugin for dev
+[ ] update "title" on client when user visits new page
+[ ] `yarn dev` should also reaload when css file in `app` dir changes
 
 ![example](https://i.imgur.com/VF5UY5s.png)
