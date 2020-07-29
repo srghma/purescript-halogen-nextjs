@@ -66,5 +66,6 @@ The [css modules](https://webpack.js.org/loaders/css-loader/#modules) are enable
 
 5. https://www.npmjs.com/package/livereload and custom https://www.npmjs.com/package/webpack-livereload-plugin for dev
 6. update "title" on client when user visits new page
+7. `yarn dev` should also reaload when css file in `app` dir changes
 
 ![example](https://i.imgur.com/VF5UY5s.png)
