@@ -155,9 +155,9 @@ loadPage clientPagesManifest document body head pageRegisteredEvent route = do
     -- the "Aff.supervise" doesn't help
     Nothing -> Aff.makeAff \resolve -> do
       unsubscribe <- Event.subscribe pageRegisteredEvent \info -> do
-        if info.pageName == route'
+        if info.pageName == routeId
           then resolve $ Right info.page
           else pure unit
       pure $ Aff.effectCanceler unsubscribe
   where
-    route' = show route
+    routeId = Nextjs.Route.routeToPageManifestId route

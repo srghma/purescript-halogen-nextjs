@@ -27,8 +27,8 @@ class BuildManifestPlugin {
             return [
               name,
               {
-                css,
-                js
+                css: R.map((x) => "/" + x, css),
+                js: R.map((x) => "/" + x, js)
               },
             ]
           },

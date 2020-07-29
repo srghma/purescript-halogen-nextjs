@@ -2,6 +2,7 @@
 
 import { loader } from 'webpack'
 import loaderUtils from 'loader-utils'
+import * as RA from 'ramda-adjunct'
 
 // export type ClientPagesLoaderOptions = {
 //   absoluteCompiledPagePursPath: string // e.g. ".../output/Foo/index.js"
@@ -24,10 +25,12 @@ const clientPagesLoader = async function() {
     pageName,
   } = loaderUtils.getOptions(this_)
 
-  if (!absoluteCompiledPagePursPath) { throw new Error('absoluteCompiledPagePursPath is empty') }
-  if (!pageName) { throw new Error('pageName is empty') }
+  // console.log('loaderUtils.getOptions(this_)', loaderUtils.getOptions(this_))
 
-  const loadJsDepsTemplate = absoluteJsDepsPath ? `require(${JSON.stringify(absoluteJsDepsPath)});` : ""
+  if (!RA.isNonEmptyString(absoluteCompiledPagePursPath)) { throw new Error(`absoluteCompiledPagePursPath is not a string, but ${absoluteCompiledPagePursPath}`) }
+  if (!RA.isNonEmptyString(pageName)) { throw new Error(`pageName is not a string, but ${pageName}`) }
+
+  const loadJsDepsTemplate = RA.isNonEmptyString(absoluteJsDepsPath) ? `require(${JSON.stringify(absoluteJsDepsPath)});` : ""
   const loadPageTemplate = `(window.__PAGE_CACHE_BUS=window.__PAGE_CACHE_BUS||[]).push({ pageName: ${JSON.stringify(pageName)}, page: require(${JSON.stringify(absoluteCompiledPagePursPath)}).page });`
 
   const output = loadJsDepsTemplate + loadPageTemplate

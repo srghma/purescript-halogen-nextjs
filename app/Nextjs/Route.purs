@@ -96,9 +96,9 @@ type PagesRec a =
   , "DeeplyNested"          :: a
   , "TextNodes"             :: a
   , "Lazy"                  :: a
-  , "Buttons.Buttons"       :: a
-  , "Buttons.Fabs"          :: a
-  , "Buttons.IconButtons"   :: a
+  , "Buttons-Buttons"       :: a
+  , "Buttons-Fabs"          :: a
+  , "Buttons-IconButtons"   :: a
   }
 
 routeToPageManifestId :: forall a . Route -> String
@@ -119,9 +119,9 @@ routeToPageManifestId DeeplyNested          = "DeeplyNested"
 routeToPageManifestId TextNodes             = "TextNodes"
 routeToPageManifestId Lazy                  = "Lazy"
 routeToPageManifestId (Buttons route)       = case route of
-  ButtonsRoute__Buttons -> "Buttons.Buttons"
-  ButtonsRoute__Fabs -> "Buttons.Fabs"
-  ButtonsRoute__IconButtons -> "Buttons.IconButtons"
+  ButtonsRoute__Buttons -> "Buttons-Buttons"
+  ButtonsRoute__Fabs -> "Buttons-Fabs"
+  ButtonsRoute__IconButtons -> "Buttons-IconButtons"
 
 extractFromPagesRec :: forall a . Route -> PagesRec a -> a
 extractFromPagesRec Index                 = _."Index"
@@ -141,6 +141,6 @@ extractFromPagesRec DeeplyNested          = _."DeeplyNested"
 extractFromPagesRec TextNodes             = _."TextNodes"
 extractFromPagesRec Lazy                  = _."Lazy"
 extractFromPagesRec (Buttons route)       = case route of
-  ButtonsRoute__Buttons -> _."Buttons.Buttons"
-  ButtonsRoute__Fabs -> _."Buttons.Fabs"
-  ButtonsRoute__IconButtons -> _."Buttons.IconButtons"
+  ButtonsRoute__Buttons -> _."Buttons-Buttons"
+  ButtonsRoute__Fabs -> _."Buttons-Fabs"
+  ButtonsRoute__IconButtons -> _."Buttons-IconButtons"

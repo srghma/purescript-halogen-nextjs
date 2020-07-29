@@ -53,6 +53,7 @@ type ChildSlots =
 renderPage :: forall action . CurrentPageInfo -> H.ComponentHTML action ChildSlots AppM
 renderPage { route, pageSpecWithInputBoxed } = Nextjs.Lib.Page.unPageSpecWithInputBoxed
   (\pageSpecWithInput ->
+    trace ("render is happening") $ const $
     HH.div_
       [ HH.text pageSpecWithInput.title
       , HH.slot (SProxy :: SProxy "page") route pageSpecWithInput.component pageSpecWithInput.input absurd

@@ -49,7 +49,7 @@ const entryPair = async (pagesDir, fileName) => // e.g. Foo.purs
 async function processTreeItem(treeItem) {
   if (treeItem.isDirectory) {
     const pagesObject = await processTree(treeItem.content)
-    const pagesObject_ = RA.renameKeysWith(R.concat(treeItem.name + "."), pagesObject)
+    const pagesObject_ = RA.renameKeysWith(R.concat(treeItem.name + "-"), pagesObject)
 
     return pagesObject_
   } else {

@@ -41,9 +41,9 @@ pagesRec =
   , "DynamicInput":          Nextjs.Pages.DynamicInput.page
   , "TextNodes":             Nextjs.Pages.TextNodes.page
   , "Lazy":                  Nextjs.Pages.Lazy.page
-  , "Buttons.Buttons":       Nextjs.Pages.Buttons.Buttons.page
-  , "Buttons.Fabs":          Nextjs.Pages.Buttons.Fabs.page
-  , "Buttons.IconButtons":   Nextjs.Pages.Buttons.IconButtons.page
+  , "Buttons-Buttons":       Nextjs.Pages.Buttons.Buttons.page
+  , "Buttons-Fabs":          Nextjs.Pages.Buttons.Fabs.page
+  , "Buttons-IconButtons":   Nextjs.Pages.Buttons.IconButtons.page
   }
 
 routeToPage :: Nextjs.Route.Route -> Nextjs.Lib.Page.Page
