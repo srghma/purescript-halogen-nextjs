@@ -11,6 +11,18 @@ import Routing.Duplex (RouteDuplex', root) as Routing.Duplex
 import Routing.Duplex.Generic (noArgs, sum) as Routing.Duplex
 import Routing.Duplex.Generic.Syntax ((/))
 
+data ButtonsRoute
+  = ButtonsRoute__Buttons
+  | ButtonsRoute__Fabs
+  | ButtonsRoute__IconButtons
+
+derive instance genericButtonsRoute :: Generic ButtonsRoute _
+derive instance eqButtonsRoute :: Eq ButtonsRoute
+derive instance ordButtonsRoute :: Ord ButtonsRoute
+instance showButtonsRoute :: Show ButtonsRoute where show = genericShow
+instance encodeJsonButtonsRoute :: EncodeJson ButtonsRoute where encodeJson = genericEncodeJson
+instance decodeJsonButtonsRoute :: DecodeJson ButtonsRoute where decodeJson = genericDecodeJson
+
 data Route
   = Index
   | Ace
@@ -28,17 +40,21 @@ data Route
   | DynamicInput
   | TextNodes
   | Lazy
+  | Buttons ButtonsRoute
 
 derive instance genericRoute :: Generic Route _
 derive instance eqRoute :: Eq Route
 derive instance ordRoute :: Ord Route
 instance showRoute :: Show Route where show = genericShow
+instance encodeJsonRoute :: EncodeJson Route where encodeJson = genericEncodeJson
+instance decodeJsonRoute :: DecodeJson Route where decodeJson = genericDecodeJson
 
-instance encodeJsonRoute :: EncodeJson Route where
-  encodeJson = genericEncodeJson
-
-instance decodeJsonRoute :: DecodeJson Route where
-  decodeJson = genericDecodeJson
+buttonsRouteCodec :: Routing.Duplex.RouteDuplex' ButtonsRoute
+buttonsRouteCodec = Routing.Duplex.sum
+  { "ButtonsRoute__Buttons":     "Buttons" / Routing.Duplex.noArgs
+  , "ButtonsRoute__Fabs":        "Fabs" / Routing.Duplex.noArgs
+  , "ButtonsRoute__IconButtons": "IconButtons" / Routing.Duplex.noArgs
+  }
 
 routeCodec :: Routing.Duplex.RouteDuplex' Route
 routeCodec = Routing.Duplex.root $ Routing.Duplex.sum
@@ -58,6 +74,7 @@ routeCodec = Routing.Duplex.root $ Routing.Duplex.sum
   , "DeeplyNested":          "DeeplyNested" / Routing.Duplex.noArgs
   , "TextNodes":             "TextNodes" / Routing.Duplex.noArgs
   , "Lazy":                  "Lazy" / Routing.Duplex.noArgs
+  , "Buttons":               "Buttons" / buttonsRouteCodec
   }
 
 type PagesRec a =
@@ -77,6 +94,11 @@ type PagesRec a =
   , "DeeplyNested" :: a
   , "TextNodes" :: a
   , "Lazy" :: a
+  , "Buttons" ::
+    { "Buttons"     :: a
+    , "Fabs"        :: a
+    , "IconButtons" :: a
+    }
   }
 
 extractFromPagesRec :: forall a . Route -> PagesRec a -> a
@@ -96,3 +118,8 @@ extractFromPagesRec DynamicInput          = _."DynamicInput"
 extractFromPagesRec DeeplyNested          = _."DeeplyNested"
 extractFromPagesRec TextNodes             = _."TextNodes"
 extractFromPagesRec Lazy                  = _."Lazy"
+extractFromPagesRec (Buttons route)       = _."Buttons" >>>
+    case route of
+        ButtonsRoute__Buttons -> _."Buttons"
+        ButtonsRoute__Fabs -> _."Fabs"
+        ButtonsRoute__IconButtons -> _."IconButtons"

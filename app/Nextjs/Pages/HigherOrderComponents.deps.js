@@ -1,1 +1,1 @@
-import './css/hoc.css'
+import './HigherOrderComponents.css'

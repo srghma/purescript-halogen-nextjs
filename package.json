@@ -1,7 +1,7 @@
 {
-  "name": "purescript-halogen-mdl",
+  "name": "purescript-halogen-nextjs",
   "version": "1.0.0",
-  "description": "My webpack project",
+  "description": "nextjs",
   "scripts": {
     "clean": "rimraf docs",
     "dev": "babel-node --presets '@babel/preset-env' --trace-deprecation ./webpack/dev.js",
@@ -16,14 +16,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/andywhite37/purescript-halogen-mdl.git"
+    "url": "git+https://github.com/srghma/purescript-halogen-nextjs.git"
   },
-  "author": "Andy White",
+  "author": "Serhii Khoma",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/andywhite37/purescript-halogen-mdl/issues"
+    "url": "https://github.com/srghma/purescript-halogen-nextjs/issues"
   },
-  "homepage": "https://github.com/andywhite37/purescript-halogen-mdl#readme",
+  "homepage": "https://github.com/srghma/purescript-halogen-nextjs#readme",
   "devDependencies": {
     "@babel/core": "^7.10.5",
     "@babel/node": "^7.10.5",

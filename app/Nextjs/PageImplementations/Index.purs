@@ -1,4 +1,4 @@
-module Lib.Pages.Index.Default (component) where
+module Nextjs.PageImplementations.Index (component) where
 
 import Protolude
 import Control.Monad.Reader (class MonadAsk)
@@ -11,7 +11,7 @@ import Halogen.HTML as HH
 import Nextjs.AppM (AppM)
 import Nextjs.Link.Default as Nextjs.Link.Default
 import Nextjs.Navigate (navigate)
-import Nextjs.Route (Route(..))
+import Nextjs.Route
 import Web.HTML (HTMLDocument, HTMLHeadElement)
 import Web.IntersectionObserver (IntersectionObserver)
 import Web.IntersectionObserverEntry (IntersectionObserverEntry)
@@ -33,6 +33,9 @@ allRoutes =
   , DeeplyNested
   , TextNodes
   , Lazy
+  , Buttons ButtonsRoute__Buttons
+  , Buttons ButtonsRoute__Fabs
+  , Buttons ButtonsRoute__IconButtons
   ]
 
 component :: forall q i o . H.Component q i o AppM

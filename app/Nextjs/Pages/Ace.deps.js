@@ -24,4 +24,4 @@ ace.config.set('workerPath', CDN);
 
 /////////////////
 
-import './css/ace.css'
+import './Ace.css'
