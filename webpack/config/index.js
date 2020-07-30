@@ -315,7 +315,7 @@ export default async function ({
 
       minimize: production && target === 'browser',
 
-      minimizer: production ? [
+      minimizer: production && target === 'browser' ? [
         new (require('terser-webpack-plugin'))({}),
         new (require('optimize-css-assets-webpack-plugin'))({}),
 
