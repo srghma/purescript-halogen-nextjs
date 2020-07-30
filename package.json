@@ -12,7 +12,7 @@
     "cordova:build": "cordova build -- --webpack.config webpack/cordova-webpack.config.js --webpack.env.mode=production",
     "cordova:dev": "cordova run android -- --webpack.config webpack/cordova-webpack.config.js --webpack.env.mode=development",
     "cordova:dev:livereload": "cordova run android -- --webpack.config webpack/cordova-webpack.config.js --webpack.env.mode=development --livereload",
-    "cordova:test-config": "node --trace-deprecation ./webpack/cordova-webpack.config.js"
+    "cordova:test-config": "webpack --config ./webpack/cordova-webpack.config.js --env.mode=development"
   },
   "repository": {
     "type": "git",

@@ -14,7 +14,7 @@ module.exports = async function(env) {
 
   const config = await createConfig({ production, target: 'mobile' })
 
-  console.log(config)
+  // console.log(config)
 
   return config
 }

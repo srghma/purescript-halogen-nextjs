@@ -260,9 +260,16 @@ export default async function ({
       (
         target === 'mobile' ?
         new (require('html-webpack-plugin'))({
-          title: 'Purescript Nextjs',
-          template: path.resolve(root, 'cordova-template-index.html'),
           minify: false,
+          inject: false, // dont inject headTags and bodyTags after template is generated - we will do that ourselves
+          templateContent: (options) => {
+            return require(path.resolve(root, 'app', 'template')).template({
+              target: 'mobile',
+              title: 'Purescript Nextjs',
+              headTags: options.htmlWebpackPlugin.tags.headTags.toString(),
+              bodyTags: options.htmlWebpackPlugin.tags.bodyTags.toString(),
+            })
+          },
         }) :
         null
       ),
