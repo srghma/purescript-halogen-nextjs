@@ -53,6 +53,7 @@ export default async function ({
     }),
 
     mode: production ? 'production' : 'development',
+    // mode: 'development',
 
     devServer: onTarget({
       target,
@@ -172,7 +173,7 @@ export default async function ({
     }),
 
     module: {
-      rules: require('./rules')()
+      rules: require('./rules')({ target, production })
     },
 
     resolve: {
@@ -312,25 +313,26 @@ export default async function ({
         ? { name: CLIENT_STATIC_FILES_RUNTIME_WEBPACK }
         : false,
 
-      // minimize: production && target === 'browser',
+      minimize: production && target === 'browser',
 
-      // minimizer: production ? [
-      //   new (require('terser-webpack-plugin'))(),
+      minimizer: production ? [
+        new (require('terser-webpack-plugin'))({}),
+        new (require('optimize-css-assets-webpack-plugin'))({}),
 
-      //   // Minify CSS
-      //   // new CssMinimizerPlugin({
-      //   //   postcssOptions: {
-      //   //     map: {
-      //   //       // `inline: false` generates the source map in a separate file.
-      //   //       // Otherwise, the CSS file is needlessly large.
-      //   //       inline: false,
-      //   //       // `annotation: false` skips appending the `sourceMappingURL`
-      //   //       // to the end of the CSS file. Webpack already handles this.
-      //   //       annotation: false,
-      //   //     },
-      //   //   },
-      //   // }),
-      // ] : [],
+        // // Minify CSS
+        // new CssMinimizerPlugin({
+        //   postcssOptions: {
+        //     map: {
+        //       // `inline: false` generates the source map in a separate file.
+        //       // Otherwise, the CSS file is needlessly large.
+        //       inline: false,
+        //       // `annotation: false` skips appending the `sourceMappingURL`
+        //       // to the end of the CSS file. Webpack already handles this.
+        //       annotation: false,
+        //     },
+        //   },
+        // }),
+      ] : [],
     },
   }
 }

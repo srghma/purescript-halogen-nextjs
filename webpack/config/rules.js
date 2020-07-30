@@ -1,7 +1,7 @@
 import * as RA from 'ramda-adjunct'
 import MiniCssExtractPlugin from 'mini-css-extract-plugin'
 
-module.exports = function() {
+module.exports = function({ target, production }) {
   return [
     ...(require('webpack-spago-loader/rules')()),
 
@@ -24,10 +24,31 @@ module.exports = function() {
           loader: 'css-loader',
           options: {
             modules: true,
-            importLoaders: 2,
+            importLoaders: 1,
           },
         },
-        'postcss-loader'
+        {
+          loader: 'postcss-loader',
+          options: {
+            ident: 'postcss',
+            minimize: true,
+            plugins: {
+              'postcss-import': {},
+              'postcss-preset-env': {},
+              'cssnano': { preset: 'default' },
+              ...(
+                production ?
+                  {
+                    '@fullhuman/postcss-purgecss': {
+                      content: ['./app/**/*.js'],
+                      defaultExtractor: (content) => content.match(/[\w-/:]+(?<!:)/g) || [],
+                    }
+                  } :
+                  undefined
+              )
+            }
+          },
+        }
       ]),
     },
     // images
