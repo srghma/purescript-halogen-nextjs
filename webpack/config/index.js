@@ -12,8 +12,6 @@ import createClientPagesEntrypoints from '../config/createClientPagesEntrypoints
 
 const CLIENT_STATIC_FILES_RUNTIME_WEBPACK = 'webpack'
 
-const totalPages = 5 // TODO
-
 const onTarget = ({ target, onBrowser, onServer, onMobile }) => {
   switch (target) {
     case 'browser':
@@ -38,6 +36,8 @@ export default async function ({
   production,
   serverPort,
 }) {
+  const entrypointsObject = target !== 'server' ? await createClientPagesEntrypoints(pagesPath) : null
+
   return {
     watch: watch,
 
@@ -125,16 +125,12 @@ export default async function ({
     entry: await onTarget({
       target,
       onBrowser: async () => {
-        const entrypointsObject = await createClientPagesEntrypoints(pagesPath)
-
         const isomorphicEntrypointsObject = R.mapObjIndexed((val, key) => `isomorphic-client-pages-loader?${querystring.stringify({ ...val, pageName: key })}!`, entrypointsObject)
 
         return R.mergeAll([isomorphicEntrypointsObject, { main: path.resolve(root, "app", "client.entry.js") }])
       },
       onServer: () => ({ main: path.resolve(root, "app", "server.entry.js") }),
       onMobile: async () => {
-        const entrypointsObject = await createClientPagesEntrypoints(pagesPath)
-
         const absoluteJsDepsPaths = R.pipe(
           R.values,
           R.map(R.prop('absoluteJsDepsPath')),
@@ -307,7 +303,7 @@ export default async function ({
       noEmitOnErrors: true,
 
       splitChunks: target === 'browser' ?
-        require('./splitChunksConfig')() :
+        require('./splitChunksConfig')({ totalPages: R.keys(entrypointsObject).length }) :
         false,
 
       nodeEnv: false,
