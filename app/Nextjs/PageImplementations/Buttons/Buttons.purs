@@ -6,6 +6,7 @@ import Halogen as H
 import Halogen.HTML as HH
 import Halogen.HTML.Events as HE
 import Halogen.HTML.Properties as HP
+import RMWC.Blocks.Button as RMWC.Blocks.Button
 
 type State = Unit
 
@@ -18,4 +19,7 @@ component =
     }
 
 render :: forall m. State -> H.ComponentHTML Void () m
-render state = HH.div_ [ HH.text "Button" ]
+render state = HH.div_
+  [ HH.text "Button"
+  , RMWC.Blocks.Button.textButton "Button"
+  ]
