@@ -119,9 +119,11 @@ export function template({
       ${meta}
       <meta charset="utf-8"/>
       <title>${title}</title>
+      <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet" />
+      <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
       ${headTags}
     </head>
-    <body>
+    <body class="mdc-typography mdc-theme--background">
       <div id="root">${target === 'server' ? prerenderedHtml : ''}</div>
       ${target === 'server' ? `<script id="__PAGES_MANIFEST__" type="application/json">${prerenderedPagesManifest}</script>` : ''}
       ${target === 'server' && prerenderedPageData ? `<script id="__PAGE_DATA__" type="application/json">${prerenderedPageData}</script>` : ''}
