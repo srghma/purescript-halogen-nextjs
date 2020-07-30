@@ -2,16 +2,8 @@
 
 import * as crypto from 'crypto'
 
-module.exports.dev = {
-  chunks: 'all',
-  cacheGroups: {
-    default: false,
-    vendors: false,
-  },
-}
-
 // this is default config from webpack site
-module.exports.prod = function({ totalPages }) {
+module.exports = function() {
   return {
     chunks: 'all',
     // chunks: 'async',
@@ -34,6 +26,15 @@ module.exports.prod = function({ totalPages }) {
         minChunks: 2,
         priority: -20,
         reuseExistingChunk: true
+      },
+
+      styles: {
+        name: 'styles',
+        test: /\.s?css$/,
+        chunks: 'all',
+        minChunks: 2, // 1 - all css is merged into 1 chunk, 2 - css chunks are being reused
+        reuseExistingChunk: true,
+        enforce: true,
       },
 
       // framework: {

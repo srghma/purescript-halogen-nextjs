@@ -307,7 +307,7 @@ export default async function ({
       noEmitOnErrors: true,
 
       splitChunks: target === 'browser' ?
-        (production ? require('./splitChunksConfig').prod({ totalPages }) : require('./splitChunksConfig').dev) :
+        require('./splitChunksConfig')() :
         false,
 
       nodeEnv: false,
