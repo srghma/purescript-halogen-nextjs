@@ -6,9 +6,7 @@ import DOM.HTML.Indexed (HTMLbutton, HTMLdiv)
 import Halogen.HTML (ClassName(..))
 import Halogen.HTML as HH
 import Halogen.HTML.Properties as HP
-
-mdc_button :: ClassName
-mdc_button = ClassName "mdc-button"
+import Classes.Material.Button
 
 textButton
   :: ∀ p i
@@ -16,7 +14,7 @@ textButton
   -> HH.HTML p i
 textButton text =
   HH.button
-    [ HP.class_ (HH.ClassName "mdc-button") ]
-    [ HH.div [ HP.class_ (HH.ClassName "mdc-button__ripple") ] []
-    , HH.span [ HP.class_ (HH.ClassName "mdc-button__label")] [ HH.text text ]
+    [ HP.class_ mdc_button ]
+    [ HH.div [ HP.class_ mdc_button__ripple ] []
+    , HH.span [ HP.class_ mdc_button__label] [ HH.text text ]
     ]
