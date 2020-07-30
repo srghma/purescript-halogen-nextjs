@@ -109,7 +109,7 @@ export function template({
       <meta name="msapplication-tap-highlight" content="no">
       <meta name="viewport" content="initial-scale=1,width=device-width,viewport-fit=cover">` :
     target === 'server' ? `
-      <meta name="viewport" content="width=device-width,initial-scale=1"/>` :
+      <meta name="viewport" content="initial-scale=1,width=device-width"/>` :
     ''
 
   return `
