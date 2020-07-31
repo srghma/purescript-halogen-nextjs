@@ -14,7 +14,7 @@ buttonRipple = HH.div [ HP.class_ mdc_button__ripple ] []
 buttonLabel :: forall i w. Array (HH.HTML w i) -> HH.HTML w i
 buttonLabel = HH.span [ HP.class_ mdc_button__label ]
 
-iIcon :: forall t1 t2. Array (HTML t2 t1) -> HTML t2 t1
+iIcon :: forall t1 t2. Array (HH.HTML t2 t1) -> HH.HTML t2 t1
 iIcon = HH.i
   [ HP.classes [ material_icons, mdc_button__icon ]
   , Halogen.HTML.Properties.ARIA.hidden "true"
