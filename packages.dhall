@@ -94,6 +94,13 @@ let additions =
         , repo = "ssh://git@github.com/garyb/purescript-codec.git"
         , version = "master"
         }
+      , halogen-svg =
+        { dependencies =
+          [ "prelude" ]
+        , repo =
+            "ssh://git@github.com/srghma/purescript-halogen-svg.git"
+        , version = "master"
+        }
       , halogen-vdom-string-renderer =
         { dependencies =
           [ "prelude", "halogen-vdom", "ordered-collections", "foreign" ]

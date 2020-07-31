@@ -1,6 +1,5 @@
 module Nextjs.Link.Types where
 
-import Protolude
 
 import Halogen (SubscriptionId) as H
 import Nextjs.Route as Nextjs.Route

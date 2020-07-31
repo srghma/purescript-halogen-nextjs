@@ -3,38 +3,25 @@ module Nextjs.Entries.Mobile where
 import Protolude
 
 import Cordova.EventTypes as Cordova
-import Data.Argonaut.Core (Json) as ArgonautCore
-import Data.Argonaut.Decode as ArgonautCodecs
-import Data.Either (hush)
 import Effect.Aff as Effect.Aff
 import FRP.Event as FRP.Event
 import Halogen as H
-import Halogen.Aff.Util as Halogen.Aff.Util
 import Halogen.VDom.Driver as Halogen.VDom.Driver
 import Nextjs.AppM (Env, runAppM)
-import Nextjs.Constants as Nextjs.Constants
 import Nextjs.Lib.Api (throwApiError) as Nextjs.Lib.Api
 import Nextjs.Lib.Page as Nextjs.Lib.Page
-import Nextjs.Lib.Utils (findJsonFromScriptElement, getHtmlEntities, getPathWithoutOrigin, selectElementRequired)
+import Nextjs.Lib.Utils (getHtmlEntities, selectElementRequired)
 import Nextjs.Link.Mobile as Nextjs.Link.Mobile
-import Nextjs.Manifest.ClientPagesManifest as Nextjs.Manifest.ClientPagesManifest
 import Nextjs.Navigate.Mobile as Nextjs.Navigate.Mobile
-import Nextjs.PageLoader as Nextjs.PageLoader
 import Nextjs.Route as Nextjs.Route
 import Nextjs.RouteToPage as Nextjs.RouteToPage
 import Nextjs.Router.Mobile as Nextjs.Router.Mobile
 import Nextjs.Router.Shared as Nextjs.Router.Shared
-import Routing.Duplex as Routing.Duplex
-import Routing.PushState as Routing.PushState
 import Web.DOM.ParentNode as Web.DOM.ParentNode
-import Web.Event.Event (EventType(..))
+import Web.Event.Event (EventType)
 import Web.Event.EventTarget (addEventListener, eventListener)
 import Web.HTML as Web.HTML
 import Web.HTML.HTMLDocument as Web.HTML.HTMLDocument
-import Web.HTML.History (back)
-import Web.HTML.Window as Web.HTML.Window
-import Web.IntersectionObserver as Web.IntersectionObserver
-import Web.IntersectionObserverEntry as Web.IntersectionObserverEntry
 
 onDocumentEvent
   :: forall m e

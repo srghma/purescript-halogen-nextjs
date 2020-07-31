@@ -18,11 +18,10 @@ import Nextjs.PageLoader as Nextjs.PageLoader
 import Nextjs.Route as Nextjs.Route
 import Nextjs.Router.Client as Nextjs.Router.Client
 import Nextjs.Router.Shared as Nextjs.Router.Shared
-import Protolude (Aff, Effect, Maybe(..), Unit, bind, error, launchAff_, liftEffect, maybe, pure, throwError, void, when, ($), (/=), (<$>), (<<<), (>>=), (\/))
+import Protolude (Aff, Effect, Maybe(..), Unit, bind, error, liftEffect, maybe, pure, throwError, void, ($), (<$>), (<<<), (>>=), (\/))
 import Routing.Duplex as Routing.Duplex
 import Routing.PushState as Routing.PushState
 import Web.DOM.ParentNode as Web.DOM.ParentNode
-import Web.HTML (window)
 import Web.HTML as Web.HTML
 import Web.HTML.Window as Web.HTML.Window
 import Web.IntersectionObserver as Web.IntersectionObserver

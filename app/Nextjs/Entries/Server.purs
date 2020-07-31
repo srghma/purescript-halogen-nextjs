@@ -31,8 +31,8 @@ import Protolude.Node as Protolude.Node
 import Routing.Duplex (parse) as Routing.Duplex
 import Routing.Duplex.Parser (RouteError) as Routing.Duplex
 import Nextjs.Manifest.ClientPagesManifest as Nextjs.Manifest.ClientPagesManifest
-import Nextjs.Router.Server as Nextjs.Router
-import Nextjs.Router.Shared as Nextjs.Router
+import Nextjs.Router.Server (serverComponent) as Nextjs.Router
+import Nextjs.Router.Shared (ServerState) as Nextjs.Router
 
 data StaticOrDynamicPageData input
   = StaticPageData input

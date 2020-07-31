@@ -2,15 +2,13 @@ module Nextjs.Router.Shared where
 
 import Protolude
 
-import Data.Argonaut.Core as ArgonautCore
 import Halogen as H
 import Halogen.HTML as HH
-import Nextjs.AppM (AppM(..))
+import Nextjs.AppM (AppM)
 import Nextjs.Lib.Page as Nextjs.Lib.Page
 import Nextjs.Manifest.ClientPagesManifest as Nextjs.Manifest.ClientPagesManifest
 import Nextjs.PageLoader as Nextjs.PageLoader
 import Nextjs.Route as Nextjs.Route
-import Unsafe.Coerce (unsafeCoerce)
 import Web.HTML as Web.HTML
 
 type CurrentPageInfo =

@@ -4,13 +4,7 @@ import Protolude
 
 import Data.Argonaut.Core as ArgonautCore
 import Data.Argonaut.Encode as ArgonautCodecs
-import Data.MediaType.Common as MediaTypes
 import Data.String (joinWith) as String
-import Halogen.HTML as Halogen.HTML
-import Halogen.HTML.Elements as Halogen.HTML.Elements
-import Halogen.HTML.Properties as Halogen.HTML.Properties
-import Nextjs.Lib.HalogenElements as Nextjs.Lib.HalogenElements
-import Nextjs.Lib.RenderHtmlWithRawTextSupport as Nextjs.Lib.RenderHtmlWithRawTextSupport
 import Nextjs.Manifest.ClientPagesManifest as Nextjs.Manifest.ClientPagesManifest
 import Nextjs.Manifest.PageManifest as Nextjs.Manifest.PageManifest
 import Data.Nullable (Nullable)

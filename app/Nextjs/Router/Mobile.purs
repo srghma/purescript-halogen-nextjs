@@ -1,18 +1,14 @@
 module Nextjs.Router.Mobile where
 
-import Protolude
+import Protolude (Either(..), Maybe(..), Unit, Void, bind, discard, identity, pure, when, ($), (/=), (>>=))
 
 import Halogen as H
-import Halogen.HTML as HH
 import Nextjs.Lib.Page as Nextjs.Lib.Page
-import Nextjs.PageLoader as Nextjs.PageLoader
 import Nextjs.Route as Nextjs.Route
 import Nextjs.AppM (AppM)
 import Nextjs.Lib.Api as Nextjs.Lib.Api
-import Nextjs.Manifest.ClientPagesManifest as Nextjs.Manifest.ClientPagesManifest
-import Web.HTML as Web.HTML
-import Nextjs.Router.Shared
-import Nextjs.RouteToPage
+import Nextjs.Router.Shared (ChildSlots, MobileState, Query(..), renderPage)
+import Nextjs.RouteToPage (routeToPage)
 
 component :: H.Component Query MobileState Void AppM
 component = H.mkComponent

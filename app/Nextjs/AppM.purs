@@ -3,20 +3,10 @@ module Nextjs.AppM where
 import Protolude
 
 import Control.Monad.Reader (ReaderT, asks, runReaderT)
-import Effect (Effect)
-import FRP.Event as FRP.Event
-import Foreign as Foreign
 import Halogen as H
 import Nextjs.Link.Types as Nextjs.Link.Types
-import Nextjs.Manifest.ClientPagesManifest as Nextjs.Manifest.ClientPagesManifest
 import Nextjs.Route as Nextjs.Route
-import Routing.Duplex as Routing.Duplex
-import Routing.PushState as Routing.PushState
 import Type.Equality (class TypeEquals, from)
-import Unsafe.Coerce (unsafeCoerce)
-import Web.HTML as Web.HTML
-import Web.IntersectionObserver as Web.IntersectionObserver
-import Web.IntersectionObserverEntry as Web.IntersectionObserverEntry
 
 type EnvLinkHandleActions =
   { handleInitialize       :: H.HalogenM Nextjs.Link.Types.State Nextjs.Link.Types.Action () Void AppM Unit

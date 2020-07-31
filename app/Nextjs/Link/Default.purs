@@ -1,29 +1,19 @@
 module Nextjs.Link.Default where
 
-import Nextjs.AppM
-import Protolude
+import Nextjs.AppM (AppM)
+import Protolude (Const, Maybe(..), Unit, Void, ask, bind, discard, identity, ($), (>>=))
 
-import FRP.Event as FRP.Event
 import Halogen as H
 import Halogen.HTML as HH
 import Halogen.HTML.Events as HE
 import Halogen.HTML.Properties as HP
-import Nextjs.ElementIsInViewport as Nextjs.ElementIsInViewport
-import Nextjs.Manifest.ClientPagesManifest as Nextjs.Manifest.ClientPagesManifest
-import Nextjs.Manifest.PageManifest as Nextjs.Manifest.PageManifest
 import Nextjs.Navigate as Nextjs.Navigate
-import Nextjs.PageLoader as Nextjs.PageLoader
 import Nextjs.Route as Nextjs.Route
 import Routing.Duplex as Routing.Duplex
-import Unsafe.Coerce (unsafeCoerce)
 import Web.Event.Event as Web.Event.Event
-import Web.HTML as Web.HTML
-import Web.HTML.HTMLElement as Web.HTML.HTMLElement
-import Web.IntersectionObserver as Web.IntersectionObserver
-import Web.IntersectionObserverEntry as Web.IntersectionObserverEntry
 import Web.UIEvent.MouseEvent as Web.UIEvent.MouseEvent
-import Nextjs.Link.Types
-import Nextjs.Link.Lib
+import Nextjs.Link.Types (Action(..), State)
+import Nextjs.Link.Lib (elementLabel)
 
 component :: H.Component (Const Void) State Void AppM
 component =

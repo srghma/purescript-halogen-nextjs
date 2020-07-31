@@ -1,20 +1,12 @@
 module Nextjs.PageImplementations.Index (component) where
 
-import Protolude
-import Control.Monad.Reader (class MonadAsk)
-import Data.Const (Const(..))
-import Effect.Class (class MonadEffect)
-import FRP.Event (Event)
-import Halogen (ComponentSlot, Slot)
+import Protolude (Const, SProxy(..), Void, absurd, const, show, unit, ($), (<#>))
+import Halogen (Slot)
 import Halogen as H
 import Halogen.HTML as HH
 import Nextjs.AppM (AppM)
 import Nextjs.Link.Default as Nextjs.Link.Default
-import Nextjs.Navigate (navigate)
-import Nextjs.Route
-import Web.HTML (HTMLDocument, HTMLHeadElement)
-import Web.IntersectionObserver (IntersectionObserver)
-import Web.IntersectionObserverEntry (IntersectionObserverEntry)
+import Nextjs.Route (ButtonsRoute(..), Route(..))
 
 allRoutes :: Array Route
 allRoutes =

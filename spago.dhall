@@ -22,6 +22,7 @@
   , "halogen-hooks-extra"
   , "halogen-formless"
   , "halogen-vdom-string-renderer"
+  , "halogen-svg"
   , "hyper"
   , "js-timers"
   , "node-process"
