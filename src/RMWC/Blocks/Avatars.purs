@@ -1,7 +1,6 @@
 module RMWC.Blocks.Avatars where
 
 import Protolude
-
 import Halogen.HTML as HH
 import Halogen.HTML.Properties as HP
 import Halogen.HTML.Properties.ARIA as Halogen.HTML.Properties.ARIA
@@ -13,31 +12,73 @@ import Unsafe.Coerce (unsafeCoerce)
 import Halogen.HTML (ClassName(..))
 import Material.Classes.LinearProgress
 import Data.Percent (Percent)
+import RMWC.Classes.Icon
+import RMWC.Classes.Avatar
+import MaterialIconsFont.Classes
 
-linearProgress :: ∀ w i . { progress :: Percent, buffer :: Percent } -> HH.HTML w i
-linearProgress { buffer, progress } =
-  HH.div
-    [ HP.attr (AttrName "role") "progressbar"
-    , Halogen.HTML.Properties.ARIA.valueMin "0"
-    , Halogen.HTML.Properties.ARIA.valueMax "1"
-    , Halogen.HTML.Properties.ARIA.valueNow (show progress)
-    , HP.class_ mdc_linear_progress
+avatarImage
+  :: forall w i
+   . { size :: Size
+     , src :: Url
+     , name :: String
+     , square :: Boolean
+     , contain :: Boolean
+     }
+  -> HH.HTML w i
+avatarImage _ =
+  HH.span
+    [ HP.title "Natalia Alianovna Romanova"
+    , HP.classes
+        [ rmwc_icon
+        , rmwc_icon____component
+        , material_icons
+        , rmwc_avatar
+        , rmwc_avatar____xsmall
+        , rmwc_avatar____has_image
+        ]
     ]
-    [ HH.div [ HP.class_ mdc_linear_progress__buffering_dots ] []
+    [ HH.div
+        [ HP.class_ rmwc_avatar__icon
+        , HP.attr (AttrName "style") "background_image: url(images/avatars/blackwidow.png); background_size: cover;"
+        ]
+        []
     , HH.div
-      [ HP.class_ mdc_linear_progress__buffer
-      , HP.attr (AttrName "style") $ "transform: scaleX(" <> show buffer <>  ");"
-      ]
-      []
+        [ HP.class_ rmwc_avatar__text ]
+        [ HH.div
+            [ HP.class_ rmwc_avatar__text_inner ]
+            [ HH.text "NR" ]
+        ]
+    ]
+
+avatarInitials
+  :: forall w i
+   . { size :: Size
+     , name :: String
+     , square :: Boolean
+     , contain :: Boolean
+     }
+  -> HH.HTML w i
+avatarInitials _ =
+  HH.span
+    [ HP.title "Natalia Alianovna Romanova"
+    , HP.classes
+        [ rmwc_icon
+        , rmwc_icon____component
+        , material_icons
+        , rmwc_avatar
+        , rmwc_avatar____xsmall
+        , rmwc_avatar____has_image
+        ]
+    ]
+    [ HH.div
+        [ HP.class_ rmwc_avatar__icon
+        , HP.attr (AttrName "style") "background_image: url(images/avatars/blackwidow.png); background_size: cover;"
+        ]
+        []
     , HH.div
-      [ HP.classes [ mdc_linear_progress__bar, mdc_linear_progress__primary_bar ]
-      , HP.attr (AttrName "style") $ "transform: scaleX(" <> show progress <>  ");"
-      ]
-      [ HH.span [ HP.class_ mdc_linear_progress__bar_inner ] []
-      ]
-    , HH.div
-      [ HP.classes [ mdc_linear_progress__bar, mdc_linear_progress__secondary_bar ]
-      ]
-      [ HH.span [ HP.class_ mdc_linear_progress__bar_inner ] []
-      ]
+        [ HP.class_ rmwc_avatar__text ]
+        [ HH.div
+            [ HP.class_ rmwc_avatar__text_inner ]
+            [ HH.text "NR" ]
+        ]
     ]
