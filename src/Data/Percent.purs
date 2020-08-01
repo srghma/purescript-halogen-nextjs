@@ -8,7 +8,11 @@ newtype Percent = Percent Number
 derive newtype instance eqPercent :: Eq Percent
 derive newtype instance ordPercent :: Ord Percent
 derive newtype instance showPercent :: Show Percent
-derive newtype instance boundedPercent :: Bounded Percent
+
+instance boundedPercent :: Bounded Percent where
+  top = Percent 1.0
+  bottom = Percent 0.0
+
 derive newtype instance semiringPercent :: Semiring Percent
 derive newtype instance ringPercent :: Ring Percent
 derive newtype instance commutativeRingPercent :: CommutativeRing Percent

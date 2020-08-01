@@ -1,4 +1,4 @@
-module RMWC.Blocks.LinearProgress where
+module RMWC.Blocks.Avatars where
 
 import Protolude
 
@@ -35,20 +35,6 @@ linearProgress { buffer, progress } =
       ]
       [ HH.span [ HP.class_ mdc_linear_progress__bar_inner ] []
       ]
-    , HH.div
-      [ HP.classes [ mdc_linear_progress__bar, mdc_linear_progress__secondary_bar ]
-      ]
-      [ HH.span [ HP.class_ mdc_linear_progress__bar_inner ] []
-      ]
-    ]
-
-linearProgressIndeterminate :: ∀ w i . HH.HTML w i
-linearProgressIndeterminate =
-  HH.div
-    [ HP.attr (AttrName "role") "progressbar"
-    , HP.classes [ mdc_linear_progress, mdc_linear_progress____indeterminate ]
-    ]
-    [ HH.div [ HP.class_ mdc_linear_progress__buffer ] []
     , HH.div
       [ HP.classes [ mdc_linear_progress__bar, mdc_linear_progress__secondary_bar ]
       ]
