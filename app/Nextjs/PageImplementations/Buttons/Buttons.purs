@@ -6,6 +6,8 @@ import Halogen as H
 import Halogen.HTML as HH
 import RMWC.Blocks.Button as RMWC.Blocks.Button
 import RMWC.Blocks.CircularProgress as RMWC.Blocks.CircularProgress
+import RMWC.Blocks.LinearProgress as RMWC.Blocks.LinearProgress
+import Data.Percent as Percent
 
 type State = Unit
 
@@ -25,12 +27,12 @@ render state = HH.div_
   , RMWC.Blocks.Button.textButtonWithIcon { leftIcon: Nothing, text: "Trailing", rightIcon: Just "keyboard_arrow_right" }
   , RMWC.Blocks.Button.textButtonWithCustomIcon
     { leftIcon: Just
-      (RMWC.Blocks.CircularProgress.circularProgressIndeterminate
-        { progress: Nothing
-        , size: RMWC.Blocks.CircularProgress.Xsmall
-        }
+      (RMWC.Blocks.CircularProgress.circularProgressIndeterminate RMWC.Blocks.CircularProgress.Xsmall
       )
     , text: "Trailing"
     , rightIcon: Nothing
     }
+  , RMWC.Blocks.CircularProgress.circularProgressDeterminate { size: RMWC.Blocks.CircularProgress.Xsmall, progress: Percent.unsafePercent 0.5 }
+  , RMWC.Blocks.LinearProgress.linearProgress { progress: Percent.unsafePercent 0.6, buffer: Percent.unsafePercent 0.8 }
+  , RMWC.Blocks.LinearProgress.linearProgressIndeterminate
   ]

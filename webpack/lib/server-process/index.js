@@ -30,7 +30,7 @@ module.exports = function spawnServerProcess({ command, onProcessEndsWithoutErro
   })
 
   return {
-    serverProcess,
+    serverProcess, // ref
     kill: () => {
       if (isWorking(serverProcess)) {
         console.log(`[SERVER] Killing server`)

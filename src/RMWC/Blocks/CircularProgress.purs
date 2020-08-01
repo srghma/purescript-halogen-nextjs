@@ -14,6 +14,8 @@ import Halogen.XLINK.Core as SVXLINK
 import Math as Math
 import Unsafe.Coerce (unsafeCoerce)
 import Halogen.HTML (ClassName(..))
+import Data.Percent (Percent)
+import Data.Percent as Percent
 
 data Size
   = Xsmall
@@ -39,59 +41,57 @@ sizeToClassName Large      = [ rmwc_circular_progress____size_large ]
 sizeToClassName Xlarge     = [ rmwc_circular_progress____size_xlarge ]
 sizeToClassName (Custom _) = []
 
-newtype Percent = Percent Number
-
-calcPercent :: Number -> Number -> Number -> Percent
-calcPercent min max value =
-  if value < min then Percent 0.0
-  else if value > max then Percent 1.0
-  else Percent $ (value - min) / (max - min)
-
-unsafePercent :: Number -> Percent
-unsafePercent = unsafeCoerce
-
-type CircularProgressProps =
-  { progress :: Maybe Percent
-  , size     :: Size
-  }
+circleProps size =
+  [ SVG.Attributes.class_ rmwc_circular_progress__path
+  , SVG.Attributes.cx (size / 2.0)
+  , SVG.Attributes.cy (size / 2.0)
+  , SVG.Attributes.r (size / 2.4)
+  ]
 
 circularProgressIndeterminate
   :: ∀ w i
-   . CircularProgressProps
+   . Size
   -> HH.HTML w i
-circularProgressIndeterminate circularProgressProps =
+circularProgressIndeterminate size =
   let
-    size' = sizeToNumber circularProgressProps.size
-
-    circleProps =
-      [ SVG.Attributes.class_ rmwc_circular_progress__path
-      , SVG.Attributes.cx (size' / 2.0)
-      , SVG.Attributes.cy (size' / 2.0)
-      , SVG.Attributes.r (size' / 2.4)
-      ]
-
-    styleAttribute =
-      case circularProgressProps.progress of
-           Nothing -> []
-           Just (Percent progress) ->
-             let
-                n = 2.0 * Math.pi * (size' / 2.4) * progress
-              in [ HP.attr (AttrName "style") ("stroke-dasharray: " <> show n <> "666.66%;") ]
+    size' = sizeToNumber size
   in
     HH.div
-      [ Halogen.HTML.Properties.ARIA.valueMin "0"
-      , Halogen.HTML.Properties.ARIA.valueMax "1"
-      , HP.classes $
-          [ rmwc_circular_progress ]
-          <> sizeToClassName circularProgressProps.size
-          <> (maybe [rmwc_circular_progress____indeterminate] (const []) circularProgressProps.progress)
+      [ HP.classes $ [ rmwc_circular_progress, rmwc_circular_progress____indeterminate ] <> sizeToClassName size
       ]
       [ SVG.svg
           [ SVG.Attributes.class_ rmwc_circular_progress__circle
           , SVG.Attributes.viewBox 0.0 0.0 size' size'
           ]
-          [ SVG.circle
-            (circleProps <> styleAttribute)
-            []
+          [ SVG.circle (circleProps size') []
+          ]
+      ]
+
+circularProgressDeterminate
+  :: ∀ w i
+   .  { progress :: Percent
+      , size     :: Size
+      }
+  -> HH.HTML w i
+circularProgressDeterminate { size, progress } =
+  let
+    size' = sizeToNumber size
+
+    styleAttribute =
+      let
+        n = 2.0 * Math.pi * (size' / 2.4) * Percent.toNumber progress
+       in [ HP.attr (AttrName "style") ("stroke-dasharray: " <> show n <> " 666.66%;") ]
+  in
+    HH.div
+      [ Halogen.HTML.Properties.ARIA.valueMin "0"
+      , Halogen.HTML.Properties.ARIA.valueMax "1"
+      , Halogen.HTML.Properties.ARIA.valueNow (show progress)
+      , HP.classes $ [ rmwc_circular_progress ] <> sizeToClassName size
+      ]
+      [ SVG.svg
+          [ SVG.Attributes.class_ rmwc_circular_progress__circle
+          , SVG.Attributes.viewBox 0.0 0.0 size' size'
+          ]
+          [ SVG.circle (circleProps size' <> styleAttribute) []
           ]
       ]
