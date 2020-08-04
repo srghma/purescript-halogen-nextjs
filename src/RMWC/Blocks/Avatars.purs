@@ -15,39 +15,60 @@ import Data.Percent (Percent)
 import RMWC.Classes.Icon
 import RMWC.Classes.Avatar
 import MaterialIconsFont.Classes
+import Protolude.Url (Url)
+import Protolude.Url as Url
+
+data Size
+  = Xsmall
+  | Small
+  | Medium
+  | Large
+  | Xlarge
+
+sizeToClassName :: Size -> ClassName
+sizeToClassName Xsmall = rmwc_avatar____xsmall
+sizeToClassName Small  = rmwc_avatar____small
+sizeToClassName Medium = rmwc_avatar____medium
+sizeToClassName Large  = rmwc_avatar____large
+sizeToClassName Xlarge = rmwc_avatar____xlarge
+
+foreign import getInitialsForName :: String -> String
+
+containToStyle :: Boolean -> String
+containToStyle true = "contain"
+containToStyle false = "cover"
+
+squareToClassName :: Boolean -> Array ClassName
+squareToClassName true = [rmwc_avatar____square]
+squareToClassName false = []
 
 avatarImage
   :: forall w i
    . { size :: Size
-     , src :: Url
+     , url :: Url
      , name :: String
      , square :: Boolean
      , contain :: Boolean
      }
   -> HH.HTML w i
-avatarImage _ =
+avatarImage options =
   HH.span
-    [ HP.title "Natalia Alianovna Romanova"
-    , HP.classes
+    [ HP.title options.name
+    , HP.classes $
         [ rmwc_icon
         , rmwc_icon____component
         , material_icons
         , rmwc_avatar
-        , rmwc_avatar____xsmall
+        , sizeToClassName options.size
         , rmwc_avatar____has_image
         ]
+        <> squareToClassName options.square
     ]
     [ HH.div
         [ HP.class_ rmwc_avatar__icon
-        , HP.attr (AttrName "style") "background_image: url(images/avatars/blackwidow.png); background_size: cover;"
+        , HP.attr (AttrName "style") $ "background_image: url(" <> Url.unUrl options.url <> "); background_size: " <> containToStyle options.contain <> ";"
         ]
         []
-    , HH.div
-        [ HP.class_ rmwc_avatar__text ]
-        [ HH.div
-            [ HP.class_ rmwc_avatar__text_inner ]
-            [ HH.text "NR" ]
-        ]
     ]
 
 avatarInitials
@@ -58,27 +79,22 @@ avatarInitials
      , contain :: Boolean
      }
   -> HH.HTML w i
-avatarInitials _ =
+avatarInitials options =
   HH.span
-    [ HP.title "Natalia Alianovna Romanova"
-    , HP.classes
+    [ HP.title options.name
+    , HP.classes $
         [ rmwc_icon
         , rmwc_icon____component
         , material_icons
         , rmwc_avatar
-        , rmwc_avatar____xsmall
-        , rmwc_avatar____has_image
+        , sizeToClassName options.size
         ]
+        <> squareToClassName options.square
     ]
     [ HH.div
-        [ HP.class_ rmwc_avatar__icon
-        , HP.attr (AttrName "style") "background_image: url(images/avatars/blackwidow.png); background_size: cover;"
-        ]
-        []
-    , HH.div
         [ HP.class_ rmwc_avatar__text ]
         [ HH.div
             [ HP.class_ rmwc_avatar__text_inner ]
-            [ HH.text "NR" ]
+            [ HH.text (getInitialsForName options.name) ]
         ]
     ]

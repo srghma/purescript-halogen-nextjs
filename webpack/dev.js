@@ -16,7 +16,7 @@ require('webpack-spago-loader/watcher-job')({
   additionalWatchGlobs: ['app/**/*.css', 'src/**/*.css'],
   options: require('./lib/spago-options'),
   onStart: () => {
-    console.log(`onStart: killing ${serverProcessState}`)
+    console.log(`onStart: killing ${serverProcessState && serverProcessState.serverProcess}`)
     // stop webpack if it is running (you cannot)
 
     // stop server if it is running
@@ -24,11 +24,11 @@ require('webpack-spago-loader/watcher-job')({
     serverProcessState && serverProcessState.kill()
   },
   onError: () => {
-    console.log(`onError: ${serverProcessState}`)
+    console.log(`onError: ${serverProcessState && serverProcessState.serverProcess}`)
     // do nothing, all was already handled in "started_compiling"
   },
   onSuccess: async () => {
-    console.log(`onSuccess: ${serverProcessState}`)
+    console.log(`onSuccess: ${serverProcessState && serverProcessState.serverProcess}`)
 
     // wait webpack to end (you cannot)
 
@@ -67,7 +67,7 @@ require('webpack-spago-loader/watcher-job')({
         return null
       }
 
-      console.log(`onSuccess: starting ${serverProcessState}`)
+      console.log(`onSuccess: starting ${serverProcessState && serverProcessState.serverProcess}`)
 
       const command = {
         head: "node",

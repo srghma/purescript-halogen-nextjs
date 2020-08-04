@@ -7,7 +7,9 @@ import Halogen.HTML as HH
 import RMWC.Blocks.Button as RMWC.Blocks.Button
 import RMWC.Blocks.CircularProgress as RMWC.Blocks.CircularProgress
 import RMWC.Blocks.LinearProgress as RMWC.Blocks.LinearProgress
+import RMWC.Blocks.Avatars as RMWC.Blocks.Avatars
 import Data.Percent as Percent
+import Protolude.Url as Url
 
 type State = Unit
 
@@ -35,4 +37,6 @@ render state = HH.div_
   , RMWC.Blocks.CircularProgress.circularProgressDeterminate { size: RMWC.Blocks.CircularProgress.Xsmall, progress: Percent.unsafePercent 0.5 }
   , RMWC.Blocks.LinearProgress.linearProgress { progress: Percent.unsafePercent 0.6, buffer: Percent.unsafePercent 0.8 }
   , RMWC.Blocks.LinearProgress.linearProgressIndeterminate
+  , RMWC.Blocks.Avatars.avatarImage { size: RMWC.Blocks.Avatars.Xsmall, url: Url.unsafeUrl "https://rmwc.io/images/avatars/blackwidow.png", name: "Natalia Alianovna Romanova", square: false, contain: false }
+  , RMWC.Blocks.Avatars.avatarInitials { size: RMWC.Blocks.Avatars.Xsmall, name: "Natalia Alianovna Romanova", square: false, contain: false }
   ]
