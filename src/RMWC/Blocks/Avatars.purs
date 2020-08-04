@@ -65,8 +65,12 @@ avatarImage options =
         <> squareToClassName options.square
     ]
     [ HH.div
-        [ HP.class_ rmwc_avatar__icon
-        , HP.attr (AttrName "style") $ "background_image: url(" <> Url.unUrl options.url <> "); background_size: " <> containToStyle options.contain <> ";"
+        [ HP.classes [ rmwc_avatar__icon ]
+        , HP.attr (AttrName "style") $ "background-image: url(" <> Url.unUrl options.url <> "); background-size: " <> containToStyle options.contain <> ";"
+        ]
+        []
+    , HH.div
+        [ HP.classes [ rmwc_avatar__text ] -- TODO: image wont be visible without it (width is 0)
         ]
         []
     ]
