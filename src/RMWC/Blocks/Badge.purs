@@ -1,4 +1,4 @@
-module RMWC.Blocks.Badges where
+module RMWC.Blocks.Badge where
 
 import Protolude
 import Halogen.HTML as HH

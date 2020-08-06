@@ -1,4 +1,4 @@
-module RMWC.Blocks.Avatars where
+module RMWC.Blocks.Avatar where
 
 import Protolude
 import Halogen.HTML as HH
