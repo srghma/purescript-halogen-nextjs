@@ -1,5 +1,5 @@
 let upstream =
-      https://github.com/purescript/package-sets/releases/download/psc-0.13.8-20200716/packages.dhall sha256:c4683b4c4da0fd33e0df86fc24af035c059270dd245f68b79a7937098f6c6542
+      https://github.com/purescript/package-sets/releases/download/psc-0.13.8-20200724/packages.dhall sha256:bb941d30820a49345a0e88937094d2b9983d939c9fd3a46969b85ce44953d7d9
 
 let overrides =
       { halogen =
@@ -14,7 +14,8 @@ let overrides =
               }
       , halogen-storybook =
               upstream.halogen-storybook
-          //  { repo = "https://github.com/srghma/purescript-halogen-storybook.git"
+          //  { repo =
+                  "https://github.com/srghma/purescript-halogen-storybook.git"
               , version = "master"
               }
       , halogen-select =
@@ -24,7 +25,8 @@ let overrides =
               }
       , halogen-formless =
               upstream.halogen-formless
-          //  { repo = "https://github.com/srghma/purescript-halogen-formless.git"
+          //  { repo =
+                  "https://github.com/srghma/purescript-halogen-formless.git"
               , version = "master"
               }
       , node-http =
@@ -54,8 +56,7 @@ let overrides =
               }
       , argonaut-core =
               upstream.argonaut-core
-          //  { repo =
-                  "https://github.com/srghma/purescript-argonaut-core.git"
+          //  { repo = "https://github.com/srghma/purescript-argonaut-core.git"
               , version = "master"
               }
       , argonaut-codecs =
@@ -95,10 +96,8 @@ let additions =
         , version = "master"
         }
       , halogen-svg =
-        { dependencies =
-          [ "prelude" ]
-        , repo =
-            "ssh://git@github.com/srghma/purescript-halogen-svg.git"
+        { dependencies = [ "prelude" ]
+        , repo = "ssh://git@github.com/srghma/purescript-halogen-svg.git"
         , version = "master"
         }
       , halogen-vdom-string-renderer =

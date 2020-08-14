@@ -3,7 +3,7 @@ import MiniCssExtractPlugin from 'mini-css-extract-plugin'
 
 module.exports = function({ target, production }) {
   return [
-    ...(require('webpack-spago-loader/rules')()),
+    ...(require('webpack-spago-loader/rules')({ spagoAbsoluteOutputDir: require('../lib/spago-options').output })),
 
     // For pure CSS (without CSS modules)
     {
