@@ -51,22 +51,22 @@ avatarImage
      , contain :: Boolean
      }
   -> HH.HTML w i
-avatarImage options =
+avatarImage config =
   HH.span
-    [ HP.title options.name
+    [ HP.title config.name
     , HP.classes $
         [ rmwc_icon
         , rmwc_icon____component
         , material_icons
         , rmwc_avatar
-        , sizeToClassName options.size
+        , sizeToClassName config.size
         , rmwc_avatar____has_image
         ]
-        <> squareToClassName options.square
+        <> squareToClassName config.square
     ]
     [ HH.div
         [ HP.classes [ rmwc_avatar__icon ]
-        , HP.attr (AttrName "style") $ "background-image: url(" <> Url.unUrl options.url <> "); background-size: " <> containToStyle options.contain <> ";"
+        , HP.attr (AttrName "style") $ "background-image: url(" <> Url.unUrl config.url <> "); background-size: " <> containToStyle config.contain <> ";"
         ]
         []
     , HH.div
@@ -83,22 +83,22 @@ avatarInitials
      , contain :: Boolean
      }
   -> HH.HTML w i
-avatarInitials options =
+avatarInitials config =
   HH.span
-    [ HP.title options.name
+    [ HP.title config.name
     , HP.classes $
         [ rmwc_icon
         , rmwc_icon____component
         , material_icons
         , rmwc_avatar
-        , sizeToClassName options.size
+        , sizeToClassName config.size
         ]
-        <> squareToClassName options.square
+        <> squareToClassName config.square
     ]
     [ HH.div
         [ HP.class_ rmwc_avatar__text ]
         [ HH.div
             [ HP.class_ rmwc_avatar__text_inner ]
-            [ HH.text (getInitialsForName options.name) ]
+            [ HH.text (getInitialsForName config.name) ]
         ]
     ]

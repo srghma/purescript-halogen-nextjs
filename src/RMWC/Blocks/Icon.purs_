@@ -29,11 +29,11 @@ maybeSizeToClassName :: Maybe Size -> Array ClassName
 maybeSizeToClassName = maybe [] (\x -> [sizeToClassName x])
 
 iconLigature :: { name :: String, size :: Maybe Size } -> forall w i . HH.HTML w i
-iconLigature options =
+iconLigature config =
   HH.i
-  [ HP.classes $ [ rmwc_icon, material_icons ] <> maybeSizeToClassName options.size
+  [ HP.classes $ [ rmwc_icon, material_icons ] <> maybeSizeToClassName config.size
   ]
-  [ HH.text options.name
+  [ HH.text config.name
   ]
 
 iconComponent :: forall w i . Maybe Size -> Array (HH.HTML w i) -> HH.HTML w i
@@ -43,9 +43,9 @@ iconComponent size =
   ]
 
 iconUrl :: forall w i . { url :: Url, size :: Maybe Size } -> HH.HTML w i
-iconUrl options =
+iconUrl config =
   HH.i
-  [ HP.classes $ [rmwc_icon, rmwc_icon____url, material_icons] <> maybeSizeToClassName options.size
-  , HP.attr (AttrName "style") $ "background-image: url(" <> Url.unUrl options.url <> ");"
+  [ HP.classes $ [rmwc_icon, rmwc_icon____url, material_icons] <> maybeSizeToClassName config.size
+  , HP.attr (AttrName "style") $ "background-image: url(" <> Url.unUrl config.url <> ");"
   ]
   []

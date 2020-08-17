@@ -23,7 +23,7 @@ data Extended
   = Extended_No
   | Extended_Yes String
 
-type Options =
+type Config =
   { icon :: Icon
   , trailingIcon :: Icon
   , mini :: Boolean
@@ -31,8 +31,8 @@ type Options =
   -- | , exited :: Boolean
   }
 
-defaultOptions :: Options
-defaultOptions =
+defaultConfig :: Config
+defaultConfig =
   { icon: Icon_None
   , trailingIcon: Icon_None
   , mini: false
@@ -41,7 +41,7 @@ defaultOptions =
 
 fab
   :: ∀ w i
-  . Options
+  . Config
   -> HH.HTML w i
 fab =
   let
@@ -58,22 +58,22 @@ fab =
 
     renderIcon Icon_None          = []
     renderIcon (Icon_Text text)   = [ renderIcon' [] [ HH.text text ] ]
-   in \options ->
+   in \config ->
      HH.button
      ( [ HP.classes $
          [ mdc_fab ]
-         <> (if options.mini then [mdc_fab____mini] else [])
-         <> (case options.extended of
+         <> (if config.mini then [mdc_fab____mini] else [])
+         <> (case config.extended of
                   Extended_No -> []
                   Extended_Yes _ -> [mdc_fab____extended]
             )
        ]
      )
      (  [ fabRipple ]
-     <> renderIcon options.icon
-     <> (case options.extended of
+     <> renderIcon config.icon
+     <> (case config.extended of
               Extended_No -> []
               Extended_Yes label -> [HH.div [HP.class_ mdc_fab__label] [ HH.text label ]]
         )
-     <> renderIcon options.trailingIcon
+     <> renderIcon config.trailingIcon
      )

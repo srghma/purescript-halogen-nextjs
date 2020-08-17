@@ -74,15 +74,6 @@ import * as RA from 'ramda-adjunct'
 //     * https://ssl.gstatic.com is required only on Android and is needed for TalkBack to function properly
 //     * Disables use of inline scripts in order to mitigate risk of XSS vulnerabilities. To change this:
 //         * Enable inline JS: add 'unsafe-inline' to default-src
-var cordovaSecurityPolicy = `<meta http-equiv="Content-Security-Policy" content="` +
-  [
-    `default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'`,
-    `style-src 'self' 'unsafe-inline'`,
-    `media-src *`,
-    `img-src 'self' data: content:`,
-    `connect-src *`, // connect-src * allows to fetch() any url
-  ].join('; ') + `">`
-
 export function template({
   target,
   title,
@@ -102,6 +93,15 @@ export function template({
 
   // console.log('options', require('util').inspect(options.htmlWebpackPlugin, { depth: null, maxArrayLength: Infinity, colors: true }))
 
+  const cordovaSecurityPolicy = `<meta http-equiv="Content-Security-Policy" content="` +
+    [
+      `default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'`,
+      `style-src 'self' 'unsafe-inline'`,
+      `media-src *`,
+      `img-src 'self' data: content:`,
+      `connect-src *`, // connect-src * allows to fetch() any url
+    ].join('; ') + `">`
+
   const meta =
     target === 'mobile' ?
     cordovaSecurityPolicy + `
@@ -119,8 +119,8 @@ export function template({
       ${meta}
       <meta charset="utf-8"/>
       <title>${title}</title>
-      <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet" />
-      <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+      <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet">
+      <link href="https://fonts.googleapis.com/css?family=Material+Icons&display=block" rel="stylesheet">
       ${headTags}
     </head>
     <body class="mdc-typography mdc-theme--background">

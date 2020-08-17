@@ -47,6 +47,8 @@ require('webpack-spago-loader/watcher-job')({
 
     console.log('[webpack] Compiling...')
 
+    serverProcessState && serverProcessState.kill()
+
     compiler.run((err, stats) => {
       const error = webpackGetError(err, stats)
 

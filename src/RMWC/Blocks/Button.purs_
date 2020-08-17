@@ -26,7 +26,7 @@ data Icon w i
   | Icon_Text String
   | Icon_Custom (HH.HTML w i)
 
-type Options w i =
+type Config w i =
   { leftIcon :: Icon w i
   , rightIcon :: Icon w i
   , label :: String
@@ -37,8 +37,8 @@ type Options w i =
   , danger :: Boolean
   }
 
-defaultOptions :: forall w i . Options w i
-defaultOptions =
+defaultConfig :: forall w i . Config w i
+defaultConfig =
   { leftIcon: Icon_None
   , rightIcon: Icon_None
   , label: ""
@@ -50,7 +50,7 @@ defaultOptions =
 
 button
   :: ∀ w i
-  . Options w i
+  . Config w i
   -> HH.HTML w i
 button =
   let
@@ -68,18 +68,18 @@ button =
     renderIcon Icon_None          = []
     renderIcon (Icon_Text text)   = [ renderIcon' [] [ HH.text text ] ]
     renderIcon (Icon_Custom html) = [ renderIcon' [ rmwc_icon____component ] [ html ] ]
-   in \options ->
+   in \config ->
      HH.button
      ( [ HP.classes $
          [ mdc_button ]
-         <> (if options.raised then [mdc_button____raised] else [])
-         <> (if options.unelevated then [mdc_button____unelevated] else [])
-         <> (if options.outlined then [mdc_button____outlined] else [])
+         <> (if config.raised then [mdc_button____raised] else [])
+         <> (if config.unelevated then [mdc_button____unelevated] else [])
+         <> (if config.outlined then [mdc_button____outlined] else [])
        ]
-       <> (if options.danger then [ HP.attr (AttrName "style") dangerStyle ] else [])
+       <> (if config.danger then [ HP.attr (AttrName "style") dangerStyle ] else [])
      )
      (  [ buttonRipple ]
-     <> renderIcon options.leftIcon
-     <> [ buttonLabel [ HH.text options.label ] ]
-     <> renderIcon options.rightIcon
+     <> renderIcon config.leftIcon
+     <> [ buttonLabel [ HH.text config.label ] ]
+     <> renderIcon config.rightIcon
      )

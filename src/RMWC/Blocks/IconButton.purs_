@@ -15,7 +15,7 @@ iconButtonRipple = HH.div [ HP.class_ mdc_icon_button__ripple ] []
 
 --------------------
 
-type Options =
+type Config =
   { icon :: Icon
   , trailingIcon :: Icon
   , mini :: Boolean
@@ -23,8 +23,8 @@ type Options =
   -- | , exited :: Boolean
   }
 
-defaultOptions :: Options
-defaultOptions =
+defaultConfig :: Config
+defaultConfig =
   { icon: Icon_None
   , trailingIcon: Icon_None
   , mini: false
@@ -33,13 +33,13 @@ defaultOptions =
 
 iconButton
   :: ∀ w i
-  . Options
+  . Config
   -> HH.HTML w i
-iconButton options =
+iconButton config =
   HH.button
     [ HP.role "button"
     , HP.tabindex "0"
-    , HP.aria-label options.label
+    , HP.aria-label config.label
     , HP.classes
       [ rmwc_icon
       , rmwc_icon____ligature
@@ -49,12 +49,12 @@ iconButton options =
       , mdc_icon_button
       ]
     ]
-    [ HH.text options.icon
+    [ HH.text config.icon
     ]
 
 iconButton
   :: ∀ w i
-  . Options
+  . Config
   -> HH.HTML w i
 iconButton =
   let
@@ -71,22 +71,22 @@ iconButton =
 
     renderIcon Icon_None          = []
     renderIcon (Icon_Text text)   = [ renderIcon' [] [ HH.text text ] ]
-   in \options ->
+   in \config ->
      HH.button
      ( [ HP.classes $
          [ mdc_icon_button ]
-         <> (if options.mini then [mdc_icon_button____mini] else [])
-         <> (case options.extended of
+         <> (if config.mini then [mdc_icon_button____mini] else [])
+         <> (case config.extended of
                   Extended_No -> []
                   Extended_Yes _ -> [mdc_icon_button____extended]
             )
        ]
      )
      (  [ iconButtonRipple ]
-     <> renderIcon options.icon
-     <> (case options.extended of
+     <> renderIcon config.icon
+     <> (case config.extended of
               Extended_No -> []
               Extended_Yes label -> [HH.div [HP.class_ mdc_icon_button__label] [ HH.text label ]]
         )
-     <> renderIcon options.trailingIcon
+     <> renderIcon config.trailingIcon
      )
