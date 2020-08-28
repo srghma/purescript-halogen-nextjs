@@ -77,7 +77,7 @@ render state = HH.div_
   -- | , RMWC.Blocks.Badge.inlineWithContent [HH.text "22+"]
 
   -- | , RMWC.Blocks.Icon.iconLigature { name: "favorite", size: Nothing }
-  -- | , RMWC.Blocks.Icon.iconComponent Nothing [ HH.div [ HP.attr (AttrName "style") "background: green; width: 24px; height: 24px; border-radius: 100px;" ] [] ]
+  -- | , RMWC.Blocks.Icon.iconComponent Nothing [ HH.div [ HP.style "background: green; width: 24px; height: 24px; border-radius: 100px;" ] [] ]
 
   -- | , RMWC.Blocks.Icon.iconLigature { name: "favorite", size: Just RMWC.Blocks.Icon.Xsmall }
   -- | , RMWC.Blocks.Icon.iconLigature { name: "favorite", size: Just RMWC.Blocks.Icon.Small }
@@ -90,7 +90,7 @@ render state = HH.div_
   -- | , RMWC.Blocks.Icon.iconComponent Nothing
   -- |   [ Halogen.SVG.Elements.svg
   -- |     [ Halogen.SVG.Attributes.viewBox 0.0 0.0 24.0 24.0
-  -- |     , HP.attr (AttrName "style") "width: 24px; height: 24px;"
+  -- |     , HP.style "width: 24px; height: 24px;"
   -- |     ]
   -- |     [ Halogen.SVG.Elements.path
   -- |       [ HP.attr (AttrName "fill") "#4285F4"
