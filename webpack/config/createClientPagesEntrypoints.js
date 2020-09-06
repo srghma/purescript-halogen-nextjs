@@ -83,26 +83,28 @@ async function processTree(tree) {
 
 export default async function(pagesDir) {
   // e.g. returns
-  // {
-  //   name: 'Basic.purs',
-  //   path: '/home/srghma/projects/purescript-halogen-nextjs/app/Nextjs/Pages',
-  //   fullname: '/home/srghma/projects/purescript-halogen-nextjs/app/Nextjs/Pages/Basic.purs',
-  //   isDirectory: false
-  // },
-  // {
-  //   name: 'Buttons',
-  //   path: '/home/srghma/projects/purescript-halogen-nextjs/app/Nextjs/Pages',
-  //   fullname: '/home/srghma/projects/purescript-halogen-nextjs/app/Nextjs/Pages/Buttons',
-  //   isDirectory: true,
-  //   content: [
-  //     {
-  //       name: 'Buttons.purs',
-  //       path: '/home/srghma/projects/purescript-halogen-nextjs/app/Nextjs/Pages/Buttons',
-  //       fullname: '/home/srghma/projects/purescript-halogen-nextjs/app/Nextjs/Pages/Buttons/Buttons.purs',
-  //       isDirectory: false
-  //     },
-  //   ]
-  // },
+  // [
+  //   {
+  //     name: 'Basic.purs',
+  //     path: '/home/srghma/projects/purescript-halogen-nextjs/app/Nextjs/Pages',
+  //     fullname: '/home/srghma/projects/purescript-halogen-nextjs/app/Nextjs/Pages/Basic.purs',
+  //     isDirectory: false
+  //   },
+  //   {
+  //     name: 'Buttons',
+  //     path: '/home/srghma/projects/purescript-halogen-nextjs/app/Nextjs/Pages',
+  //     fullname: '/home/srghma/projects/purescript-halogen-nextjs/app/Nextjs/Pages/Buttons',
+  //     isDirectory: true,
+  //     content: [
+  //       {
+  //         name: 'Buttons.purs',
+  //         path: '/home/srghma/projects/purescript-halogen-nextjs/app/Nextjs/Pages/Buttons',
+  //         fullname: '/home/srghma/projects/purescript-halogen-nextjs/app/Nextjs/Pages/Buttons/Buttons.purs',
+  //         isDirectory: false
+  //       },
+  //     ]
+  //   }
+  // ]
 
   const tree = await rra.list(
     pagesDir,
