@@ -1,4 +1,4 @@
-module Nextjs.Pages.EffectsEffectRandom (page) where
+module Nextjs.Pages.Examples.EffectsEffectRandom (page) where
 
 import Protolude (Unit, liftAff, unit, ($))
 import Example.Effects.Effect.Random.Component as Example.Effects.Effect.Random.Component

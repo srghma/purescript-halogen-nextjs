@@ -1,4 +1,4 @@
-module Nextjs.Pages.DynamicInput (page) where
+module Nextjs.Pages.Examples.DynamicInput (page) where
 
 import Affjax as Affjax
 import Affjax.RequestBody (json) as Affjax.RequestBody

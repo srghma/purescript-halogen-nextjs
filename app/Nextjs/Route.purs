@@ -11,36 +11,36 @@ import Routing.Duplex (RouteDuplex', root) as Routing.Duplex
 import Routing.Duplex.Generic (noArgs, sum) as Routing.Duplex
 import Routing.Duplex.Generic.Syntax ((/))
 
-data ButtonsRoute
-  = ButtonsRoute__Buttons
-  | ButtonsRoute__Fabs
-  | ButtonsRoute__IconButtons
+data Examples
+  = Examples__Ace
+  | Examples__Basic
+  | Examples__Components
+  | Examples__ComponentsInputs
+  | Examples__ComponentsMultitype
+  | Examples__EffectsAffAjax
+  | Examples__EffectsEffectRandom
+  | Examples__HigherOrderComponents
+  | Examples__Interpret
+  | Examples__KeyboardInput
+  | Examples__Lifecycle
+  | Examples__DeeplyNested
+  | Examples__DynamicInput
+  | Examples__TextNodes
+  | Examples__Lazy
 
-derive instance genericButtonsRoute :: Generic ButtonsRoute _
-derive instance eqButtonsRoute :: Eq ButtonsRoute
-derive instance ordButtonsRoute :: Ord ButtonsRoute
-instance showButtonsRoute :: Show ButtonsRoute where show = genericShow
-instance encodeJsonButtonsRoute :: EncodeJson ButtonsRoute where encodeJson = genericEncodeJson
-instance decodeJsonButtonsRoute :: DecodeJson ButtonsRoute where decodeJson = genericDecodeJson
+derive instance genericExamples :: Generic Examples _
+derive instance eqExamples :: Eq Examples
+derive instance ordExamples :: Ord Examples
+instance showExamples :: Show Examples where show = genericShow
+instance encodeJsonExamples :: EncodeJson Examples where encodeJson = genericEncodeJson
+instance decodeJsonExamples :: DecodeJson Examples where decodeJson = genericDecodeJson
 
 data Route
   = Index
-  | Ace
-  | Basic
-  | Components
-  | ComponentsInputs
-  | ComponentsMultitype
-  | EffectsAffAjax
-  | EffectsEffectRandom
-  | HigherOrderComponents
-  | Interpret
-  | KeyboardInput
-  | Lifecycle
-  | DeeplyNested
-  | DynamicInput
-  | TextNodes
-  | Lazy
-  | Buttons ButtonsRoute
+  | Login
+  | Signup
+  | Secret
+  | Examples Examples
 
 derive instance genericRoute :: Generic Route _
 derive instance eqRoute :: Eq Route
@@ -49,98 +49,106 @@ instance showRoute :: Show Route where show = genericShow
 instance encodeJsonRoute :: EncodeJson Route where encodeJson = genericEncodeJson
 instance decodeJsonRoute :: DecodeJson Route where decodeJson = genericDecodeJson
 
-buttonsRouteCodec :: Routing.Duplex.RouteDuplex' ButtonsRoute
-buttonsRouteCodec = Routing.Duplex.sum
-  { "ButtonsRoute__Buttons":     "Buttons" / Routing.Duplex.noArgs
-  , "ButtonsRoute__Fabs":        "Fabs" / Routing.Duplex.noArgs
-  , "ButtonsRoute__IconButtons": "IconButtons" / Routing.Duplex.noArgs
-  }
-
 routeCodec :: Routing.Duplex.RouteDuplex' Route
 routeCodec = Routing.Duplex.root $ Routing.Duplex.sum
-  { "Index":                 Routing.Duplex.noArgs
-  , "Ace":                   "Ace" / Routing.Duplex.noArgs
-  , "Basic":                 "Basic" / Routing.Duplex.noArgs
-  , "Components":            "Components" / Routing.Duplex.noArgs
-  , "ComponentsInputs":      "ComponentsInputs" / Routing.Duplex.noArgs
-  , "ComponentsMultitype":   "ComponentsMultitype" / Routing.Duplex.noArgs
-  , "EffectsAffAjax":        "EffectsAffAjax" / Routing.Duplex.noArgs
-  , "EffectsEffectRandom":   "EffectsEffectRandom" / Routing.Duplex.noArgs
-  , "HigherOrderComponents": "HigherOrderComponents" / Routing.Duplex.noArgs
-  , "Interpret":             "Interpret" / Routing.Duplex.noArgs
-  , "KeyboardInput":         "KeyboardInput" / Routing.Duplex.noArgs
-  , "Lifecycle":             "Lifecycle" / Routing.Duplex.noArgs
-  , "DynamicInput":          "DynamicInput" / Routing.Duplex.noArgs
-  , "DeeplyNested":          "DeeplyNested" / Routing.Duplex.noArgs
-  , "TextNodes":             "TextNodes" / Routing.Duplex.noArgs
-  , "Lazy":                  "Lazy" / Routing.Duplex.noArgs
-  , "Buttons":               "Buttons" / buttonsRouteCodec
+  { "Index":    Routing.Duplex.noArgs
+  , "Login":    "login" / Routing.Duplex.noArgs
+  , "Signup":   "signup" / Routing.Duplex.noArgs
+  , "Secret":   "secret" / Routing.Duplex.noArgs
+  , "Examples": "examples" / examplesCodec
   }
+  where
+    examplesCodec :: Routing.Duplex.RouteDuplex' Examples
+    examplesCodec = Routing.Duplex.sum
+      { "Examples__Ace":                   "ace" / Routing.Duplex.noArgs
+      , "Examples__Basic":                 "basic" / Routing.Duplex.noArgs
+      , "Examples__Components":            "components" / Routing.Duplex.noArgs
+      , "Examples__ComponentsInputs":      "components-inputs" / Routing.Duplex.noArgs
+      , "Examples__ComponentsMultitype":   "components-multitype" / Routing.Duplex.noArgs
+      , "Examples__EffectsAffAjax":        "effects-aff-ajax" / Routing.Duplex.noArgs
+      , "Examples__EffectsEffectRandom":   "effects-effect-random" / Routing.Duplex.noArgs
+      , "Examples__HigherOrderComponents": "higher-order-components" / Routing.Duplex.noArgs
+      , "Examples__Interpret":             "interpret" / Routing.Duplex.noArgs
+      , "Examples__KeyboardInput":         "keyboard-input" / Routing.Duplex.noArgs
+      , "Examples__Lifecycle":             "lifecycle" / Routing.Duplex.noArgs
+      , "Examples__DeeplyNested":          "deeply-nested" / Routing.Duplex.noArgs
+      , "Examples__DynamicInput":          "dynamic-input" / Routing.Duplex.noArgs
+      , "Examples__TextNodes":             "text-nodes" / Routing.Duplex.noArgs
+      , "Examples__Lazy":                  "lazy" / Routing.Duplex.noArgs
+      }
 
 -- where the key is an id of the page in the page manifest
 -- pagesManifestRec
+-- NOTE: SHOULD NOT BE MULTILEVEL/NESTED
 type PagesRec a =
-  { "Index"                 :: a
-  , "Ace"                   :: a
-  , "Basic"                 :: a
-  , "Components"            :: a
-  , "ComponentsInputs"      :: a
-  , "ComponentsMultitype"   :: a
-  , "EffectsAffAjax"        :: a
-  , "EffectsEffectRandom"   :: a
-  , "HigherOrderComponents" :: a
-  , "Interpret"             :: a
-  , "KeyboardInput"         :: a
-  , "Lifecycle"             :: a
-  , "DynamicInput"          :: a
-  , "DeeplyNested"          :: a
-  , "TextNodes"             :: a
-  , "Lazy"                  :: a
-  , "Buttons-Buttons"       :: a
-  , "Buttons-Fabs"          :: a
-  , "Buttons-IconButtons"   :: a
+  { "Index"  :: a
+  , "Login"  :: a
+  , "Signup" :: a
+  , "Secret" :: a
+
+  , "Examples__Ace"                   :: a
+  , "Examples__Basic"                 :: a
+  , "Examples__Components"            :: a
+  , "Examples__ComponentsInputs"      :: a
+  , "Examples__ComponentsMultitype"   :: a
+  , "Examples__EffectsAffAjax"        :: a
+  , "Examples__EffectsEffectRandom"   :: a
+  , "Examples__HigherOrderComponents" :: a
+  , "Examples__Interpret"             :: a
+  , "Examples__KeyboardInput"         :: a
+  , "Examples__Lifecycle"             :: a
+  , "Examples__DeeplyNested"          :: a
+  , "Examples__DynamicInput"          :: a
+  , "Examples__TextNodes"             :: a
+  , "Examples__Lazy"                  :: a
   }
 
-routeToPageManifestId :: forall a . Route -> String
-routeToPageManifestId Index                 = "Index"
-routeToPageManifestId Ace                   = "Ace"
-routeToPageManifestId Basic                 = "Basic"
-routeToPageManifestId Components            = "Components"
-routeToPageManifestId ComponentsInputs      = "ComponentsInputs"
-routeToPageManifestId ComponentsMultitype   = "ComponentsMultitype"
-routeToPageManifestId EffectsAffAjax        = "EffectsAffAjax"
-routeToPageManifestId EffectsEffectRandom   = "EffectsEffectRandom"
-routeToPageManifestId HigherOrderComponents = "HigherOrderComponents"
-routeToPageManifestId Interpret             = "Interpret"
-routeToPageManifestId KeyboardInput         = "KeyboardInput"
-routeToPageManifestId Lifecycle             = "Lifecycle"
-routeToPageManifestId DynamicInput          = "DynamicInput"
-routeToPageManifestId DeeplyNested          = "DeeplyNested"
-routeToPageManifestId TextNodes             = "TextNodes"
-routeToPageManifestId Lazy                  = "Lazy"
-routeToPageManifestId (Buttons route)       = case route of
-  ButtonsRoute__Buttons -> "Buttons-Buttons"
-  ButtonsRoute__Fabs -> "Buttons-Fabs"
-  ButtonsRoute__IconButtons -> "Buttons-IconButtons"
-
 extractFromPagesRec :: forall a . Route -> PagesRec a -> a
-extractFromPagesRec Index                 = _."Index"
-extractFromPagesRec Ace                   = _."Ace"
-extractFromPagesRec Basic                 = _."Basic"
-extractFromPagesRec Components            = _."Components"
-extractFromPagesRec ComponentsInputs      = _."ComponentsInputs"
-extractFromPagesRec ComponentsMultitype   = _."ComponentsMultitype"
-extractFromPagesRec EffectsAffAjax        = _."EffectsAffAjax"
-extractFromPagesRec EffectsEffectRandom   = _."EffectsEffectRandom"
-extractFromPagesRec HigherOrderComponents = _."HigherOrderComponents"
-extractFromPagesRec Interpret             = _."Interpret"
-extractFromPagesRec KeyboardInput         = _."KeyboardInput"
-extractFromPagesRec Lifecycle             = _."Lifecycle"
-extractFromPagesRec DynamicInput          = _."DynamicInput"
-extractFromPagesRec DeeplyNested          = _."DeeplyNested"
-extractFromPagesRec TextNodes             = _."TextNodes"
-extractFromPagesRec Lazy                  = _."Lazy"
-extractFromPagesRec (Buttons route)       = case route of
-  ButtonsRoute__Buttons -> _."Buttons-Buttons"
-  ButtonsRoute__Fabs -> _."Buttons-Fabs"
-  ButtonsRoute__IconButtons -> _."Buttons-IconButtons"
+extractFromPagesRec =
+  case _ of
+       Index  -> _."Index"
+       Login  -> _."Login"
+       Signup -> _."Signup"
+       Secret -> _."Secret"
+       Examples examples ->
+         case examples of
+              Examples__Ace                   -> _."Examples__Ace"
+              Examples__Basic                 -> _."Examples__Basic"
+              Examples__Components            -> _."Examples__Components"
+              Examples__ComponentsInputs      -> _."Examples__ComponentsInputs"
+              Examples__ComponentsMultitype   -> _."Examples__ComponentsMultitype"
+              Examples__EffectsAffAjax        -> _."Examples__EffectsAffAjax"
+              Examples__EffectsEffectRandom   -> _."Examples__EffectsEffectRandom"
+              Examples__HigherOrderComponents -> _."Examples__HigherOrderComponents"
+              Examples__Interpret             -> _."Examples__Interpret"
+              Examples__KeyboardInput         -> _."Examples__KeyboardInput"
+              Examples__Lifecycle             -> _."Examples__Lifecycle"
+              Examples__DeeplyNested          -> _."Examples__DeeplyNested"
+              Examples__DynamicInput          -> _."Examples__DynamicInput"
+              Examples__TextNodes             -> _."Examples__TextNodes"
+              Examples__Lazy                  -> _."Examples__Lazy"
+
+routeToPageManifestId :: Route -> String
+routeToPageManifestId =
+  case _ of
+       Index  -> "Index"
+       Login  -> "Login"
+       Signup -> "Signup"
+       Secret -> "Secret"
+       Examples examples ->
+         case examples of
+              Examples__Ace                   -> "Examples__Ace"
+              Examples__Basic                 -> "Examples__Basic"
+              Examples__Components            -> "Examples__Components"
+              Examples__ComponentsInputs      -> "Examples__ComponentsInputs"
+              Examples__ComponentsMultitype   -> "Examples__ComponentsMultitype"
+              Examples__EffectsAffAjax        -> "Examples__EffectsAffAjax"
+              Examples__EffectsEffectRandom   -> "Examples__EffectsEffectRandom"
+              Examples__HigherOrderComponents -> "Examples__HigherOrderComponents"
+              Examples__Interpret             -> "Examples__Interpret"
+              Examples__KeyboardInput         -> "Examples__KeyboardInput"
+              Examples__Lifecycle             -> "Examples__Lifecycle"
+              Examples__DeeplyNested          -> "Examples__DeeplyNested"
+              Examples__DynamicInput          -> "Examples__DynamicInput"
+              Examples__TextNodes             -> "Examples__TextNodes"
+              Examples__Lazy                  -> "Examples__Lazy"

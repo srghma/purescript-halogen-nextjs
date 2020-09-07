@@ -1,49 +1,51 @@
 module Nextjs.RouteToPage where
 
-import Nextjs.Pages.Index                 as Nextjs.Pages.Index
-import Nextjs.Pages.Ace                   as Nextjs.Pages.Ace
-import Nextjs.Pages.Basic                 as Nextjs.Pages.Basic
-import Nextjs.Pages.Components            as Nextjs.Pages.Components
-import Nextjs.Pages.ComponentsInputs      as Nextjs.Pages.ComponentsInputs
-import Nextjs.Pages.ComponentsMultitype   as Nextjs.Pages.ComponentsMultitype
-import Nextjs.Pages.EffectsAffAjax        as Nextjs.Pages.EffectsAffAjax
-import Nextjs.Pages.EffectsEffectRandom   as Nextjs.Pages.EffectsEffectRandom
-import Nextjs.Pages.HigherOrderComponents as Nextjs.Pages.HigherOrderComponents
-import Nextjs.Pages.Interpret             as Nextjs.Pages.Interpret
-import Nextjs.Pages.KeyboardInput         as Nextjs.Pages.KeyboardInput
-import Nextjs.Pages.Lifecycle             as Nextjs.Pages.Lifecycle
-import Nextjs.Pages.DeeplyNested          as Nextjs.Pages.DeeplyNested
-import Nextjs.Pages.DynamicInput          as Nextjs.Pages.DynamicInput
-import Nextjs.Pages.TextNodes             as Nextjs.Pages.TextNodes
-import Nextjs.Pages.Lazy                  as Nextjs.Pages.Lazy
-import Nextjs.Pages.Buttons.Buttons       as Nextjs.Pages.Buttons.Buttons
-import Nextjs.Pages.Buttons.Fabs          as Nextjs.Pages.Buttons.Fabs
-import Nextjs.Pages.Buttons.IconButtons   as Nextjs.Pages.Buttons.IconButtons
-
 import Nextjs.Route    as Nextjs.Route
 import Nextjs.Lib.Page as Nextjs.Lib.Page
 
+import Nextjs.Pages.Index  as Nextjs.Pages.Index
+import Nextjs.Pages.Login  as Nextjs.Pages.Login
+import Nextjs.Pages.Signup as Nextjs.Pages.Signup
+import Nextjs.Pages.Secret as Nextjs.Pages.Secret
+
+import Nextjs.Pages.Examples.Ace                   as Nextjs.Pages.Examples.Ace
+import Nextjs.Pages.Examples.Basic                 as Nextjs.Pages.Examples.Basic
+import Nextjs.Pages.Examples.Components            as Nextjs.Pages.Examples.Components
+import Nextjs.Pages.Examples.ComponentsInputs      as Nextjs.Pages.Examples.ComponentsInputs
+import Nextjs.Pages.Examples.ComponentsMultitype   as Nextjs.Pages.Examples.ComponentsMultitype
+import Nextjs.Pages.Examples.EffectsAffAjax        as Nextjs.Pages.Examples.EffectsAffAjax
+import Nextjs.Pages.Examples.EffectsEffectRandom   as Nextjs.Pages.Examples.EffectsEffectRandom
+import Nextjs.Pages.Examples.HigherOrderComponents as Nextjs.Pages.Examples.HigherOrderComponents
+import Nextjs.Pages.Examples.Interpret             as Nextjs.Pages.Examples.Interpret
+import Nextjs.Pages.Examples.KeyboardInput         as Nextjs.Pages.Examples.KeyboardInput
+import Nextjs.Pages.Examples.Lifecycle             as Nextjs.Pages.Examples.Lifecycle
+import Nextjs.Pages.Examples.DeeplyNested          as Nextjs.Pages.Examples.DeeplyNested
+import Nextjs.Pages.Examples.DynamicInput          as Nextjs.Pages.Examples.DynamicInput
+import Nextjs.Pages.Examples.TextNodes             as Nextjs.Pages.Examples.TextNodes
+import Nextjs.Pages.Examples.Lazy                  as Nextjs.Pages.Examples.Lazy
+
 pagesRec :: Nextjs.Route.PagesRec Nextjs.Lib.Page.Page
 pagesRec =
-  { "Index":                 Nextjs.Pages.Index.page
-  , "Ace":                   Nextjs.Pages.Ace.page
-  , "Basic":                 Nextjs.Pages.Basic.page
-  , "Components":            Nextjs.Pages.Components.page
-  , "ComponentsInputs":      Nextjs.Pages.ComponentsInputs.page
-  , "ComponentsMultitype":   Nextjs.Pages.ComponentsMultitype.page
-  , "EffectsAffAjax":        Nextjs.Pages.EffectsAffAjax.page
-  , "EffectsEffectRandom":   Nextjs.Pages.EffectsEffectRandom.page
-  , "HigherOrderComponents": Nextjs.Pages.HigherOrderComponents.page
-  , "Interpret":             Nextjs.Pages.Interpret.page
-  , "KeyboardInput":         Nextjs.Pages.KeyboardInput.page
-  , "Lifecycle":             Nextjs.Pages.Lifecycle.page
-  , "DeeplyNested":          Nextjs.Pages.DeeplyNested.page
-  , "DynamicInput":          Nextjs.Pages.DynamicInput.page
-  , "TextNodes":             Nextjs.Pages.TextNodes.page
-  , "Lazy":                  Nextjs.Pages.Lazy.page
-  , "Buttons-Buttons":       Nextjs.Pages.Buttons.Buttons.page
-  , "Buttons-Fabs":          Nextjs.Pages.Buttons.Fabs.page
-  , "Buttons-IconButtons":   Nextjs.Pages.Buttons.IconButtons.page
+  { "Index":  Nextjs.Pages.Index.page
+  , "Login":  Nextjs.Pages.Login.page
+  , "Signup": Nextjs.Pages.Signup.page
+  , "Secret": Nextjs.Pages.Secret.page
+
+  , "Examples__Ace":                   Nextjs.Pages.Examples.Ace.page
+  , "Examples__Basic":                 Nextjs.Pages.Examples.Basic.page
+  , "Examples__Components":            Nextjs.Pages.Examples.Components.page
+  , "Examples__ComponentsInputs":      Nextjs.Pages.Examples.ComponentsInputs.page
+  , "Examples__ComponentsMultitype":   Nextjs.Pages.Examples.ComponentsMultitype.page
+  , "Examples__EffectsAffAjax":        Nextjs.Pages.Examples.EffectsAffAjax.page
+  , "Examples__EffectsEffectRandom":   Nextjs.Pages.Examples.EffectsEffectRandom.page
+  , "Examples__HigherOrderComponents": Nextjs.Pages.Examples.HigherOrderComponents.page
+  , "Examples__Interpret":             Nextjs.Pages.Examples.Interpret.page
+  , "Examples__KeyboardInput":         Nextjs.Pages.Examples.KeyboardInput.page
+  , "Examples__Lifecycle":             Nextjs.Pages.Examples.Lifecycle.page
+  , "Examples__DeeplyNested":          Nextjs.Pages.Examples.DeeplyNested.page
+  , "Examples__DynamicInput":          Nextjs.Pages.Examples.DynamicInput.page
+  , "Examples__TextNodes":             Nextjs.Pages.Examples.TextNodes.page
+  , "Examples__Lazy":                  Nextjs.Pages.Examples.Lazy.page
   }
 
 routeToPage :: Nextjs.Route.Route -> Nextjs.Lib.Page.Page

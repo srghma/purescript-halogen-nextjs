@@ -1,7 +1,10 @@
-module Nextjs.Link.Default where
+module Nextjs.Link.Default
+  ( module Nextjs.Link.Default
+  , module Nextjs.Link.Types
+  ) where
 
 import Nextjs.AppM (AppM)
-import Protolude (Const, Maybe(..), Unit, Void, ask, bind, discard, identity, ($), (>>=))
+import Protolude
 
 import Halogen as H
 import Halogen.HTML as HH
@@ -12,10 +15,10 @@ import Nextjs.Route as Nextjs.Route
 import Routing.Duplex as Routing.Duplex
 import Web.Event.Event as Web.Event.Event
 import Web.UIEvent.MouseEvent as Web.UIEvent.MouseEvent
-import Nextjs.Link.Types (Action(..), State)
+import Nextjs.Link.Types
 import Nextjs.Link.Lib (elementLabel)
 
-component :: H.Component (Const Void) State Void AppM
+component :: H.Component Query State Message AppM
 component =
   H.mkComponent
     { initialState: identity

@@ -1,15 +1,15 @@
-module Nextjs.Pages.ComponentsInputs (page) where
+module Nextjs.Pages.Examples.Lazy (page) where
 
 import Protolude (Unit, liftAff, unit, ($))
-import Example.Components.Inputs.Container as Container
+import Example.Lazy.Main as Example.Lazy.Main
 import Nextjs.Lib.Page (Page, PageData(..), PageSpec, mkPage)
 import Halogen as H
 
 pageSpec :: PageSpec Unit
 pageSpec =
   { pageData: StaticPageData unit
-  , component: H.hoist liftAff $ Container.component
-  , title: "Halogen Example - Components with inputs example"
+  , component: H.hoist liftAff $ Example.Lazy.Main.component
+  , title: "Halogen Example - lazy"
   }
 
 page :: Page

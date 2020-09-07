@@ -1,36 +1,40 @@
 module Nextjs.PageImplementations.Index (component) where
 
-import Protolude (Const, SProxy(..), Void, absurd, const, show, unit, ($), (<#>))
+import Protolude
 import Halogen (Slot)
 import Halogen as H
 import Halogen.HTML as HH
 import Nextjs.AppM (AppM)
 import Nextjs.Link.Default as Nextjs.Link.Default
-import Nextjs.Route (ButtonsRoute(..), Route(..))
+import Nextjs.Route (Examples(..), Route(..))
 
 allRoutes :: Array Route
 allRoutes =
-  [ Ace
-  , Basic
-  , Components
-  , ComponentsInputs
-  , ComponentsMultitype
-  , EffectsAffAjax
-  , EffectsEffectRandom
-  , HigherOrderComponents
-  , Interpret
-  , KeyboardInput
-  , Lifecycle
-  , DynamicInput
-  , DeeplyNested
-  , TextNodes
-  , Lazy
-  , Buttons ButtonsRoute__Buttons
-  , Buttons ButtonsRoute__Fabs
-  , Buttons ButtonsRoute__IconButtons
-  ]
+  [ Index
+  , Login
+  , Signup
+  , Secret
+  ] <>
+  ( map Examples $
+    [ Examples__Ace
+    , Examples__Basic
+    , Examples__Components
+    , Examples__ComponentsInputs
+    , Examples__ComponentsMultitype
+    , Examples__EffectsAffAjax
+    , Examples__EffectsEffectRandom
+    , Examples__HigherOrderComponents
+    , Examples__Interpret
+    , Examples__KeyboardInput
+    , Examples__Lifecycle
+    , Examples__DeeplyNested
+    , Examples__DynamicInput
+    , Examples__TextNodes
+    , Examples__Lazy
+    ]
+  )
 
-component :: forall q i o . H.Component q i o AppM
+component :: forall query input output . H.Component query input output AppM
 component =
   H.mkComponent
     { initialState: const unit
@@ -41,10 +45,10 @@ component =
 render
   :: forall action state
    . state
-  -> HH.ComponentHTML action ( mylink :: Slot (Const Void) Void Route ) AppM
+  -> HH.ComponentHTML action ( mylink :: Slot Nextjs.Link.Default.Query Nextjs.Link.Default.Message Route ) AppM
 render _ =
   HH.ul_ $
-    allRoutes <#> (\route ->
+    allRoutes <#> \route ->
       HH.li_ $
         [ HH.slot
           (SProxy :: SProxy "mylink")
@@ -53,4 +57,3 @@ render _ =
           { route, text: show route }
           absurd
         ]
-      )

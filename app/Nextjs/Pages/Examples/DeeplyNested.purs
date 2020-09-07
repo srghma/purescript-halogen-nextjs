@@ -1,4 +1,4 @@
-module Nextjs.Pages.DeeplyNested (page) where
+module Nextjs.Pages.Examples.DeeplyNested (page) where
 
 import Protolude (Unit, liftAff, unit, ($))
 import Example.DeeplyNested.A as Example.DeeplyNested.A

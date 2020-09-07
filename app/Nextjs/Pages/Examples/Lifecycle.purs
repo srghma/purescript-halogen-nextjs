@@ -1,4 +1,4 @@
-module Nextjs.Pages.Lifecycle (page) where
+module Nextjs.Pages.Examples.Lifecycle (page) where
 
 import Protolude (Unit, liftAff, unit, ($))
 import Example.Lifecycle.Main as Example.Lifecycle.Main

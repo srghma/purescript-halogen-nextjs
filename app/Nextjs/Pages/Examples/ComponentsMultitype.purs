@@ -1,15 +1,15 @@
-module Nextjs.Pages.Interpret (page) where
+module Nextjs.Pages.Examples.ComponentsMultitype (page) where
 
 import Protolude (Unit, liftAff, unit, ($))
-import Example.Interpret.Main as Example.Interpret.Main
+import Example.Components.Multitype.Container as Container
 import Nextjs.Lib.Page (Page, PageData(..), PageSpec, mkPage)
 import Halogen as H
 
 pageSpec :: PageSpec Unit
 pageSpec =
   { pageData: StaticPageData unit
-  , component: H.hoist liftAff $ Example.Interpret.Main.ui'
-  , title: "Halogen Example - Interpret button"
+  , component: H.hoist liftAff $ Container.component
+  , title: "Halogen Example - components multitype button"
   }
 
 page :: Page
