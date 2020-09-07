@@ -58,8 +58,8 @@ renderPage { route, pageSpecWithInputBoxed } = Nextjs.Lib.Page.unPageSpecWithInp
   )
   pageSpecWithInputBoxed
 
-render :: forall action r . { currentPageInfo :: Maybe CurrentPageInfo | r } -> H.ComponentHTML action ChildSlots AppM
-render { currentPageInfo } =
+maybeRenderPage :: forall action r . { currentPageInfo :: Maybe CurrentPageInfo | r } -> H.ComponentHTML action ChildSlots AppM
+maybeRenderPage { currentPageInfo } =
   case currentPageInfo of
        Nothing -> HH.div_ [ HH.text "Oh no! That page wasn't found." ]
        Just currentPageInfo' -> renderPage currentPageInfo'

@@ -5,7 +5,7 @@ import Halogen (Slot)
 import Halogen as H
 import Halogen.HTML as HH
 import Nextjs.AppM (AppM)
-import Nextjs.Link.Default as Nextjs.Link.Default
+import Nextjs.Link as Nextjs.Link
 import Nextjs.Route (Examples(..), Route(..))
 
 type Query = Const Void

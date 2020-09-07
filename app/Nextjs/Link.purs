@@ -1,5 +1,5 @@
-module Nextjs.Link.Default
-  ( module Nextjs.Link.Default
+module Nextjs.Link
+  ( module Nextjs.Link
   , module Nextjs.Link.Types
   ) where
 
