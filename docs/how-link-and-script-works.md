@@ -12,7 +12,7 @@ from
 summary
 - without anything at the `<head>` - DOM building is blocked until `<script>` is evaluated, `<script>` cannot see anything below
 - without anything at the end of `<body>` - `<script>` cannot see anything below, but is loaded only after whole html is parsed
-- "defer" - load in parallel, execute after DOM is built, doesnt block parsing, but before `DOMContentLoaded` event, order is saved
+- "defer" - load in parallel, execute after DOM is built, doesn't block parsing, but before `DOMContentLoaded` event, order is saved
 - "async" - load in parallel, execute when loaded (before or after DOM is built), blocks parsing, `<script>`'s are executed in parallel without order, `DOMContentLoaded` is not dependent on "async" script (i.e. can happen before or after)
 
 what we want:

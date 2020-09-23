@@ -151,7 +151,7 @@ loadPage clientPagesManifest document body head pageRegisteredEvent route = do
     Just info -> pure info.page
 
     -- TODO
-    -- how to always "unsubscribe" on completition (mainly on "resolve")?
+    -- how to always "unsubscribe" on completion (mainly on "resolve")?
     -- the "Aff.supervise" doesn't help
     Nothing -> Aff.makeAff \resolve -> do
       unsubscribe <- Event.subscribe pageRegisteredEvent \info -> do

@@ -45,7 +45,7 @@ data Query a
   = Navigate Nextjs.Route.Route a
 
 type ChildSlots =
-  ( page :: H.Slot (Const Void) Void Nextjs.Route.Route -- the index here (Nextjs.Route.Route) is very important, the page wont just update if we replace it with Unit
+  ( page :: H.Slot (Const Void) Void Nextjs.Route.Route -- the index here (Nextjs.Route.Route) is very important, the page won't just update if we replace it with Unit
   )
 
 renderPage :: forall action . CurrentPageInfo -> H.ComponentHTML action ChildSlots AppM

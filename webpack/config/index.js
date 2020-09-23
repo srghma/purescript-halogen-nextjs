@@ -41,7 +41,7 @@ export default async function ({
   return {
     watch: watch,
 
-    // watchOptions: { // doesnt work, still watches purs
+    // watchOptions: { // doesn't work, still watches purs
     //   ignored: ['.purs', 'node_modules']
     // },
 
@@ -65,8 +65,8 @@ export default async function ({
         // hot: true,
         // contentBase: path.join(root, '.dist-asdfadf'),
         // port: 4008,
-        // stats: 'verbose', // doesnt work if webpack-dev-middleware is used
-        // stats: 'errors-only', // doesnt work if webpack-dev-middleware is used
+        // stats: 'verbose', // doesn't work if webpack-dev-middleware is used
+        // stats: 'errors-only', // doesn't work if webpack-dev-middleware is used
         // disableHostCheck: true, // That solved it
         // host: `localhost`,
         // port: hmrPort,
@@ -197,7 +197,7 @@ export default async function ({
     },
 
     plugins: RA.compact([
-      // target === 'browser' ? new MiniCssExtractPlugin() : null, // inline css doesnt work with ssr
+      // target === 'browser' ? new MiniCssExtractPlugin() : null, // inline css doesn't work with ssr
       // TODO: per page https://github.com/webpack-contrib/mini-css-extract-plugin#extracting-css-based-on-entry
       new MiniCssExtractPlugin({
         // Options similar to the same options in webpackOptions.output

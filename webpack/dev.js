@@ -52,7 +52,7 @@ require('webpack-spago-loader/watcher-job')({
       const clientConfig = configs[0]
       const serverConfig = configs[1]
 
-      const serverPath = path.resolve(serverConfig.output.path, 'main.js') // hardcoded, dont know how to find (serverConfig.output.filename doesnt help)
+      const serverPath = path.resolve(serverConfig.output.path, 'main.js') // hardcoded, dont know how to find (serverConfig.output.filename doesn't help)
 
       if(!fileExistsAndIsNonEmpty(serverPath)) {
         console.log(`[SERVER] file doesn't exist ${serverPath}`)
