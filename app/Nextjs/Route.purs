@@ -79,7 +79,7 @@ routeCodec = Routing.Duplex.root $ Routing.Duplex.sum
 
 -- where the key is an id of the page in the page manifest
 -- pagesManifestRec
--- NOTE: SHOULD NOT BE MULTILEVEL/NESTED
+-- XXX: SHOULD NOT BE MULTILEVEL/NESTED!!!!
 type PagesRec a =
   { "Index"  :: a
   , "Login"  :: a

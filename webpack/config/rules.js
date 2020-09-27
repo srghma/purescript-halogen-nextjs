@@ -5,55 +5,33 @@ module.exports = function({ target, production }) {
   return [
     ...(require('webpack-spago-loader/rules')({ spagoAbsoluteOutputDir: require('../lib/spago-options').output })),
 
-    // For pure CSS (without CSS modules)
+    // from https://github.com/material-components/material-components-web/blob/master/docs/getting-started.md
     {
-      test: /\.css$/i,
-      exclude: /\.module\.css$/i,
-      use: RA.compact([
-        MiniCssExtractPlugin.loader, // TODO: disable extraction when server
-        "css-loader"
-      ]),
-    },
-
-    // For CSS modules
-    {
-      test: /\.module\.css$/i,
-      use: RA.compact([
+      test: /\.scss$/i,
+      use: [
         MiniCssExtractPlugin.loader,
+        { loader: 'css-loader' },
+        { loader: 'postcss-loader' },
         {
-          loader: 'css-loader',
+          loader: 'sass-loader',
           options: {
-            modules: true,
-            importLoaders: 1,
+            // Prefer Dart Sass
+            implementation: require('sass'),
+
+            // See https://github.com/webpack-contrib/sass-loader/issues/804
+            webpackImporter: false,
+
+            sassOptions: {
+              includePaths: ['./node_modules'],
+            },
           },
         },
-        {
-          loader: 'postcss-loader',
-          options: {
-            ident: 'postcss',
-            minimize: true,
-            plugins: {
-              'postcss-import': {},
-              'postcss-preset-env': {},
-              'cssnano': { preset: 'default' },
-              ...(
-                production ?
-                  {
-                    '@fullhuman/postcss-purgecss': {
-                      content: ['./app/**/*.js'],
-                      defaultExtractor: (content) => content.match(/[\w-/:]+(?<!:)/g) || [],
-                    }
-                  } :
-                  undefined
-              )
-            }
-          },
-        }
-      ]),
+      ]
     },
+
     // images
     {
-      test: /\.(png|jpg|gif)$/i,
+      test: /\.(png|jpg|gif|svg)$/i,
       use: [
         {
           loader: 'url-loader',
