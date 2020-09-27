@@ -5,7 +5,7 @@ import * as RA from 'ramda-adjunct'
 //     {
 //       tagName: 'link',
 //       voidTag: true,
-//       attributes: { href: './index.css', rel: 'stylesheet' },
+//       attributes: { href: './index.scss', rel: 'stylesheet' },
 //       toString: [Function (anonymous)]
 //     }
 //   ],
@@ -21,7 +21,7 @@ import * as RA from 'ramda-adjunct'
 // files: {
 //   publicPath: './',
 //   js: [ './index.js' ],
-//   css: [ './index.css' ],
+//   css: [ './index.scss' ],
 //   manifest: undefined,
 //   favicon: undefined
 // },

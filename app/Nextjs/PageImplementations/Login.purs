@@ -6,12 +6,15 @@ import Data.Lens.Record (prop) as Lens
 import Halogen (Slot)
 import Halogen as H
 import Halogen.HTML as HH
+import Halogen.HTML.Properties as HP
 import HalogenMWC.Button as Button
 import HalogenMWC.TextField.Outlined as TextField.Outlined
 import HalogenMWC.Utils (setEfficiently)
 import Nextjs.AppM (AppM)
+import Nextjs.Blocks.PurescriptLogo (purescriptLogoSrc)
 import Nextjs.Link as Nextjs.Link
 import Nextjs.Route (Examples(..), Route(..))
+import Nextjs.PageImplementations.Login.Css as Css
 
 type Query = Const Void
 
@@ -48,8 +51,10 @@ component = H.hoist liftAff $
                SubmitButtonClick Button.Message__Clicked   -> traceM "SubmitButtonClick"
       }
     , render: \state ->
-      HH.div_
-        [ HH.text "Login"
+      HH.div
+        [ HP.class_ Css.styles.root
+        ]
+        [ HH.img [ HP.class_ Css.styles.logo, HP.alt "logo", HP.src purescriptLogoSrc ]
         , HH.slot
           (SProxy :: SProxy "email")
           unit
@@ -57,6 +62,7 @@ component = H.hoist liftAff $
             ( TextField.Outlined.defaultConfig
               { label = TextField.Outlined.LabelConfig__With { id: "email", labelText: "Email" }
               , value = state.email
+              , fullwidth = true
               }
             )
           EmailChanged
@@ -67,10 +73,14 @@ component = H.hoist liftAff $
             ( TextField.Outlined.defaultConfig
               { label = TextField.Outlined.LabelConfig__With { id: "password", labelText: "Password" }
               , value = state.password
+              , fullwidth = true
               }
             )
           PasswordChanged
-        , HH.slot (SProxy :: SProxy "register-button") unit Button.button { variant: Button.Text, config: Button.defaultConfig, content: [ HH.text "Register" ] } RegisterButtonClick
-        , HH.slot (SProxy :: SProxy "submit-button") unit Button.button { variant: Button.Raised, config: Button.defaultConfig, content: [ HH.text "Submit" ] } SubmitButtonClick
+        , HH.div
+          [ HP.class_ Css.styles.buttons ]
+          [ HH.slot (SProxy :: SProxy "register-button") unit Button.button { variant: Button.Text, config: Button.defaultConfig, content: [ HH.text "Register" ] } RegisterButtonClick
+          , HH.slot (SProxy :: SProxy "submit-button") unit Button.button { variant: Button.Raised, config: Button.defaultConfig, content: [ HH.text "Submit" ] } SubmitButtonClick
+          ]
         ]
     }

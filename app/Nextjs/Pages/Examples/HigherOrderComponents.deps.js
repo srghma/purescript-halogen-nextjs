@@ -1,1 +1,1 @@
-import './HigherOrderComponents.css'
+import './HigherOrderComponents.scss'

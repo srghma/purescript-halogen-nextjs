@@ -1,1 +1,1 @@
-exports.purescriptLogoSrc = require('./PurescriptLogo.svg')
+exports.purescriptLogoSrc = require('./PurescriptLogo.svg').default

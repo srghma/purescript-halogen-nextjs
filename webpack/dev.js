@@ -7,13 +7,20 @@ import chalk from 'chalk'
 import createConfig from './config'
 import webpackGetError from './lib/webpackGetError'
 import fileExistsAndIsNonEmpty from './lib/fileExistsAndIsNonEmpty'
+import onFilesChangeRunCommand from './lib/on-files-change-run-command'
 
 const serverPort = 3000
 
 let serverProcessState
 
+onFilesChangeRunCommand({
+  files: ['app/**/*.scss'],
+  command: 'generate-halogen-css-modules',
+  commandArgs: ['-d', './app'],
+})
+
 require('webpack-spago-loader/watcher-job')({
-  additionalWatchGlobs: ['app/**/*.css', 'src/**/*.css'],
+  additionalWatchGlobs: ['app/**/*.scss', 'src/**/*.scss'],
   options: require('./lib/spago-options'),
   onStart: () => {},
   onError: () => {},
