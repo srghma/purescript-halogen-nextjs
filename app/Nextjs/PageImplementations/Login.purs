@@ -1,7 +1,9 @@
 module Nextjs.PageImplementations.Login (component) where
 
+import Material.Classes.LayoutGrid
 import Protolude
 
+import Data.Array (singleton) as Array
 import Data.Lens.Record (prop) as Lens
 import Halogen (Slot)
 import Halogen as H
@@ -13,8 +15,8 @@ import HalogenMWC.Utils (setEfficiently)
 import Nextjs.AppM (AppM)
 import Nextjs.Blocks.PurescriptLogo (purescriptLogoSrc)
 import Nextjs.Link as Nextjs.Link
-import Nextjs.Route (Examples(..), Route(..))
 import Nextjs.PageImplementations.Login.Css as Css
+import Nextjs.Route (Examples(..), Route(..))
 
 type Query = Const Void
 
@@ -52,35 +54,55 @@ component = H.hoist liftAff $
       }
     , render: \state ->
       HH.div
-        [ HP.class_ Css.styles.root
-        ]
-        [ HH.img [ HP.class_ Css.styles.logo, HP.alt "logo", HP.src purescriptLogoSrc ]
-        , HH.slot
-          (SProxy :: SProxy "email")
-          unit
-          TextField.Outlined.outlined
-            ( TextField.Outlined.defaultConfig
-              { label = TextField.Outlined.LabelConfig__With { id: "email", labelText: "Email" }
-              , value = state.email
-              , additionalClassesRoot = [ Css.styles.input ]
-              }
-            )
-          EmailChanged
-        , HH.slot
-          (SProxy :: SProxy "password")
-          unit
-          TextField.Outlined.outlined
-            ( TextField.Outlined.defaultConfig
-              { label = TextField.Outlined.LabelConfig__With { id: "password", labelText: "Password" }
-              , value = state.password
-              , additionalClassesRoot = [ Css.styles.input ]
-              }
-            )
-          PasswordChanged
-        , HH.div
-          [ HP.class_ Css.styles.buttons ]
-          [ HH.slot (SProxy :: SProxy "register-button") unit Button.button { variant: Button.Text, config: Button.defaultConfig, content: [ HH.text "Register" ] } RegisterButtonClick
-          , HH.slot (SProxy :: SProxy "submit-button") unit Button.button { variant: Button.Raised, config: Button.defaultConfig, content: [ HH.text "Submit" ] } SubmitButtonClick
+        [ HP.class_ mdc_layout_grid ]
+        [ HH.div
+          [ HP.class_ mdc_layout_grid__inner ]
+          [ HH.img [ HP.classes [ mdc_layout_grid__cell, mdc_layout_grid__cell____align_middle, mdc_layout_grid__cell____span_3 ], HP.alt "logo", HP.src purescriptLogoSrc ]
+          , HH.slot
+            (SProxy :: SProxy "email")
+            unit
+            TextField.Outlined.outlined
+              ( TextField.Outlined.defaultConfig
+                { label = TextField.Outlined.LabelConfig__With { id: "email", labelText: "Email" }
+                , value = state.email
+                , additionalClassesRoot = [ mdc_layout_grid__cell, mdc_layout_grid__cell____span_12 ]
+                }
+              )
+            EmailChanged
+          , HH.slot
+            (SProxy :: SProxy "password")
+            unit
+            TextField.Outlined.outlined
+              ( TextField.Outlined.defaultConfig
+                { label = TextField.Outlined.LabelConfig__With { id: "password", labelText: "Password" }
+                , value = state.password
+                , additionalClassesRoot = [ mdc_layout_grid__cell, mdc_layout_grid__cell____span_12 ]
+                }
+              )
+            PasswordChanged
+          , HH.div [ HP.class_ mdc_layout_grid__cell ] $ Array.singleton $ HH.div [ HP.class_ mdc_layout_grid__inner ]
+            [ HH.div
+              [ HP.classes [ mdc_layout_grid__cell, mdc_layout_grid____align_right ] ]
+              [ HH.slot
+                (SProxy :: SProxy "register-button")
+                unit
+                Button.button
+                { variant: Button.Text
+                , config: Button.defaultConfig { additionalClasses = [ mdc_layout_grid__cell, mdc_layout_grid__cell____span_12_phone ] }
+                , content: [ HH.text "Register" ]
+                }
+                RegisterButtonClick
+              , HH.slot
+                (SProxy :: SProxy "submit-button")
+                unit
+                Button.button
+                { variant: Button.Raised
+                , config: Button.defaultConfig { additionalClasses = [ mdc_layout_grid__cell, mdc_layout_grid__cell____span_12_phone ] }
+                , content: [ HH.text "Submit" ]
+                }
+                SubmitButtonClick
+              ]
+            ]
           ]
         ]
     }

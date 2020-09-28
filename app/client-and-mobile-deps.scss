@@ -1,1 +1,46 @@
-@use "material-components-web/material-components-web";
+// $mdc-theme-primary: #FEDBD0;
+// $mdc-theme-on-primary: #442C2E;
+// $mdc-theme-secondary: #FEEAE6;
+// $mdc-theme-on-secondary: #442C2E;
+// $mdc-theme-surface: #FFFBFA;
+// $mdc-theme-on-surface: #442C2E;
+// $mdc-theme-background: #FFFFFF;
+// $mdc-theme-on-background: #442C2E;
+
+@use "@material/button/mdc-button";
+@use "@material/card/mdc-card";
+@use "@material/checkbox/mdc-checkbox";
+@use "@material/chips/mdc-chips";
+@use "@material/circular-progress/mdc-circular-progress";
+@use "@material/data-table/mdc-data-table";
+@use "@material/dialog/mdc-dialog";
+@use "@material/drawer/mdc-drawer";
+@use "@material/elevation/mdc-elevation";
+@use "@material/fab/mdc-fab";
+@use "@material/floating-label/mdc-floating-label";
+@use "@material/form-field/mdc-form-field";
+@use "@material/icon-button/mdc-icon-button";
+@use "@material/image-list/mdc-image-list";
+@use "@material/layout-grid/mdc-layout-grid";
+@use "@material/line-ripple/mdc-line-ripple";
+@use "@material/linear-progress/mdc-linear-progress";
+@use "@material/list/mdc-list";
+@use "@material/menu/mdc-menu";
+@use "@material/menu-surface/mdc-menu-surface";
+@use "@material/notched-outline/mdc-notched-outline";
+@use "@material/radio/mdc-radio";
+@use "@material/ripple/mdc-ripple";
+@use "@material/select/mdc-select";
+@use "@material/slider/mdc-slider";
+@use "@material/snackbar/mdc-snackbar";
+@use "@material/switch/mdc-switch";
+@use "@material/tab/mdc-tab";
+@use "@material/tab-bar/mdc-tab-bar";
+@use "@material/tab-indicator/mdc-tab-indicator";
+@use "@material/tab-scroller/mdc-tab-scroller";
+@use "@material/textfield/mdc-text-field";
+@use '@material/theme/mdc-theme' with (
+  $mdc-theme-primary: #fcb8ab,
+);
+@use "@material/top-app-bar/mdc-top-app-bar";
+@use "@material/typography/mdc-typography";
