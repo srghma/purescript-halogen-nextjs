@@ -10,7 +10,15 @@ module.exports = function({ target, production }) {
       test: /\.scss$/i,
       use: [
         MiniCssExtractPlugin.loader,
-        { loader: 'css-loader' },
+        {
+          loader: 'css-loader',
+          options: {
+            modules: {
+              auto: true,
+              localIdentName: production ? undefined : '[path][name]__[local]',
+            },
+          },
+        },
         { loader: 'postcss-loader' },
         {
           loader: 'sass-loader',

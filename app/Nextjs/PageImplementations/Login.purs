@@ -62,7 +62,7 @@ component = H.hoist liftAff $
             ( TextField.Outlined.defaultConfig
               { label = TextField.Outlined.LabelConfig__With { id: "email", labelText: "Email" }
               , value = state.email
-              , fullwidth = true
+              , additionalClassesRoot = [ Css.styles.input ]
               }
             )
           EmailChanged
@@ -73,7 +73,7 @@ component = H.hoist liftAff $
             ( TextField.Outlined.defaultConfig
               { label = TextField.Outlined.LabelConfig__With { id: "password", labelText: "Password" }
               , value = state.password
-              , fullwidth = true
+              , additionalClassesRoot = [ Css.styles.input ]
               }
             )
           PasswordChanged

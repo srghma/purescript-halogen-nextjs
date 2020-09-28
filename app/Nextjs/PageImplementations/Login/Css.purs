@@ -7,4 +7,5 @@ foreign import styles ::
   { root :: ClassName
   , logo :: ClassName
   , buttons :: ClassName
+  , input :: ClassName
   }
