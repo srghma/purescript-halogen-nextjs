@@ -28,7 +28,7 @@ const onTarget = ({ target, onBrowser, onServer, onMobile }) => {
   }
 }
 
-const pagesPath = path.resolve(root, "app", "Nextjs", "Pages")
+const pagesPath = path.resolve(root, "app", "NextjsApp", "Pages")
 
 export default async function ({
   target,

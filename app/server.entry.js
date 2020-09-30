@@ -1,3 +1,3 @@
-import { main } from "./Nextjs/Entries/Server.purs"
+import { main } from "./NextjsApp/Entries/Server.purs"
 
 main()

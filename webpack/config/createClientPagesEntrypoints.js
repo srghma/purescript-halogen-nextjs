@@ -81,7 +81,21 @@ async function processTree(tree) {
   return R.mergeAll(entryPairList)
 }
 
+function is_dir(path) {
+  try {
+    const stat = fs.lstatSync(path);
+    return stat.isDirectory();
+  } catch (e) {
+    // lstatSync throws an error if path doesn't exist
+    return false;
+  }
+}
+
 export default async function(pagesDir) {
+  if(!is_dir(pagesDir)) {
+    throw new Error(`directory with pages ${pagesDir} doesn't exist`)
+  }
+
   // e.g. returns
   // [
   //   {
