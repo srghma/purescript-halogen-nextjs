@@ -10,13 +10,12 @@ import Type.Equality (class TypeEquals, from)
 
 type EnvLinkHandleActions =
   { handleInitialize       :: H.HalogenM Nextjs.Link.Types.State Nextjs.Link.Types.Action () Void AppM Unit
-  , handleFinalize         :: H.HalogenM Nextjs.Link.Types.State Nextjs.Link.Types.Action () Void AppM Unit
   , handleLinkIsInViewport :: H.SubscriptionId -> H.HalogenM Nextjs.Link.Types.State Nextjs.Link.Types.Action () Void AppM Unit
   }
 
 type Env =
   { navigate :: Nextjs.Route.Route -> Effect Unit
-  , linkHandleActions :: EnvLinkHandleActions
+  , linkHandleActions :: EnvLinkHandleActions -- TODO: this thing doesn't make sense for mobile, only for client
   }
 
 newtype AppM a = AppM (ReaderT Env Aff a)

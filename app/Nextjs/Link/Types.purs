@@ -7,7 +7,6 @@ import Protolude
 
 data Action
   = Initialize
-  | Finalize
   | Navigate Web.UIEvent.MouseEvent.MouseEvent
   | LinkIsInViewport H.SubscriptionId
 

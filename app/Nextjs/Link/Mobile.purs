@@ -1,13 +1,12 @@
 module Nextjs.Link.Mobile where
 
-import Protolude (pure, unit)
-
+import Effect.Exception.Unsafe (unsafeThrow)
 import Nextjs.AppM (EnvLinkHandleActions)
+import Protolude (pure, unit)
 
 mkLinkHandleActions
   :: EnvLinkHandleActions
 mkLinkHandleActions =
   { handleInitialize: pure unit
-  , handleFinalize: pure unit
-  , handleLinkIsInViewport: \_ -> pure unit
+  , handleLinkIsInViewport: \_ -> unsafeThrow "handleLinkIsInViewport should not be ever called"
   }

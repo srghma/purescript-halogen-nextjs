@@ -26,7 +26,6 @@ component =
     , eval: H.mkEval $ H.defaultEval
       { handleAction = handleAction
       , initialize = Just Initialize
-      , finalize = Just Finalize
       }
     }
 
@@ -56,5 +55,4 @@ handleAction action = ask >>= \env ->
     case action of
          Navigate mouseEvent -> handleActionNavigate mouseEvent
          Initialize -> env.linkHandleActions.handleInitialize
-         Finalize -> env.linkHandleActions.handleFinalize
          LinkIsInViewport subscriptionId -> env.linkHandleActions.handleLinkIsInViewport subscriptionId
