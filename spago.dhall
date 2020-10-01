@@ -40,12 +40,14 @@
   , "yarn"
   , "web-intersection-observer"
   , "aff-promise"
+  , "pathy"
   ]
 , packages = ./packages.dhall
 , sources =
   [ "app/**/*.purs"
   , "src/**/*.purs"
   , "test/**/*.purs"
+  , "webpack/**/*.purs"
   , "examples/ace/**/*.purs"
   , "examples/basic/**/*.purs"
   , "examples/components-inputs/**/*.purs"

@@ -10,3 +10,4 @@ generate-halogen-css-modules -d ./app
 
 update-module-name-purs -d ./src
 update-module-name-purs -d ./app
+update-module-name-purs -d ./webpack

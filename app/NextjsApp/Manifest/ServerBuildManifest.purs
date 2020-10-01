@@ -13,6 +13,7 @@ import NextjsApp.Server.Config as NextjsApp.Server.Config
 import Node.Encoding as Node.Encoding
 import Node.FS.Sync as Node.FS.Sync
 import Node.Path as Node.Path
+import Pathy
 
 type BuildManifest =
   { pages :: NextjsApp.Route.PagesRec NextjsApp.Manifest.PageManifest.PageManifest
@@ -24,7 +25,10 @@ decodeBuildManifest content = ArgonautCodecs.parseJson content >>= ArgonautCodec
 
 getBuildManifest :: NextjsApp.Server.Config.Config -> Effect BuildManifest
 getBuildManifest config = do
-  content <- Node.FS.Sync.readTextFile Node.Encoding.UTF8 (Node.Path.concat [config.rootPath, "build-manifest.json"])
+  let manifestAbsPath = config.rootPath </> file (SProxy :: SProxy "build-manifest") <.> "json"
+
+  content <- Node.FS.Sync.readTextFile Node.Encoding.UTF8 (printPath posixPrinter (sandboxAny manifestAbsPath))
+
   case decodeBuildManifest content of
        Left decodeError -> do
           log $ "Error when decoding manifest:\n" <> content

@@ -9,6 +9,7 @@ import NextjsApp.Manifest.ClientPagesManifest as NextjsApp.Manifest.ClientPagesM
 import NextjsApp.Manifest.PageManifest as NextjsApp.Manifest.PageManifest
 import Data.Nullable (Nullable)
 import Data.Nullable as Nullable
+import NextjsApp.Template as Template
 
 -- renderToStaticMarkup - https://github.com/zeit/next.js/blob/86236bc76bcfc69b4e704f06be5b29cda3c1908c/packages/next/next-server/server/render.tsx#L234
 -- NextScript - https://github.com/zeit/next.js/blob/86236bc76bcfc69b4e704f06be5b29cda3c1908c/packages/next/pages/_document.tsx#L558
@@ -32,27 +33,17 @@ type PageSpecServerRendered =
   , title :: String
   }
 
-foreign import template
-  :: { target :: String
-     , headTags :: String
-     , bodyTags :: String
-     , title :: String
-     , prerenderedHtml :: String
-     , prerenderedPagesManifest :: String
-     , prerenderedPageData :: Nullable String
-     }
-  -> String
-
 pageTemplate :: NextjsApp.Manifest.ClientPagesManifest.ClientPagesManifest -> NextjsApp.Manifest.PageManifest.PageManifest -> PageSpecServerRendered -> String
-pageTemplate clientPagesManifest currentPageManifest pageSpecResolved = template
-  { target: "server"
-  , headTags: String.joinWith "\n" $ (currentPageManifest.js <#> jsPreload) <> (currentPageManifest.css <#> css)
-  , bodyTags: String.joinWith "\n" $ currentPageManifest.js <#> jsAsync
+pageTemplate clientPagesManifest currentPageManifest pageSpecResolved = Template.template
+  { targetData: Template.TargetData__Server
+    { prerenderedHtml: pageSpecResolved.component
+    , prerenderedPagesManifest: ArgonautCore.stringify (ArgonautCodecs.encodeJson clientPagesManifest)
+    , prerenderedPageData:
+      case pageSpecResolved.pageData of
+           StaticPageData -> Nothing
+           DynamicPageData json -> Just $ ArgonautCore.stringify json
+    }
+  , headTags: (currentPageManifest.js <#> jsPreload) <> (currentPageManifest.css <#> css)
+  , bodyTags: currentPageManifest.js <#> jsAsync
   , title: pageSpecResolved.title
-  , prerenderedHtml: pageSpecResolved.component
-  , prerenderedPagesManifest: ArgonautCore.stringify (ArgonautCodecs.encodeJson clientPagesManifest)
-  , prerenderedPageData:
-    case pageSpecResolved.pageData of
-         StaticPageData -> Nullable.null
-         DynamicPageData json -> Nullable.notNull $ ArgonautCore.stringify json
   }

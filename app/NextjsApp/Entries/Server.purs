@@ -33,6 +33,7 @@ import Routing.Duplex.Parser (RouteError) as Routing.Duplex
 import NextjsApp.Manifest.ClientPagesManifest as NextjsApp.Manifest.ClientPagesManifest
 import NextjsApp.Router.Server (serverComponent) as NextjsApp.Router
 import NextjsApp.Router.Shared (ServerState) as NextjsApp.Router
+import Pathy
 
 data StaticOrDynamicPageData input
   = StaticPageData input
@@ -129,12 +130,14 @@ main = launchAff_ do
 
   buildManifest <- liftEffect $ NextjsApp.Manifest.ServerBuildManifest.getBuildManifest config
 
-  Protolude.Node.filePathExistsAndIsDir config.rootPath >>=
+  let (rootPath' :: String) = printPath posixPrinter (sandboxAny config.rootPath)
+
+  Protolude.Node.filePathExistsAndIs NodeFS.Stats.isDirectory rootPath' >>=
     if _
-      then Console.log $ Ansi.withGraphics (Ansi.foreground Ansi.BrightGreen) $ "Using static files dir: " <> config.rootPath
-      else Protolude.Node.exitWith 1 $ "Could not find static files dir: " <> config.rootPath
+      then Console.log $ Ansi.withGraphics (Ansi.foreground Ansi.BrightGreen) $ "Using static files dir: " <> rootPath'
+      else Protolude.Node.exitWith 1 $ "Could not find static files dir: " <> rootPath'
 
   liftEffect $ Hyper.Node.runServer
     (Hyper.Node.defaultOptionsWithLogging { port = Hyper.Node.Port config.port })
     {}
-    (app buildManifest # Hyper.Node.fileServer config.rootPath)
+    (app buildManifest # Hyper.Node.fileServer rootPath')

@@ -17,15 +17,22 @@ import Node.Path (FilePath)
 import Node.Path as Node.Path
 import Effect.Exception
 import Data.Argonaut.Parser as Data.Argonaut.Parser
+import Pathy hiding (Parser(..))
+import Pathy as Pathy
 
 type Config =
-  { rootPath :: FilePath
+  { rootPath :: Path Abs Dir
   , port :: Int
   }
 
+absDir :: ReadM (Path Abs Dir)
+absDir = eitherReader $ \s -> case parseAbsDir posixParser s of
+  Nothing -> Left $ "Can't parse as Int: `" <> show s <> "`"
+  Just a -> Right a
+
 configParser :: Parser Config
 configParser = { rootPath: _ , port: _ }
-      <$> strOption
+      <$> option absDir
           ( long "root-path"
          <> metavar "TARGET"
          <> help "root path" )

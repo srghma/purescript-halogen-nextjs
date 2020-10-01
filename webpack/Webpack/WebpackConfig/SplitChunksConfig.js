@@ -1,9 +1,7 @@
 // from https://github.com/vercel/next.js/blob/90638c70010310ba19aa0f28847b6226fdd20339/packages/next/build/webpack-config.ts#L346
 
-import * as crypto from 'crypto'
-
 // this is default config from webpack site
-module.exports = function({ totalPages }) {
+exports.splitChunksConfig = function(config) {
   return {
     chunks: 'all',
 
@@ -32,7 +30,7 @@ module.exports = function({ totalPages }) {
 
       commons: {
         name: 'commons',
-        minChunks: totalPages,
+        minChunks: config.totalPages,
         priority: 20,
       },
     },

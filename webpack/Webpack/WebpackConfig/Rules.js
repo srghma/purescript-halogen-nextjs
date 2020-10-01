@@ -1,15 +1,12 @@
-import * as RA from 'ramda-adjunct'
-import MiniCssExtractPlugin from 'mini-css-extract-plugin'
-
-module.exports = function({ target, production }) {
+exports.scssAndImagesRules = function({ production }) {
   return [
-    ...(require('webpack-spago-loader/rules')({ spagoAbsoluteOutputDir: require('../lib/spago-options').output })),
+    // ...(require('webpack-spago-loader/rules')({ spagoAbsoluteOutputDir: require('../lib/spago-options').output })),
 
     // from https://github.com/material-components/material-components-web/blob/master/docs/getting-started.md
     {
       test: /\.scss$/i,
       use: [
-        MiniCssExtractPlugin.loader,
+        require('mini-css-extract-plugin').loader,
         {
           loader: 'css-loader',
           options: {
