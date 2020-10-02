@@ -12,7 +12,7 @@ import * as RA from 'ramda-adjunct'
 
 // check createClientPagesEntrypoints for more
 
-const clientPagesLoader = async function() {
+const clientPagesLoader = function() {
   const this_ = this
 
   this_.cacheable && this_.cacheable()

@@ -1,6 +1,7 @@
 module Webpack.GetError where
 
 import Control.Promise
+import Effect.Uncurried
 import Data.Function.Uncurried
 import Protolude
 
@@ -12,19 +13,11 @@ import Data.Nullable as Nullable
 import Data.Array as Array
 import Data.Array.NonEmpty (NonEmptyArray)
 import Data.Array.NonEmpty as NonEmptyArray
+import Unsafe.Coerce
+import Webpack.Compiler
 
-data WebpackError
-
-type WebpackStats =
-  { stats :: Array
-    { compilation ::
-      { errors :: Array WebpackError
-      }
-    }
-  }
-
-webpackGetErrors :: Fn2 (Nullable WebpackError) WebpackStats (Maybe $ NonEmptyArray WebpackError)
-webpackGetErrors = mkFn2 \error stats ->
+webpackGetErrors :: Nullable Error -> MultiStats -> Maybe (NonEmptyArray Error)
+webpackGetErrors = \error stats ->
   case Nullable.toMaybe error of
        Just e -> Just $ NonEmptyArray.singleton e
        Nothing -> Array.findMap (\stat -> NonEmptyArray.fromArray stat.compilation.errors) stats.stats

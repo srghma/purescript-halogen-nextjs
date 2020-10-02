@@ -3,7 +3,28 @@ let upstream =
 
 let overrides = {=}
 
-let additions = {=}
+let additions =
+  { webpack-loader-api =
+      { dependencies =
+          [ "aff"
+          , "aff-promise"
+          , "console"
+          , "effect"
+          , "foldable-traversable"
+          , "foreign"
+          , "foreign-object"
+          , "node-buffer"
+          , "node-path"
+          , "prelude"
+          , "psci-support"
+          , "transformers"
+          ]
+      , repo =
+          "https://github.com/srghma/purescript-webpack-loader-api.git"
+      , version =
+          "master"
+      }
+  }
 
 in      upstream
     //  https://raw.githubusercontent.com/srghma/my-purescript-package-sets/master/packages.dhall sha256:6d1a867eb821ae07fea3021b3df23c083c30137d644767e271503c32aa460fd4

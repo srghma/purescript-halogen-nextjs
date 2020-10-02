@@ -41,6 +41,7 @@
   , "web-intersection-observer"
   , "aff-promise"
   , "pathy"
+  , "webpack-loader-api"
   ]
 , packages = ./packages.dhall
 , sources =
