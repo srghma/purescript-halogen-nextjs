@@ -11,7 +11,17 @@ import Data.String.Yarn as Yarn
 import Effect.Class.Console as Console
 import Options.Applicative as Options.Applicative
 import Protolude.Node as Protolude.Node
+import Node.Process as Node.Process
+import Pathy
+
+cwd :: Effect (Path Abs Dir)
+cwd = Node.Process.cwd >>= \(d :: String) ->
+  case parseAbsDir posixParser d of
+       Just d' -> pure d'
+       Nothing -> throwError $ error $ d <> "is cwd, but not absolute"
+
 
 main :: Effect Unit
 main = do
+  root <- cwd
   Console.log $ Ansi.withGraphics (Ansi.foreground Ansi.BrightGreen) $ "Using static files dir: "

@@ -1,5 +1,6 @@
 module NextjsApp.Entries.Server where
 
+import Pathy
 import Protolude
 
 import Affjax as Affjax
@@ -20,20 +21,20 @@ import Hyper.Status (statusBadRequest, statusOK) as Hyper
 import Nextjs.Api as Nextjs.Api
 import Nextjs.Page as Nextjs.Page
 import Nextjs.RenderComponent as Nextjs.RenderComponent
+import NextjsApp.Manifest.ClientPagesManifest as NextjsApp.Manifest.ClientPagesManifest
+import NextjsApp.Manifest.PageManifest as NextjsApp.Manifest.PageManifest
+import NextjsApp.Manifest.ServerBuildManifest as NextjsApp.Manifest.ServerBuildManifest
 import NextjsApp.Route as NextjsApp.Route
 import NextjsApp.RouteToPage as NextjsApp.RouteToPage
-import NextjsApp.Manifest.ServerBuildManifest as NextjsApp.Manifest.ServerBuildManifest
-import NextjsApp.Manifest.PageManifest as NextjsApp.Manifest.PageManifest
+import NextjsApp.Router.Server (serverComponent) as NextjsApp.Router
+import NextjsApp.Router.Shared (ServerState) as NextjsApp.Router
 import NextjsApp.Server.Config as NextjsApp.Server.Config
 import NextjsApp.Server.PageTemplate as NextjsApp.Server.PageTemplate
+import Node.FS.Stats as Node.FS.Stats
 import Options.Applicative as Options.Applicative
 import Protolude.Node as Protolude.Node
 import Routing.Duplex (parse) as Routing.Duplex
 import Routing.Duplex.Parser (RouteError) as Routing.Duplex
-import NextjsApp.Manifest.ClientPagesManifest as NextjsApp.Manifest.ClientPagesManifest
-import NextjsApp.Router.Server (serverComponent) as NextjsApp.Router
-import NextjsApp.Router.Shared (ServerState) as NextjsApp.Router
-import Pathy
 
 data StaticOrDynamicPageData input
   = StaticPageData input
@@ -132,7 +133,7 @@ main = launchAff_ do
 
   let (rootPath' :: String) = printPath posixPrinter (sandboxAny config.rootPath)
 
-  Protolude.Node.filePathExistsAndIs NodeFS.Stats.isDirectory rootPath' >>=
+  Protolude.Node.filePathExistsAndIs Node.FS.Stats.isDirectory rootPath' >>=
     if _
       then Console.log $ Ansi.withGraphics (Ansi.foreground Ansi.BrightGreen) $ "Using static files dir: " <> rootPath'
       else Protolude.Node.exitWith 1 $ "Could not find static files dir: " <> rootPath'

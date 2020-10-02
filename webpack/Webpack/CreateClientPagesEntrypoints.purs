@@ -23,7 +23,6 @@ module Webpack.CreateClientPagesEntrypoints where
 
 import Pathy
 import Protolude
-import Protolude.Node as Protolude.Node
 
 import Control.Parallel (parSequence)
 import Data.Array as Array
@@ -31,16 +30,20 @@ import Data.Array.NonEmpty (NonEmptyArray)
 import Data.Array.NonEmpty as NonEmptyArray
 import Data.Map (Map)
 import Data.Map as Map
+import Data.String as String
 import Data.String.NonEmpty (NonEmptyString)
 import Data.String.NonEmpty as NonEmptyString
 import Data.String.Regex as Regex
 import Data.String.Regex.Flags as Regex
 import Data.String.Regex.Unsafe as Regex
 import Firstline (firstline)
+import Node.FS.Stats as Node.FS.Stats
+import Protolude.Node as Protolude.Node
 import RecursiveReaddirAsync (DirOrFile(..), recursiveTreeList)
 
 newtype ModuleName = ModuleName (NonEmptyArray NonEmptyString) -- e.g. [ 'Basic' ], or ['Buttons', 'Buttons']
 
+derive instance newtypeModuleName :: Newtype ModuleName _
 derive newtype instance eqModuleName :: Eq ModuleName
 derive newtype instance ordModuleName :: Ord ModuleName
 
@@ -59,10 +62,18 @@ getFileModule :: Path Abs File -> Aff ModuleName
 getFileModule = \filePath -> do
   firstLine <- firstline filePath
 
-  case Regex.match moduleNameRegex firstLine >>= NonEmptyArray.head of
+  let
+      (trimmedModuleName :: Maybe String) = (Regex.match moduleNameRegex firstLine >>= NonEmptyArray.head) <#> String.trim
+
+      (trimmedModuleName' :: Maybe (NonEmptyArray NonEmptyString)) = trimmedModuleName >>= toModule
+
+  case trimmedModuleName' of
        Nothing -> throwError $ error $ "cannot find module name on the first line " <> firstLine
-       Just moduleName -> pure (undefined moduleName)
+       Just moduleName -> pure (ModuleName moduleName)
   where
+    toModule :: String -> Maybe (NonEmptyArray NonEmptyString)
+    toModule = String.split (String.Pattern " ") >>> map NonEmptyString.fromString >>> Array.catMaybes >>> NonEmptyArray.fromArray
+
     moduleNameRegex = Regex.unsafeRegex """module (\S+)""" Regex.noFlags
 
 processTree :: Path Abs Dir -> DirOrFile -> Aff (Array (ModuleName /\ ClientPagesLoaderOptions))
@@ -75,11 +86,11 @@ processTree spagoAbsoluteOutputDir =
 
           let (absoluteJsDepsPath :: Path Abs File) = rename (alterExtension (const $ Just $ NonEmptyString.nes (SProxy :: SProxy ".deps.js"))) fullname
 
-          exisingAbsoluteJsDepsPath <-
-            Protolude.Node.filePathExistsAndIs NodeFS.Stats.isFile (printPath posixPrinter (sandboxAny absoluteJsDepsPath)) <#>
+          (exisingAbsoluteJsDepsPath :: Maybe (Path Abs File)) <-
+            Protolude.Node.filePathExistsAndIs Node.FS.Stats.isFile (printPath posixPrinter (sandboxAny absoluteJsDepsPath)) <#>
               if _
-                then pure $ Just absoluteJsDepsPath
-                else pure $ Nothing
+                then Just absoluteJsDepsPath
+                else Nothing
 
           pure $ Array.singleton $ moduleName /\
             { absoluteCompiledPagePursPath
