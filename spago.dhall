@@ -42,6 +42,9 @@
   , "aff-promise"
   , "pathy"
   , "webpack-loader-api"
+  , "codec-argonaut"
+  , "profunctor"
+  , "newtype"
   ]
 , packages = ./packages.dhall
 , sources =

@@ -31,6 +31,7 @@ pagesRec =
   , "Signup": NextjsApp.Pages.Signup.page
   , "Secret": NextjsApp.Pages.Secret.page
 
+  -- XXX: the manifest id separator is __ !!!!
   , "Examples__Ace":                   NextjsApp.Pages.Examples.Ace.page
   , "Examples__Basic":                 NextjsApp.Pages.Examples.Basic.page
   , "Examples__Components":            NextjsApp.Pages.Examples.Components.page

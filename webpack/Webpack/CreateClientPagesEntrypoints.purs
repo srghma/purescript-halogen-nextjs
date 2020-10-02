@@ -12,15 +12,6 @@ module Webpack.CreateClientPagesEntrypoints where
 -- script prefetched https://github.com/vercel/next.js/blob/3036463080d7905aa22da46e63f6c50dd50adc3c/packages/next/client/page-loader.js#L36-L49
 -- script added https://github.com/vercel/next.js/blob/42a328f3e44a560d45821a582beb257fdeea10af/packages/next/client/page-loader.js#L254
 
--- | import root from '../lib/root'
--- | import * as path from 'path'
--- | import * as fs from 'fs'
--- | import * as fse from 'fs-extra'
--- | import * as R from 'ramda'
--- | import * as RA from 'ramda-adjunct'
--- | import firstline from 'firstline'
--- | import * as rra from 'recursive-readdir-async'
-
 import Pathy
 import Protolude
 
@@ -49,6 +40,13 @@ derive newtype instance ordModuleName :: Ord ModuleName
 
 printModuleName :: ModuleName -> NonEmptyString
 printModuleName (ModuleName m) = NonEmptyString.joinWith1 (NonEmptyString.nes (SProxy :: SProxy ".")) (map NonEmptyString.toString m)
+
+-- TODO: extract the the settings!!!
+manifestPageIdSeparator :: String
+manifestPageIdSeparator = "__"
+
+moduleNameToManifestPageId :: ModuleName -> String
+moduleNameToManifestPageId (ModuleName m) = String.joinWith manifestPageIdSeparator (NonEmptyArray.toArray $ map NonEmptyString.toString m)
 
 moduleNameToName :: forall n . ModuleName -> Name n
 moduleNameToName = printModuleName >>> \n -> joinName { name: n, ext: Nothing }
