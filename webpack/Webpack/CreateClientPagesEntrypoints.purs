@@ -31,15 +31,8 @@ import Firstline (firstline)
 import Node.FS.Stats as Node.FS.Stats
 import Protolude.Node as Protolude.Node
 import RecursiveReaddirAsync (DirOrFile(..), recursiveTreeList)
-
-newtype ModuleName = ModuleName (NonEmptyArray NonEmptyString) -- e.g. [ 'Basic' ], or ['Buttons', 'Buttons']
-
-derive instance newtypeModuleName :: Newtype ModuleName _
-derive newtype instance eqModuleName :: Eq ModuleName
-derive newtype instance ordModuleName :: Ord ModuleName
-
-printModuleName :: ModuleName -> NonEmptyString
-printModuleName (ModuleName m) = NonEmptyString.joinWith1 (NonEmptyString.nes (SProxy :: SProxy ".")) (map NonEmptyString.toString m)
+import Unsafe.Coerce
+import ModuleName
 
 -- TODO: extract the the settings!!!
 manifestPageIdSeparator :: String
@@ -63,15 +56,12 @@ getFileModule = \filePath -> do
   let
       (trimmedModuleName :: Maybe String) = (Regex.match moduleNameRegex firstLine >>= NonEmptyArray.head) <#> String.trim
 
-      (trimmedModuleName' :: Maybe (NonEmptyArray NonEmptyString)) = trimmedModuleName >>= toModule
+      (trimmedModuleName' :: Maybe (NonEmptyArray NonEmptyString)) = trimmedModuleName >>= moduleNameFromString (String.Pattern " ")
 
   case trimmedModuleName' of
        Nothing -> throwError $ error $ "cannot find module name on the first line " <> firstLine
        Just moduleName -> pure (ModuleName moduleName)
   where
-    toModule :: String -> Maybe (NonEmptyArray NonEmptyString)
-    toModule = String.split (String.Pattern " ") >>> map NonEmptyString.fromString >>> Array.catMaybes >>> NonEmptyArray.fromArray
-
     moduleNameRegex = Regex.unsafeRegex """module (\S+)""" Regex.noFlags
 
 processTree :: Path Abs Dir -> DirOrFile -> Aff (Array (ModuleName /\ ClientPagesLoaderOptions))

@@ -8,7 +8,7 @@ import NextjsApp.Route as NextjsApp.Route
 import NextjsApp.AppM (AppM)
 import Nextjs.Api as Nextjs.Api
 import NextjsApp.Router.Shared (ChildSlots, MobileState, Query(..), renderPage)
-import NextjsApp.RouteToPage (routeToPage)
+import NextjsApp.RouteToPageNonClient (routeToPage)
 
 component :: H.Component Query MobileState Void AppM
 component = H.mkComponent

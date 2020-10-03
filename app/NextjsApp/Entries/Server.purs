@@ -25,7 +25,7 @@ import NextjsApp.Manifest.ClientPagesManifest as NextjsApp.Manifest.ClientPagesM
 import NextjsApp.Manifest.PageManifest as NextjsApp.Manifest.PageManifest
 import NextjsApp.Manifest.ServerBuildManifest as NextjsApp.Manifest.ServerBuildManifest
 import NextjsApp.Route as NextjsApp.Route
-import NextjsApp.RouteToPage as NextjsApp.RouteToPage
+import NextjsApp.RouteToPageNonClient as NextjsApp.RouteToPageNonClient
 import NextjsApp.Router.Server (serverComponent) as NextjsApp.Router
 import NextjsApp.Router.Shared (ServerState) as NextjsApp.Router
 import NextjsApp.Server.Config as NextjsApp.Server.Config
@@ -123,7 +123,7 @@ app buildManifest = IndexedMonad.do
       let pageManifest = NextjsApp.Route.extractFromPagesRec route buildManifest.pages
       let mergedPageManifest = NextjsApp.Manifest.PageManifest.mergePageManifests buildManifest.main pageManifest
 
-      Nextjs.Page.unPage (renderPage route buildManifest.pages mergedPageManifest) (NextjsApp.RouteToPage.routeToPage route)
+      Nextjs.Page.unPage (renderPage route buildManifest.pages mergedPageManifest) (NextjsApp.RouteToPageNonClient.routeToPage route)
 
 main :: Effect Unit
 main = launchAff_ do

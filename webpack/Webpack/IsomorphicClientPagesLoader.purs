@@ -28,6 +28,7 @@ import Data.Profunctor (dimap)
 import Data.Newtype
 import Node.Buffer as Node.Buffer
 import Node.Encoding as Node.Encoding
+import ModuleName
 
 type Options = Tuple ModuleName ClientPagesLoaderOptions
 

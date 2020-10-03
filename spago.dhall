@@ -45,6 +45,7 @@
   , "codec-argonaut"
   , "profunctor"
   , "newtype"
+  , "homogeneous-records"
   ]
 , packages = ./packages.dhall
 , sources =

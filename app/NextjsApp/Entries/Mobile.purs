@@ -14,7 +14,7 @@ import Nextjs.Utils (getHtmlEntities, selectElementRequired)
 import NextjsApp.Link.Mobile as NextjsApp.Link.Mobile
 import NextjsApp.Navigate.Mobile as NextjsApp.Navigate.Mobile
 import NextjsApp.Route as NextjsApp.Route
-import NextjsApp.RouteToPage as NextjsApp.RouteToPage
+import NextjsApp.RouteToPageNonClient as NextjsApp.RouteToPageNonClient
 import NextjsApp.Router.Mobile as NextjsApp.Router.Mobile
 import NextjsApp.Router.Shared as NextjsApp.Router.Shared
 import Web.DOM.ParentNode as Web.DOM.ParentNode
@@ -42,7 +42,7 @@ main = do
   -- first we'll get the route the user landed on
   let (route :: NextjsApp.Route.Route) = NextjsApp.Route.Index
 
-  let (page :: Nextjs.Page.Page) = NextjsApp.RouteToPage.routeToPage route
+  let (page :: Nextjs.Page.Page) = NextjsApp.RouteToPageNonClient.routeToPage route
 
   let (env :: Env) =
         { navigate: NextjsApp.Navigate.Mobile.navigate newRouteEventIO

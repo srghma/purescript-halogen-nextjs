@@ -80,28 +80,34 @@ routeCodec = Routing.Duplex.root $ Routing.Duplex.sum
 -- where the key is an id of the page in the page manifest
 -- pagesManifestRec
 -- XXX: SHOULD NOT BE MULTILEVEL/NESTED!!!!
-type PagesRec a =
-  { "Index"  :: a
+pagesRecSeparator :: String
+pagesRecSeparator = "."
+
+type PagesRecRow a =
+  ( "Index"  :: a
   , "Login"  :: a
   , "Signup" :: a
   , "Secret" :: a
 
-  , "Examples__Ace"                   :: a
-  , "Examples__Basic"                 :: a
-  , "Examples__Components"            :: a
-  , "Examples__ComponentsInputs"      :: a
-  , "Examples__ComponentsMultitype"   :: a
-  , "Examples__EffectsAffAjax"        :: a
-  , "Examples__EffectsEffectRandom"   :: a
-  , "Examples__HigherOrderComponents" :: a
-  , "Examples__Interpret"             :: a
-  , "Examples__KeyboardInput"         :: a
-  , "Examples__Lifecycle"             :: a
-  , "Examples__DeeplyNested"          :: a
-  , "Examples__DynamicInput"          :: a
-  , "Examples__TextNodes"             :: a
-  , "Examples__Lazy"                  :: a
-  }
+  -- is using pagesRecSeparator
+  , "Examples.Ace"                   :: a
+  , "Examples.Basic"                 :: a
+  , "Examples.Components"            :: a
+  , "Examples.ComponentsInputs"      :: a
+  , "Examples.ComponentsMultitype"   :: a
+  , "Examples.EffectsAffAjax"        :: a
+  , "Examples.EffectsEffectRandom"   :: a
+  , "Examples.HigherOrderComponents" :: a
+  , "Examples.Interpret"             :: a
+  , "Examples.KeyboardInput"         :: a
+  , "Examples.Lifecycle"             :: a
+  , "Examples.DeeplyNested"          :: a
+  , "Examples.DynamicInput"          :: a
+  , "Examples.TextNodes"             :: a
+  , "Examples.Lazy"                  :: a
+  )
+
+type PagesRec a = Record (PagesRecRow a)
 
 extractFromPagesRec :: forall a . Route -> PagesRec a -> a
 extractFromPagesRec =
@@ -112,21 +118,21 @@ extractFromPagesRec =
        Secret -> _."Secret"
        Examples examples ->
          case examples of
-              Examples__Ace                   -> _."Examples__Ace"
-              Examples__Basic                 -> _."Examples__Basic"
-              Examples__Components            -> _."Examples__Components"
-              Examples__ComponentsInputs      -> _."Examples__ComponentsInputs"
-              Examples__ComponentsMultitype   -> _."Examples__ComponentsMultitype"
-              Examples__EffectsAffAjax        -> _."Examples__EffectsAffAjax"
-              Examples__EffectsEffectRandom   -> _."Examples__EffectsEffectRandom"
-              Examples__HigherOrderComponents -> _."Examples__HigherOrderComponents"
-              Examples__Interpret             -> _."Examples__Interpret"
-              Examples__KeyboardInput         -> _."Examples__KeyboardInput"
-              Examples__Lifecycle             -> _."Examples__Lifecycle"
-              Examples__DeeplyNested          -> _."Examples__DeeplyNested"
-              Examples__DynamicInput          -> _."Examples__DynamicInput"
-              Examples__TextNodes             -> _."Examples__TextNodes"
-              Examples__Lazy                  -> _."Examples__Lazy"
+              Examples__Ace                   -> _."Examples.Ace"
+              Examples__Basic                 -> _."Examples.Basic"
+              Examples__Components            -> _."Examples.Components"
+              Examples__ComponentsInputs      -> _."Examples.ComponentsInputs"
+              Examples__ComponentsMultitype   -> _."Examples.ComponentsMultitype"
+              Examples__EffectsAffAjax        -> _."Examples.EffectsAffAjax"
+              Examples__EffectsEffectRandom   -> _."Examples.EffectsEffectRandom"
+              Examples__HigherOrderComponents -> _."Examples.HigherOrderComponents"
+              Examples__Interpret             -> _."Examples.Interpret"
+              Examples__KeyboardInput         -> _."Examples.KeyboardInput"
+              Examples__Lifecycle             -> _."Examples.Lifecycle"
+              Examples__DeeplyNested          -> _."Examples.DeeplyNested"
+              Examples__DynamicInput          -> _."Examples.DynamicInput"
+              Examples__TextNodes             -> _."Examples.TextNodes"
+              Examples__Lazy                  -> _."Examples.Lazy"
 
 routeToPageManifestId :: Route -> String
 routeToPageManifestId =
@@ -137,18 +143,18 @@ routeToPageManifestId =
        Secret -> "Secret"
        Examples examples ->
          case examples of
-              Examples__Ace                   -> "Examples__Ace"
-              Examples__Basic                 -> "Examples__Basic"
-              Examples__Components            -> "Examples__Components"
-              Examples__ComponentsInputs      -> "Examples__ComponentsInputs"
-              Examples__ComponentsMultitype   -> "Examples__ComponentsMultitype"
-              Examples__EffectsAffAjax        -> "Examples__EffectsAffAjax"
-              Examples__EffectsEffectRandom   -> "Examples__EffectsEffectRandom"
-              Examples__HigherOrderComponents -> "Examples__HigherOrderComponents"
-              Examples__Interpret             -> "Examples__Interpret"
-              Examples__KeyboardInput         -> "Examples__KeyboardInput"
-              Examples__Lifecycle             -> "Examples__Lifecycle"
-              Examples__DeeplyNested          -> "Examples__DeeplyNested"
-              Examples__DynamicInput          -> "Examples__DynamicInput"
-              Examples__TextNodes             -> "Examples__TextNodes"
-              Examples__Lazy                  -> "Examples__Lazy"
+              Examples__Ace                   -> "Examples.Ace"
+              Examples__Basic                 -> "Examples.Basic"
+              Examples__Components            -> "Examples.Components"
+              Examples__ComponentsInputs      -> "Examples.ComponentsInputs"
+              Examples__ComponentsMultitype   -> "Examples.ComponentsMultitype"
+              Examples__EffectsAffAjax        -> "Examples.EffectsAffAjax"
+              Examples__EffectsEffectRandom   -> "Examples.EffectsEffectRandom"
+              Examples__HigherOrderComponents -> "Examples.HigherOrderComponents"
+              Examples__Interpret             -> "Examples.Interpret"
+              Examples__KeyboardInput         -> "Examples.KeyboardInput"
+              Examples__Lifecycle             -> "Examples.Lifecycle"
+              Examples__DeeplyNested          -> "Examples.DeeplyNested"
+              Examples__DynamicInput          -> "Examples.DynamicInput"
+              Examples__TextNodes             -> "Examples.TextNodes"
+              Examples__Lazy                  -> "Examples.Lazy"
