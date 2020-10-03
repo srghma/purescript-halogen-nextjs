@@ -14,6 +14,7 @@ module Webpack.CreateClientPagesEntrypoints where
 
 import Pathy
 import Protolude
+import NextjsApp.Route
 
 import Control.Parallel (parSequence)
 import Data.Array as Array
@@ -86,7 +87,7 @@ processTree spagoAbsoluteOutputDir =
             }
        DirOrFile__Dir { content } -> map join $ parTraverse (processTree spagoAbsoluteOutputDir) content
 
-createClientPagesEntrypoints :: { pagesDir :: Path Abs Dir, spagoAbsoluteOutputDir :: Path Abs Dir } -> Aff (Map ModuleName ClientPagesLoaderOptions)
+createClientPagesEntrypoints :: { pagesDir :: Path Abs Dir, spagoAbsoluteOutputDir :: Path Abs Dir } -> Aff (PagesRec ClientPagesLoaderOptions)
 createClientPagesEntrypoints { pagesDir, spagoAbsoluteOutputDir } = do
   tree <- recursiveTreeList pagesDir { include: [ ".purs" ] }
 

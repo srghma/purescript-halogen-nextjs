@@ -24,4 +24,12 @@ exports._BundleAnalyzerPlugin = function (opts) { return new (require("webpack-b
 
 exports._HtmlWebpackPlugin = function (opts) { new (require("html-webpack-plugin"))(opts) }
 
-exports.htmlWebpackPlugin__tags__toString = function (tags) { return tags.toString() }
+exports.htmlWebpackPlugin__tags__toString = function (tags) {
+  const r = tags.toString()
+
+  console.log('htmlWebpackPlugin__tags__toString', r)
+
+  if (!Array.isArray(r)) { throw new Error('not an array') }
+
+  return r
+}
