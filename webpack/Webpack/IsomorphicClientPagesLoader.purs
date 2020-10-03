@@ -9,7 +9,7 @@ import Foreign as Foreign
 import Pathy
 import Webpack.Loader
 import LoaderUtils
-import Webpack.CreateClientPagesEntrypoints
+import Webpack.GetClientPagesEntrypoints
 -- | import Data.Argonaut.Decode (JsonDecodeError)
 -- | import Data.Argonaut.Decode as ArgonautCodecs
 -- | import Data.Argonaut.Decode.Decoders
@@ -29,8 +29,9 @@ import Data.Newtype
 import Node.Buffer as Node.Buffer
 import Node.Encoding as Node.Encoding
 import ModuleName
+import NextjsApp.Route (PagesRec, PagesRecRow, Route)
 
-type Options = Tuple ModuleName ClientPagesLoaderOptions
+type Options = Tuple Route Options
 
 prismaticCodecNamed :: forall a b . String -> (a -> Maybe b) -> (b -> a) -> JsonCodec a -> JsonCodec b
 prismaticCodecNamed name decode encode codec = Codec.Argonaut.prismaticCodec decode encode codec # hoistCodec (lmap (Named name))
@@ -41,8 +42,8 @@ nonEmptyStringCodec = prismaticCodecNamed "NonEmptyString" NonEmptyString.fromSt
 nonEmptyArrayCodec ∷ forall a . JsonCodec a -> JsonCodec (NonEmptyArray a)
 nonEmptyArrayCodec codec = prismaticCodecNamed "NonEmptyArray" NonEmptyArray.fromArray NonEmptyArray.toArray $ Codec.Argonaut.array codec
 
-moduleNameCodec ∷ JsonCodec ModuleName
-moduleNameCodec = dimap unwrap wrap (nonEmptyArrayCodec nonEmptyStringCodec)
+routeCodec ∷ JsonCodec ModuleName
+routeCodec = dimap unwrap wrap (nonEmptyArrayCodec nonEmptyStringCodec)
 
 absFileCodec
   ∷ { parser :: Parser
@@ -65,8 +66,17 @@ clientPagesLoaderOptionsCodec =
     # Codec.Argonaut.recordProp (SProxy :: _ "absoluteCompiledPagePursPath") absFileCodecPosixRoot
     # Codec.Argonaut.recordProp (SProxy :: _ "absoluteJsDepsPath") (Codec.Argonaut.maybe absFileCodecPosixRoot)
 
-optionsCodec :: JsonCodec Options
+optionsCodec :: JsonCodec (PagesRec ClientPagesLoaderOptions)
 optionsCodec = Codec.Argonaut.tuple moduleNameCodec clientPagesLoaderOptionsCodec
+
+-- | TODO:
+-- | ModuleName - full name of module, e.g. ["NextjsApp", "Pages", "Examples", "Ace"]
+-- | printed ModuleName - module name as in purescript, "NextjsApp.Pages.Examples.Ace"
+-- | Page or Route - e.g. Examples__Ace
+-- | PageId - string repr of Page, .e.g "Examples__Ace", this occurs in PagesRec
+-- | pageIdSeparator - e.g. "__"
+
+-- Not Route but Page?
 
 loader :: Loader
 loader = mkAsyncLoader \context buffer -> liftEffect do

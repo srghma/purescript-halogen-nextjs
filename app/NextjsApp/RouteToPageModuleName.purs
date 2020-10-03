@@ -29,9 +29,6 @@ import Type.Prelude (RProxy(..))
 pagesKeys :: forall rowList type_ . RowToList (PagesRecRow type_) rowList => Keys rowList => List String
 pagesKeys = keysImpl (RLProxy :: RLProxy rowList)
 
-unsafeModuleNameFromString :: String -> ModuleName
-unsafeModuleNameFromString = String.split (String.Pattern NextjsApp.Route.pagesRecSeparator) >>> unsafeModuleName
-
 -- | Will map
 -- |
 -- | ```purs
@@ -46,8 +43,8 @@ unsafeModuleNameFromString = String.split (String.Pattern NextjsApp.Route.pagesR
 -- | { "PageNamespace.PageName" :: ModuleName [ "PageNamespace", "PageName" ]
 -- | }
 -- | ```
-pagesRec :: PagesRec ModuleName
-pagesRec = Record.Homogeneous.mapIndex unsafeModuleNameFromString (RProxy :: forall type_ . RProxy (PagesRecRow type_))
-
-routeToPage :: Route -> ModuleName
-routeToPage route = NextjsApp.Route.extractFromPagesRec route pagesRec
+pagesToModuleNameRec :: PagesRec ModuleName
+pagesToModuleNameRec = Record.Homogeneous.mapIndex unsafeModuleNameFromString (RProxy :: forall type_ . RProxy (PagesRecRow type_))
+  where
+    unsafeModuleNameFromString :: String -> ModuleName
+    unsafeModuleNameFromString = String.split (String.Pattern NextjsApp.Route.pagesRecSeparator) >>> append ["NextjsApp", "Pages"] >>> unsafeModuleName
