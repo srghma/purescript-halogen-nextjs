@@ -4,13 +4,14 @@ import Protolude
 
 import Data.String as String
 import Webpack.WebpackSpagoLoader
+import Effect.Uncurried
+import Pathy
 
--- TODO: from config
-spagoDhall = "./spago.dhall"
-
-spagoOptions = do
-  output <- getAbsoluteOutputDirFromSpago spagoDhall
-  pursFiles <- getSourcesFromSpago spagoDhall
+spagoOptions :: Path Abs File -> Effect SpagoOptions
+spagoOptions spagoDhall = do
+  let spagoDhall' = printPath posixPrinter (sandboxAny spagoDhall)
+  output <- runEffectFn1 getAbsoluteOutputDirFromSpago spagoDhall'
+  pursFiles <- runEffectFn1 getSourcesFromSpago spagoDhall'
   pure
     { output
     , pursFiles

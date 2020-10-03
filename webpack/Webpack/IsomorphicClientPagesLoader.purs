@@ -1,4 +1,4 @@
-module Webpack.IsomorphicClientPagesLoader where
+module Webpack.IsomorphicClientPagesLoader (loader) where
 
 import Control.Promise
 import Effect.Uncurried
@@ -68,8 +68,8 @@ clientPagesLoaderOptionsCodec =
 optionsCodec :: JsonCodec Options
 optionsCodec = Codec.Argonaut.tuple moduleNameCodec clientPagesLoaderOptionsCodec
 
-clientPagesLoader :: Loader
-clientPagesLoader = mkAsyncLoader \context buffer -> liftEffect do
+loader :: Loader
+loader = mkAsyncLoader \context buffer -> liftEffect do
   (options :: Json) <- getOptions context
 
   (moduleName /\ clientPagesLoaderOptions) <-
