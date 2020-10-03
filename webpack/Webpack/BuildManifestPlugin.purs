@@ -1,8 +1,16 @@
-// from https://github.com/vercel/next.js/blob/e125d905a0/packages/next/build/webpack/plugins/build-manifest-plugin.ts
+module Webpack.BuildManifestPlugin where
 
-import { RawSource } from 'webpack-sources'
-import * as RA from 'ramda-adjunct'
-import * as R from 'ramda'
+webpackEntrypontName :: WebpackEntrypont -> Effect String
+
+webpackEntrypontGetFiles :: WebpackEntrypont -> Effect (Array String)
+
+rawSource :: String -> RawSource
+
+printBuildManifest ::
+
+webpackSetAsset :: Compilation -> String -> RawSource -> Unit
+
+foreign import mkBuildManifestPlugin :: StrMap WebpackEntrypont -> Effect Unit
 
 class BuildManifestPlugin {
   constructor(options) { }
@@ -53,3 +61,4 @@ class BuildManifestPlugin {
 }
 
 module.exports = BuildManifestPlugin
+
