@@ -178,6 +178,9 @@ routeToRouteId = (unsafeCoerce :: String -> RouteId) <<<
 stringToMaybeRoute :: String -> Maybe Route
 stringToMaybeRoute field = Object.lookup field (Object.fromHomogeneous routeIdToRouteMapping)
 
+stringToMaybeRouteId :: String -> Maybe RouteId
+stringToMaybeRouteId = stringToMaybeRoute >>> map (Lens.view _routeToRouteIdIso)
+
 _routeToRouteIdIso :: Lens.Iso' Route RouteId
 _routeToRouteIdIso = Lens.iso routeToRouteId from
   where

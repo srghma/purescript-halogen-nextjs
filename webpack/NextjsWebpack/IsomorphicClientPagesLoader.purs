@@ -26,12 +26,12 @@ import Data.String as String
 import Data.String.NonEmpty (NonEmptyString)
 import Data.String.NonEmpty as NonEmptyString
 import Foreign as Foreign
-import NextjsApp.Route (RouteIdMapping, RouteIdMappingRow, Route)
+import NextjsApp.Route (RouteIdMapping, RouteIdMappingRow, Route, RouteId)
 import NextjsApp.Route as NextjsApp.Route
 import Node.Buffer as Node.Buffer
 import Node.Encoding as Node.Encoding
 
-type Options = Tuple Route Options
+type Options = Tuple Route ClientPagesLoaderOptions
 
 prismaticCodecNamed :: forall a b . String -> (a -> Maybe b) -> (b -> a) -> JsonCodec a -> JsonCodec b
 prismaticCodecNamed name decode encode codec = Codec.Argonaut.prismaticCodec decode encode codec # hoistCodec (lmap (Named name))
@@ -40,10 +40,13 @@ nonEmptyStringCodec ∷ JsonCodec NonEmptyString
 nonEmptyStringCodec = prismaticCodecNamed "NonEmptyString" NonEmptyString.fromString NonEmptyString.toString Codec.Argonaut.string
 
 nonEmptyArrayCodec ∷ forall a . JsonCodec a -> JsonCodec (NonEmptyArray a)
-nonEmptyArrayCodec codec = prismaticCodecNamed "NonEmptyArray" NonEmptyArray.fromArray NonEmptyArray.toArray $ Codec.Argonaut.array codec
+nonEmptyArrayCodec codec = prismaticCodecNamed "NonEmptyArray" NonEmptyArray.fromArray NonEmptyArray.toArray (Codec.Argonaut.array codec)
 
-routeCodec ∷ JsonCodec ModuleName
-routeCodec = dimap unwrap wrap (nonEmptyArrayCodec nonEmptyStringCodec)
+routeIdCodec ∷ JsonCodec RouteId
+routeIdCodec = prismaticCodecNamed "RouteId" NextjsApp.Route.stringToMaybeRouteId NextjsApp.Route.routeIdToString Codec.Argonaut.string
+
+routeCodec ∷ JsonCodec Route
+routeCodec = dimap (Lens.view NextjsApp.Route._routeToRouteIdIso) (Lens.review NextjsApp.Route._routeToRouteIdIso) routeIdCodec
 
 absFileCodec
   ∷ { parser :: Parser
@@ -66,17 +69,8 @@ clientPagesLoaderOptionsCodec =
     # Codec.Argonaut.recordProp (SProxy :: _ "absoluteCompiledPagePursPath") absFileCodecPosixRoot
     # Codec.Argonaut.recordProp (SProxy :: _ "absoluteJsDepsPath") (Codec.Argonaut.maybe absFileCodecPosixRoot)
 
-optionsCodec :: JsonCodec (RouteIdMapping ClientPagesLoaderOptions)
-optionsCodec = Codec.Argonaut.tuple moduleNameCodec clientPagesLoaderOptionsCodec
-
--- | TODO:
--- | ModuleName - full name of module, e.g. ["NextjsApp", "Pages", "Examples", "Ace"]
--- | printed ModuleName - module name as in purescript, "NextjsApp.Pages.Examples.Ace"
--- | Page or Route - e.g. Examples__Ace
--- | PageId - string repr of Page, .e.g "Examples__Ace", this occurs in RouteIdMapping
--- | pageIdSeparator - e.g. "__"
-
--- Not Route but Page?
+optionsCodec :: JsonCodec Options
+optionsCodec = Codec.Argonaut.tuple routeCodec clientPagesLoaderOptionsCodec
 
 loader :: Loader
 loader = mkAsyncLoader \context buffer -> liftEffect do
@@ -94,7 +88,7 @@ loader = mkAsyncLoader \context buffer -> liftEffect do
              Just absoluteJsDepsPath -> "require(" <> printPath posixPrinter (sandboxAny absoluteJsDepsPath) <> ")"
       , String.joinWith ""
           [ "(window.__PAGE_CACHE_BUS=window.__PAGE_CACHE_BUS||[]).push({ routeId:"
-          , NextjsApp.Route.routeIdToString $ Lens.view _routeToRouteIdIso $ route
+          , NextjsApp.Route.routeIdToString $ Lens.view NextjsApp.Route._routeToRouteIdIso $ route
           , ", page: require("
           , printPath posixPrinter (sandboxAny clientPagesLoaderOptions.absoluteCompiledPagePursPath)
           , ").page })"
