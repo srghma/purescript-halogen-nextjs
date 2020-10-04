@@ -17,11 +17,11 @@ import Data.Argonaut.Encode as ArgonautCodecs
 import Data.Argonaut.Core (Json, stringifyWithIndent)
 import Pathy
 import Webpack.Types
-
-foreign import mkBuildManifestPlugin :: (EffectFn1 Compilation Unit) -> WebpackPluginInstance
+import Webpack.FFI
+import Data.Function.Uncurried
 
 buildManifestPlugin :: WebpackPluginInstance
-buildManifestPlugin = mkBuildManifestPlugin $ mkEffectFn1 \compilation -> do
+buildManifestPlugin = mkPluginSync "BuildManifestPlugin" \compilation -> do
   (entrypointValues :: Object WebpackEntrypont) <- runEffectFn1 compilationGetEntrypoints compilation
 
   -- | const pages = R.map(

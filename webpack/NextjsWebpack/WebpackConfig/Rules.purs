@@ -6,10 +6,10 @@ import Data.String.Regex.Unsafe
 import Protolude
 
 import Data.Nullable (Nullable)
-import Webpack.WebpackConfig.Types
-import Webpack.WebpackSpagoLoader as Webpack.WebpackSpagoLoader
+import Webpack.Types
+import WebpackSpagoLoader as WebpackSpagoLoader
 
 foreign import scssAndImagesRules :: { production :: Boolean } -> Array Rule
 
 rules :: { spagoAbsoluteOutputDir :: String, production :: Boolean } -> Array Rule
-rules { spagoAbsoluteOutputDir, production } = Webpack.WebpackSpagoLoader.rules { spagoAbsoluteOutputDir } <> scssAndImagesRules { production }
+rules { spagoAbsoluteOutputDir, production } = WebpackSpagoLoader.rules { spagoAbsoluteOutputDir } <> scssAndImagesRules { production }

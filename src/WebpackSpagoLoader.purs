@@ -1,7 +1,7 @@
 module WebpackSpagoLoader where
 
 import Protolude
-import Webpack.WebpackConfig.Types
+import Webpack.Types
 import Effect.Uncurried
 
 type SpagoOptions =

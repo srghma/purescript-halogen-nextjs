@@ -9,7 +9,7 @@ import Foreign as Foreign
 import Pathy
 import Webpack.Loader
 import LoaderUtils
-import Webpack.GetClientPagesEntrypoints
+import NextjsWebpack.GetClientPagesEntrypoints
 -- | import Data.Argonaut.Decode (JsonDecodeError)
 -- | import Data.Argonaut.Decode as ArgonautCodecs
 -- | import Data.Argonaut.Decode.Decoders

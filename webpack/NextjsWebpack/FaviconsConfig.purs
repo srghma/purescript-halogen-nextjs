@@ -1,5 +1,9 @@
 module NextjsWebpack.FaviconsConfig where
 
+import Protolude
+import Data.Nullable as Nullable
+import Favicons
+
 faviconsConfig :: FaviconsConfig
 faviconsConfig =
   { path:                        "/"

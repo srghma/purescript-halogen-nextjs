@@ -1,7 +1,6 @@
 module NextjsWebpack.WebpackConfig.SplitChunksConfig where
 
 import Protolude
-import Webpack.WebpackConfig.Types
 
 import Data.String.Regex.Unsafe as Regex
 import Data.String.Regex.Flags as Regex

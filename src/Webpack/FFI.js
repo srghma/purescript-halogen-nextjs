@@ -9,3 +9,5 @@ exports.rawSource = function(string) {
 exports.compilationSetAsset = function(compilation, name, rawSource) { compilation[name] = rawSource }
 
 exports.compilationGetEntrypoints = function(compilation) { return compilation.entrypoints }
+
+exports.mkPlugin = function(compilation) { return compilation.entrypoints }

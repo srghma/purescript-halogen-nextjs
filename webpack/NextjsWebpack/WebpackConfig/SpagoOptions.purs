@@ -3,7 +3,7 @@ module NextjsWebpack.WebpackConfig.SpagoOptions where
 import Protolude
 
 import Data.String as String
-import Webpack.WebpackSpagoLoader
+import WebpackSpagoLoader
 import Effect.Uncurried
 import Pathy
 

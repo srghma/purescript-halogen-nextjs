@@ -5,6 +5,8 @@ import Effect.Uncurried
 import Pathy
 import Protolude
 import Webpack.Types
+import Webpack.Plugins
+import ContribWebpackPlugins
 
 import Data.Array as Array
 import Data.Nullable (Nullable, notNull)
@@ -14,9 +16,9 @@ import Foreign as Foreign
 import Foreign.Object as Object
 import NextjsApp.Route (PagesRec, PagesRecRow, Route)
 import NextjsApp.Template as NextjsApp.Template
-import Webpack.BuildManifestPlugin as Webpack.BuildManifestPlugin
-import Webpack.GetClientPagesEntrypoints (ClientPagesLoaderOptions)
-import Webpack.WebpackConfig.SplitChunksConfig as Webpack.WebpackConfig.SplitChunksConfig
+import NextjsWebpack.BuildManifestPlugin as NextjsWebpack.BuildManifestPlugin
+import NextjsWebpack.GetClientPagesEntrypoints (ClientPagesLoaderOptions)
+import NextjsWebpack.WebpackConfig.SplitChunksConfig as NextjsWebpack.WebpackConfig.SplitChunksConfig
 
 -- https://github.com/zeit/next.js/blob/450d4bd0f32a042fd452c81bc3850ec31306eab3/packages/next/next-server/lib/constants.ts#L35
 
@@ -177,7 +179,7 @@ config { target, watch, production, root, pagesPath, bundleAnalyze } = do
           else Nothing
 
       , case target of
-            Target__Browser -> Just $ Webpack.BuildManifestPlugin.buildManifestPlugin
+            Target__Browser -> Just $ NextjsWebpack.BuildManifestPlugin.buildManifestPlugin
             _ -> Nothing
 
       , case target of
@@ -204,7 +206,7 @@ config { target, watch, production, root, pagesPath, bundleAnalyze } = do
 
       , splitChunks: case target of
              Target__Browser -> unsafeToForeign $
-               Webpack.WebpackConfig.SplitChunksConfig.splitChunksConfig
+               NextjsWebpack.WebpackConfig.SplitChunksConfig.splitChunksConfig
                { totalPages: Array.length $ Object.keys $ Object.fromHomogeneous entrypointsObject
                }
              _ -> unsafeToForeign false
