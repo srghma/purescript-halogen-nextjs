@@ -33,8 +33,9 @@ import NextjsApp.Server.PageTemplate as NextjsApp.Server.PageTemplate
 import Node.FS.Stats as Node.FS.Stats
 import Options.Applicative as Options.Applicative
 import Protolude.Node as Protolude.Node
-import Routing.Duplex (parse) as Routing.Duplex
-import Routing.Duplex.Parser (RouteError) as Routing.Duplex
+import Routing.Duplex as Routing.Duplex
+import Routing.Duplex.Parser as Routing.Duplex
+import NextjsApp.RouteDuplexCodec as NextjsApp.RouteDuplexCodec
 
 data StaticOrDynamicPageData input
   = StaticPageData input
@@ -123,7 +124,7 @@ app buildManifest = IndexedMonad.do
       let pageManifest = NextjsApp.Route.lookupFromRouteIdMapping route buildManifest.pages
       let mergedPageManifest = NextjsApp.Manifest.PageManifest.mergePageManifests buildManifest.main pageManifest
 
-      Nextjs.Page.unPage (renderPage route buildManifest.pages mergedPageManifest) (NextjsApp.RouteToPageNonClient.routeToPage route)
+      Nextjs.Page.unPage (renderPage route buildManifest.pages mergedPageManifest) (NextjsApp.Route.lookupFromRouteIdMapping route NextjsApp.RouteToPageNonClient.routeIdMapping)
 
 main :: Effect Unit
 main = launchAff_ do

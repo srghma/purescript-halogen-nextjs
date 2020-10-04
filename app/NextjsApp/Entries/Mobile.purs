@@ -42,7 +42,7 @@ main = do
   -- first we'll get the route the user landed on
   let (route :: NextjsApp.Route.Route) = NextjsApp.Route.Index
 
-  let (page :: Nextjs.Page.Page) = NextjsApp.RouteToPageNonClient.routeToPage route
+  let (page :: Nextjs.Page.Page) = NextjsApp.Route.lookupFromRouteIdMapping route NextjsApp.RouteToPageNonClient.routeIdMapping
 
   let (env :: Env) =
         { navigate: NextjsApp.Navigate.Mobile.navigate newRouteEventIO

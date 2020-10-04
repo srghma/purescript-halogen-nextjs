@@ -47,7 +47,7 @@ config { target, watch, production, root, pagesPath, bundleAnalyze } = do
 
   entry <-
     case target of
-         -- R.mapObjIndexed((val, key) => `isomorphic-client-pages-loader?${querystring.stringify({ ...val, pageName: key })}!`, entrypointsObject)
+         -- R.mapObjIndexed((val, key) => `isomorphic-client-pages-loader?${querystring.stringify({ ...val, routeId: key })}!`, entrypointsObject)
          -- | let isomorphicEntrypointsObject = undefined
 
          -- R.mergeAll([isomorphicEntrypointsObject, { main: path.resolve(root, "app", "client.entry.js") }])

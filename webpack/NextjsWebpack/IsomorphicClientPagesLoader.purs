@@ -1,35 +1,35 @@
 module NextjsWebpack.IsomorphicClientPagesLoader (loader) where
 
 import Control.Promise
-import Effect.Uncurried
-import Protolude
-
-import Foreign
-import Foreign as Foreign
-import Pathy
-import Webpack.Loader
-import LoaderUtils
-import NextjsWebpack.GetClientPagesEntrypoints
--- | import Data.Argonaut.Decode (JsonDecodeError)
--- | import Data.Argonaut.Decode as ArgonautCodecs
--- | import Data.Argonaut.Decode.Decoders
-import Data.Argonaut.Core (Json)
-import Data.String as String
-import Pathy
 import Data.Codec
+import Data.Newtype
+import Effect.Uncurried
+import Foreign
+import LoaderUtils
+import ModuleName
+import NextjsWebpack.GetClientPagesEntrypoints
+import Pathy
+import Pathy
+import Protolude
+import Webpack.Loader
+
+import Data.Argonaut.Core (Json)
+import Data.Array.NonEmpty (NonEmptyArray)
+import Data.Array.NonEmpty as NonEmptyArray
 import Data.Codec.Argonaut (JsonCodec, JsonDecodeError(..))
 import Data.Codec.Argonaut as Codec.Argonaut
 import Data.Codec.Argonaut.Common as Codec.Argonaut
+import Data.Lens as Lens
+import Data.Lens.Iso as Lens
+import Data.Profunctor (dimap)
+import Data.String as String
 import Data.String.NonEmpty (NonEmptyString)
 import Data.String.NonEmpty as NonEmptyString
-import Data.Array.NonEmpty (NonEmptyArray)
-import Data.Array.NonEmpty as NonEmptyArray
-import Data.Profunctor (dimap)
-import Data.Newtype
+import Foreign as Foreign
+import NextjsApp.Route (RouteIdMapping, RouteIdMappingRow, Route)
+import NextjsApp.Route as NextjsApp.Route
 import Node.Buffer as Node.Buffer
 import Node.Encoding as Node.Encoding
-import ModuleName
-import NextjsApp.Route (RouteIdMapping, RouteIdMappingRow, Route)
 
 type Options = Tuple Route Options
 
@@ -82,7 +82,7 @@ loader :: Loader
 loader = mkAsyncLoader \context buffer -> liftEffect do
   (options :: Json) <- getOptions context
 
-  (moduleName /\ clientPagesLoaderOptions) <-
+  (route /\ clientPagesLoaderOptions) <-
     case Codec.Argonaut.decode optionsCodec options of
        Left decodeError -> throwError $ error $ Codec.Argonaut.printJsonDecodeError decodeError
        Right options' -> pure options'
@@ -93,8 +93,8 @@ loader = mkAsyncLoader \context buffer -> liftEffect do
              Nothing -> ""
              Just absoluteJsDepsPath -> "require(" <> printPath posixPrinter (sandboxAny absoluteJsDepsPath) <> ")"
       , String.joinWith ""
-          [ "(window.__PAGE_CACHE_BUS=window.__PAGE_CACHE_BUS||[]).push({ pageName:"
-          , moduleNameToManifestPageId moduleName
+          [ "(window.__PAGE_CACHE_BUS=window.__PAGE_CACHE_BUS||[]).push({ routeId:"
+          , NextjsApp.Route.routeIdToString $ Lens.view _routeToRouteIdIso $ route
           , ", page: require("
           , printPath posixPrinter (sandboxAny clientPagesLoaderOptions.absoluteCompiledPagePursPath)
           , ").page })"

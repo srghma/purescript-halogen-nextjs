@@ -8,7 +8,7 @@ import NextjsApp.Route as NextjsApp.Route
 import NextjsApp.AppM (AppM)
 import Nextjs.Api as Nextjs.Api
 import NextjsApp.Router.Shared (ChildSlots, MobileState, Query(..), renderPage)
-import NextjsApp.RouteToPageNonClient (routeToPage)
+import NextjsApp.RouteToPageNonClient as NextjsApp.RouteToPageNonClient
 
 component :: H.Component Query MobileState Void AppM
 component = H.mkComponent
@@ -29,7 +29,7 @@ handleQuery = case _ of
 
 mobileLoadAndPutNewPage :: forall action. MobileState -> NextjsApp.Route.Route -> H.HalogenM MobileState action ChildSlots Void AppM Unit
 mobileLoadAndPutNewPage currentState destRoute = do
-  let page = routeToPage destRoute
+  let page = NextjsApp.Route.lookupFromRouteIdMapping destRoute NextjsApp.RouteToPageNonClient.routeIdMapping
   (H.liftAff $ Nextjs.Page.pageToPageSpecWithInputBoxed page) >>=
     case _ of
       Left error -> H.liftAff $ Nextjs.Api.throwApiError error -- TODO: show an error as alert

@@ -27,6 +27,7 @@ import Web.HTML.Window as Web.HTML.Window
 import Web.IntersectionObserver as Web.IntersectionObserver
 import Web.IntersectionObserverEntry as Web.IntersectionObserverEntry
 import NextjsApp.Link.Client as NextjsApp.Link.Client
+import NextjsApp.RouteDuplexCodec as NextjsApp.RouteDuplexCodec
 
 getPrerenderedJson :: Aff ArgonautCore.Json
 getPrerenderedJson = findJsonFromScriptElement (Web.DOM.ParentNode.QuerySelector NextjsApp.Constants.pagesDataId)

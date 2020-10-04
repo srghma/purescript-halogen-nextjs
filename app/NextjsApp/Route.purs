@@ -1,5 +1,6 @@
 module NextjsApp.Route where
 
+import Data.Symbol
 import Effect.Exception.Unsafe
 import Protolude hiding ((/))
 
@@ -18,12 +19,13 @@ import Data.String.NonEmpty as NonEmptyString
 import Data.String.Regex as Regex
 import Data.String.Regex.Flags as Regex
 import Data.String.Regex.Unsafe as Regex
+import Foreign.Object as Object
+import Record.ExtraSrghma as Record.ExtraSrghma
 import Routing.Duplex (RouteDuplex', root) as Routing.Duplex
 import Routing.Duplex.Generic (noArgs, sum) as Routing.Duplex
 import Routing.Duplex.Generic.Syntax ((/))
+import Type.Prelude (RProxy(..))
 import Unsafe.Coerce (unsafeCoerce)
-import Foreign.Object as Object
-import Data.Symbol
 
 data RouteExamples
   = RouteExamples__Ace
@@ -66,6 +68,7 @@ instance decodeJsonRoute :: DecodeJson Route where decodeJson = genericDecodeJso
 newtype RouteId = RouteId NonEmptyString -- e.g. "RouteExamples__Ace"
 
 derive instance newtypeRouteId :: Newtype RouteId _
+derive newtype instance eqRouteId :: Eq RouteId
 
 routeIdToString :: RouteId -> String
 routeIdToString = unsafeCoerce
@@ -73,6 +76,7 @@ routeIdToString = unsafeCoerce
 newtype RouteIdArray = RouteIdArray (NonEmptyArray NonEmptyString) -- String repr of a route, e.g. ["RouteExamples", "Ace"]
 
 derive instance newtypeRouteIdArray :: Newtype RouteIdArray _
+derive newtype instance eqRouteIdArray :: Eq RouteIdArray
 
 routeIdArrayToArrayString :: RouteIdArray -> Array String
 routeIdArrayToArrayString = unsafeCoerce
