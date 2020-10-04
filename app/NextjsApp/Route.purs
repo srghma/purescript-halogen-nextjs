@@ -1,46 +1,58 @@
 module NextjsApp.Route where
 
+import Data.Lens.Iso as Lens
+import Data.Lens as Lens
+import Effect.Exception.Unsafe
 import Protolude hiding ((/))
 
 import Data.Argonaut.Decode (class DecodeJson)
 import Data.Argonaut.Decode.Generic.Rep (genericDecodeJson)
 import Data.Argonaut.Encode (class EncodeJson)
 import Data.Argonaut.Encode.Generic.Rep (genericEncodeJson)
+import Data.Array.NonEmpty (NonEmptyArray)
+import Data.Array.NonEmpty as NonEmptyArray
 import Data.Generic.Rep.Show (genericShow)
+import Data.String.NonEmpty (NonEmptyString)
+import Data.String.NonEmpty as NonEmptyString
 import Routing.Duplex (RouteDuplex', root) as Routing.Duplex
 import Routing.Duplex.Generic (noArgs, sum) as Routing.Duplex
 import Routing.Duplex.Generic.Syntax ((/))
+import Unsafe.Coerce (unsafeCoerce)
+import Data.String as String
+import Data.String.Regex as Regex
+import Data.String.Regex.Flags as Regex
+import Data.String.Regex.Unsafe as Regex
 
-data Examples
-  = Examples__Ace
-  | Examples__Basic
-  | Examples__Components
-  | Examples__ComponentsInputs
-  | Examples__ComponentsMultitype
-  | Examples__EffectsAffAjax
-  | Examples__EffectsEffectRandom
-  | Examples__HigherOrderComponents
-  | Examples__Interpret
-  | Examples__KeyboardInput
-  | Examples__Lifecycle
-  | Examples__DeeplyNested
-  | Examples__DynamicInput
-  | Examples__TextNodes
-  | Examples__Lazy
+data RouteExamples
+  = RouteExamples__Ace
+  | RouteExamples__Basic
+  | RouteExamples__Components
+  | RouteExamples__ComponentsInputs
+  | RouteExamples__ComponentsMultitype
+  | RouteExamples__EffectsAffAjax
+  | RouteExamples__EffectsEffectRandom
+  | RouteExamples__HigherOrderComponents
+  | RouteExamples__Interpret
+  | RouteExamples__KeyboardInput
+  | RouteExamples__Lifecycle
+  | RouteExamples__DeeplyNested
+  | RouteExamples__DynamicInput
+  | RouteExamples__TextNodes
+  | RouteExamples__Lazy
 
-derive instance genericExamples :: Generic Examples _
-derive instance eqExamples :: Eq Examples
-derive instance ordExamples :: Ord Examples
-instance showExamples :: Show Examples where show = genericShow
-instance encodeJsonExamples :: EncodeJson Examples where encodeJson = genericEncodeJson
-instance decodeJsonExamples :: DecodeJson Examples where decodeJson = genericDecodeJson
+derive instance genericRoutesExamples :: Generic RouteExamples _
+derive instance eqRoutesExamples :: Eq RouteExamples
+derive instance ordRoutesExamples :: Ord RouteExamples
+instance showRoutesExamples :: Show RouteExamples where show = genericShow
+instance encodeJsonRoutesExamples :: EncodeJson RouteExamples where encodeJson = genericEncodeJson
+instance decodeJsonRoutesExamples :: DecodeJson RouteExamples where decodeJson = genericDecodeJson
 
 data Route
   = Index
   | Login
   | Signup
   | Secret
-  | Examples Examples
+  | RouteExamples RouteExamples
 
 derive instance genericRoute :: Generic Route _
 derive instance eqRoute :: Eq Route
@@ -49,39 +61,79 @@ instance showRoute :: Show Route where show = genericShow
 instance encodeJsonRoute :: EncodeJson Route where encodeJson = genericEncodeJson
 instance decodeJsonRoute :: DecodeJson Route where decodeJson = genericDecodeJson
 
-routeCodec :: Routing.Duplex.RouteDuplex' Route
-routeCodec = Routing.Duplex.root $ Routing.Duplex.sum
-  { "Index":    Routing.Duplex.noArgs
-  , "Login":    "login" / Routing.Duplex.noArgs
-  , "Signup":   "signup" / Routing.Duplex.noArgs
-  , "Secret":   "secret" / Routing.Duplex.noArgs
-  , "Examples": "examples" / examplesCodec
-  }
-  where
-    examplesCodec :: Routing.Duplex.RouteDuplex' Examples
-    examplesCodec = Routing.Duplex.sum
-      { "Examples__Ace":                   "ace" / Routing.Duplex.noArgs
-      , "Examples__Basic":                 "basic" / Routing.Duplex.noArgs
-      , "Examples__Components":            "components" / Routing.Duplex.noArgs
-      , "Examples__ComponentsInputs":      "components-inputs" / Routing.Duplex.noArgs
-      , "Examples__ComponentsMultitype":   "components-multitype" / Routing.Duplex.noArgs
-      , "Examples__EffectsAffAjax":        "effects-aff-ajax" / Routing.Duplex.noArgs
-      , "Examples__EffectsEffectRandom":   "effects-effect-random" / Routing.Duplex.noArgs
-      , "Examples__HigherOrderComponents": "higher-order-components" / Routing.Duplex.noArgs
-      , "Examples__Interpret":             "interpret" / Routing.Duplex.noArgs
-      , "Examples__KeyboardInput":         "keyboard-input" / Routing.Duplex.noArgs
-      , "Examples__Lifecycle":             "lifecycle" / Routing.Duplex.noArgs
-      , "Examples__DeeplyNested":          "deeply-nested" / Routing.Duplex.noArgs
-      , "Examples__DynamicInput":          "dynamic-input" / Routing.Duplex.noArgs
-      , "Examples__TextNodes":             "text-nodes" / Routing.Duplex.noArgs
-      , "Examples__Lazy":                  "lazy" / Routing.Duplex.noArgs
-      }
+routeIdSeparator :: NonEmptyString
+routeIdSeparator = unsafeCoerce "__"
 
--- where the key is an id of the page in the page manifest
--- pagesManifestRec
--- XXX: SHOULD NOT BE MULTILEVEL/NESTED!!!!
-pagesRecSeparator :: String
-pagesRecSeparator = "."
+newtype RouteId = RouteId NonEmptyString -- e.g. "RouteExamples__Ace"
+
+newtype RouteIdArray = RouteIdArray (NonEmptyArray NonEmptyString) -- String repr of a route
+
+maybeRouteIdToRoute :: String -> Maybe Route
+maybeRouteIdToRoute =
+  case _ of
+       "Index"                                -> Just $ Index
+       "Login"                                -> Just $ Login
+       "Signup"                               -> Just $ Signup
+       "Secret"                               -> Just $ Secret
+       "RouteExamples__Ace"                   -> Just $ RouteExamples RouteExamples__Ace
+       "RouteExamples__Basic"                 -> Just $ RouteExamples RouteExamples__Basic
+       "RouteExamples__Components"            -> Just $ RouteExamples RouteExamples__Components
+       "RouteExamples__ComponentsInputs"      -> Just $ RouteExamples RouteExamples__ComponentsInputs
+       "RouteExamples__ComponentsMultitype"   -> Just $ RouteExamples RouteExamples__ComponentsMultitype
+       "RouteExamples__EffectsAffAjax"        -> Just $ RouteExamples RouteExamples__EffectsAffAjax
+       "RouteExamples__EffectsEffectRandom"   -> Just $ RouteExamples RouteExamples__EffectsEffectRandom
+       "RouteExamples__HigherOrderComponents" -> Just $ RouteExamples RouteExamples__HigherOrderComponents
+       "RouteExamples__Interpret"             -> Just $ RouteExamples RouteExamples__Interpret
+       "RouteExamples__KeyboardInput"         -> Just $ RouteExamples RouteExamples__KeyboardInput
+       "RouteExamples__Lifecycle"             -> Just $ RouteExamples RouteExamples__Lifecycle
+       "RouteExamples__DeeplyNested"          -> Just $ RouteExamples RouteExamples__DeeplyNested
+       "RouteExamples__DynamicInput"          -> Just $ RouteExamples RouteExamples__DynamicInput
+       "RouteExamples__TextNodes"             -> Just $ RouteExamples RouteExamples__TextNodes
+       "RouteExamples__Lazy"                  -> Just $ RouteExamples RouteExamples__Lazy
+       _                                      -> Nothing
+
+_routeToRouteIdIso :: Lens.Iso' Route RouteId
+_routeToRouteIdIso = Lens.iso to from
+  where
+    to :: Route -> RouteId
+    to = (unsafeCoerce :: String -> RouteId) <<<
+      case _ of
+           Index  -> "Index"
+           Login  -> "Login"
+           Signup -> "Signup"
+           Secret -> "Secret"
+           RouteExamples routesexamples ->
+             case routesexamples of
+                  RouteExamples__Ace                   -> "RouteExamples__Ace"
+                  RouteExamples__Basic                 -> "RouteExamples__Basic"
+                  RouteExamples__Components            -> "RouteExamples__Components"
+                  RouteExamples__ComponentsInputs      -> "RouteExamples__ComponentsInputs"
+                  RouteExamples__ComponentsMultitype   -> "RouteExamples__ComponentsMultitype"
+                  RouteExamples__EffectsAffAjax        -> "RouteExamples__EffectsAffAjax"
+                  RouteExamples__EffectsEffectRandom   -> "RouteExamples__EffectsEffectRandom"
+                  RouteExamples__HigherOrderComponents -> "RouteExamples__HigherOrderComponents"
+                  RouteExamples__Interpret             -> "RouteExamples__Interpret"
+                  RouteExamples__KeyboardInput         -> "RouteExamples__KeyboardInput"
+                  RouteExamples__Lifecycle             -> "RouteExamples__Lifecycle"
+                  RouteExamples__DeeplyNested          -> "RouteExamples__DeeplyNested"
+                  RouteExamples__DynamicInput          -> "RouteExamples__DynamicInput"
+                  RouteExamples__TextNodes             -> "RouteExamples__TextNodes"
+                  RouteExamples__Lazy                  -> "RouteExamples__Lazy"
+
+    from:: RouteId -> Route
+    from (RouteId id) =
+      case maybeRouteIdToRoute (NonEmptyString.toString id) of
+           Just route -> route
+           Nothing -> unsafeThrow $ "UNSAFE EXCEPTION: cannot convert RouteId " <> (NonEmptyString.toString id) <> " to Route"
+
+_routeToRouteIdArrayIso :: Lens.Iso' Route RouteIdArray
+_routeToRouteIdArrayIso = Lens.iso to from
+  where
+    to :: Route -> RouteIdArray
+    to = Lens.view _routeToRouteIdIso >>> (unsafeCoerce :: RouteId -> String) >>> String.split (String.Pattern (NonEmptyString.toString routeIdSeparator)) >>> (unsafeCoerce :: Array String -> RouteIdArray)
+
+    from:: RouteIdArray -> Route
+    from = (unsafeCoerce :: RouteIdArray -> Array String) >>> String.joinWith (NonEmptyString.toString routeIdSeparator) >>> (unsafeCoerce :: String -> RouteId) >>> Lens.review _routeToRouteIdIso
 
 type PagesRecRow a =
   ( "Index"  :: a
@@ -90,21 +142,21 @@ type PagesRecRow a =
   , "Secret" :: a
 
   -- is using pagesRecSeparator
-  , "Examples.Ace"                   :: a
-  , "Examples.Basic"                 :: a
-  , "Examples.Components"            :: a
-  , "Examples.ComponentsInputs"      :: a
-  , "Examples.ComponentsMultitype"   :: a
-  , "Examples.EffectsAffAjax"        :: a
-  , "Examples.EffectsEffectRandom"   :: a
-  , "Examples.HigherOrderComponents" :: a
-  , "Examples.Interpret"             :: a
-  , "Examples.KeyboardInput"         :: a
-  , "Examples.Lifecycle"             :: a
-  , "Examples.DeeplyNested"          :: a
-  , "Examples.DynamicInput"          :: a
-  , "Examples.TextNodes"             :: a
-  , "Examples.Lazy"                  :: a
+  , "RouteExamples.Ace"                   :: a
+  , "RouteExamples.Basic"                 :: a
+  , "RouteExamples.Components"            :: a
+  , "RouteExamples.ComponentsInputs"      :: a
+  , "RouteExamples.ComponentsMultitype"   :: a
+  , "RouteExamples.EffectsAffAjax"        :: a
+  , "RouteExamples.EffectsEffectRandom"   :: a
+  , "RouteExamples.HigherOrderComponents" :: a
+  , "RouteExamples.Interpret"             :: a
+  , "RouteExamples.KeyboardInput"         :: a
+  , "RouteExamples.Lifecycle"             :: a
+  , "RouteExamples.DeeplyNested"          :: a
+  , "RouteExamples.DynamicInput"          :: a
+  , "RouteExamples.TextNodes"             :: a
+  , "RouteExamples.Lazy"                  :: a
   )
 
 type PagesRec a = Record (PagesRecRow a)
@@ -116,45 +168,20 @@ extractFromPagesRec =
        Login  -> _."Login"
        Signup -> _."Signup"
        Secret -> _."Secret"
-       Examples examples ->
-         case examples of
-              Examples__Ace                   -> _."Examples.Ace"
-              Examples__Basic                 -> _."Examples.Basic"
-              Examples__Components            -> _."Examples.Components"
-              Examples__ComponentsInputs      -> _."Examples.ComponentsInputs"
-              Examples__ComponentsMultitype   -> _."Examples.ComponentsMultitype"
-              Examples__EffectsAffAjax        -> _."Examples.EffectsAffAjax"
-              Examples__EffectsEffectRandom   -> _."Examples.EffectsEffectRandom"
-              Examples__HigherOrderComponents -> _."Examples.HigherOrderComponents"
-              Examples__Interpret             -> _."Examples.Interpret"
-              Examples__KeyboardInput         -> _."Examples.KeyboardInput"
-              Examples__Lifecycle             -> _."Examples.Lifecycle"
-              Examples__DeeplyNested          -> _."Examples.DeeplyNested"
-              Examples__DynamicInput          -> _."Examples.DynamicInput"
-              Examples__TextNodes             -> _."Examples.TextNodes"
-              Examples__Lazy                  -> _."Examples.Lazy"
-
-routeToPageManifestId :: Route -> String
-routeToPageManifestId =
-  case _ of
-       Index  -> "Index"
-       Login  -> "Login"
-       Signup -> "Signup"
-       Secret -> "Secret"
-       Examples examples ->
-         case examples of
-              Examples__Ace                   -> "Examples.Ace"
-              Examples__Basic                 -> "Examples.Basic"
-              Examples__Components            -> "Examples.Components"
-              Examples__ComponentsInputs      -> "Examples.ComponentsInputs"
-              Examples__ComponentsMultitype   -> "Examples.ComponentsMultitype"
-              Examples__EffectsAffAjax        -> "Examples.EffectsAffAjax"
-              Examples__EffectsEffectRandom   -> "Examples.EffectsEffectRandom"
-              Examples__HigherOrderComponents -> "Examples.HigherOrderComponents"
-              Examples__Interpret             -> "Examples.Interpret"
-              Examples__KeyboardInput         -> "Examples.KeyboardInput"
-              Examples__Lifecycle             -> "Examples.Lifecycle"
-              Examples__DeeplyNested          -> "Examples.DeeplyNested"
-              Examples__DynamicInput          -> "Examples.DynamicInput"
-              Examples__TextNodes             -> "Examples.TextNodes"
-              Examples__Lazy                  -> "Examples.Lazy"
+       RouteExamples routesexamples ->
+         case routesexamples of
+              RouteExamples__Ace                   -> _."RouteExamples.Ace"
+              RouteExamples__Basic                 -> _."RouteExamples.Basic"
+              RouteExamples__Components            -> _."RouteExamples.Components"
+              RouteExamples__ComponentsInputs      -> _."RouteExamples.ComponentsInputs"
+              RouteExamples__ComponentsMultitype   -> _."RouteExamples.ComponentsMultitype"
+              RouteExamples__EffectsAffAjax        -> _."RouteExamples.EffectsAffAjax"
+              RouteExamples__EffectsEffectRandom   -> _."RouteExamples.EffectsEffectRandom"
+              RouteExamples__HigherOrderComponents -> _."RouteExamples.HigherOrderComponents"
+              RouteExamples__Interpret             -> _."RouteExamples.Interpret"
+              RouteExamples__KeyboardInput         -> _."RouteExamples.KeyboardInput"
+              RouteExamples__Lifecycle             -> _."RouteExamples.Lifecycle"
+              RouteExamples__DeeplyNested          -> _."RouteExamples.DeeplyNested"
+              RouteExamples__DynamicInput          -> _."RouteExamples.DynamicInput"
+              RouteExamples__TextNodes             -> _."RouteExamples.TextNodes"
+              RouteExamples__Lazy                  -> _."RouteExamples.Lazy"
