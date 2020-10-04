@@ -50,7 +50,7 @@ mkLinkHandleActions = \context ->
 
       -- now prefetch the page dependencies
       { route } <- H.get
-      let (pageManifest :: NextjsApp.Manifest.PageManifest.PageManifest) = NextjsApp.Route.extractFromPagesRec route context.clientPagesManifest
+      let (pageManifest :: NextjsApp.Manifest.PageManifest.PageManifest) = NextjsApp.Route.lookupFromRouteIdMapping route context.clientPagesManifest
 
       H.liftEffect $ NextjsApp.PageLoader.appendPagePrefetch pageManifest context.document context.head
   }

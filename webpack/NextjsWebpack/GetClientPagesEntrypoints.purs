@@ -80,9 +80,9 @@ printPathPosix = printPath posixPrinter <<< sandboxAny
 foldAppendDirs :: Path Abs Dir -> Array (Path Rel Dir) -> Path Abs Dir
 foldAppendDirs = foldl (\acc dir -> acc </> dir)
 
-getClientPagesEntrypoints :: { pagesDir :: Path Abs Dir, spagoAbsoluteOutputDir :: Path Abs Dir } -> Aff (PagesRec ClientPagesLoaderOptions)
+getClientPagesEntrypoints :: { pagesDir :: Path Abs Dir, spagoAbsoluteOutputDir :: Path Abs Dir } -> Aff (RouteIdMapping ClientPagesLoaderOptions)
 getClientPagesEntrypoints { pagesDir, spagoAbsoluteOutputDir } = do
-  let (pagesToOptionsRec :: PagesRec (Aff ClientPagesLoaderOptions)) = flip Record.Extra.mapRecord NextjsApp.RouteToPageModuleName.pagesToModuleNameRec
+  let (pagesToOptionsRec :: RouteIdMapping (Aff ClientPagesLoaderOptions)) = flip Record.Extra.mapRecord NextjsApp.RouteToPageModuleName.pagesToModuleNameRec
         (\moduleName -> do
             let (absoluteCompiledPagePursPath :: Path Abs File) = spagoAbsoluteOutputDir </> dir' (moduleNameToName moduleName) </> file (SProxy :: SProxy "index.js") -- e.g. ".../output/Foo/index.js"
 

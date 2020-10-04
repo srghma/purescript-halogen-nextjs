@@ -33,7 +33,7 @@ getPrerenderedJson = findJsonFromScriptElement (Web.DOM.ParentNode.QuerySelector
 
 getInitialRouteFromLocation :: Aff NextjsApp.Route.Route
 getInitialRouteFromLocation = do
-  initialRoute <- hush <<< Routing.Duplex.parse NextjsApp.Route.routeCodec <$> liftEffect (Web.HTML.window >>= Web.HTML.Window.location >>= getPathWithoutOrigin)
+  initialRoute <- hush <<< Routing.Duplex.parse NextjsApp.RouteDuplexCodec.routeCodec <$> liftEffect (Web.HTML.window >>= Web.HTML.Window.location >>= getPathWithoutOrigin)
   initialRoute' <- maybe (throwError (error $ "Could not find initialRoute")) pure initialRoute
   pure initialRoute'
 
@@ -108,4 +108,4 @@ main = do
 
     halogenIO <- Halogen.VDom.Driver.hydrateUI component initialState rootElement
 
-    void $ liftEffect $ Routing.PushState.matchesWith (Routing.Duplex.parse NextjsApp.Route.routeCodec) (NextjsApp.Router.Shared.callNavigateQueryIfNew halogenIO) pushStateInterface
+    void $ liftEffect $ Routing.PushState.matchesWith (Routing.Duplex.parse NextjsApp.RouteDuplexCodec.routeCodec) (NextjsApp.Router.Shared.callNavigateQueryIfNew halogenIO) pushStateInterface

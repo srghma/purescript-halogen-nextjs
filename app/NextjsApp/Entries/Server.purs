@@ -112,7 +112,7 @@ app
 app buildManifest = IndexedMonad.do
   request <- Hyper.getRequestData
 
-  case Routing.Duplex.parse NextjsApp.Route.routeCodec request.url of
+  case Routing.Duplex.parse NextjsApp.RouteDuplexCodec.routeCodec request.url of
     Left (error :: Routing.Duplex.RouteError) -> IndexedMonad.do
       Hyper.writeStatus Hyper.statusBadRequest
       Hyper.closeHeaders
@@ -120,7 +120,7 @@ app buildManifest = IndexedMonad.do
     Right route -> IndexedMonad.do
       Console.log $ Ansi.withGraphics (Ansi.foreground Ansi.BrightYellow) $ "  Page requested: " <> show route
 
-      let pageManifest = NextjsApp.Route.extractFromPagesRec route buildManifest.pages
+      let pageManifest = NextjsApp.Route.lookupFromRouteIdMapping route buildManifest.pages
       let mergedPageManifest = NextjsApp.Manifest.PageManifest.mergePageManifests buildManifest.main pageManifest
 
       Nextjs.Page.unPage (renderPage route buildManifest.pages mergedPageManifest) (NextjsApp.RouteToPageNonClient.routeToPage route)

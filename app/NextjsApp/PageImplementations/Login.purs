@@ -16,7 +16,7 @@ import NextjsApp.AppM (AppM)
 import NextjsApp.Blocks.PurescriptLogo (purescriptLogoSrc)
 import NextjsApp.Link as NextjsApp.Link
 import NextjsApp.PageImplementations.Login.Css as Css
-import NextjsApp.Route (Examples(..), Route(..))
+import NextjsApp.Route
 
 type Query = Const Void
 

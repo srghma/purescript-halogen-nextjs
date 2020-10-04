@@ -17,6 +17,7 @@ import Web.Event.Event as Web.Event.Event
 import Web.UIEvent.MouseEvent as Web.UIEvent.MouseEvent
 import NextjsApp.Link.Types
 import NextjsApp.Link.Lib (elementLabel)
+import NextjsApp.RouteDuplexCodec as NextjsApp.RouteDuplexCodec
 
 component :: H.Component Query State Message AppM
 component =
@@ -32,7 +33,7 @@ component =
 render :: State -> H.ComponentHTML Action () AppM
 render state =
   HH.a
-    [ HP.href (Routing.Duplex.print NextjsApp.Route.routeCodec state.route) -- TODO: can cache
+    [ HP.href (Routing.Duplex.print NextjsApp.RouteDuplexCodec.routeCodec state.route) -- TODO: can cache
     , HE.onClick Navigate
     , HP.ref elementLabel
     ]

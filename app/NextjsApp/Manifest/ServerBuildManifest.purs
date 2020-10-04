@@ -16,7 +16,7 @@ import Node.Path as Node.Path
 import Pathy
 
 type BuildManifest =
-  { pages :: NextjsApp.Route.PagesRec NextjsApp.Manifest.PageManifest.PageManifest
+  { pages :: NextjsApp.Route.RouteIdMapping NextjsApp.Manifest.PageManifest.PageManifest
   , main :: NextjsApp.Manifest.PageManifest.PageManifest
   }
 

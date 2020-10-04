@@ -29,7 +29,7 @@ import Data.Newtype
 import Node.Buffer as Node.Buffer
 import Node.Encoding as Node.Encoding
 import ModuleName
-import NextjsApp.Route (PagesRec, PagesRecRow, Route)
+import NextjsApp.Route (RouteIdMapping, RouteIdMappingRow, Route)
 
 type Options = Tuple Route Options
 
@@ -66,14 +66,14 @@ clientPagesLoaderOptionsCodec =
     # Codec.Argonaut.recordProp (SProxy :: _ "absoluteCompiledPagePursPath") absFileCodecPosixRoot
     # Codec.Argonaut.recordProp (SProxy :: _ "absoluteJsDepsPath") (Codec.Argonaut.maybe absFileCodecPosixRoot)
 
-optionsCodec :: JsonCodec (PagesRec ClientPagesLoaderOptions)
+optionsCodec :: JsonCodec (RouteIdMapping ClientPagesLoaderOptions)
 optionsCodec = Codec.Argonaut.tuple moduleNameCodec clientPagesLoaderOptionsCodec
 
 -- | TODO:
 -- | ModuleName - full name of module, e.g. ["NextjsApp", "Pages", "Examples", "Ace"]
 -- | printed ModuleName - module name as in purescript, "NextjsApp.Pages.Examples.Ace"
 -- | Page or Route - e.g. Examples__Ace
--- | PageId - string repr of Page, .e.g "Examples__Ace", this occurs in PagesRec
+-- | PageId - string repr of Page, .e.g "Examples__Ace", this occurs in RouteIdMapping
 -- | pageIdSeparator - e.g. "__"
 
 -- Not Route but Page?

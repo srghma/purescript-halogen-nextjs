@@ -143,7 +143,7 @@ loadPage :: NextjsApp.Manifest.ClientPagesManifest.ClientPagesManifest -> Web.HT
 loadPage clientPagesManifest document body head pageRegisteredEvent route = do
   pageCache <- liftEffect readPageCache
 
-  liftEffect $ appendPage (NextjsApp.Route.extractFromPagesRec route clientPagesManifest) document body head
+  liftEffect $ appendPage (NextjsApp.Route.lookupFromRouteIdMapping route clientPagesManifest) document body head
 
   case findPageInCache route pageCache of
     Just info -> pure info.page

@@ -26,30 +26,27 @@ import NextjsApp.Pages.Examples.Lazy                  as NextjsApp.Pages.Example
 
 -- XXX: you should NOT IMPORT this module from client
 
-pagesRec :: NextjsApp.Route.PagesRec Nextjs.Page.Page
-pagesRec =
+routeIdMapping :: NextjsApp.Route.RouteIdMapping Nextjs.Page.Page
+routeIdMapping =
   { "Index":  NextjsApp.Pages.Index.page
   , "Login":  NextjsApp.Pages.Login.page
   , "Signup": NextjsApp.Pages.Signup.page
   , "Secret": NextjsApp.Pages.Secret.page
 
   -- XXX: the manifest id separator is __ !!!!
-  , "Examples.Ace":                   NextjsApp.Pages.Examples.Ace.page
-  , "Examples.Basic":                 NextjsApp.Pages.Examples.Basic.page
-  , "Examples.Components":            NextjsApp.Pages.Examples.Components.page
-  , "Examples.ComponentsInputs":      NextjsApp.Pages.Examples.ComponentsInputs.page
-  , "Examples.ComponentsMultitype":   NextjsApp.Pages.Examples.ComponentsMultitype.page
-  , "Examples.EffectsAffAjax":        NextjsApp.Pages.Examples.EffectsAffAjax.page
-  , "Examples.EffectsEffectRandom":   NextjsApp.Pages.Examples.EffectsEffectRandom.page
-  , "Examples.HigherOrderComponents": NextjsApp.Pages.Examples.HigherOrderComponents.page
-  , "Examples.Interpret":             NextjsApp.Pages.Examples.Interpret.page
-  , "Examples.KeyboardInput":         NextjsApp.Pages.Examples.KeyboardInput.page
-  , "Examples.Lifecycle":             NextjsApp.Pages.Examples.Lifecycle.page
-  , "Examples.DeeplyNested":          NextjsApp.Pages.Examples.DeeplyNested.page
-  , "Examples.DynamicInput":          NextjsApp.Pages.Examples.DynamicInput.page
-  , "Examples.TextNodes":             NextjsApp.Pages.Examples.TextNodes.page
-  , "Examples.Lazy":                  NextjsApp.Pages.Examples.Lazy.page
+  , "RouteExamples__Ace":                   NextjsApp.Pages.Examples.Ace.page
+  , "RouteExamples__Basic":                 NextjsApp.Pages.Examples.Basic.page
+  , "RouteExamples__Components":            NextjsApp.Pages.Examples.Components.page
+  , "RouteExamples__ComponentsInputs":      NextjsApp.Pages.Examples.ComponentsInputs.page
+  , "RouteExamples__ComponentsMultitype":   NextjsApp.Pages.Examples.ComponentsMultitype.page
+  , "RouteExamples__EffectsAffAjax":        NextjsApp.Pages.Examples.EffectsAffAjax.page
+  , "RouteExamples__EffectsEffectRandom":   NextjsApp.Pages.Examples.EffectsEffectRandom.page
+  , "RouteExamples__HigherOrderComponents": NextjsApp.Pages.Examples.HigherOrderComponents.page
+  , "RouteExamples__Interpret":             NextjsApp.Pages.Examples.Interpret.page
+  , "RouteExamples__KeyboardInput":         NextjsApp.Pages.Examples.KeyboardInput.page
+  , "RouteExamples__Lifecycle":             NextjsApp.Pages.Examples.Lifecycle.page
+  , "RouteExamples__DeeplyNested":          NextjsApp.Pages.Examples.DeeplyNested.page
+  , "RouteExamples__DynamicInput":          NextjsApp.Pages.Examples.DynamicInput.page
+  , "RouteExamples__TextNodes":             NextjsApp.Pages.Examples.TextNodes.page
+  , "RouteExamples__Lazy":                  NextjsApp.Pages.Examples.Lazy.page
   }
-
-routeToPage :: NextjsApp.Route.Route -> Nextjs.Page.Page
-routeToPage route = NextjsApp.Route.extractFromPagesRec route pagesRec

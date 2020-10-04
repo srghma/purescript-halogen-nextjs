@@ -14,7 +14,7 @@ import Data.Nullable as Nullable
 import Foreign (Foreign, unsafeToForeign)
 import Foreign as Foreign
 import Foreign.Object as Object
-import NextjsApp.Route (PagesRec, PagesRecRow, Route)
+import NextjsApp.Route (RouteIdMapping, RouteIdMappingRow, Route)
 import NextjsApp.Template as NextjsApp.Template
 import NextjsWebpack.BuildManifestPlugin as NextjsWebpack.BuildManifestPlugin
 import NextjsWebpack.GetClientPagesEntrypoints (ClientPagesLoaderOptions)
@@ -43,7 +43,7 @@ config
   -> Effect _
 config { target, watch, production, root, pagesPath, bundleAnalyze } = do
   -- target !== "server" ? await createClientPagesEntrypoints(pagesPath) : null
-  let (entrypointsObject :: PagesRec ClientPagesLoaderOptions) = undefined
+  let (entrypointsObject :: RouteIdMapping ClientPagesLoaderOptions) = undefined
 
   entry <-
     case target of

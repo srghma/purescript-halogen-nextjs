@@ -6,7 +6,7 @@ import Halogen as H
 import Halogen.HTML as HH
 import NextjsApp.AppM (AppM)
 import NextjsApp.Link as NextjsApp.Link
-import NextjsApp.Route (Examples(..), Route(..))
+import NextjsApp.Route
 
 allRoutes :: Array Route
 allRoutes =
@@ -15,22 +15,22 @@ allRoutes =
   , Signup
   , Secret
   ] <>
-  ( map Examples $
-    [ Examples__Ace
-    , Examples__Basic
-    , Examples__Components
-    , Examples__ComponentsInputs
-    , Examples__ComponentsMultitype
-    , Examples__EffectsAffAjax
-    , Examples__EffectsEffectRandom
-    , Examples__HigherOrderComponents
-    , Examples__Interpret
-    , Examples__KeyboardInput
-    , Examples__Lifecycle
-    , Examples__DeeplyNested
-    , Examples__DynamicInput
-    , Examples__TextNodes
-    , Examples__Lazy
+  ( map RouteExamples $
+    [ RouteExamples__Ace
+    , RouteExamples__Basic
+    , RouteExamples__Components
+    , RouteExamples__ComponentsInputs
+    , RouteExamples__ComponentsMultitype
+    , RouteExamples__EffectsAffAjax
+    , RouteExamples__EffectsEffectRandom
+    , RouteExamples__HigherOrderComponents
+    , RouteExamples__Interpret
+    , RouteExamples__KeyboardInput
+    , RouteExamples__Lifecycle
+    , RouteExamples__DeeplyNested
+    , RouteExamples__DynamicInput
+    , RouteExamples__TextNodes
+    , RouteExamples__Lazy
     ]
   )
 

@@ -1,7 +1,5 @@
 module NextjsApp.Route where
 
-import Data.Lens.Iso as Lens
-import Data.Lens as Lens
 import Effect.Exception.Unsafe
 import Protolude hiding ((/))
 
@@ -12,16 +10,20 @@ import Data.Argonaut.Encode.Generic.Rep (genericEncodeJson)
 import Data.Array.NonEmpty (NonEmptyArray)
 import Data.Array.NonEmpty as NonEmptyArray
 import Data.Generic.Rep.Show (genericShow)
+import Data.Lens as Lens
+import Data.Lens.Iso as Lens
+import Data.String as String
 import Data.String.NonEmpty (NonEmptyString)
 import Data.String.NonEmpty as NonEmptyString
+import Data.String.Regex as Regex
+import Data.String.Regex.Flags as Regex
+import Data.String.Regex.Unsafe as Regex
 import Routing.Duplex (RouteDuplex', root) as Routing.Duplex
 import Routing.Duplex.Generic (noArgs, sum) as Routing.Duplex
 import Routing.Duplex.Generic.Syntax ((/))
 import Unsafe.Coerce (unsafeCoerce)
-import Data.String as String
-import Data.String.Regex as Regex
-import Data.String.Regex.Flags as Regex
-import Data.String.Regex.Unsafe as Regex
+import Foreign.Object as Object
+import Data.Symbol
 
 data RouteExamples
   = RouteExamples__Ace
@@ -61,127 +63,141 @@ instance showRoute :: Show Route where show = genericShow
 instance encodeJsonRoute :: EncodeJson Route where encodeJson = genericEncodeJson
 instance decodeJsonRoute :: DecodeJson Route where decodeJson = genericDecodeJson
 
-routeIdSeparator :: NonEmptyString
-routeIdSeparator = unsafeCoerce "__"
-
 newtype RouteId = RouteId NonEmptyString -- e.g. "RouteExamples__Ace"
 
-newtype RouteIdArray = RouteIdArray (NonEmptyArray NonEmptyString) -- String repr of a route
+derive instance newtypeRouteId :: Newtype RouteId _
 
-maybeRouteIdToRoute :: String -> Maybe Route
-maybeRouteIdToRoute =
-  case _ of
-       "Index"                                -> Just $ Index
-       "Login"                                -> Just $ Login
-       "Signup"                               -> Just $ Signup
-       "Secret"                               -> Just $ Secret
-       "RouteExamples__Ace"                   -> Just $ RouteExamples RouteExamples__Ace
-       "RouteExamples__Basic"                 -> Just $ RouteExamples RouteExamples__Basic
-       "RouteExamples__Components"            -> Just $ RouteExamples RouteExamples__Components
-       "RouteExamples__ComponentsInputs"      -> Just $ RouteExamples RouteExamples__ComponentsInputs
-       "RouteExamples__ComponentsMultitype"   -> Just $ RouteExamples RouteExamples__ComponentsMultitype
-       "RouteExamples__EffectsAffAjax"        -> Just $ RouteExamples RouteExamples__EffectsAffAjax
-       "RouteExamples__EffectsEffectRandom"   -> Just $ RouteExamples RouteExamples__EffectsEffectRandom
-       "RouteExamples__HigherOrderComponents" -> Just $ RouteExamples RouteExamples__HigherOrderComponents
-       "RouteExamples__Interpret"             -> Just $ RouteExamples RouteExamples__Interpret
-       "RouteExamples__KeyboardInput"         -> Just $ RouteExamples RouteExamples__KeyboardInput
-       "RouteExamples__Lifecycle"             -> Just $ RouteExamples RouteExamples__Lifecycle
-       "RouteExamples__DeeplyNested"          -> Just $ RouteExamples RouteExamples__DeeplyNested
-       "RouteExamples__DynamicInput"          -> Just $ RouteExamples RouteExamples__DynamicInput
-       "RouteExamples__TextNodes"             -> Just $ RouteExamples RouteExamples__TextNodes
-       "RouteExamples__Lazy"                  -> Just $ RouteExamples RouteExamples__Lazy
-       _                                      -> Nothing
+routeIdToString :: RouteId -> String
+routeIdToString = unsafeCoerce
 
-_routeToRouteIdIso :: Lens.Iso' Route RouteId
-_routeToRouteIdIso = Lens.iso to from
-  where
-    to :: Route -> RouteId
-    to = (unsafeCoerce :: String -> RouteId) <<<
-      case _ of
-           Index  -> "Index"
-           Login  -> "Login"
-           Signup -> "Signup"
-           Secret -> "Secret"
-           RouteExamples routesexamples ->
-             case routesexamples of
-                  RouteExamples__Ace                   -> "RouteExamples__Ace"
-                  RouteExamples__Basic                 -> "RouteExamples__Basic"
-                  RouteExamples__Components            -> "RouteExamples__Components"
-                  RouteExamples__ComponentsInputs      -> "RouteExamples__ComponentsInputs"
-                  RouteExamples__ComponentsMultitype   -> "RouteExamples__ComponentsMultitype"
-                  RouteExamples__EffectsAffAjax        -> "RouteExamples__EffectsAffAjax"
-                  RouteExamples__EffectsEffectRandom   -> "RouteExamples__EffectsEffectRandom"
-                  RouteExamples__HigherOrderComponents -> "RouteExamples__HigherOrderComponents"
-                  RouteExamples__Interpret             -> "RouteExamples__Interpret"
-                  RouteExamples__KeyboardInput         -> "RouteExamples__KeyboardInput"
-                  RouteExamples__Lifecycle             -> "RouteExamples__Lifecycle"
-                  RouteExamples__DeeplyNested          -> "RouteExamples__DeeplyNested"
-                  RouteExamples__DynamicInput          -> "RouteExamples__DynamicInput"
-                  RouteExamples__TextNodes             -> "RouteExamples__TextNodes"
-                  RouteExamples__Lazy                  -> "RouteExamples__Lazy"
+newtype RouteIdArray = RouteIdArray (NonEmptyArray NonEmptyString) -- String repr of a route, e.g. ["RouteExamples", "Ace"]
 
-    from:: RouteId -> Route
-    from (RouteId id) =
-      case maybeRouteIdToRoute (NonEmptyString.toString id) of
-           Just route -> route
-           Nothing -> unsafeThrow $ "UNSAFE EXCEPTION: cannot convert RouteId " <> (NonEmptyString.toString id) <> " to Route"
+derive instance newtypeRouteIdArray :: Newtype RouteIdArray _
 
-_routeToRouteIdArrayIso :: Lens.Iso' Route RouteIdArray
-_routeToRouteIdArrayIso = Lens.iso to from
-  where
-    to :: Route -> RouteIdArray
-    to = Lens.view _routeToRouteIdIso >>> (unsafeCoerce :: RouteId -> String) >>> String.split (String.Pattern (NonEmptyString.toString routeIdSeparator)) >>> (unsafeCoerce :: Array String -> RouteIdArray)
+routeIdArrayToArrayString :: RouteIdArray -> Array String
+routeIdArrayToArrayString = unsafeCoerce
 
-    from:: RouteIdArray -> Route
-    from = (unsafeCoerce :: RouteIdArray -> Array String) >>> String.joinWith (NonEmptyString.toString routeIdSeparator) >>> (unsafeCoerce :: String -> RouteId) >>> Lens.review _routeToRouteIdIso
-
-type PagesRecRow a =
+type RouteIdMappingRow a =
   ( "Index"  :: a
   , "Login"  :: a
   , "Signup" :: a
   , "Secret" :: a
 
-  -- is using pagesRecSeparator
-  , "RouteExamples.Ace"                   :: a
-  , "RouteExamples.Basic"                 :: a
-  , "RouteExamples.Components"            :: a
-  , "RouteExamples.ComponentsInputs"      :: a
-  , "RouteExamples.ComponentsMultitype"   :: a
-  , "RouteExamples.EffectsAffAjax"        :: a
-  , "RouteExamples.EffectsEffectRandom"   :: a
-  , "RouteExamples.HigherOrderComponents" :: a
-  , "RouteExamples.Interpret"             :: a
-  , "RouteExamples.KeyboardInput"         :: a
-  , "RouteExamples.Lifecycle"             :: a
-  , "RouteExamples.DeeplyNested"          :: a
-  , "RouteExamples.DynamicInput"          :: a
-  , "RouteExamples.TextNodes"             :: a
-  , "RouteExamples.Lazy"                  :: a
+  -- is using routeIdSeparator
+  , "RouteExamples__Ace"                   :: a
+  , "RouteExamples__Basic"                 :: a
+  , "RouteExamples__Components"            :: a
+  , "RouteExamples__ComponentsInputs"      :: a
+  , "RouteExamples__ComponentsMultitype"   :: a
+  , "RouteExamples__EffectsAffAjax"        :: a
+  , "RouteExamples__EffectsEffectRandom"   :: a
+  , "RouteExamples__HigherOrderComponents" :: a
+  , "RouteExamples__Interpret"             :: a
+  , "RouteExamples__KeyboardInput"         :: a
+  , "RouteExamples__Lifecycle"             :: a
+  , "RouteExamples__DeeplyNested"          :: a
+  , "RouteExamples__DynamicInput"          :: a
+  , "RouteExamples__TextNodes"             :: a
+  , "RouteExamples__Lazy"                  :: a
   )
 
-type PagesRec a = Record (PagesRecRow a)
+type RouteIdMapping a = Record (RouteIdMappingRow a)
 
-extractFromPagesRec :: forall a . Route -> PagesRec a -> a
-extractFromPagesRec =
+--- THESE ARE THE 3 SOURCES OF TRUTH - separator and 2 *things* that define bidirectional mapping
+
+routeIdSeparator :: SProxy "__"
+routeIdSeparator = SProxy
+
+-- written as record for memoization AND to make `RouteIdMapping` total
+routeIdToRouteMapping :: RouteIdMapping Route
+routeIdToRouteMapping =
+  { "Index":  Index
+  , "Login":  Login
+  , "Signup": Signup
+  , "Secret": Secret
+
+  -- is using routeIdSeparator
+  , "RouteExamples__Ace":                   RouteExamples RouteExamples__Ace
+  , "RouteExamples__Basic":                 RouteExamples RouteExamples__Basic
+  , "RouteExamples__Components":            RouteExamples RouteExamples__Components
+  , "RouteExamples__ComponentsInputs":      RouteExamples RouteExamples__ComponentsInputs
+  , "RouteExamples__ComponentsMultitype":   RouteExamples RouteExamples__ComponentsMultitype
+  , "RouteExamples__EffectsAffAjax":        RouteExamples RouteExamples__EffectsAffAjax
+  , "RouteExamples__EffectsEffectRandom":   RouteExamples RouteExamples__EffectsEffectRandom
+  , "RouteExamples__HigherOrderComponents": RouteExamples RouteExamples__HigherOrderComponents
+  , "RouteExamples__Interpret":             RouteExamples RouteExamples__Interpret
+  , "RouteExamples__KeyboardInput":         RouteExamples RouteExamples__KeyboardInput
+  , "RouteExamples__Lifecycle":             RouteExamples RouteExamples__Lifecycle
+  , "RouteExamples__DeeplyNested":          RouteExamples RouteExamples__DeeplyNested
+  , "RouteExamples__DynamicInput":          RouteExamples RouteExamples__DynamicInput
+  , "RouteExamples__TextNodes":             RouteExamples RouteExamples__TextNodes
+  , "RouteExamples__Lazy":                  RouteExamples RouteExamples__Lazy
+  }
+
+-- | cannot replace this with `Map Route RouteId`, because this WILL NOT be type safe / total mapping
+-- | would LIKE to replace this with record
+-- |
+-- | TODO: derive from `routeIdToRouteMapping`
+routeToRouteId :: Route -> RouteId
+routeToRouteId = (unsafeCoerce :: String -> RouteId) <<<
   case _ of
-       Index  -> _."Index"
-       Login  -> _."Login"
-       Signup -> _."Signup"
-       Secret -> _."Secret"
+       Index  -> "Index"
+       Login  -> "Login"
+       Signup -> "Signup"
+       Secret -> "Secret"
        RouteExamples routesexamples ->
          case routesexamples of
-              RouteExamples__Ace                   -> _."RouteExamples.Ace"
-              RouteExamples__Basic                 -> _."RouteExamples.Basic"
-              RouteExamples__Components            -> _."RouteExamples.Components"
-              RouteExamples__ComponentsInputs      -> _."RouteExamples.ComponentsInputs"
-              RouteExamples__ComponentsMultitype   -> _."RouteExamples.ComponentsMultitype"
-              RouteExamples__EffectsAffAjax        -> _."RouteExamples.EffectsAffAjax"
-              RouteExamples__EffectsEffectRandom   -> _."RouteExamples.EffectsEffectRandom"
-              RouteExamples__HigherOrderComponents -> _."RouteExamples.HigherOrderComponents"
-              RouteExamples__Interpret             -> _."RouteExamples.Interpret"
-              RouteExamples__KeyboardInput         -> _."RouteExamples.KeyboardInput"
-              RouteExamples__Lifecycle             -> _."RouteExamples.Lifecycle"
-              RouteExamples__DeeplyNested          -> _."RouteExamples.DeeplyNested"
-              RouteExamples__DynamicInput          -> _."RouteExamples.DynamicInput"
-              RouteExamples__TextNodes             -> _."RouteExamples.TextNodes"
-              RouteExamples__Lazy                  -> _."RouteExamples.Lazy"
+              RouteExamples__Ace                   -> "RouteExamples__Ace"
+              RouteExamples__Basic                 -> "RouteExamples__Basic"
+              RouteExamples__Components            -> "RouteExamples__Components"
+              RouteExamples__ComponentsInputs      -> "RouteExamples__ComponentsInputs"
+              RouteExamples__ComponentsMultitype   -> "RouteExamples__ComponentsMultitype"
+              RouteExamples__EffectsAffAjax        -> "RouteExamples__EffectsAffAjax"
+              RouteExamples__EffectsEffectRandom   -> "RouteExamples__EffectsEffectRandom"
+              RouteExamples__HigherOrderComponents -> "RouteExamples__HigherOrderComponents"
+              RouteExamples__Interpret             -> "RouteExamples__Interpret"
+              RouteExamples__KeyboardInput         -> "RouteExamples__KeyboardInput"
+              RouteExamples__Lifecycle             -> "RouteExamples__Lifecycle"
+              RouteExamples__DeeplyNested          -> "RouteExamples__DeeplyNested"
+              RouteExamples__DynamicInput          -> "RouteExamples__DynamicInput"
+              RouteExamples__TextNodes             -> "RouteExamples__TextNodes"
+              RouteExamples__Lazy                  -> "RouteExamples__Lazy"
+
+---------------------
+
+-- EVERYTHING ELSE IS DERIVED FROM THEM
+
+-- |
+-- | String  --stringToMaybeRoute-->  Route  <---_routeToRouteIdIso--->  RouteId  <---_routeIdToRouteIdArrayIso--->  RouteIdArray
+-- |
+
+stringToMaybeRoute :: String -> Maybe Route
+stringToMaybeRoute field = Object.lookup field (Object.fromHomogeneous routeIdToRouteMapping)
+
+_routeToRouteIdIso :: Lens.Iso' Route RouteId
+_routeToRouteIdIso = Lens.iso routeToRouteId from
+  where
+    from:: RouteId -> Route
+    from (RouteId id) =
+      case stringToMaybeRoute (NonEmptyString.toString id) of
+           Just route -> route
+           Nothing -> unsafeThrow $ "_routeToRouteIdIso -> from: impossible case, RouteId \"" <> (NonEmptyString.toString id) <> "\" is not valid, because cannot be found in routeIdToRouteMapping"
+
+_routeIdToRouteIdArrayIso :: Lens.Iso' RouteId RouteIdArray
+_routeIdToRouteIdArrayIso = Lens.iso to from
+  where
+    to :: RouteId -> RouteIdArray
+    to = routeIdToString >>> String.split (String.Pattern (reflectSymbol routeIdSeparator)) >>> (unsafeCoerce :: Array String -> RouteIdArray)
+
+    from:: RouteIdArray -> RouteId
+    from = routeIdArrayToArrayString >>> String.joinWith (reflectSymbol routeIdSeparator) >>> (unsafeCoerce :: String -> RouteId)
+
+---------------------------------
+
+lookupFromRouteIdMapping :: forall a . Route -> RouteIdMapping a -> a
+lookupFromRouteIdMapping route routeIdToTmthingMapping =
+  let
+    (field :: String) = routeIdToString $ routeToRouteId route
+  in case Object.lookup field (Object.fromHomogeneous routeIdToTmthingMapping) of
+          Just a -> a
+          _ -> unsafeThrow $ "lookupFromRouteIdMapping: impossible case, routeToRouteId function is not total, becuase field \"" <> field <> "\" cannot be found in given routeIdToTmthingMapping"

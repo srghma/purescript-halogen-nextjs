@@ -6,7 +6,7 @@ import Halogen as H
 import Halogen.HTML as HH
 import NextjsApp.AppM (AppM)
 import NextjsApp.Link as NextjsApp.Link
-import NextjsApp.Route (Examples(..), Route(..))
+import NextjsApp.Route
 
 type Query = Const Void
 

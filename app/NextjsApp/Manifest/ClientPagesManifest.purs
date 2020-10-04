@@ -9,7 +9,7 @@ import Web.DOM.ParentNode as Web.DOM.ParentNode
 import Data.Argonaut.Decode as ArgonautCodecs
 import NextjsApp.Constants as NextjsApp.Constants
 
-type ClientPagesManifest = NextjsApp.Route.PagesRec NextjsApp.Manifest.PageManifest.PageManifest
+type ClientPagesManifest = NextjsApp.Route.RouteIdMapping NextjsApp.Manifest.PageManifest.PageManifest
 
 getBuildManifest :: Aff ClientPagesManifest
 getBuildManifest = do
