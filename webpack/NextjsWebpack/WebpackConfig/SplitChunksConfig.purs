@@ -1,4 +1,4 @@
-module Webpack.WebpackConfig.SplitChunksConfig where
+module NextjsWebpack.WebpackConfig.SplitChunksConfig where
 
 import Protolude
 import Webpack.WebpackConfig.Types

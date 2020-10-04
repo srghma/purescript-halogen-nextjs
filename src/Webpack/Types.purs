@@ -1,4 +1,4 @@
-module Webpack.WebpackConfig.Types where
+module Webpack.Types where
 
 import Data.String.Regex
 import Data.String.Regex.Flags
@@ -14,3 +14,12 @@ type UseElement = { loader :: String, options :: Nullable LoaderOptions }
 type Rule = { test :: Regex, use :: Array UseElement }
 
 data SplitChunksConfig
+
+data WebpackEntrypont
+
+data Compilation
+
+data RawSource
+
+data WebpackPluginInstance
+

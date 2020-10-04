@@ -1,4 +1,4 @@
-module Webpack.BuildManifestPlugin where
+module NextjsWebpack.BuildManifestPlugin where
 
 import Protolude
 import NextjsApp.Manifest.ServerBuildManifest
@@ -17,16 +17,6 @@ import Data.Argonaut.Encode as ArgonautCodecs
 import Data.Argonaut.Core (Json, stringifyWithIndent)
 import Pathy
 import Webpack.Types
-
-foreign import webpackEntrypontName :: EffectFn1 WebpackEntrypont String
-
-foreign import webpackEntrypontGetFiles :: EffectFn1 WebpackEntrypont (Array String)
-
-foreign import rawSource :: String -> RawSource
-
-foreign import compilationSetAsset :: EffectFn3 Compilation String RawSource Unit
-
-foreign import compilationGetEntrypoints :: EffectFn1 Compilation (Object WebpackEntrypont)
 
 foreign import mkBuildManifestPlugin :: (EffectFn1 Compilation Unit) -> WebpackPluginInstance
 

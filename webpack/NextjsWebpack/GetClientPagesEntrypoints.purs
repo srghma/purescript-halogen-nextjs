@@ -1,4 +1,4 @@
-module Webpack.GetClientPagesEntrypoints where
+module NextjsWebpack.GetClientPagesEntrypoints where
 -- Copy of
 --
 -- https://github.com/vercel/next.js/blob/b88f20c90bf4659b8ad5cb2a27956005eac2c7e8/packages/next/build/entries.ts#L131

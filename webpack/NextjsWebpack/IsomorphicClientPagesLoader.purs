@@ -1,4 +1,4 @@
-module Webpack.IsomorphicClientPagesLoader (loader) where
+module NextjsWebpack.IsomorphicClientPagesLoader (loader) where
 
 import Control.Promise
 import Effect.Uncurried

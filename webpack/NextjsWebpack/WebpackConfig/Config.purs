@@ -1,4 +1,4 @@
-module Webpack.WebpackConfig.Config where
+module NextjsWebpack.WebpackConfig.Config where
 
 import Control.Promise
 import Effect.Uncurried
@@ -19,27 +19,6 @@ import Webpack.GetClientPagesEntrypoints (ClientPagesLoaderOptions)
 import Webpack.WebpackConfig.SplitChunksConfig as Webpack.WebpackConfig.SplitChunksConfig
 
 -- https://github.com/zeit/next.js/blob/450d4bd0f32a042fd452c81bc3850ec31306eab3/packages/next/next-server/lib/constants.ts#L35
-
-foreign import _MiniCssExtractPlugin :: forall options . { | options } -> WebpackPluginInstance
-
-foreign import webpack ::
-  { _DefinePlugin :: forall options . Nullable { | options } -> WebpackPluginInstance
-  , _ProvidePlugin :: forall options . { | options } ->  WebpackPluginInstance
-  , _NoEmitOnErrorsPlugin :: WebpackPluginInstance
-  , optimize ::
-    { _LimitChunkCountPlugin :: forall options . { | options } ->  WebpackPluginInstance
-    }
-  }
-
-foreign import _CleanWebpackPlugin :: WebpackPluginInstance
-
-foreign import _BundleAnalyzerPlugin :: forall options . { | options } -> WebpackPluginInstance
-
-foreign import _HtmlWebpackPlugin :: forall options . { | options } -> WebpackPluginInstance
-
-data HtmlWebpackPlugin__Tags
-
-foreign import htmlWebpackPlugin__tags__toString :: HtmlWebpackPlugin__Tags -> Array String
 
 
 client_static_files_runtime_webpack = "webpack"

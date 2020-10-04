@@ -1,4 +1,4 @@
-module Webpack.WebpackSpagoLoader where
+module WebpackSpagoLoader where
 
 import Protolude
 import Webpack.WebpackConfig.Types

@@ -46,6 +46,8 @@
   , "profunctor"
   , "newtype"
   , "homogeneous-records"
+  , "record-extra"
+  , "record-extra-srghma"
   ]
 , packages = ./packages.dhall
 , sources =

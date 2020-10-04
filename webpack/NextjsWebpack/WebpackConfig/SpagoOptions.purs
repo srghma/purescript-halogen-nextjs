@@ -1,4 +1,4 @@
-module Webpack.WebpackConfig.SpagoOptions where
+module NextjsWebpack.WebpackConfig.SpagoOptions where
 
 import Protolude
 

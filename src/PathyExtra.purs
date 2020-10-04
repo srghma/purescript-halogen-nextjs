@@ -1,4 +1,4 @@
-module Webpack.Build where
+module PathyExtra where
 
 import Protolude
 
@@ -20,8 +20,3 @@ cwd = Node.Process.cwd >>= \(d :: String) ->
        Just d' -> pure d'
        Nothing -> throwError $ error $ d <> "is cwd, but not absolute"
 
-
-main :: Effect Unit
-main = do
-  root <- cwd
-  Console.log $ Ansi.withGraphics (Ansi.foreground Ansi.BrightGreen) $ "Using static files dir: "

@@ -1,4 +1,4 @@
-module Webpack.WebpackConfig.Rules where
+module NextjsWebpack.WebpackConfig.Rules where
 
 import Data.String.Regex
 import Data.String.Regex.Flags
