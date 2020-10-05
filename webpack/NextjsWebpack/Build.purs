@@ -17,5 +17,6 @@ import PathyExtra
 
 main :: Effect Unit
 main = do
+  entrypointsObject <- undefined
   root <- cwd
   Console.log $ Ansi.withGraphics (Ansi.foreground Ansi.BrightGreen) $ "Using static files dir: "
