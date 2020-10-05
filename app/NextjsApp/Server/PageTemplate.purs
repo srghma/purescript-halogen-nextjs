@@ -4,7 +4,7 @@ import Protolude
 
 import Data.Argonaut.Core as ArgonautCore
 import Data.Argonaut.Encode as ArgonautCodecs
-import Data.String (joinWith) as String
+import Data.String as String
 import NextjsApp.Manifest.ClientPagesManifest as NextjsApp.Manifest.ClientPagesManifest
 import NextjsApp.Manifest.PageManifest as NextjsApp.Manifest.PageManifest
 import Data.Nullable (Nullable)

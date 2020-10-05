@@ -1,6 +1,6 @@
 module NextjsApp.Link.Types where
 
-import Halogen (SubscriptionId) as H
+import Halogen as H
 import NextjsApp.Route as NextjsApp.Route
 import Web.UIEvent.MouseEvent as Web.UIEvent.MouseEvent
 import Protolude

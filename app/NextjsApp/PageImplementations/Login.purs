@@ -3,8 +3,8 @@ module NextjsApp.PageImplementations.Login (component) where
 import Material.Classes.LayoutGrid
 import Protolude
 
-import Data.Array (singleton) as Array
-import Data.Lens.Record (prop) as Lens
+import Data.Array as Array
+import Data.Lens.Record as Lens
 import Halogen (Slot)
 import Halogen as H
 import Halogen.HTML as HH

@@ -12,9 +12,9 @@ import Halogen.HTML as HH
 import Halogen.Query.Event (eventListenerEventSource)
 import Halogen.VDom.Driver (runUI)
 import Web.Event.Event as E
-import Web.HTML (window) as Web
+import Web.HTML as Web
 import Web.HTML.HTMLDocument as HTMLDocument
-import Web.HTML.Window (document) as Web
+import Web.HTML.Window as Web
 import Web.UIEvent.KeyboardEvent (KeyboardEvent)
 import Web.UIEvent.KeyboardEvent as KE
 import Web.UIEvent.KeyboardEvent.EventTypes as KET

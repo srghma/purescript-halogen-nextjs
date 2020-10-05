@@ -20,7 +20,7 @@ import Data.Nullable (Nullable)
 import Data.Nullable as Nullable
 import Foreign (Foreign)
 import Foreign as Foreign
-import Foreign.Object (Object, fromHomogeneous)
+import Foreign.Object (Object)
 import Foreign.Object as Object
 import NextjsApp.Route (RouteIdMapping, RouteIdMappingRow, Route)
 import NextjsApp.Route as NextjsApp.Route

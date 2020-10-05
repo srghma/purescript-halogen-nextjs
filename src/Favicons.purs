@@ -3,7 +3,7 @@ module Favicons where
 import Protolude
 
 import Data.Nullable (Nullable)
-import Data.Nullable (null) as Nullable
+import Data.Nullable as Nullable
 
 type FaviconsConfig =
   { path                        :: String   -- Path for overriding default icons path. `string`

@@ -5,10 +5,10 @@ import Data.Newtype                     as Newtype
 import Halogen                          as Halogen
 import Halogen.HTML                     as Halogen.HTML
 import Halogen.Component                as Halogen.Component
-import Halogen.Query.Input (Input) as Halogen.Query
-import Halogen.VDom (VDom) as HalogenVDom
-import Halogen.VDom.DOM.Prop (Prop) as HalogenVDom
-import Halogen.VDom.Thunk (runThunk) as HalogenVDom
+import Halogen.Query.Input as Halogen.Query
+import Halogen.VDom as HalogenVDom
+import Halogen.VDom.DOM.Prop as HalogenVDom
+import Halogen.VDom.Thunk as HalogenVDom
 import Halogen.VDom.DOM.StringRenderer  as HalogenVdomStringRenderer.DOM
 
 renderComponentImpl :: ∀ query input output m . input -> Halogen.Component query input output m -> String

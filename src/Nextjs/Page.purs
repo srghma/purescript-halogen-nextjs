@@ -5,8 +5,8 @@ import Protolude (type (\/), Aff, Const, Either(..), Void, bind, pure, ($), (<#>
 
 import Affjax as Affjax
 import Data.Argonaut.Core as ArgonautCore
-import Data.Argonaut.Decode (class DecodeJson, JsonDecodeError, decodeJson) as ArgonautCodecs
-import Data.Argonaut.Encode (class EncodeJson, encodeJson) as ArgonautCodecs
+import Data.Argonaut.Decode as ArgonautCodecs
+import Data.Argonaut.Encode as ArgonautCodecs
 import Halogen as Halogen
 import Nextjs.Api as Nextjs.Api
 import Unsafe.Coerce (unsafeCoerce)

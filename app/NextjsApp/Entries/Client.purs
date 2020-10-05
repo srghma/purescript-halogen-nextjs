@@ -1,6 +1,6 @@
 module NextjsApp.Entries.Client where
 
-import Data.Argonaut.Core (Json) as ArgonautCore
+import Data.Argonaut.Core as ArgonautCore
 import Data.Argonaut.Decode as ArgonautCodecs
 import Data.Either (hush)
 import Effect.Aff as Effect.Aff

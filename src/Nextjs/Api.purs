@@ -4,7 +4,7 @@ import Protolude
 
 import Affjax as Affjax
 import Data.Argonaut.Core as ArgonautCore
-import Data.Argonaut.Decode (JsonDecodeError, printJsonDecodeError) as ArgonautCodecs
+import Data.Argonaut.Decode as ArgonautCodecs
 
 data ApiError
   = ApiAffjaxError Affjax.Error

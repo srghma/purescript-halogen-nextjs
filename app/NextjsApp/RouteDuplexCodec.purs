@@ -19,8 +19,8 @@ import Data.String.NonEmpty as NonEmptyString
 import Data.String.Regex as Regex
 import Data.String.Regex.Flags as Regex
 import Data.String.Regex.Unsafe as Regex
-import Routing.Duplex (RouteDuplex', root) as Routing.Duplex
-import Routing.Duplex.Generic (noArgs, sum) as Routing.Duplex
+import Routing.Duplex as Routing.Duplex
+import Routing.Duplex.Generic as Routing.Duplex
 import Routing.Duplex.Generic.Syntax ((/))
 import Unsafe.Coerce (unsafeCoerce)
 import Foreign.Object as Object

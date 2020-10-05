@@ -3,7 +3,7 @@ module NextjsApp.Server.Config where
 import Protolude
 
 import Ansi.Codes (Color(..)) as Ansi
-import Ansi.Output (foreground, withGraphics) as Ansi
+import Ansi.Output as Ansi
 import Data.Int as Integers
 import Effect.Class.Console as Console
 import Node.Process as NodeProcess.Process

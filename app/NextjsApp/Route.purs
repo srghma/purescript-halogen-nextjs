@@ -22,8 +22,8 @@ import Data.String.Regex.Unsafe as Regex
 import Foreign.Object (Object)
 import Foreign.Object as Object
 import Record.ExtraSrghma as Record.ExtraSrghma
-import Routing.Duplex (RouteDuplex', root) as Routing.Duplex
-import Routing.Duplex.Generic (noArgs, sum) as Routing.Duplex
+import Routing.Duplex as Routing.Duplex
+import Routing.Duplex.Generic as Routing.Duplex
 import Routing.Duplex.Generic.Syntax ((/))
 import Type.Prelude (RProxy(..))
 import Unsafe.Coerce (unsafeCoerce)

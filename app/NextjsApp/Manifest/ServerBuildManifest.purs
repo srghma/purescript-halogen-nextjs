@@ -4,7 +4,7 @@ import Protolude
 
 import Data.Argonaut.Decode (JsonDecodeError)
 import Data.Argonaut.Decode as ArgonautCodecs
-import Data.Argonaut.Decode.Parser (parseJson) as ArgonautCodecs
+import Data.Argonaut.Decode.Parser as ArgonautCodecs
 import Effect.Console (log)
 import Nextjs.Utils as Nextjs.Utils
 import NextjsApp.Manifest.PageManifest as NextjsApp.Manifest.PageManifest

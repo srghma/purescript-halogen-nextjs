@@ -1,10 +1,10 @@
 module NextjsApp.Pages.Examples.DynamicInput (page) where
 
 import Affjax as Affjax
-import Affjax.RequestBody (json) as Affjax.RequestBody
-import Affjax.ResponseFormat (json) as Affjax.ResponseFormat
+import Affjax.RequestBody as Affjax.RequestBody
+import Affjax.ResponseFormat as Affjax.ResponseFormat
 import Data.Argonaut as ArgonautCore
-import Data.Argonaut.Encode (encodeJson) as ArgonautCodecs
+import Data.Argonaut.Encode as ArgonautCodecs
 import Example.DynamicInput.Container as Example.DynamicInput.Container
 import Halogen as H
 import Nextjs.Page (Page, PageData(..), PageSpec, mkCodec, mkPage)
