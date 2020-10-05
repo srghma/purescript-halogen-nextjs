@@ -81,6 +81,7 @@ derive newtype instance eqRouteIdArray :: Eq RouteIdArray
 routeIdArrayToArrayString :: RouteIdArray -> Array String
 routeIdArrayToArrayString = unsafeCoerce
 
+-- the key is a RouteId
 type RouteIdMappingRow a =
   ( "Index"  :: a
   , "Login"  :: a
@@ -107,7 +108,8 @@ type RouteIdMappingRow a =
 
 type RouteIdMapping a = Record (RouteIdMappingRow a)
 
---- THESE ARE THE 3 SOURCES OF TRUTH - separator and 2 *things* that define bidirectional mapping
+-- THESE ARE THE 3 SOURCES OF TRUTH - separator and 2 *things* that define bidirectional total bijectional mapping `RouteId <-> Route`
+-- EVERYTHING ELSE IS DERIVED FROM THEM
 
 routeIdSeparator :: SProxy "__"
 routeIdSeparator = SProxy
@@ -138,38 +140,33 @@ routeIdToRouteMapping =
   , "RouteExamples__Lazy":                  RouteExamples RouteExamples__Lazy
   }
 
--- | cannot replace this with `Map Route RouteId`, because this WILL NOT be type safe / total mapping
--- | would LIKE to replace this with record
--- |
--- | TODO: derive from `routeIdToRouteMapping`
-routeToRouteId :: Route -> RouteId
-routeToRouteId = (unsafeCoerce :: String -> RouteId) <<<
+-- written as a accessor finder to make it total bidirectional mapping / bijection
+lookupFromRouteIdMapping :: forall a . Route -> RouteIdMapping a -> a
+lookupFromRouteIdMapping =
   case _ of
-       Index  -> "Index"
-       Login  -> "Login"
-       Signup -> "Signup"
-       Secret -> "Secret"
+       Index  -> _."Index"
+       Login  -> _."Login"
+       Signup -> _."Signup"
+       Secret -> _."Secret"
        RouteExamples routesexamples ->
          case routesexamples of
-              RouteExamples__Ace                   -> "RouteExamples__Ace"
-              RouteExamples__Basic                 -> "RouteExamples__Basic"
-              RouteExamples__Components            -> "RouteExamples__Components"
-              RouteExamples__ComponentsInputs      -> "RouteExamples__ComponentsInputs"
-              RouteExamples__ComponentsMultitype   -> "RouteExamples__ComponentsMultitype"
-              RouteExamples__EffectsAffAjax        -> "RouteExamples__EffectsAffAjax"
-              RouteExamples__EffectsEffectRandom   -> "RouteExamples__EffectsEffectRandom"
-              RouteExamples__HigherOrderComponents -> "RouteExamples__HigherOrderComponents"
-              RouteExamples__Interpret             -> "RouteExamples__Interpret"
-              RouteExamples__KeyboardInput         -> "RouteExamples__KeyboardInput"
-              RouteExamples__Lifecycle             -> "RouteExamples__Lifecycle"
-              RouteExamples__DeeplyNested          -> "RouteExamples__DeeplyNested"
-              RouteExamples__DynamicInput          -> "RouteExamples__DynamicInput"
-              RouteExamples__TextNodes             -> "RouteExamples__TextNodes"
-              RouteExamples__Lazy                  -> "RouteExamples__Lazy"
+              RouteExamples__Ace                   -> _."RouteExamples__Ace"
+              RouteExamples__Basic                 -> _."RouteExamples__Basic"
+              RouteExamples__Components            -> _."RouteExamples__Components"
+              RouteExamples__ComponentsInputs      -> _."RouteExamples__ComponentsInputs"
+              RouteExamples__ComponentsMultitype   -> _."RouteExamples__ComponentsMultitype"
+              RouteExamples__EffectsAffAjax        -> _."RouteExamples__EffectsAffAjax"
+              RouteExamples__EffectsEffectRandom   -> _."RouteExamples__EffectsEffectRandom"
+              RouteExamples__HigherOrderComponents -> _."RouteExamples__HigherOrderComponents"
+              RouteExamples__Interpret             -> _."RouteExamples__Interpret"
+              RouteExamples__KeyboardInput         -> _."RouteExamples__KeyboardInput"
+              RouteExamples__Lifecycle             -> _."RouteExamples__Lifecycle"
+              RouteExamples__DeeplyNested          -> _."RouteExamples__DeeplyNested"
+              RouteExamples__DynamicInput          -> _."RouteExamples__DynamicInput"
+              RouteExamples__TextNodes             -> _."RouteExamples__TextNodes"
+              RouteExamples__Lazy                  -> _."RouteExamples__Lazy"
 
 ---------------------
-
--- EVERYTHING ELSE IS DERIVED FROM THEM
 
 -- |
 -- | String  --stringToMaybeRoute-->  Route  <---_routeToRouteIdIso--->  RouteId  <---_routeIdToRouteIdArrayIso--->  RouteIdArray
@@ -182,8 +179,23 @@ stringToMaybeRouteId :: String -> Maybe RouteId
 stringToMaybeRouteId = stringToMaybeRoute >>> map (Lens.view _routeToRouteIdIso)
 
 _routeToRouteIdIso :: Lens.Iso' Route RouteId
-_routeToRouteIdIso = Lens.iso routeToRouteId from
+_routeToRouteIdIso = Lens.iso to from
   where
+    unsafeStringToRecordId :: String -> RouteId
+    unsafeStringToRecordId string =
+        case NonEmptyString.fromString string of
+             Just string' -> RouteId string'
+             _ -> unsafeThrow $ "unsafeStringToRecordId: expected non-empty string, but got " <> string
+
+    -- This is smart
+    reifiedRecordWhereKeyAndValueAreRecordId :: RouteIdMapping RouteId
+    reifiedRecordWhereKeyAndValueAreRecordId = Record.ExtraSrghma.mapIndex unsafeStringToRecordId (RProxy :: forall type_ . RProxy (RouteIdMappingRow type_))
+
+    -- Wow This is smart
+    to :: Route -> RouteId
+    to route = lookupFromRouteIdMapping route reifiedRecordWhereKeyAndValueAreRecordId
+
+    ----------------------------
     from:: RouteId -> Route
     from (RouteId id) =
       case stringToMaybeRoute (NonEmptyString.toString id) of
@@ -198,13 +210,3 @@ _routeIdToRouteIdArrayIso = Lens.iso to from
 
     from:: RouteIdArray -> RouteId
     from = routeIdArrayToArrayString >>> String.joinWith (reflectSymbol routeIdSeparator) >>> (unsafeCoerce :: String -> RouteId)
-
----------------------------------
-
-lookupFromRouteIdMapping :: forall a . Route -> RouteIdMapping a -> a
-lookupFromRouteIdMapping route routeIdToTmthingMapping =
-  let
-    (field :: String) = routeIdToString $ routeToRouteId route
-  in case Object.lookup field (Object.fromHomogeneous routeIdToTmthingMapping) of
-          Just a -> a
-          _ -> unsafeThrow $ "lookupFromRouteIdMapping: impossible case, routeToRouteId function is not total, becuase field \"" <> field <> "\" cannot be found in given routeIdToTmthingMapping"
