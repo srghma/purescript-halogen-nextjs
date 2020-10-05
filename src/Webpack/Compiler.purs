@@ -14,6 +14,7 @@ import Data.Array as Array
 import Data.Array.NonEmpty (NonEmptyArray)
 import Data.Array.NonEmpty as NonEmptyArray
 import Unsafe.Coerce
+import Webpack.Types
 
 -- https://github.com/DefinitelyTyped/DefinitelyTyped/blob/7bcd046f24df925802e1d1d04a7fd6f19b54cde0/types/webpack/index.d.ts#L1312
 type Compilation =
@@ -39,10 +40,6 @@ type MultiHandler = Nullable Error -> MultiStats -> Effect Unit
 data Compiler
 
 data MultiCompiler
-
-----------
-
-type Configuration = {  }
 
 ----------
 

@@ -14,6 +14,7 @@ import Node.Encoding as Node.Encoding
 import Node.FS.Sync as Node.FS.Sync
 import Node.Path as Node.Path
 import Pathy
+import PathyExtra
 
 type BuildManifest =
   { pages :: NextjsApp.Route.RouteIdMapping NextjsApp.Manifest.PageManifest.PageManifest
@@ -27,7 +28,7 @@ getBuildManifest :: NextjsApp.Server.Config.Config -> Effect BuildManifest
 getBuildManifest config = do
   let manifestAbsPath = config.rootPath </> file (SProxy :: SProxy "build-manifest") <.> "json"
 
-  content <- Node.FS.Sync.readTextFile Node.Encoding.UTF8 (printPath posixPrinter (sandboxAny manifestAbsPath))
+  content <- Node.FS.Sync.readTextFile Node.Encoding.UTF8 (printPathPosixSandboxAny manifestAbsPath)
 
   case decodeBuildManifest content of
        Left decodeError -> do

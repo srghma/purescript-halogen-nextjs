@@ -6,10 +6,11 @@ import Data.String as String
 import WebpackSpagoLoader
 import Effect.Uncurried
 import Pathy
+import PathyExtra
 
 spagoOptions :: Path Abs File -> Effect SpagoOptions
 spagoOptions spagoDhall = do
-  let spagoDhall' = printPath posixPrinter (sandboxAny spagoDhall)
+  let spagoDhall' = printPathPosixSandboxAny spagoDhall
   output <- runEffectFn1 getAbsoluteOutputDirFromSpago spagoDhall'
   pursFiles <- runEffectFn1 getSourcesFromSpago spagoDhall'
   pure

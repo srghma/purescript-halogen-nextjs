@@ -1,4 +1,4 @@
-module NextjsWebpack.IsomorphicClientPagesLoader (loader) where
+module NextjsWebpack.IsomorphicClientPagesLoader (loader, optionsCodec) where
 
 import Control.Promise
 import Data.Codec
@@ -30,6 +30,7 @@ import NextjsApp.Route (RouteIdMapping, RouteIdMappingRow, Route, RouteId)
 import NextjsApp.Route as NextjsApp.Route
 import Node.Buffer as Node.Buffer
 import Node.Encoding as Node.Encoding
+import PathyExtra
 
 type Options = Tuple Route ClientPagesLoaderOptions
 
@@ -85,12 +86,12 @@ loader = mkAsyncLoader \context buffer -> liftEffect do
     source = String.joinWith "" <<< map (\x -> x <> ";") $
       [ case clientPagesLoaderOptions.absoluteJsDepsPath of
              Nothing -> ""
-             Just absoluteJsDepsPath -> "require(" <> printPath posixPrinter (sandboxAny absoluteJsDepsPath) <> ")"
+             Just absoluteJsDepsPath -> "require(" <> printPathPosixSandboxAny absoluteJsDepsPath <> ")"
       , String.joinWith ""
           [ "(window.__PAGE_CACHE_BUS=window.__PAGE_CACHE_BUS||[]).push({ routeId:"
           , NextjsApp.Route.routeIdToString $ Lens.view NextjsApp.Route._routeToRouteIdIso $ route
           , ", page: require("
-          , printPath posixPrinter (sandboxAny clientPagesLoaderOptions.absoluteCompiledPagePursPath)
+          , printPathPosixSandboxAny clientPagesLoaderOptions.absoluteCompiledPagePursPath
           , ").page })"
           ]
       ]

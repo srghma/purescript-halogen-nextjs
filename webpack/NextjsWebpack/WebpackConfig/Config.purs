@@ -1,24 +1,38 @@
 module NextjsWebpack.WebpackConfig.Config where
 
+import ContribWebpackPlugins
 import Control.Promise
 import Effect.Uncurried
 import Pathy
+import PathyExtra
 import Protolude
-import Webpack.Types
 import Webpack.Plugins
-import ContribWebpackPlugins
+import Webpack.Types
 
+import Data.Argonaut.Core (Json)
 import Data.Array as Array
-import Data.Nullable (Nullable, notNull)
+import Data.Codec.Argonaut (JsonCodec, JsonDecodeError(..))
+import Data.Codec.Argonaut as Codec.Argonaut
+import Data.Codec.Argonaut.Common as Codec.Argonaut
+import Data.Lens as Lens
+import Data.Lens.Iso as Lens
+import Data.Nullable (Nullable)
 import Data.Nullable as Nullable
-import Foreign (Foreign, unsafeToForeign)
+import Foreign (Foreign)
 import Foreign as Foreign
+import Foreign.Object (Object, fromHomogeneous)
 import Foreign.Object as Object
 import NextjsApp.Route (RouteIdMapping, RouteIdMappingRow, Route)
+import NextjsApp.Route as NextjsApp.Route
 import NextjsApp.Template as NextjsApp.Template
 import NextjsWebpack.BuildManifestPlugin as NextjsWebpack.BuildManifestPlugin
 import NextjsWebpack.GetClientPagesEntrypoints (ClientPagesLoaderOptions)
+import NextjsWebpack.IsomorphicClientPagesLoader as NextjsWebpack.IsomorphicClientPagesLoader
+import NextjsWebpack.WebpackConfig.Rules as NextjsWebpack.WebpackConfig.Rules
 import NextjsWebpack.WebpackConfig.SplitChunksConfig as NextjsWebpack.WebpackConfig.SplitChunksConfig
+import Node.URL as Node.URL
+import Record as Record
+import Unsafe.Coerce (unsafeCoerce)
 
 -- https://github.com/zeit/next.js/blob/450d4bd0f32a042fd452c81bc3850ec31306eab3/packages/next/next-server/lib/constants.ts#L35
 
@@ -26,13 +40,15 @@ import NextjsWebpack.WebpackConfig.SplitChunksConfig as NextjsWebpack.WebpackCon
 client_static_files_runtime_webpack = "webpack"
 
 data Target
-  = Target__Browser
+  = Target__Browser { entrypointsObject :: RouteIdMapping ClientPagesLoaderOptions }
   | Target__Server
-  | Target__Mobile
+  | Target__Mobile { entrypointsObject :: RouteIdMapping ClientPagesLoaderOptions }
+
+toQuery :: Json -> Node.URL.Query
+toQuery = unsafeCoerce
 
 config
-  :: forall configProps
-   . { target :: Target
+  :: { target :: Target
      , watch :: Boolean
      , production :: Boolean
      , root :: Path Abs Dir
@@ -40,95 +56,98 @@ config
      , bundleAnalyze :: Boolean
      , spagoOutput :: Path Abs Dir
      }
-  -> Effect _
-config { target, watch, production, root, pagesPath, bundleAnalyze } = do
-  -- target !== "server" ? await createClientPagesEntrypoints(pagesPath) : null
-  let (entrypointsObject :: RouteIdMapping ClientPagesLoaderOptions) = undefined
+  -> Effect Configuration
+config { target, watch, production, root, pagesPath, bundleAnalyze, spagoOutput } = do
+  let (entry :: Object (Array String)) =
+        case target of
+            Target__Server -> Object.fromHomogeneous
+                { main: Array.singleton $ printPathPosixSandboxAny $ root </> dir (SProxy :: SProxy "app") </> file (SProxy :: SProxy "server.entry.js")
+                }
 
-  entry <-
-    case target of
-         -- R.mapObjIndexed((val, key) => `isomorphic-client-pages-loader?${querystring.stringify({ ...val, routeId: key })}!`, entrypointsObject)
-         -- | let isomorphicEntrypointsObject = undefined
+            Target__Browser { entrypointsObject } ->
+                let
+                  (pages :: RouteIdMapping (Array String)) =
+                    flip NextjsApp.Route.mapRouteIdMappingWithKey entrypointsObject \routeId clientPagesLoaderOptions ->
+                      let
+                        (route :: Route) = Lens.review NextjsApp.Route._routeToRouteIdIso routeId
+                      in Array.singleton $ "isomorphic-client-pages-loader?" <> Node.URL.toQueryString (toQuery $ Codec.Argonaut.encode NextjsWebpack.IsomorphicClientPagesLoader.optionsCodec (route /\ clientPagesLoaderOptions))
 
-         -- R.mergeAll([isomorphicEntrypointsObject, { main: path.resolve(root, "app", "client.entry.js") }])
+                  mainPage =
+                    { main: Array.singleton $ printPathPosixSandboxAny $ root </> dir (SProxy :: SProxy "app") </> file (SProxy :: SProxy "client.entry.js")
+                    }
+                 in Object.fromHomogeneous $ Record.union pages mainPage
+            Target__Mobile { entrypointsObject } ->
+              let
+                (absoluteJsDepsPaths :: Array (Path Abs File)) = Array.catMaybes $ map _.absoluteJsDepsPath $ Object.values $ Object.fromHomogeneous entrypointsObject
 
-        Target__Browser -> pure undefined
-        Target__Server -> pure { main: root </> dir (SProxy :: SProxy "app") </> file (SProxy :: SProxy "server.entry.js") }
-        Target__Mobile -> pure undefined
-          -- | let absoluteJsDepsPaths = R.pipe(
-          -- |   R.values,
-          -- |   R.map(R.prop("absoluteJsDepsPath")),
-          -- |   RA.compact
-          -- | )(entrypointsObject)
+                mainPath = root </> dir (SProxy :: SProxy "app") </> file (SProxy :: SProxy "mobile.entry.js")
 
-          -- | let mainPath = path.resolve(root, "app", "mobile.entry.js")
-
-          -- | let mainPathWithJsDeps = [...absoluteJsDepsPaths, mainPath]
-
-          -- | return { main: mainPathWithJsDeps }
+               in Object.fromHomogeneous { main: map printPathPosixSandboxAny $ absoluteJsDepsPaths <> [ mainPath ] }
 
   pure
     { watch
     , target:
         case target of
-            Target__Browser -> "web"
-            Target__Mobile -> "web"
+            Target__Browser _ -> "web"
             Target__Server -> "node"
+            Target__Mobile _ -> "web"
     , mode: if production then "production" else "development"
     -- mode: "development"
     , devServer:
         case target of
-          Target__Browser -> Nullable.null
+          Target__Browser _ -> Nullable.null
           Target__Server -> Nullable.null
-          Target__Mobile -> Nullable.notNull
+          Target__Mobile _ -> Nullable.notNull
             { hot: false
             }
     , output:
       { path:
           let outputDir = if production then dir (SProxy :: SProxy ".dist") else dir (SProxy :: SProxy ".dist-dev")
-          in case target of
-                  Target__Browser -> root </> outputDir </> dir (SProxy :: SProxy "client")
-                  Target__Server -> root </> outputDir </> dir (SProxy :: SProxy "server")
-                  Target__Mobile -> root </> dir (SProxy :: SProxy "www")
+          in printPathPosixSandboxAny $
+            case target of
+                 Target__Browser _ -> root </> outputDir </> dir (SProxy :: SProxy "client")
+                 Target__Server -> root </> outputDir </> dir (SProxy :: SProxy "server")
+                 Target__Mobile _ -> root </> dir (SProxy :: SProxy "www")
 
       , filename: case target of
-          Target__Browser -> if production then "[name]-[contenthash].js" else "[name].js"
+          Target__Browser _ -> if production then "[name]-[contenthash].js" else "[name].js"
           Target__Server -> "[name].js"
-          Target__Mobile -> "index.js"
+          Target__Mobile _ -> "index.js"
 
       , publicPath: case target of
-          Target__Browser -> "/"
+          Target__Browser _ -> "/"
           Target__Server -> "/"
-          Target__Mobile -> "./" -- from https://github.com/jantimon/html-webpack-plugin/issues/488
+          Target__Mobile _ -> "./" -- from https://github.com/jantimon/html-webpack-plugin/issues/488
 
       , libraryTarget: case target of
           Target__Server -> "commonjs2"
-          Target__Browser -> "var"
-          Target__Mobile -> "var"
+          Target__Browser _ -> "var"
+          Target__Mobile _ -> "var"
 
       -- This saves chunks with the name given via `import()`
       , chunkFilename: case target of
-          Target__Browser -> Nullable.notNull $ "chunks/" <> if production then "[name]-[contenthash]" else "[name]" <> ".js"
+          Target__Browser _ -> Nullable.notNull $ "chunks/" <> if production then "[name]-[contenthash]" else "[name]" <> ".js"
           Target__Server -> Nullable.null
-          Target__Mobile -> Nullable.null
+          Target__Mobile _ -> Nullable.null
       }
-    , entry
+    , entry: entry
 
     , node: case target of
-        Target__Server -> unsafeToForeign
+        Target__Server -> Foreign.unsafeToForeign
           { __dirname: false -- possible values: false - runtime, true - during complilation, "mock" - "/"
           }
-        _ -> unsafeToForeign false
+        _ -> Foreign.unsafeToForeign false
 
     , bail: true
     , profile: false
     , stats: "errors-only"
-    , context: root
+    , context: printPathPosixSandboxAny root
     , devtool: case target of
-        Target__Server -> unsafeToForeign false
-        _ -> if production then unsafeToForeign false else unsafeToForeign "eval"
+        Target__Server -> Foreign.unsafeToForeign false
+        _ -> if production then Foreign.unsafeToForeign false else Foreign.unsafeToForeign "eval"
 
-    , "module": undefined -- { rules: require("./rules")({ target, production }) }
+    , "module": { rules: NextjsWebpack.WebpackConfig.Rules.rules { spagoAbsoluteOutputDir: printPathPosixSandboxAny spagoOutput, production } }
+
     , resolve:
       { modules: [ "node_modules" ]
       , extensions: [ ".purs", ".js"]
@@ -139,8 +158,8 @@ config { target, watch, production, root, pagesPath, bundleAnalyze } = do
       , alias:
           { "isomorphic-client-pages-loader":
             case target of
-                 Target__Browser -> unsafeToForeign $ root </> dir (SProxy :: SProxy "webpack") </> file (SProxy :: SProxy "isomorphic-client-pages-loader.js")
-                 _ -> unsafeToForeign false
+                 Target__Browser _ -> Foreign.unsafeToForeign $ root </> dir (SProxy :: SProxy "webpack") </> file (SProxy :: SProxy "isomorphic-client-pages-loader.js")
+                 _ -> Foreign.unsafeToForeign false
           }
       }
     -- TODO: per page https://github.com/webpack-contrib/mini-css-extract-plugin#extracting-css-based-on-entry
@@ -148,15 +167,15 @@ config { target, watch, production, root, pagesPath, bundleAnalyze } = do
       [ Just $ _MiniCssExtractPlugin
         { filename:
           case target of
-              Target__Browser -> if production then "css/[name].[hash].css" else "css/[name].css"
+              Target__Browser _ -> if production then "css/[name].[hash].css" else "css/[name].css"
               Target__Server -> if production then "css/[name].[hash].css" else "css/[name].css"
-              Target__Mobile -> "index.css"
+              Target__Mobile _ -> "index.css"
 
         , chunkFilename:
           case target of
-              Target__Browser -> if production then "css/[id].[hash].css" else "css/[id].css"
+              Target__Browser _ -> if production then "css/[id].[hash].css" else "css/[id].css"
               Target__Server -> if production then "css/[id].[hash].css" else "css/[id].css"
-              Target__Mobile -> "index.css"
+              Target__Mobile _ -> "index.css"
         }
       , Just $ webpack._DefinePlugin $
           case target of
@@ -179,11 +198,11 @@ config { target, watch, production, root, pagesPath, bundleAnalyze } = do
           else Nothing
 
       , case target of
-            Target__Browser -> Just $ NextjsWebpack.BuildManifestPlugin.buildManifestPlugin
+            Target__Browser _ -> Just $ NextjsWebpack.BuildManifestPlugin.buildManifestPlugin
             _ -> Nothing
 
       , case target of
-            Target__Mobile -> Just $ _HtmlWebpackPlugin
+            Target__Mobile _ -> Just $ _HtmlWebpackPlugin
                 { minify: false
                 , inject: false -- dont inject headTags and bodyTags after template is generated - we will do that ourselves
                 , templateContent: \options -> NextjsApp.Template.template
@@ -198,30 +217,31 @@ config { target, watch, production, root, pagesPath, bundleAnalyze } = do
       -- from https://medium.com/@glennreyes/how-to-disable-code-splitting-in-webpack-1c0b1754a3c5
       -- disables chunks completely for mobile , disables lazy loaded files `import("./file.js")`
       , case target of
-            Target__Mobile -> Just $ webpack.optimize._LimitChunkCountPlugin { maxChunks: 1 }
+            Target__Mobile _ -> Just $ webpack.optimize._LimitChunkCountPlugin { maxChunks: 1 }
             _ -> Nothing
       ]
     , optimization:
       { noEmitOnErrors: true
 
-      , splitChunks: case target of
-             Target__Browser -> unsafeToForeign $
+      , splitChunks:
+        case target of
+             Target__Browser { entrypointsObject } -> Foreign.unsafeToForeign $
                NextjsWebpack.WebpackConfig.SplitChunksConfig.splitChunksConfig
                { totalPages: Array.length $ Object.keys $ Object.fromHomogeneous entrypointsObject
                }
-             _ -> unsafeToForeign false
+             _ -> Foreign.unsafeToForeign false
 
       , nodeEnv: false
 
       , runtimeChunk:
         case target of
             -- extract webpack runtime to separate module, e.g. "/runtime/webpack-xxxxx.js"
-            Target__Browser -> unsafeToForeign { name: client_static_files_runtime_webpack }
-            _ -> unsafeToForeign false
+            Target__Browser _ -> Foreign.unsafeToForeign { name: client_static_files_runtime_webpack }
+            _ -> Foreign.unsafeToForeign false
 
       , minimize:
         case target of
-             Target__Browser -> production
+             Target__Browser _ -> production
              _ -> false
 
       -- | minimizer: production && target === "browser" ? [

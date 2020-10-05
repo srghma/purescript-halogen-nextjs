@@ -1,6 +1,7 @@
 module NextjsApp.Entries.Server where
 
 import Pathy
+import PathyExtra
 import Protolude
 
 import Affjax as Affjax
@@ -132,7 +133,7 @@ main = launchAff_ do
 
   buildManifest <- liftEffect $ NextjsApp.Manifest.ServerBuildManifest.getBuildManifest config
 
-  let (rootPath' :: String) = printPath posixPrinter (sandboxAny config.rootPath)
+  let (rootPath' :: String) = printPathPosixSandboxAny config.rootPath
 
   Protolude.Node.filePathExistsAndIs Node.FS.Stats.isDirectory rootPath' >>=
     if _

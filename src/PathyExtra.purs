@@ -20,3 +20,4 @@ cwd = Node.Process.cwd >>= \(d :: String) ->
        Just d' -> pure d'
        Nothing -> throwError $ error $ d <> "is cwd, but not absolute"
 
+printPathPosixSandboxAny = printPath posixPrinter <<< sandboxAny

@@ -48,6 +48,7 @@
   , "homogeneous-records"
   , "record-extra"
   , "record-extra-srghma"
+  , "node-url"
   ]
 , packages = ./packages.dhall
 , sources =

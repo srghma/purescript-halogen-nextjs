@@ -19,6 +19,7 @@ import Data.String.NonEmpty as NonEmptyString
 import Data.String.Regex as Regex
 import Data.String.Regex.Flags as Regex
 import Data.String.Regex.Unsafe as Regex
+import Foreign.Object (Object)
 import Foreign.Object as Object
 import Record.ExtraSrghma as Record.ExtraSrghma
 import Routing.Duplex (RouteDuplex', root) as Routing.Duplex
@@ -167,6 +168,9 @@ lookupFromRouteIdMapping =
               RouteExamples__Lazy                  -> _."RouteExamples__Lazy"
 
 ---------------------
+
+mapRouteIdMappingWithKey :: forall a b . (RouteId -> a -> b) -> RouteIdMapping a -> RouteIdMapping b
+mapRouteIdMappingWithKey f mapping = (unsafeCoerce :: Object b -> RouteIdMapping b) $ Object.mapWithKey ((unsafeCoerce :: (RouteId -> a -> b) -> String -> a -> b) f) $ Object.fromHomogeneous mapping
 
 -- |
 -- | String  --stringToMaybeRoute-->  Route  <---_routeToRouteIdIso--->  RouteId  <---_routeIdToRouteIdArrayIso--->  RouteIdArray
