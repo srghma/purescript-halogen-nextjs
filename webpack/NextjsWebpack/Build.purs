@@ -3,7 +3,7 @@ module NextjsWebpack.Build where
 import Protolude
 
 import Affjax as Affjax
-import Ansi.Codes (Color(..)) as Ansi
+import Ansi.Codes as Ansi
 import Ansi.Output as Ansi
 import Data.Argonaut.Core as ArgonautCore
 import Data.Argonaut.Decode as ArgonautCodecs

@@ -2,7 +2,7 @@ module NextjsApp.Server.Config where
 
 import Protolude
 
-import Ansi.Codes (Color(..)) as Ansi
+import Ansi.Codes as Ansi
 import Ansi.Output as Ansi
 import Data.Int as Integers
 import Effect.Class.Console as Console

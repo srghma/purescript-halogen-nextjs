@@ -5,7 +5,7 @@ import PathyExtra
 import Protolude
 
 import Affjax as Affjax
-import Ansi.Codes (Color(..)) as Ansi
+import Ansi.Codes as Ansi
 import Ansi.Output as Ansi
 import Control.Monad.Indexed.Qualified as IndexedMonad
 import Data.Argonaut.Core as ArgonautCore
@@ -15,7 +15,7 @@ import Effect.Class.Console as Console
 import Hyper.Conn as Hyper
 import Hyper.Middleware as Hyper
 import Hyper.Node.FileServer as Hyper.Node
-import Hyper.Node.Server (HttpRequest, HttpResponse, Port(..), defaultOptionsWithLogging, runServer) as Hyper.Node
+import Hyper.Node.Server as Hyper.Node
 import Hyper.Request as Hyper
 import Hyper.Response as Hyper
 import Hyper.Status as Hyper
