@@ -160,8 +160,8 @@ config { target, watch, production, root, bundleAnalyze, spagoOutput } =
       { alias: Object.fromHomogeneous
           { "isomorphic-client-pages-loader":
             case target of
-                 Target__Browser _ -> Foreign.unsafeToForeign $ printPathPosixSandboxAny $ root </> dir (SProxy :: SProxy "webpack") </> file (SProxy :: SProxy "isomorphic-client-pages-loader.js")
-                 -- | Target__Browser _ -> Foreign.unsafeToForeign $ printPathPosixSandboxAny $ spagoOutput </> dir (SProxy :: SProxy "NextjsWebpack.IsomorphicClientPagesLoader") </> file (SProxy :: SProxy "index.js")
+                 -- | Target__Browser _ -> Foreign.unsafeToForeign $ printPathPosixSandboxAny $ root </> dir (SProxy :: SProxy "webpack") </> file (SProxy :: SProxy "isomorphic-client-pages-loader.js")
+                 Target__Browser _ -> Foreign.unsafeToForeign $ printPathPosixSandboxAny $ spagoOutput </> dir (SProxy :: SProxy "NextjsWebpack.IsomorphicClientPagesLoader") </> file (SProxy :: SProxy "index.js")
                  _ -> Foreign.unsafeToForeign false
           }
       }

@@ -1,4 +1,4 @@
-module NextjsWebpack.IsomorphicClientPagesLoader (loader, optionsCodec) where
+module NextjsWebpack.IsomorphicClientPagesLoader (default, optionsCodec) where
 
 import Control.Promise
 import Data.Codec
@@ -74,8 +74,12 @@ optionsCodec =
     # Codec.Argonaut.recordProp (SProxy :: _ "absoluteJsDepsPath") (Codec.Argonaut.maybe absFileCodecPosixRoot)
     # Codec.Argonaut.recordProp (SProxy :: _ "route") (routeCodec)
 
-loader :: Loader
-loader = mkAsyncLoader \context buffer -> liftEffect do
+-- | "default" is a magic word
+-- | https://github.com/webpack/loader-runner/blob/cebc687275edc688a5d8cf0d7c9a2be34c67fa4d/lib/loadLoader.js#L45
+-- | https://github.com/webpack/webpack/issues/11581#issuecomment-704200033
+
+default :: Loader
+default = mkAsyncLoader \context buffer -> liftEffect do
   json <- getOptions context
 
   traceM json
