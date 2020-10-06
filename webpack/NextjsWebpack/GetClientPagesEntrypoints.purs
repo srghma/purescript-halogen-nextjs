@@ -12,9 +12,11 @@ module NextjsWebpack.GetClientPagesEntrypoints where
 -- script prefetched https://github.com/vercel/next.js/blob/3036463080d7905aa22da46e63f6c50dd50adc3c/packages/next/client/page-loader.js#L36-L49
 -- script added https://github.com/vercel/next.js/blob/42a328f3e44a560d45821a582beb257fdeea10af/packages/next/client/page-loader.js#L254
 
+import ModuleName
+import NextjsApp.Route
 import Pathy
 import Protolude
-import NextjsApp.Route
+import Unsafe.Coerce
 
 import Control.Parallel (parSequence)
 import Data.Array as Array
@@ -28,15 +30,14 @@ import Data.String.NonEmpty as NonEmptyString
 import Data.String.Regex as Regex
 import Data.String.Regex.Flags as Regex
 import Data.String.Regex.Unsafe as Regex
-import Firstline (firstline)
+import Firstline as Firstline
+import NextjsApp.RouteToPageModuleName as NextjsApp.RouteToPageModuleName
 import Node.FS.Stats as Node.FS.Stats
 import Protolude.Node as Protolude.Node
-import RecursiveReaddirAsync (DirOrFile(..), recursiveTreeList)
-import Unsafe.Coerce
-import ModuleName
 import Record.Extra as Record.Extra
 import Record.Homogeneous as Record.Homogeneous
-import NextjsApp.RouteToPageModuleName as NextjsApp.RouteToPageModuleName
+import RecursiveReaddirAsync (DirOrFile(..), recursiveTreeList)
+import Record.ExtraSrghma as Record.ExtraSrghma
 
 -- | moduleNameToManifestPageId :: ModuleName -> String
 -- | moduleNameToManifestPageId (ModuleName m) = String.joinWith manifestPageIdSeparator (NonEmptyArray.toArray $ map NonEmptyString.toString m)
@@ -54,7 +55,7 @@ type ClientPagesLoaderOptions =
 
 -- | getFileModule :: Path Abs File -> Aff ModuleName
 -- | getFileModule = \filePath -> do
--- |   firstLine <- firstline filePath
+-- |   firstLine <- Firstline.firstline filePath
 
 -- |   let
 -- |       (trimmedModuleName :: Maybe String) = (Regex.match moduleNameRegex firstLine >>= NonEmptyArray.head) <#> String.trim
@@ -106,5 +107,4 @@ getClientPagesEntrypoints { pagesDir, spagoAbsoluteOutputDir } = do
               }
         )
 
-  undefined
-  -- | processTree spagoAbsoluteOutputDir tree <#> Map.fromFoldable
+  Record.ExtraSrghma.parSequenceRecord pagesToOptionsRec

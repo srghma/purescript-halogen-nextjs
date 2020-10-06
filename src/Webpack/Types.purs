@@ -30,9 +30,7 @@ data WebpackPluginInstance
 type Configuration =
   { bail :: Boolean
   , context :: FilePath -- Path Abs Dir
-  , devServer :: Nullable
-                   { hot :: Boolean
-                   }
+  , devServer :: Foreign
   , devtool :: Foreign
   , entry :: Object (Array FilePath) -- Path Abs File
   , mode :: String
@@ -53,11 +51,11 @@ type Configuration =
   , plugins :: Array WebpackPluginInstance
   , profile :: Boolean
   , resolve :: { extensions :: Array String
-               , modules :: Array String
+               -- | , modules :: Array String
                }
-  , resolveLoader :: { alias :: { "isomorphic-client-pages-loader" :: Foreign
-                                }
-                     , modules :: Array String
+  , resolveLoader :: { alias :: Object Foreign
+                     -- | , mainFields :: Array String
+                     -- | , modules :: Array String
                      }
   , stats :: String
   , target :: String

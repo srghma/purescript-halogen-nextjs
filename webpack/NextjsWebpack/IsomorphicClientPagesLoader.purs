@@ -7,7 +7,6 @@ import Effect.Uncurried
 import Foreign
 import LoaderUtils
 import ModuleName
-import NextjsWebpack.GetClientPagesEntrypoints
 import Pathy
 import Pathy
 import Protolude
@@ -32,7 +31,11 @@ import Node.Buffer as Node.Buffer
 import Node.Encoding as Node.Encoding
 import PathyExtra
 
-type Options = Tuple Route ClientPagesLoaderOptions
+type Options =
+  { absoluteCompiledPagePursPath :: Path Abs File         -- e.g. ".../output/Foo/index.js"
+  , absoluteJsDepsPath           :: Maybe (Path Abs File) -- e.g. ".../app/Pages/Foo.deps.js" or null
+  , route                        :: Route
+  }
 
 prismaticCodecNamed :: forall a b . String -> (a -> Maybe b) -> (b -> a) -> JsonCodec a -> JsonCodec b
 prismaticCodecNamed name decode encode codec = Codec.Argonaut.prismaticCodec decode encode codec # hoistCodec (lmap (Named name))
@@ -64,34 +67,34 @@ absFileCodecPosixRoot = absFileCodec
   , sandboxer: sandboxAny
   }
 
-clientPagesLoaderOptionsCodec :: JsonCodec ClientPagesLoaderOptions
-clientPagesLoaderOptionsCodec =
-  Codec.Argonaut.object "ClientPagesLoaderOptions" $ Codec.Argonaut.record
+optionsCodec :: JsonCodec Options
+optionsCodec =
+  Codec.Argonaut.object "Options" $ Codec.Argonaut.record
     # Codec.Argonaut.recordProp (SProxy :: _ "absoluteCompiledPagePursPath") absFileCodecPosixRoot
     # Codec.Argonaut.recordProp (SProxy :: _ "absoluteJsDepsPath") (Codec.Argonaut.maybe absFileCodecPosixRoot)
-
-optionsCodec :: JsonCodec Options
-optionsCodec = Codec.Argonaut.tuple routeCodec clientPagesLoaderOptionsCodec
+    # Codec.Argonaut.recordProp (SProxy :: _ "route") (routeCodec)
 
 loader :: Loader
 loader = mkAsyncLoader \context buffer -> liftEffect do
-  (options :: Json) <- getOptions context
+  json <- getOptions context
 
-  (route /\ clientPagesLoaderOptions) <-
-    case Codec.Argonaut.decode optionsCodec options of
+  traceM json
+
+  options <-
+    case Codec.Argonaut.decode optionsCodec json of
        Left decodeError -> throwError $ error $ Codec.Argonaut.printJsonDecodeError decodeError
-       Right options' -> pure options'
+       Right options -> pure options
 
   let
     source = String.joinWith "" <<< map (\x -> x <> ";") $
-      [ case clientPagesLoaderOptions.absoluteJsDepsPath of
+      [ case options.absoluteJsDepsPath of
              Nothing -> ""
              Just absoluteJsDepsPath -> "require(" <> printPathPosixSandboxAny absoluteJsDepsPath <> ")"
       , String.joinWith ""
           [ "(window.__PAGE_CACHE_BUS=window.__PAGE_CACHE_BUS||[]).push({ routeId:"
-          , NextjsApp.Route.routeIdToString $ Lens.view NextjsApp.Route._routeToRouteIdIso $ route
+          , NextjsApp.Route.routeIdToString $ Lens.view NextjsApp.Route._routeToRouteIdIso $ options.route
           , ", page: require("
-          , printPathPosixSandboxAny clientPagesLoaderOptions.absoluteCompiledPagePursPath
+          , printPathPosixSandboxAny options.absoluteCompiledPagePursPath
           , ").page })"
           ]
       ]

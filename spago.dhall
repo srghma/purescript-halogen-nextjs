@@ -49,6 +49,7 @@
   , "record-extra"
   , "record-extra-srghma"
   , "node-url"
+  , "foreign-generic"
   ]
 , packages = ./packages.dhall
 , sources =

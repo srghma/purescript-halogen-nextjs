@@ -29,12 +29,6 @@ type MultiStats =
   { stats :: Array Stats
   }
 
-type Handler' = EffectFn2 (Nullable Error) Stats Unit
-type Handler = Nullable Error -> Stats -> Effect Unit
-
-type MultiHandler' = EffectFn2 (Nullable Error) MultiStats Unit
-type MultiHandler = Nullable Error -> MultiStats -> Effect Unit
-
 ----------
 
 data Compiler
@@ -48,36 +42,40 @@ foreign import _webpackCompilerRun :: EffectFn2 Foreign Foreign Unit
 
 webpackCompilerRun
   :: Compiler
-  -> Handler
+  -> (Maybe Error -> Stats -> Effect Unit)
   -> Effect Unit
 webpackCompilerRun = \compiler handler -> runEffectFn2 _webpackCompilerRun (coerceCompiler compiler) (coerceHandler' $ coerceHandler handler)
   where
     coerceCompiler = (unsafeCoerce :: Compiler -> Foreign)
-    coerceHandler' = (unsafeCoerce :: Handler' -> Foreign)
-    coerceHandler = (mkEffectFn2 :: Handler -> Handler')
+    coerceHandler' = (unsafeCoerce :: EffectFn2 (Nullable Error) Stats Unit -> Foreign)
+
+    coerceHandler :: (Maybe Error -> Stats -> Effect Unit) -> EffectFn2 (Nullable Error) Stats Unit
+    coerceHandler multihandler = mkEffectFn2 \nerror stats -> multihandler (Nullable.toMaybe nerror) stats
 
 webpackCompilerRunMulti
   :: MultiCompiler
-  -> MultiHandler
+  -> (Maybe Error -> MultiStats -> Effect Unit)
   -> Effect Unit
 webpackCompilerRunMulti = \compiler multihandler -> runEffectFn2 _webpackCompilerRun (coerceCompiler compiler) (coerceMultiHandler' $ coerceMultiHandler multihandler)
   where
     coerceCompiler = (unsafeCoerce :: MultiCompiler -> Foreign)
-    coerceMultiHandler' = (unsafeCoerce :: MultiHandler' -> Foreign)
-    coerceMultiHandler = (mkEffectFn2 :: MultiHandler -> MultiHandler')
+    coerceMultiHandler' = (unsafeCoerce :: EffectFn2 (Nullable Error) MultiStats Unit -> Foreign)
+
+    coerceMultiHandler :: (Maybe Error -> MultiStats -> Effect Unit) -> EffectFn2 (Nullable Error) MultiStats Unit
+    coerceMultiHandler multihandler = mkEffectFn2 \nerror stats -> multihandler (Nullable.toMaybe nerror) stats
 
 ----------
 
-foreign import _webpack :: EffectFn1 Foreign Foreign
+foreign import _webpack :: Fn1 Foreign Foreign
 
-webpackCompiler :: Configuration -> Effect Compiler
-webpackCompiler = \compiler -> runEffectFn1 _webpack (coerceConfig compiler) # map coerceToCompiler
+webpackCompiler :: Configuration -> Compiler
+webpackCompiler = \compiler -> runFn1 _webpack (coerceConfig compiler) # coerceToCompiler
   where
     coerceToCompiler = (unsafeCoerce :: Foreign -> Compiler)
     coerceConfig = (unsafeCoerce :: Configuration -> Foreign)
 
-webpackCompilerMulti :: Array Configuration -> Effect MultiCompiler
-webpackCompilerMulti = \compiler -> runEffectFn1 _webpack (coerceConfig compiler) # map coerceToCompiler
+webpackCompilerMulti :: Array Configuration -> MultiCompiler
+webpackCompilerMulti = \compiler -> runFn1 _webpack (coerceConfig compiler) # coerceToCompiler
   where
     coerceToCompiler = (unsafeCoerce :: Foreign -> MultiCompiler)
     coerceConfig = (unsafeCoerce :: Array Configuration -> Foreign)

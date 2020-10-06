@@ -20,6 +20,7 @@ import Data.Nullable (Nullable)
 import Data.Nullable as Nullable
 import Foreign (Foreign)
 import Foreign as Foreign
+import Foreign.NullOrUndefined as Foreign.NullOrUndefined
 import Foreign.Object (Object)
 import Foreign.Object as Object
 import NextjsApp.Route (RouteIdMapping, RouteIdMappingRow, Route)
@@ -36,14 +37,12 @@ import Unsafe.Coerce (unsafeCoerce)
 
 -- https://github.com/zeit/next.js/blob/450d4bd0f32a042fd452c81bc3850ec31306eab3/packages/next/next-server/lib/constants.ts#L35
 
-
-client_static_files_runtime_webpack = "webpack"
-
 data Target
   = Target__Browser { entrypointsObject :: RouteIdMapping ClientPagesLoaderOptions }
   | Target__Server
   | Target__Mobile { entrypointsObject :: RouteIdMapping ClientPagesLoaderOptions }
 
+-- | Should be one level
 toQuery :: Json -> Node.URL.Query
 toQuery = unsafeCoerce
 
@@ -52,12 +51,11 @@ config
      , watch :: Boolean
      , production :: Boolean
      , root :: Path Abs Dir
-     , pagesPath :: Path Abs Dir
      , bundleAnalyze :: Boolean
      , spagoOutput :: Path Abs Dir
      }
-  -> Effect Configuration
-config { target, watch, production, root, pagesPath, bundleAnalyze, spagoOutput } = do
+  -> Configuration
+config { target, watch, production, root, bundleAnalyze, spagoOutput } =
   let (entry :: Object (Array String)) =
         case target of
             Target__Server -> Object.fromHomogeneous
@@ -70,7 +68,13 @@ config { target, watch, production, root, pagesPath, bundleAnalyze, spagoOutput 
                     flip NextjsApp.Route.mapRouteIdMappingWithKey entrypointsObject \routeId clientPagesLoaderOptions ->
                       let
                         (route :: Route) = Lens.review NextjsApp.Route._routeToRouteIdIso routeId
-                      in Array.singleton $ "isomorphic-client-pages-loader?" <> Node.URL.toQueryString (toQuery $ Codec.Argonaut.encode NextjsWebpack.IsomorphicClientPagesLoader.optionsCodec (route /\ clientPagesLoaderOptions))
+
+                        options =
+                          { absoluteCompiledPagePursPath: clientPagesLoaderOptions.absoluteCompiledPagePursPath
+                          , absoluteJsDepsPath: clientPagesLoaderOptions.absoluteJsDepsPath
+                          , route
+                          }
+                      in Array.singleton $ "isomorphic-client-pages-loader?" <> Node.URL.toQueryString (toQuery $ spy "asdf" $ Codec.Argonaut.encode NextjsWebpack.IsomorphicClientPagesLoader.optionsCodec options) <> "!"
 
                   mainPage =
                     { main: Array.singleton $ printPathPosixSandboxAny $ root </> dir (SProxy :: SProxy "app") </> file (SProxy :: SProxy "client.entry.js")
@@ -84,7 +88,7 @@ config { target, watch, production, root, pagesPath, bundleAnalyze, spagoOutput 
 
                in Object.fromHomogeneous { main: map printPathPosixSandboxAny $ absoluteJsDepsPaths <> [ mainPath ] }
 
-  pure
+   in
     { watch
     , target:
         case target of
@@ -95,11 +99,11 @@ config { target, watch, production, root, pagesPath, bundleAnalyze, spagoOutput 
     -- mode: "development"
     , devServer:
         case target of
-          Target__Browser _ -> Nullable.null
-          Target__Server -> Nullable.null
-          Target__Mobile _ -> Nullable.notNull
-            { hot: false
-            }
+             Target__Browser _ -> Foreign.NullOrUndefined.undefined
+             Target__Server -> Foreign.NullOrUndefined.undefined
+             Target__Mobile _ -> Foreign.unsafeToForeign
+               { hot: false
+               }
     , output:
       { path:
           let outputDir = if production then dir (SProxy :: SProxy ".dist") else dir (SProxy :: SProxy ".dist-dev")
@@ -149,16 +153,15 @@ config { target, watch, production, root, pagesPath, bundleAnalyze, spagoOutput 
     , "module": { rules: NextjsWebpack.WebpackConfig.Rules.rules { spagoAbsoluteOutputDir: printPathPosixSandboxAny spagoOutput, production } }
 
     , resolve:
-      { modules: [ "node_modules" ]
-      , extensions: [ ".purs", ".js"]
+      { extensions: [ ".purs", ".js"]
       }
 
     , resolveLoader:
-      { modules: [ "node_modules" ]
-      , alias:
+      { alias: Object.fromHomogeneous
           { "isomorphic-client-pages-loader":
             case target of
-                 Target__Browser _ -> Foreign.unsafeToForeign $ root </> dir (SProxy :: SProxy "webpack") </> file (SProxy :: SProxy "isomorphic-client-pages-loader.js")
+                 Target__Browser _ -> Foreign.unsafeToForeign $ printPathPosixSandboxAny $ root </> dir (SProxy :: SProxy "webpack") </> file (SProxy :: SProxy "isomorphic-client-pages-loader.js")
+                 -- | Target__Browser _ -> Foreign.unsafeToForeign $ printPathPosixSandboxAny $ spagoOutput </> dir (SProxy :: SProxy "NextjsWebpack.IsomorphicClientPagesLoader") </> file (SProxy :: SProxy "index.js")
                  _ -> Foreign.unsafeToForeign false
           }
       }
@@ -179,11 +182,11 @@ config { target, watch, production, root, pagesPath, bundleAnalyze, spagoOutput 
         }
       , Just $ webpack._DefinePlugin $
           case target of
-                Target__Server -> Nullable.notNull
+                Target__Server -> Foreign.unsafeToForeign
                     -- for purescript-ace on node environment: dont throw "undefined" exception, just make `var ace = false`
                     { "ace": false
                     }
-                _ -> Nullable.null
+                _ -> Foreign.unsafeToForeign {}
 
       , case target of
               Target__Server -> Just $ webpack._ProvidePlugin
@@ -236,7 +239,7 @@ config { target, watch, production, root, pagesPath, bundleAnalyze, spagoOutput 
       , runtimeChunk:
         case target of
             -- extract webpack runtime to separate module, e.g. "/runtime/webpack-xxxxx.js"
-            Target__Browser _ -> Foreign.unsafeToForeign { name: client_static_files_runtime_webpack }
+            Target__Browser _ -> Foreign.unsafeToForeign { name: "webpack" }
             _ -> Foreign.unsafeToForeign false
 
       , minimize:

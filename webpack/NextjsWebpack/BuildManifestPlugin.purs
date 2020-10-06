@@ -20,6 +20,7 @@ import Webpack.Types
 import Webpack.FFI
 import Data.Function.Uncurried
 
+-- from https://github.com/vercel/next.js/blob/e125d905a0/packages/next/build/webpack/plugins/build-manifest-plugin.ts
 buildManifestPlugin :: WebpackPluginInstance
 buildManifestPlugin = mkPluginSync "BuildManifestPlugin" \compilation -> do
   (entrypointValues :: Object WebpackEntrypont) <- runEffectFn1 compilationGetEntrypoints compilation

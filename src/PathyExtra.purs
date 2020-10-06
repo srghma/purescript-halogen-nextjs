@@ -13,11 +13,20 @@ import Options.Applicative as Options.Applicative
 import Protolude.Node as Protolude.Node
 import Node.Process as Node.Process
 import Pathy
+import Data.String as String
+
+mkDirAbsoluteIfNotAlready :: String -> String
+mkDirAbsoluteIfNotAlready string =
+  case String.stripSuffix (String.Pattern "/") string of
+       Just _ -> string
+       Nothing -> string <> "/"
 
 cwd :: Effect (Path Abs Dir)
 cwd = Node.Process.cwd >>= \(d :: String) ->
-  case parseAbsDir posixParser d of
+  let validD = mkDirAbsoluteIfNotAlready d
+  in case parseAbsDir posixParser validD of
        Just d' -> pure d'
-       Nothing -> throwError $ error $ d <> "is cwd, but not absolute"
+       Nothing -> throwError $ error $ validD <> "is cwd, but not absolute"
 
+printPathPosixSandboxAny :: ∀ a b. IsRelOrAbs a ⇒ IsDirOrFile b ⇒ Path a b → String
 printPathPosixSandboxAny = printPath posixPrinter <<< sandboxAny

@@ -16,8 +16,8 @@ import Data.Array.NonEmpty as NonEmptyArray
 import Unsafe.Coerce
 import Webpack.Compiler
 
-webpackGetErrors :: Nullable Error -> MultiStats -> Maybe (NonEmptyArray Error)
+webpackGetErrors :: Maybe Error -> MultiStats -> Maybe (NonEmptyArray Error)
 webpackGetErrors = \error stats ->
-  case Nullable.toMaybe error of
+  case error of
        Just e -> Just $ NonEmptyArray.singleton e
        Nothing -> Array.findMap (\stat -> NonEmptyArray.fromArray stat.compilation.errors) stats.stats
