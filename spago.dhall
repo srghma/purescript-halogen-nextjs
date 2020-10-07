@@ -50,6 +50,8 @@
   , "record-extra-srghma"
   , "node-url"
   , "foreign-generic"
+  , "stringutils"
+  , "foreign-js-map"
   ]
 , packages = ./packages.dhall
 , sources =

@@ -49,8 +49,6 @@ main = launchAff_ do
         -- |   }
         ]
 
-  -- | traceM configs
-
   liftEffect $ Webpack.Compiler.webpackCompilerRunMulti (Webpack.Compiler.webpackCompilerMulti configs) \merror stats ->
     case Webpack.GetError.webpackGetErrors merror stats of
          Just errors -> throwError $ unsafeCoerce $ errors

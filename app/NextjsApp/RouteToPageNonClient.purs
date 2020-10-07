@@ -34,19 +34,19 @@ routeIdMapping =
   , "Secret": NextjsApp.Pages.Secret.page
 
   -- XXX: the manifest id separator is __ !!!!
-  , "RouteExamples__Ace":                   NextjsApp.Pages.Examples.Ace.page
-  , "RouteExamples__Basic":                 NextjsApp.Pages.Examples.Basic.page
-  , "RouteExamples__Components":            NextjsApp.Pages.Examples.Components.page
-  , "RouteExamples__ComponentsInputs":      NextjsApp.Pages.Examples.ComponentsInputs.page
-  , "RouteExamples__ComponentsMultitype":   NextjsApp.Pages.Examples.ComponentsMultitype.page
-  , "RouteExamples__EffectsAffAjax":        NextjsApp.Pages.Examples.EffectsAffAjax.page
-  , "RouteExamples__EffectsEffectRandom":   NextjsApp.Pages.Examples.EffectsEffectRandom.page
-  , "RouteExamples__HigherOrderComponents": NextjsApp.Pages.Examples.HigherOrderComponents.page
-  , "RouteExamples__Interpret":             NextjsApp.Pages.Examples.Interpret.page
-  , "RouteExamples__KeyboardInput":         NextjsApp.Pages.Examples.KeyboardInput.page
-  , "RouteExamples__Lifecycle":             NextjsApp.Pages.Examples.Lifecycle.page
-  , "RouteExamples__DeeplyNested":          NextjsApp.Pages.Examples.DeeplyNested.page
-  , "RouteExamples__DynamicInput":          NextjsApp.Pages.Examples.DynamicInput.page
-  , "RouteExamples__TextNodes":             NextjsApp.Pages.Examples.TextNodes.page
-  , "RouteExamples__Lazy":                  NextjsApp.Pages.Examples.Lazy.page
+  , "Examples__Ace":                   NextjsApp.Pages.Examples.Ace.page
+  , "Examples__Basic":                 NextjsApp.Pages.Examples.Basic.page
+  , "Examples__Components":            NextjsApp.Pages.Examples.Components.page
+  , "Examples__ComponentsInputs":      NextjsApp.Pages.Examples.ComponentsInputs.page
+  , "Examples__ComponentsMultitype":   NextjsApp.Pages.Examples.ComponentsMultitype.page
+  , "Examples__EffectsAffAjax":        NextjsApp.Pages.Examples.EffectsAffAjax.page
+  , "Examples__EffectsEffectRandom":   NextjsApp.Pages.Examples.EffectsEffectRandom.page
+  , "Examples__HigherOrderComponents": NextjsApp.Pages.Examples.HigherOrderComponents.page
+  , "Examples__Interpret":             NextjsApp.Pages.Examples.Interpret.page
+  , "Examples__KeyboardInput":         NextjsApp.Pages.Examples.KeyboardInput.page
+  , "Examples__Lifecycle":             NextjsApp.Pages.Examples.Lifecycle.page
+  , "Examples__DeeplyNested":          NextjsApp.Pages.Examples.DeeplyNested.page
+  , "Examples__DynamicInput":          NextjsApp.Pages.Examples.DynamicInput.page
+  , "Examples__TextNodes":             NextjsApp.Pages.Examples.TextNodes.page
+  , "Examples__Lazy":                  NextjsApp.Pages.Examples.Lazy.page
   }

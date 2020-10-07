@@ -8,7 +8,10 @@ exports.rawSource = function(string) {
 
 exports.compilationSetAsset = function(compilation, name, rawSource) { compilation[name] = rawSource }
 
-exports.compilationGetEntrypoints = function(compilation) { return compilation.entrypoints }
+exports.compilationGetEntrypoints = function(compilation) {
+  // console.log('compilation', compilation.entrypoints)
+  return compilation.entrypoints
+}
 
 exports.mkPlugin = function(pluginName, doWork) {
   // how to define class name dynamically https://www.reddit.com/r/javascript/comments/b56f7z/dynamic_class_name_classname0/ejbl5fe?utm_source=share&utm_medium=web2x&context=3

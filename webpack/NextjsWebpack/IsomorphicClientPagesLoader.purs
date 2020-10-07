@@ -2,7 +2,7 @@ module NextjsWebpack.IsomorphicClientPagesLoader (default, optionsCodec) where
 
 import Control.Promise
 import Data.Codec
-import Data.Newtype
+-- | import Data.Newtype
 import Effect.Uncurried
 import Foreign
 import LoaderUtils
@@ -13,11 +13,12 @@ import Protolude
 import Webpack.Loader
 
 import Data.Argonaut.Core (Json)
+import Data.Array as Array
 import Data.Array.NonEmpty (NonEmptyArray)
 import Data.Array.NonEmpty as NonEmptyArray
 import Data.Codec.Argonaut (JsonCodec, JsonDecodeError(..))
-import Data.Codec.Argonaut as Codec.Argonaut
-import Data.Codec.Argonaut.Common as Codec.Argonaut
+import Data.Codec.Argonaut as Data.Codec.Argonaut
+import Data.Codec as Codec
 import Data.Lens as Lens
 import Data.Lens.Iso as Lens
 import Data.Profunctor (dimap)
@@ -30,6 +31,17 @@ import NextjsApp.Route as NextjsApp.Route
 import Node.Buffer as Node.Buffer
 import Node.Encoding as Node.Encoding
 import PathyExtra
+import Node.URL (Query)
+import Node.URL as Node.URL
+import Foreign (Foreign)
+import Foreign as Foreign
+import Foreign.NullOrUndefined as Foreign.NullOrUndefined
+import Foreign.Object (Object)
+import Foreign.Object as Object
+import Unsafe.Coerce (unsafeCoerce)
+import NodeUrlExtra
+
+type QueryCodec a = BasicCodec (Either JsonDecodeError) Query a
 
 type Options =
   { absoluteCompiledPagePursPath :: Path Abs File         -- e.g. ".../output/Foo/index.js"
@@ -37,19 +49,16 @@ type Options =
   , route                        :: Route
   }
 
-prismaticCodecNamed :: forall a b . String -> (a -> Maybe b) -> (b -> a) -> JsonCodec a -> JsonCodec b
-prismaticCodecNamed name decode encode codec = Codec.Argonaut.prismaticCodec decode encode codec # hoistCodec (lmap (Named name))
+routeIdCodec ∷ BasicCodec (Either JsonDecodeError) String RouteId
+routeIdCodec = basicCodec dec enc
+  where
+    dec :: String -> Either JsonDecodeError RouteId
+    dec s = NextjsApp.Route.stringToMaybeRouteId s # note (Named "routeId" MissingValue)
 
-nonEmptyStringCodec ∷ JsonCodec NonEmptyString
-nonEmptyStringCodec = prismaticCodecNamed "NonEmptyString" NonEmptyString.fromString NonEmptyString.toString Codec.Argonaut.string
+    enc :: RouteId -> String
+    enc = NextjsApp.Route.routeIdToString
 
-nonEmptyArrayCodec ∷ forall a . JsonCodec a -> JsonCodec (NonEmptyArray a)
-nonEmptyArrayCodec codec = prismaticCodecNamed "NonEmptyArray" NonEmptyArray.fromArray NonEmptyArray.toArray (Codec.Argonaut.array codec)
-
-routeIdCodec ∷ JsonCodec RouteId
-routeIdCodec = prismaticCodecNamed "RouteId" NextjsApp.Route.stringToMaybeRouteId NextjsApp.Route.routeIdToString Codec.Argonaut.string
-
-routeCodec ∷ JsonCodec Route
+routeCodec ∷ BasicCodec (Either JsonDecodeError) String Route
 routeCodec = dimap (Lens.view NextjsApp.Route._routeToRouteIdIso) (Lens.review NextjsApp.Route._routeToRouteIdIso) routeIdCodec
 
 absFileCodec
@@ -57,22 +66,60 @@ absFileCodec
     , printer :: Printer
     , sandboxer :: Path Abs File -> SandboxedPath Abs File
     }
-  -> JsonCodec (Path Abs File)
-absFileCodec config = prismaticCodecNamed "Path Abs File" (parseAbsFile config.parser) (printPath config.printer <<< config.sandboxer) Codec.Argonaut.string
+  -> BasicCodec (Either JsonDecodeError) String (Path Abs File)
+absFileCodec config = basicCodec dec enc
+  where
+    dec :: String -> Either JsonDecodeError (Path Abs File)
+    dec s = parseAbsFile config.parser s # note (Named "absFile" MissingValue)
 
-absFileCodecPosixRoot :: JsonCodec (Path Abs File)
+    enc :: Path Abs File -> String
+    enc = printPath config.printer <<< config.sandboxer
+
+absFileCodecPosixRoot :: BasicCodec (Either JsonDecodeError) String (Path Abs File)
 absFileCodecPosixRoot = absFileCodec
   { parser:    posixParser
   , printer:   posixPrinter
   , sandboxer: sandboxAny
   }
 
-optionsCodec :: JsonCodec Options
-optionsCodec =
-  Codec.Argonaut.object "Options" $ Codec.Argonaut.record
-    # Codec.Argonaut.recordProp (SProxy :: _ "absoluteCompiledPagePursPath") absFileCodecPosixRoot
-    # Codec.Argonaut.recordProp (SProxy :: _ "absoluteJsDepsPath") (Codec.Argonaut.maybe absFileCodecPosixRoot)
-    # Codec.Argonaut.recordProp (SProxy :: _ "route") (routeCodec)
+optionsCodec :: QueryCodec Options
+optionsCodec = basicCodec (fromQuery >>> dec) (enc >>> toQuery)
+  where
+        lookup name obj = Object.lookup name obj # note (AtKey name MissingValue)
+
+        dec
+          :: Object String
+          -> Either JsonDecodeError
+              { absoluteCompiledPagePursPath :: Path Abs File
+              , absoluteJsDepsPath :: Maybe (Path Abs File)
+              , route :: Route
+              }
+        dec obj = do
+           (absoluteCompiledPagePursPath :: String) <- lookup "absoluteCompiledPagePursPath" obj
+           let (absoluteJsDepsPath :: Maybe String) = Object.lookup "absoluteJsDepsPath" obj
+           (route :: String) <- lookup "route" obj
+
+           (absoluteCompiledPagePursPath' :: Path Abs File) <- Codec.decode absFileCodecPosixRoot absoluteCompiledPagePursPath
+           (absoluteJsDepsPath' :: Maybe (Path Abs File)) <- traverse (Codec.decode absFileCodecPosixRoot) absoluteJsDepsPath
+           (route' :: Route) <- Codec.decode routeCodec route
+
+           pure
+            { absoluteCompiledPagePursPath: absoluteCompiledPagePursPath'
+            , absoluteJsDepsPath: absoluteJsDepsPath'
+            , route: route'
+            }
+
+        enc
+          :: { absoluteCompiledPagePursPath :: Path Abs File
+             , absoluteJsDepsPath :: Maybe (Path Abs File)
+             , route :: Route
+             }
+          -> Object String
+        enc obj = Object.fromFoldable $ Array.catMaybes
+          [ Just $ "absoluteCompiledPagePursPath" /\ Codec.encode absFileCodecPosixRoot obj.absoluteCompiledPagePursPath
+          , map (\x -> "absoluteJsDepsPath" /\ Codec.encode absFileCodecPosixRoot x) obj.absoluteJsDepsPath
+          , Just $ "route" /\ Codec.encode routeCodec obj.route
+          ]
 
 -- | "default" is a magic word
 -- | https://github.com/webpack/loader-runner/blob/cebc687275edc688a5d8cf0d7c9a2be34c67fa4d/lib/loadLoader.js#L45
@@ -80,25 +127,21 @@ optionsCodec =
 
 default :: Loader
 default = mkAsyncLoader \context buffer -> liftEffect do
-  json <- getOptions context
-
-  traceM json
+  (query :: Query) <- getOptions context
 
   options <-
-    case Codec.Argonaut.decode optionsCodec json of
-       Left decodeError -> throwError $ error $ Codec.Argonaut.printJsonDecodeError decodeError
+    case Codec.decode optionsCodec query of
+       Left decodeError -> throwError $ error $ Data.Codec.Argonaut.printJsonDecodeError decodeError
        Right options -> pure options
 
   let
-    source = String.joinWith "" <<< map (\x -> x <> ";") $
-      [ case options.absoluteJsDepsPath of
-             Nothing -> ""
-             Just absoluteJsDepsPath -> "require(" <> printPathPosixSandboxAny absoluteJsDepsPath <> ")"
-      , String.joinWith ""
-          [ "(window.__PAGE_CACHE_BUS=window.__PAGE_CACHE_BUS||[]).push({ routeId:"
-          , NextjsApp.Route.routeIdToString $ Lens.view NextjsApp.Route._routeToRouteIdIso $ options.route
+    source = String.joinWith "" <<< map (\x -> x <> ";") $ Array.catMaybes
+      [ flip map options.absoluteJsDepsPath $ \absoluteJsDepsPath -> "require(" <> printPathPosixSandboxAny absoluteJsDepsPath <> ")"
+      , Just $ String.joinWith ""
+          [ "(window.__PAGE_CACHE_BUS=window.__PAGE_CACHE_BUS||[]).push({ routeId: "
+          , show $ NextjsApp.Route.routeIdToString $ Lens.view NextjsApp.Route._routeToRouteIdIso $ options.route
           , ", page: require("
-          , printPathPosixSandboxAny options.absoluteCompiledPagePursPath
+          , show $ printPathPosixSandboxAny options.absoluteCompiledPagePursPath
           , ").page })"
           ]
       ]

@@ -66,7 +66,7 @@ instance showRoute :: Show Route where show = genericShow
 instance encodeJsonRoute :: EncodeJson Route where encodeJson = genericEncodeJson
 instance decodeJsonRoute :: DecodeJson Route where decodeJson = genericDecodeJson
 
-newtype RouteId = RouteId NonEmptyString -- e.g. "RouteExamples__Ace"
+newtype RouteId = RouteId NonEmptyString -- e.g. "Examples__Ace"
 
 derive instance newtypeRouteId :: Newtype RouteId _
 derive newtype instance eqRouteId :: Eq RouteId
@@ -74,7 +74,7 @@ derive newtype instance eqRouteId :: Eq RouteId
 routeIdToString :: RouteId -> String
 routeIdToString = unsafeCoerce
 
-newtype RouteIdArray = RouteIdArray (NonEmptyArray NonEmptyString) -- String repr of a route, e.g. ["RouteExamples", "Ace"]
+newtype RouteIdArray = RouteIdArray (NonEmptyArray NonEmptyString) -- String repr of a route, e.g. ["Examples", "Ace"]
 
 derive instance newtypeRouteIdArray :: Newtype RouteIdArray _
 derive newtype instance eqRouteIdArray :: Eq RouteIdArray
@@ -83,29 +83,32 @@ routeIdArrayToArrayString :: RouteIdArray -> Array String
 routeIdArrayToArrayString = unsafeCoerce
 
 -- the key is a RouteId
-type RouteIdMappingRow a =
+type RouteIdMappingRow' a r =
   ( "Index"  :: a
   , "Login"  :: a
   , "Signup" :: a
   , "Secret" :: a
 
   -- is using routeIdSeparator
-  , "RouteExamples__Ace"                   :: a
-  , "RouteExamples__Basic"                 :: a
-  , "RouteExamples__Components"            :: a
-  , "RouteExamples__ComponentsInputs"      :: a
-  , "RouteExamples__ComponentsMultitype"   :: a
-  , "RouteExamples__EffectsAffAjax"        :: a
-  , "RouteExamples__EffectsEffectRandom"   :: a
-  , "RouteExamples__HigherOrderComponents" :: a
-  , "RouteExamples__Interpret"             :: a
-  , "RouteExamples__KeyboardInput"         :: a
-  , "RouteExamples__Lifecycle"             :: a
-  , "RouteExamples__DeeplyNested"          :: a
-  , "RouteExamples__DynamicInput"          :: a
-  , "RouteExamples__TextNodes"             :: a
-  , "RouteExamples__Lazy"                  :: a
+  , "Examples__Ace"                   :: a
+  , "Examples__Basic"                 :: a
+  , "Examples__Components"            :: a
+  , "Examples__ComponentsInputs"      :: a
+  , "Examples__ComponentsMultitype"   :: a
+  , "Examples__EffectsAffAjax"        :: a
+  , "Examples__EffectsEffectRandom"   :: a
+  , "Examples__HigherOrderComponents" :: a
+  , "Examples__Interpret"             :: a
+  , "Examples__KeyboardInput"         :: a
+  , "Examples__Lifecycle"             :: a
+  , "Examples__DeeplyNested"          :: a
+  , "Examples__DynamicInput"          :: a
+  , "Examples__TextNodes"             :: a
+  , "Examples__Lazy"                  :: a
+  | r
   )
+
+type RouteIdMappingRow a = RouteIdMappingRow' a ()
 
 type RouteIdMapping a = Record (RouteIdMappingRow a)
 
@@ -124,21 +127,21 @@ routeIdToRouteMapping =
   , "Secret": Secret
 
   -- is using routeIdSeparator
-  , "RouteExamples__Ace":                   RouteExamples RouteExamples__Ace
-  , "RouteExamples__Basic":                 RouteExamples RouteExamples__Basic
-  , "RouteExamples__Components":            RouteExamples RouteExamples__Components
-  , "RouteExamples__ComponentsInputs":      RouteExamples RouteExamples__ComponentsInputs
-  , "RouteExamples__ComponentsMultitype":   RouteExamples RouteExamples__ComponentsMultitype
-  , "RouteExamples__EffectsAffAjax":        RouteExamples RouteExamples__EffectsAffAjax
-  , "RouteExamples__EffectsEffectRandom":   RouteExamples RouteExamples__EffectsEffectRandom
-  , "RouteExamples__HigherOrderComponents": RouteExamples RouteExamples__HigherOrderComponents
-  , "RouteExamples__Interpret":             RouteExamples RouteExamples__Interpret
-  , "RouteExamples__KeyboardInput":         RouteExamples RouteExamples__KeyboardInput
-  , "RouteExamples__Lifecycle":             RouteExamples RouteExamples__Lifecycle
-  , "RouteExamples__DeeplyNested":          RouteExamples RouteExamples__DeeplyNested
-  , "RouteExamples__DynamicInput":          RouteExamples RouteExamples__DynamicInput
-  , "RouteExamples__TextNodes":             RouteExamples RouteExamples__TextNodes
-  , "RouteExamples__Lazy":                  RouteExamples RouteExamples__Lazy
+  , "Examples__Ace":                   RouteExamples RouteExamples__Ace
+  , "Examples__Basic":                 RouteExamples RouteExamples__Basic
+  , "Examples__Components":            RouteExamples RouteExamples__Components
+  , "Examples__ComponentsInputs":      RouteExamples RouteExamples__ComponentsInputs
+  , "Examples__ComponentsMultitype":   RouteExamples RouteExamples__ComponentsMultitype
+  , "Examples__EffectsAffAjax":        RouteExamples RouteExamples__EffectsAffAjax
+  , "Examples__EffectsEffectRandom":   RouteExamples RouteExamples__EffectsEffectRandom
+  , "Examples__HigherOrderComponents": RouteExamples RouteExamples__HigherOrderComponents
+  , "Examples__Interpret":             RouteExamples RouteExamples__Interpret
+  , "Examples__KeyboardInput":         RouteExamples RouteExamples__KeyboardInput
+  , "Examples__Lifecycle":             RouteExamples RouteExamples__Lifecycle
+  , "Examples__DeeplyNested":          RouteExamples RouteExamples__DeeplyNested
+  , "Examples__DynamicInput":          RouteExamples RouteExamples__DynamicInput
+  , "Examples__TextNodes":             RouteExamples RouteExamples__TextNodes
+  , "Examples__Lazy":                  RouteExamples RouteExamples__Lazy
   }
 
 -- written as a accessor finder to make it total bidirectional mapping / bijection
@@ -151,21 +154,21 @@ lookupFromRouteIdMapping =
        Secret -> _."Secret"
        RouteExamples routesexamples ->
          case routesexamples of
-              RouteExamples__Ace                   -> _."RouteExamples__Ace"
-              RouteExamples__Basic                 -> _."RouteExamples__Basic"
-              RouteExamples__Components            -> _."RouteExamples__Components"
-              RouteExamples__ComponentsInputs      -> _."RouteExamples__ComponentsInputs"
-              RouteExamples__ComponentsMultitype   -> _."RouteExamples__ComponentsMultitype"
-              RouteExamples__EffectsAffAjax        -> _."RouteExamples__EffectsAffAjax"
-              RouteExamples__EffectsEffectRandom   -> _."RouteExamples__EffectsEffectRandom"
-              RouteExamples__HigherOrderComponents -> _."RouteExamples__HigherOrderComponents"
-              RouteExamples__Interpret             -> _."RouteExamples__Interpret"
-              RouteExamples__KeyboardInput         -> _."RouteExamples__KeyboardInput"
-              RouteExamples__Lifecycle             -> _."RouteExamples__Lifecycle"
-              RouteExamples__DeeplyNested          -> _."RouteExamples__DeeplyNested"
-              RouteExamples__DynamicInput          -> _."RouteExamples__DynamicInput"
-              RouteExamples__TextNodes             -> _."RouteExamples__TextNodes"
-              RouteExamples__Lazy                  -> _."RouteExamples__Lazy"
+              RouteExamples__Ace                   -> _."Examples__Ace"
+              RouteExamples__Basic                 -> _."Examples__Basic"
+              RouteExamples__Components            -> _."Examples__Components"
+              RouteExamples__ComponentsInputs      -> _."Examples__ComponentsInputs"
+              RouteExamples__ComponentsMultitype   -> _."Examples__ComponentsMultitype"
+              RouteExamples__EffectsAffAjax        -> _."Examples__EffectsAffAjax"
+              RouteExamples__EffectsEffectRandom   -> _."Examples__EffectsEffectRandom"
+              RouteExamples__HigherOrderComponents -> _."Examples__HigherOrderComponents"
+              RouteExamples__Interpret             -> _."Examples__Interpret"
+              RouteExamples__KeyboardInput         -> _."Examples__KeyboardInput"
+              RouteExamples__Lifecycle             -> _."Examples__Lifecycle"
+              RouteExamples__DeeplyNested          -> _."Examples__DeeplyNested"
+              RouteExamples__DynamicInput          -> _."Examples__DynamicInput"
+              RouteExamples__TextNodes             -> _."Examples__TextNodes"
+              RouteExamples__Lazy                  -> _."Examples__Lazy"
 
 ---------------------
 
