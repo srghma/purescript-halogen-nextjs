@@ -42,7 +42,8 @@ require(spagoOptions.output + '/NextjsWebpack.Utils.OnFilesChangedRunCommand/ind
 })()
 
 require('webpack-spago-loader/watcher-job')({
-  additionalWatchGlobs: ['app/**/*.scss', 'src/**/*.scss'],
+  // additionalWatchGlobs: ['app/**/*.scss', 'src/**/*.scss'],
+  additionalWatchGlobs: [],
   options: spagoOptions,
   onStart: () => {},
   onError: () => {},
