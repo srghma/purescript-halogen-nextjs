@@ -42,7 +42,7 @@ type Configuration =
                     , runtimeChunk :: Foreign
                     , splitChunks :: Foreign
                     }
-  , output :: { chunkFilename :: Nullable String
+  , output :: { chunkFilename :: Foreign
               , filename :: String
               , libraryTarget :: String
               , path :: FilePath -- Path Abs Dir

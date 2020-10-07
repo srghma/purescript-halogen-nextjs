@@ -40,14 +40,16 @@ main = launchAff_ do
           , bundleAnalyze: false
           , spagoOutput
           }
-        -- | , { target: NextjsWebpack.WebpackConfig.Config.Target__Server
-        -- |   , watch: false
-        -- |   , production: false
-        -- |   , root
-        -- |   , bundleAnalyze: false
-        -- |   , spagoOutput
-        -- |   }
+        , { target: NextjsWebpack.WebpackConfig.Config.Target__Server
+          , watch: false
+          , production: false
+          , root
+          , bundleAnalyze: false
+          , spagoOutput
+          }
         ]
+
+  traceM configs
 
   liftEffect $ Webpack.Compiler.webpackCompilerRunMulti (Webpack.Compiler.webpackCompilerMulti configs) \merror stats ->
     case Webpack.GetError.webpackGetErrors merror stats of

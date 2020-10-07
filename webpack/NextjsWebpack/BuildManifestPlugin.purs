@@ -26,16 +26,18 @@ import NextjsApp.Manifest.PageManifest as NextjsApp.Manifest.PageManifest
 import Record.Extra as Record.Extra
 import Record.ExtraSrghma as Record.ExtraSrghma
 import Type.Prelude (RProxy(..))
+import Foreign.JsMap (JsMap)
+import Foreign.JsMap as JsMap
 
 type EntrypointsRow a = RouteIdMappingRow' a ( main :: a )
 
-decodePages :: Object WebpackEntrypont -> Either String { | EntrypointsRow WebpackEntrypont }
+decodePages :: JsMap String WebpackEntrypont -> Effect { | EntrypointsRow WebpackEntrypont }
 decodePages obj = Record.Extra.sequenceRecord $ Record.ExtraSrghma.mapIndex doWork (RProxy :: forall type_ . RProxy (EntrypointsRow type_))
   where
-    doWork s =
-      case Object.lookup s obj of
-           Just x -> Right x
-           Nothing -> traceWithoutInspect { s, obj } (const (Left $ "cannot find " <> s))
+    doWork s = JsMap.get s obj >>=
+      case _ of
+           Just x -> pure x
+           Nothing -> throwError $ error $ "cannot find " <> s
 
 toCssAndJs :: WebpackEntrypont -> Effect { css :: Array String, js :: Array String }
 toCssAndJs entrypoint = do
@@ -47,20 +49,16 @@ toCssAndJs entrypoint = do
 
   let { yes: js, no: other } = Array.partition (String.endsWith ".js") nonCss
 
-  when (Array.null other) (throwError $ error $ "unknown files: " <> show other)
+  when (not $ Array.null other) (throwError $ error $ "unknown files: " <> show other)
 
   pure { css, js }
 
 -- from https://github.com/vercel/next.js/blob/e125d905a0/packages/next/build/webpack/plugins/build-manifest-plugin.ts
 buildManifestPlugin :: WebpackPluginInstance
 buildManifestPlugin = mkPluginSync "BuildManifestPlugin" \compilation -> do
-  (entrypointValues :: Object WebpackEntrypont) <- runEffectFn1 compilationGetEntrypoints compilation
+  (entrypointValues :: JsMap String WebpackEntrypont) <- runEffectFn1 compilationGetEntrypoints compilation
 
-  (entrypointValues' :: { | EntrypointsRow WebpackEntrypont }) <-
-    decodePages entrypointValues #
-      case _ of
-           Right x -> pure x
-           Left errorString -> throwError $ error errorString
+  (entrypointValues' :: { | EntrypointsRow WebpackEntrypont }) <- decodePages entrypointValues
 
   (entrypointValues'' :: { | EntrypointsRow NextjsApp.Manifest.PageManifest.PageManifest }) <- Record.Extra.sequenceRecord (Record.Extra.mapRecord toCssAndJs entrypointValues')
 

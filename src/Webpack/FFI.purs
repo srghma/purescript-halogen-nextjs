@@ -8,6 +8,8 @@ import Foreign (Foreign)
 import Foreign as Foreign
 import Foreign.Object (Object)
 import Foreign.Object as Object
+import Foreign.JsMap (JsMap)
+import Foreign.JsMap as JsMap
 import Webpack.Types
 
 foreign import webpackEntrypontName :: EffectFn1 WebpackEntrypont String
@@ -18,7 +20,7 @@ foreign import rawSource :: String -> RawSource
 
 foreign import compilationSetAsset :: EffectFn3 Compilation String RawSource Unit
 
-foreign import compilationGetEntrypoints :: EffectFn1 Compilation (Object WebpackEntrypont)
+foreign import compilationGetEntrypoints :: EffectFn1 Compilation (JsMap String WebpackEntrypont)
 
 foreign import mkPlugin :: Fn2 String (EffectFn2 Compilation (Effect Unit) Unit) WebpackPluginInstance
 

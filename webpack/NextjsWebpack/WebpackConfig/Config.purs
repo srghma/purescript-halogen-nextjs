@@ -3,6 +3,7 @@ module NextjsWebpack.WebpackConfig.Config where
 import ContribWebpackPlugins
 import Control.Promise
 import Effect.Uncurried
+import NodeUrlExtra
 import Pathy
 import PathyExtra
 import Protolude
@@ -18,7 +19,7 @@ import Data.Lens as Lens
 import Data.Lens.Iso as Lens
 import Data.Nullable (Nullable)
 import Data.Nullable as Nullable
-import Foreign (Foreign)
+import Foreign (Foreign, unsafeToForeign)
 import Foreign as Foreign
 import Foreign.NullOrUndefined as Foreign.NullOrUndefined
 import Foreign.Object (Object)
@@ -34,7 +35,6 @@ import NextjsWebpack.WebpackConfig.SplitChunksConfig as NextjsWebpack.WebpackCon
 import Node.URL as Node.URL
 import Record as Record
 import Unsafe.Coerce (unsafeCoerce)
-import NodeUrlExtra
 
 -- https://github.com/zeit/next.js/blob/450d4bd0f32a042fd452c81bc3850ec31306eab3/packages/next/next-server/lib/constants.ts#L35
 
@@ -94,9 +94,9 @@ config { target, watch, production, root, bundleAnalyze, spagoOutput } =
 
     -- This saves chunks with the name given via `import()`
     , chunkFilename: case target of
-        Target__Browser _ -> Nullable.notNull $ "chunks/" <> if production then "[name]-[contenthash]" else "[name]" <> ".js"
-        Target__Server -> Nullable.null
-        Target__Mobile _ -> Nullable.null
+        Target__Browser _ -> Foreign.unsafeToForeign $ "chunks/" <> if production then "[name]-[contenthash]" else "[name]" <> ".js"
+        Target__Server -> Foreign.NullOrUndefined.undefined
+        Target__Mobile _ -> Foreign.NullOrUndefined.undefined
     }
   , entry:
       case target of
@@ -116,7 +116,9 @@ config { target, watch, production, root, bundleAnalyze, spagoOutput } =
                         , absoluteJsDepsPath: clientPagesLoaderOptions.absoluteJsDepsPath
                         , route
                         }
-                    in Array.singleton $ "isomorphic-client-pages-loader?" <> Node.URL.toQueryString (Codec.Argonaut.encode NextjsWebpack.IsomorphicClientPagesLoader.optionsCodec options) <> "!"
+
+                      loaderPath = printPathPosixSandboxAny $ spagoOutput </> dir (SProxy :: SProxy "NextjsWebpack.IsomorphicClientPagesLoader") </> file (SProxy :: SProxy "index.js")
+                    in Array.singleton $ loaderPath <> "?" <> Node.URL.toQueryString (Codec.Argonaut.encode NextjsWebpack.IsomorphicClientPagesLoader.optionsCodec options) <> "!"
 
                 mainPage =
                   { main: Array.singleton $ printPathPosixSandboxAny $ root </> dir (SProxy :: SProxy "app") </> file (SProxy :: SProxy "client.entry.js")
@@ -151,14 +153,9 @@ config { target, watch, production, root, bundleAnalyze, spagoOutput } =
     }
 
   , resolveLoader:
-    { alias: Object.fromHomogeneous
-        { "isomorphic-client-pages-loader":
-          case target of
-                -- | Target__Browser _ -> Foreign.unsafeToForeign $ printPathPosixSandboxAny $ root </> dir (SProxy :: SProxy "webpack") </> file (SProxy :: SProxy "isomorphic-client-pages-loader.js")
-                Target__Browser _ -> Foreign.unsafeToForeign $ printPathPosixSandboxAny $ spagoOutput </> dir (SProxy :: SProxy "NextjsWebpack.IsomorphicClientPagesLoader") </> file (SProxy :: SProxy "index.js")
-                _ -> Foreign.unsafeToForeign false
-        }
+    { alias: Object.fromHomogeneous { }
     }
+
   -- TODO: per page https://github.com/webpack-contrib/mini-css-extract-plugin#extracting-css-based-on-entry
   , plugins: Array.catMaybes
     [ Just $ _MiniCssExtractPlugin
