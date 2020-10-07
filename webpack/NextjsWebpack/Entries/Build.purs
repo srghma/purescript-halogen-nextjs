@@ -1,4 +1,4 @@
-module NextjsWebpack.Build where
+module NextjsWebpack.Entries.Build where
 
 import Pathy
 import PathyExtra
@@ -20,6 +20,11 @@ import Unsafe.Coerce (unsafeCoerce)
 import Webpack.Compiler as Webpack.Compiler
 import Webpack.GetError as Webpack.GetError
 import NextjsWebpack.GetClientPagesEntrypoints as NextjsWebpack.GetClientPagesEntrypoints
+import Data.Array.NonEmpty (NonEmptyArray)
+import Data.Array.NonEmpty as NonEmptyArray
+import Data.String.NonEmpty (NonEmptyString)
+import Data.String.NonEmpty as NonEmptyString
+
 
 main :: Effect Unit
 main = launchAff_ do
@@ -27,9 +32,13 @@ main = launchAff_ do
 
   let spagoOutput = root </> dir (SProxy :: SProxy "output")
 
-  let pagesDir = root </> dir (SProxy :: SProxy "app") </> dir (SProxy :: SProxy "NextjsApp") </> dir (SProxy :: SProxy "Pages")
+  let
+    pagesModuleNamePrefix :: NonEmptyArray NonEmptyString
+    pagesModuleNamePrefix = unsafeCoerce ["NextjsApp", "Pages"]
 
-  entrypointsObject <- NextjsWebpack.GetClientPagesEntrypoints.getClientPagesEntrypoints { pagesDir, spagoAbsoluteOutputDir: spagoOutput }
+    appDir = root </> dir (SProxy :: SProxy "app")
+
+  entrypointsObject <- NextjsWebpack.GetClientPagesEntrypoints.getClientPagesEntrypoints { pagesModuleNamePrefix, appDir, spagoAbsoluteOutputDir: spagoOutput }
 
   let configs =
         map NextjsWebpack.WebpackConfig.Config.config
@@ -48,8 +57,6 @@ main = launchAff_ do
           , spagoOutput
           }
         ]
-
-  traceM configs
 
   liftEffect $ Webpack.Compiler.webpackCompilerRunMulti (Webpack.Compiler.webpackCompilerMulti configs) \merror stats ->
     case Webpack.GetError.webpackGetErrors merror stats of

@@ -1,13 +1,58 @@
-import * as R from 'ramda'
-import * as RA from 'ramda-adjunct'
-import webpack from 'webpack'
-import * as path from 'path'
-import chalk from 'chalk'
+const RA = require('ramda-adjunct')
+const path = require('path')
 
-import createConfig from './config'
-import webpackGetError from './lib/webpackGetError'
-import fileExistsAndIsNonEmpty from './lib/fileExistsAndIsNonEmpty'
-import onFilesChangeRunCommand from './lib/on-files-change-run-command'
+function webpackGetError(err, stats) {
+  if (err) {
+    return err // this is error object
+  }
+
+  for (let stat of stats.stats) {
+    const errors = stat.compilation.errors
+
+    if (!RA.isEmptyArray(errors)) {
+      return errors // this is array
+    }
+  }
+}
+
+function fileExistsAndIsNonEmpty(path) {
+  try {
+    const stat = require('fs').statSync(path)
+
+    return stat.isFile() && stat.size !== 0
+  } catch (e) {
+    return false
+  }
+}
+
+const chokidar = require('chokidar')
+const childProcessPromise = require('child-process-promise')
+
+const onFilesChangeRunCommand = function({ files, command, commandArgs }) {
+  const watcher = chokidar.watch(files)
+
+  watcher.on('all', (_event, _path) => {
+    childProcessPromise.spawn(command, commandArgs, { stdio: ['ignore', 'inherit', 'inherit'] })
+  })
+}
+
+const spagoDhall = './spago.dhall'
+
+const spagoOptions = {
+  output:    require('webpack-spago-loader/lib/getAbsoluteOutputDirFromSpago')(spagoDhall),
+  pursFiles: require('webpack-spago-loader/lib/getSourcesFromSpago')(spagoDhall),
+
+  compiler: 'psa',
+  // note that warnings are shown only when file is recompiled, delete output folder to show all warnings
+  compilerOptions: {
+    censorCodes: [
+      'ImplicitQualifiedImport',
+      'UnusedImport',
+      'ImplicitImport',
+    ].join(','),
+    // strict: true
+  }
+}
 
 const serverPort = 3000
 
@@ -21,10 +66,20 @@ onFilesChangeRunCommand({
 
 require('webpack-spago-loader/watcher-job')({
   additionalWatchGlobs: ['app/**/*.scss', 'src/**/*.scss'],
-  options: require('./lib/spago-options'),
+  options: spagoOptions,
   onStart: () => {},
   onError: () => {},
   onSuccess: async () => {
+    // clear cache
+    for (const cachePath in require.cache) {
+      if (
+        cachePath.startsWith(spagoOptions.output)
+      ) {
+        console.log('clearing cachePath', cachePath)
+        delete require.cache[cachePath]
+      }
+    }
+
     console.log(`onSuccess: ${serverProcessState && serverProcessState.serverProcess}`)
 
     // wait webpack to end (you cannot)
@@ -33,59 +88,40 @@ require('webpack-spago-loader/watcher-job')({
 
     // start webpack
 
-    const commonSettings = { production: false }
+    require(spagoOptions.output + '/NextjsWebpack.Entries.Dev/index.js').runWebpack({
+      onSuccess: function({ serverConfig, clientConfig }) {
+        console.log('[mywebpack] Compiling...')
 
-    const configs = await Promise.all([
-      createConfig(R.mergeAll([commonSettings, { target: 'browser' }])),
-      createConfig(R.mergeAll([commonSettings, { target: 'server' }]))
-    ])
+        serverProcessState && serverProcessState.kill()
 
-    const compiler = webpack(configs)
+        const serverPath = path.resolve(serverConfig.output.path, 'main.js') // hardcoded, dont know how to find (serverConfig.output.filename doesn't help)
 
-    console.log('[webpack] Compiling...')
+        if(!fileExistsAndIsNonEmpty(serverPath)) {
+          console.log(`[SERVER] file doesn't exist ${serverPath}`)
+          return null
+        }
 
-    serverProcessState && serverProcessState.kill()
+        console.log(`onSuccess: starting ${serverProcessState && serverProcessState.serverProcess}`)
 
-    compiler.run((err, stats) => {
-      const error = webpackGetError(err, stats)
+        const command = {
+          head: "node",
+          tail: [
+            "--trace-deprecation",
+            serverPath,
+            "--port",
+            serverPort.toString(),
+            "--root-path",
+            clientConfig.output.path,
+          ]
+        }
 
-      if (error) {
-        console.warn(chalk.keyword('orange')(error))
-        return
+        serverProcessState = require('./server-process')({
+          command,
+          onProcessEndsWithoutError: () => { },
+          onProcessEndsWithError: () => { },
+        })
       }
-
-      // start server
-
-      const clientConfig = configs[0]
-      const serverConfig = configs[1]
-
-      const serverPath = path.resolve(serverConfig.output.path, 'main.js') // hardcoded, dont know how to find (serverConfig.output.filename doesn't help)
-
-      if(!fileExistsAndIsNonEmpty(serverPath)) {
-        console.log(`[SERVER] file doesn't exist ${serverPath}`)
-        return null
-      }
-
-      console.log(`onSuccess: starting ${serverProcessState && serverProcessState.serverProcess}`)
-
-      const command = {
-        head: "node",
-        tail: [
-          "--trace-deprecation",
-          serverPath,
-          "--port",
-          serverPort.toString(),
-          "--root-path",
-          clientConfig.output.path,
-        ]
-      }
-
-      serverProcessState = require('./lib/server-process')({
-        command,
-        onProcessEndsWithoutError: () => { },
-        onProcessEndsWithError: () => { },
-      })
-    })
+    })()
   }
 })
 

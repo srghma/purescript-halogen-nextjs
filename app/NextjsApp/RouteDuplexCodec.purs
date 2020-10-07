@@ -31,7 +31,7 @@ routeCodec = Routing.Duplex.root $ Routing.Duplex.sum
   , "Login":    "login" / Routing.Duplex.noArgs
   , "Signup":   "signup" / Routing.Duplex.noArgs
   , "Secret":   "secret" / Routing.Duplex.noArgs
-  , "RouteExamples": "routesexamples" / routesexamplesCodec
+  , "RouteExamples": "examples" / routesexamplesCodec
   }
   where
     routesexamplesCodec :: Routing.Duplex.RouteDuplex' RouteExamples

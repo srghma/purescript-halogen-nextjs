@@ -60,17 +60,17 @@ template { targetData, title, headTags, bodyTags } =
 
     tagStart x = "<" <> x <> ">"
 
-    tagEnd x = "<" <> x <> "/>"
+    tagEnd x = "</" <> x <> ">"
 
     printProp (name /\ val) = name <> "=\"" <> val <> "\""
 
     printProps = String.joinWith " " <<< map printProp
 
     tagOneline :: String -> Array (String /\ String) -> String -> String
-    tagOneline tagName props content = tagStart (tagName <> printProps props) <> content <> tagEnd tagName
+    tagOneline tagName props content = tagStart (tagName <> " " <> printProps props) <> content <> tagEnd tagName
 
     tagMultiLine :: String -> Array (String /\ String) -> Array String -> String
-    tagMultiLine tagName props content = String.unlines $ [ tagStart (tagName <> printProps props), unlinesIndent content, tagEnd tagName ]
+    tagMultiLine tagName props content = String.unlines $ [ tagStart (tagName <> " " <> printProps props), unlinesIndent content, tagEnd tagName ]
   in String.unlines
     [ "<!DOCTYPE html>"
     , tagMultiLine "html" []

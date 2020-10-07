@@ -136,7 +136,7 @@ default = mkAsyncLoader \context buffer -> liftEffect do
 
   let
     source = String.joinWith "" <<< map (\x -> x <> ";") $ Array.catMaybes
-      [ flip map options.absoluteJsDepsPath $ \absoluteJsDepsPath -> "require(" <> printPathPosixSandboxAny absoluteJsDepsPath <> ")"
+      [ flip map options.absoluteJsDepsPath $ \absoluteJsDepsPath -> "require(" <> show (printPathPosixSandboxAny absoluteJsDepsPath) <> ")"
       , Just $ String.joinWith ""
           [ "(window.__PAGE_CACHE_BUS=window.__PAGE_CACHE_BUS||[]).push({ routeId: "
           , show $ NextjsApp.Route.routeIdToString $ Lens.view NextjsApp.Route._routeToRouteIdIso $ options.route

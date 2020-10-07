@@ -31,13 +31,16 @@ import Data.String.Regex as Regex
 import Data.String.Regex.Flags as Regex
 import Data.String.Regex.Unsafe as Regex
 import Firstline as Firstline
-import NextjsApp.RouteToPageModuleName as NextjsApp.RouteToPageModuleName
 import Node.FS.Stats as Node.FS.Stats
 import Protolude.Node as Protolude.Node
 import Record.Extra as Record.Extra
 import Record.Homogeneous as Record.Homogeneous
 import RecursiveReaddirAsync (DirOrFile(..), recursiveTreeList)
 import Record.ExtraSrghma as Record.ExtraSrghma
+import PathyExtra
+import Data.Lens as Lens
+import NextjsApp.Route as NextjsApp.Route
+import Data.Newtype
 
 -- | moduleNameToManifestPageId :: ModuleName -> String
 -- | moduleNameToManifestPageId (ModuleName m) = String.joinWith manifestPageIdSeparator (NonEmptyArray.toArray $ map NonEmptyString.toString m)
@@ -76,27 +79,31 @@ type ClientPagesLoaderOptions =
 
 -- |        DirOrFile__Dir { content } -> map join $ parTraverse (processTree spagoAbsoluteOutputDir) content
 
-printPathPosix = printPath posixPrinter <<< sandboxAny
-
 foldAppendDirs :: Path Abs Dir -> Array (Path Rel Dir) -> Path Abs Dir
 foldAppendDirs = foldl (\acc dir -> acc </> dir)
 
-getClientPagesEntrypoints :: { pagesDir :: Path Abs Dir, spagoAbsoluteOutputDir :: Path Abs Dir } -> Aff (RouteIdMapping ClientPagesLoaderOptions)
-getClientPagesEntrypoints { pagesDir, spagoAbsoluteOutputDir } = do
-  let (pagesToOptionsRec :: RouteIdMapping (Aff ClientPagesLoaderOptions)) = flip Record.Extra.mapRecord NextjsApp.RouteToPageModuleName.pagesToModuleNameRec
-        (\moduleName -> do
+routeToModuleName :: NonEmptyArray NonEmptyString -> Route -> ModuleName
+routeToModuleName pagesModuleNamePrefix route = wrap (pagesModuleNamePrefix <> unwrap (Lens.view NextjsApp.Route._routeIdToRouteIdArrayIso (Lens.view NextjsApp.Route._routeToRouteIdIso route)))
+
+-- | routeToModuleName pagesModuleNamePrefix
+getClientPagesEntrypoints :: { pagesModuleNamePrefix :: NonEmptyArray NonEmptyString, appDir :: Path Abs Dir, spagoAbsoluteOutputDir :: Path Abs Dir } -> Aff (RouteIdMapping ClientPagesLoaderOptions)
+getClientPagesEntrypoints { pagesModuleNamePrefix, appDir, spagoAbsoluteOutputDir } = do
+  let (pagesToOptionsRec :: RouteIdMapping (Aff ClientPagesLoaderOptions)) = flip Record.Extra.mapRecord NextjsApp.Route.routeIdToRouteMapping
+        (\route -> do
+            let moduleName = routeToModuleName pagesModuleNamePrefix route
+
             let (absoluteCompiledPagePursPath :: Path Abs File) = spagoAbsoluteOutputDir </> dir' (moduleNameToName moduleName) </> file (SProxy :: SProxy "index.js") -- e.g. ".../output/Foo/index.js"
 
-            -- | unlessM (Protolude.Node.filePathExistsAndIs Node.FS.Stats.isFile (printPathPosix absoluteCompiledPagePursPath)) $ do
-            -- |   throwError $ error $ "spago output file doesn't exist: " <> printPathPosix absoluteCompiledPagePursPath
+            -- | unlessM (Protolude.Node.filePathExistsAndIs Node.FS.Stats.isFile (printPathPosixSandboxAny absoluteCompiledPagePursPath)) $ do
+            -- |   throwError $ error $ "spago output file doesn't exist: " <> printPathPosixSandboxAny absoluteCompiledPagePursPath
 
             let (absoluteJsDepsPath :: Path Abs File) =
                   let
                       ({ init, last } :: { init :: Array NonEmptyString, last :: NonEmptyString }) = NonEmptyArray.unsnoc (unwrap moduleName)
                       (disToFile :: Array (Path Rel Dir)) = map (nonEmptyStringToName >>> dir') init
-                   in (foldAppendDirs pagesDir disToFile) </> (file' $ joinName { name: last, ext: Just (NonEmptyString.nes (SProxy :: SProxy "deps.js")) })
+                   in (foldAppendDirs appDir disToFile) </> (file' $ joinName { name: last, ext: Just (NonEmptyString.nes (SProxy :: SProxy "deps.js")) })
 
-            (absoluteJsDepsPathExists :: Boolean) <- Protolude.Node.filePathExistsAndIs Node.FS.Stats.isFile (printPathPosix absoluteJsDepsPath)
+            (absoluteJsDepsPathExists :: Boolean) <- Protolude.Node.filePathExistsAndIs Node.FS.Stats.isFile (printPathPosixSandboxAny absoluteJsDepsPath)
 
             pure
               { absoluteCompiledPagePursPath

@@ -17,17 +17,20 @@ import Data.Argonaut.Decode (JsonDecodeError)
 import Data.Argonaut.Decode as ArgonautCodecs
 import Data.Argonaut.Encode as ArgonautCodecs
 import Data.Array as Array
+import Data.Nullable (Nullable)
+import Data.Nullable as Nullable
 import Data.String.Utils as String
 import Foreign (Foreign)
 import Foreign as Foreign
+import Foreign.JsMap (JsMap)
+import Foreign.JsMap as JsMap
 import Foreign.Object (Object)
 import Foreign.Object as Object
 import NextjsApp.Manifest.PageManifest as NextjsApp.Manifest.PageManifest
 import Record.Extra as Record.Extra
 import Record.ExtraSrghma as Record.ExtraSrghma
 import Type.Prelude (RProxy(..))
-import Foreign.JsMap (JsMap)
-import Foreign.JsMap as JsMap
+import Unsafe.Coerce (unsafeCoerce)
 
 type EntrypointsRow a = RouteIdMappingRow' a ( main :: a )
 
@@ -39,11 +42,11 @@ decodePages obj = Record.Extra.sequenceRecord $ Record.ExtraSrghma.mapIndex doWo
            Just x -> pure x
            Nothing -> throwError $ error $ "cannot find " <> s
 
-toCssAndJs :: WebpackEntrypont -> Effect { css :: Array String, js :: Array String }
-toCssAndJs entrypoint = do
+toCssAndJs :: String -> WebpackEntrypont -> Effect { css :: Array String, js :: Array String }
+toCssAndJs publicPath entrypoint = do
   -- | name <- runEffectFn1 webpackEntrypontName entrypoint
 
-  (files :: Array String) <- runEffectFn1 webpackEntrypontGetFiles entrypoint
+  (files :: Array String) <- runEffectFn1 webpackEntrypontGetFiles entrypoint <#> map (publicPath <> _)
 
   let { yes: css, no: nonCss } = Array.partition (String.endsWith ".css") files
 
@@ -58,9 +61,16 @@ buildManifestPlugin :: WebpackPluginInstance
 buildManifestPlugin = mkPluginSync "BuildManifestPlugin" \compilation -> do
   (entrypointValues :: JsMap String WebpackEntrypont) <- runEffectFn1 compilationGetEntrypoints compilation
 
+  let (publicPath :: Nullable String) = (unsafeCoerce compilation).options.output.publicPath
+
+  publicPath' <-
+    case Nullable.toMaybe publicPath of
+         Just x -> pure x
+         Nothing -> throwError $ error $ "no publicPath"
+
   (entrypointValues' :: { | EntrypointsRow WebpackEntrypont }) <- decodePages entrypointValues
 
-  (entrypointValues'' :: { | EntrypointsRow NextjsApp.Manifest.PageManifest.PageManifest }) <- Record.Extra.sequenceRecord (Record.Extra.mapRecord toCssAndJs entrypointValues')
+  (entrypointValues'' :: { | EntrypointsRow NextjsApp.Manifest.PageManifest.PageManifest }) <- Record.Extra.sequenceRecord (Record.Extra.mapRecord (toCssAndJs publicPath') entrypointValues')
 
   let main /\ pages = Record.ExtraSrghma.pop (SProxy :: SProxy "main") entrypointValues''
 
@@ -70,7 +80,5 @@ buildManifestPlugin = mkPluginSync "BuildManifestPlugin" \compilation -> do
         }
 
   let (json :: Json) = ArgonautCodecs.encodeJson manifest
-
-  traceM json
 
   runEffectFn3 compilationSetAsset compilation "build-manifest.json" (rawSource $ Argonaut.stringifyWithIndent 2 json)

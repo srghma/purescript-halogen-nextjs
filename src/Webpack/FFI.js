@@ -6,7 +6,7 @@ exports.rawSource = function(string) {
   return new (require('webpack-sources').RawSource)(string)
 }
 
-exports.compilationSetAsset = function(compilation, name, rawSource) { compilation[name] = rawSource }
+exports.compilationSetAsset = function(compilation, name, rawSource) { compilation.assets[name] = rawSource }
 
 exports.compilationGetEntrypoints = function(compilation) {
   // console.log('compilation', compilation.entrypoints)

@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "nextjs",
   "scripts": {
-    "dev": "babel-node --presets '@babel/preset-env' --trace-deprecation ./webpack/dev.js",
+    "dev": "node --trace-deprecation ./webpack/dev.js",
     "dev:spago": "spago build --watch",
     "build": "spago run --main NextjsWebpack.Build",
     "serve:prod": "node --trace-deprecation ./.dist/server/main.js --port 3000 --root-path /home/srghma/projects/purescript-halogen-nextjs/.dist/client",
