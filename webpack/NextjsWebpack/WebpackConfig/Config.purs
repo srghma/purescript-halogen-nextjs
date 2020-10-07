@@ -94,7 +94,7 @@ config { target, watch, production, root, bundleAnalyze, spagoOutput } =
 
     -- This saves chunks with the name given via `import()`
     , chunkFilename: case target of
-        Target__Browser _ -> Foreign.unsafeToForeign $ "chunks/" <> if production then "[name]-[contenthash]" else "[name]" <> ".js"
+        Target__Browser _ -> Foreign.unsafeToForeign $ "chunks/[name]-[contenthash].js"
         Target__Server -> Foreign.NullOrUndefined.undefined
         Target__Mobile _ -> Foreign.NullOrUndefined.undefined
     }
