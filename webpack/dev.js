@@ -1,20 +1,6 @@
 const RA = require('ramda-adjunct')
 const path = require('path')
 
-function webpackGetError(err, stats) {
-  if (err) {
-    return err // this is error object
-  }
-
-  for (let stat of stats.stats) {
-    const errors = stat.compilation.errors
-
-    if (!RA.isEmptyArray(errors)) {
-      return errors // this is array
-    }
-  }
-}
-
 function fileExistsAndIsNonEmpty(path) {
   try {
     const stat = require('fs').statSync(path)
@@ -27,14 +13,6 @@ function fileExistsAndIsNonEmpty(path) {
 
 const chokidar = require('chokidar')
 const childProcessPromise = require('child-process-promise')
-
-const onFilesChangeRunCommand = function({ files, command, commandArgs }) {
-  const watcher = chokidar.watch(files)
-
-  watcher.on('all', (_event, _path) => {
-    childProcessPromise.spawn(command, commandArgs, { stdio: ['ignore', 'inherit', 'inherit'] })
-  })
-}
 
 const spagoDhall = './spago.dhall'
 
@@ -58,11 +36,10 @@ const serverPort = 3000
 
 let serverProcessState
 
-onFilesChangeRunCommand({
+require(spagoOptions.output + '/NextjsWebpack.Utils.OnFilesChangedRunCommand/index.js').onFilesChangedRunCommand({
   files: ['app/**/*.scss'],
-  command: 'generate-halogen-css-modules',
-  commandArgs: ['-d', './app'],
-})
+  command: [ 'generate-halogen-css-modules', '-d', './app' ],
+})()
 
 require('webpack-spago-loader/watcher-job')({
   additionalWatchGlobs: ['app/**/*.scss', 'src/**/*.scss'],

@@ -52,6 +52,7 @@
   , "foreign-generic"
   , "stringutils"
   , "foreign-js-map"
+  , "node-child-process"
   ]
 , packages = ./packages.dhall
 , sources =
