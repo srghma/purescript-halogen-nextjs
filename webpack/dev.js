@@ -80,7 +80,7 @@ require('webpack-spago-loader/watcher-job')({
       }
     }
 
-    console.log(`onSuccess: ${serverProcessState && serverProcessState.serverProcess}`)
+    console.log(`onSuccess: ${serverProcessState && require('util').inspect({ pid: serverProcessState.serverProcess.pid })}`)
 
     // wait webpack to end (you cannot)
 
@@ -101,7 +101,7 @@ require('webpack-spago-loader/watcher-job')({
           return null
         }
 
-        console.log(`onSuccess: starting ${serverProcessState && serverProcessState.serverProcess}`)
+        console.log(`onSuccess: starting ${serverProcessState && require('util').inspect({ pid: serverProcessState.serverProcess.pid })}`)
 
         const command = {
           head: "node",

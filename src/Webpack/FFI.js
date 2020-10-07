@@ -26,9 +26,9 @@ exports.mkPlugin = function(pluginName, doWork) {
 
   const refForDynamicName = {
     [pluginName]: class {
-        apply(compiler) {
-          compiler.hooks.emit.tapAsync(pluginName, doWork)
-        }
+      apply(compiler) {
+        compiler.hooks.emit.tapAsync(pluginName, doWork)
+      }
     }
   }
 
