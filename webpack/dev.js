@@ -1,19 +1,6 @@
 const RA = require('ramda-adjunct')
 const path = require('path')
 
-function fileExistsAndIsNonEmpty(path) {
-  try {
-    const stat = require('fs').statSync(path)
-
-    return stat.isFile() && stat.size !== 0
-  } catch (e) {
-    return false
-  }
-}
-
-const chokidar = require('chokidar')
-const childProcessPromise = require('child-process-promise')
-
 const spagoDhall = './spago.dhall'
 
 const spagoOptions = {
@@ -32,14 +19,12 @@ const spagoOptions = {
   }
 }
 
-const serverPort = 3000
-
-let serverProcessState
-
-require(spagoOptions.output + '/NextjsWebpack.Utils.OnFilesChangedRunCommand/index.js').onFilesChangedRunCommand({
+const cleanupCssModulesGenerator = require(spagoOptions.output + '/NextjsWebpack.Utils.OnFilesChangedRunCommand/index.js').onFilesChangedRunCommand({
   files: ['app/**/*.scss'],
   command: [ 'generate-halogen-css-modules', '-d', './app' ],
 })()
+
+const { spawnServer, cleanupServer } = require(spagoOptions.output + '/NextjsWebpack.Utils.OneServerATimeSpawner/index.js').oneServerATimeSpawner()
 
 require('webpack-spago-loader/watcher-job')({
   // additionalWatchGlobs: ['app/**/*.scss', 'src/**/*.scss'],
@@ -49,16 +34,13 @@ require('webpack-spago-loader/watcher-job')({
   onError: () => {},
   onSuccess: async () => {
     // clear cache
+    console.log('clearing cache')
+
     for (const cachePath in require.cache) {
-      if (
-        cachePath.startsWith(spagoOptions.output)
-      ) {
-        console.log('clearing cachePath', cachePath)
+      if (cachePath.startsWith(spagoOptions.output)) {
         delete require.cache[cachePath]
       }
     }
-
-    console.log(`onSuccess: ${serverProcessState && require('util').inspect({ pid: serverProcessState.serverProcess.pid })}`)
 
     // wait webpack to end (you cannot)
 
@@ -68,42 +50,20 @@ require('webpack-spago-loader/watcher-job')({
 
     require(spagoOptions.output + '/NextjsWebpack.Entries.Dev/index.js').runWebpack({
       onSuccess: function({ serverConfig, clientConfig }) {
-        console.log('[mywebpack] Compiling...')
+        const serverFilePath = path.resolve(serverConfig.output.path, 'main.js') // hardcoded, dont know how to find (serverConfig.output.filename doesn't help)
 
-        serverProcessState && serverProcessState.kill()
-
-        const serverPath = path.resolve(serverConfig.output.path, 'main.js') // hardcoded, dont know how to find (serverConfig.output.filename doesn't help)
-
-        if(!fileExistsAndIsNonEmpty(serverPath)) {
-          console.log(`[SERVER] file doesn't exist ${serverPath}`)
-          return null
-        }
-
-        console.log(`onSuccess: starting ${serverProcessState && require('util').inspect({ pid: serverProcessState.serverProcess.pid })}`)
-
-        const command = {
-          head: "node",
-          tail: [
-            "--trace-deprecation",
-            serverPath,
-            "--port",
-            serverPort.toString(),
-            "--root-path",
-            clientConfig.output.path,
-          ]
-        }
-
-        serverProcessState = require('./server-process')({
-          command,
-          onProcessEndsWithoutError: () => { },
-          onProcessEndsWithError: () => { },
-        })
+        spawnServer({
+          serverFilePath,
+          port: 3000,
+          compiliedClientDirPath: clientConfig.output.path,
+        })()
       }
     })()
   }
 })
 
-process.on('exit', function() {
-  // kill zombie process
-  serverProcessState && serverProcessState.kill()
+process.on('beforeExit', function() {
+  console.log('cleaning up server and chokidar')
+  cleanupCssModulesGenerator()
+  cleanupServer()
 })

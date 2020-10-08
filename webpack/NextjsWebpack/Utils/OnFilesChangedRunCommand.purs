@@ -25,21 +25,28 @@ import Node.Stream (Stream, Write)
 import Unsafe.Coerce (unsafeCoerce)
 import NodeChildProcessExtra
 
-onFilesChangedRunCommand :: { files :: Array String, command :: Array String } -> Effect Unit
+onFilesChangedRunCommand :: { files :: Array String, command :: Array String } -> Effect (Effect Unit)
 onFilesChangedRunCommand config = do
   files <- NonEmptyArray.fromArray config.files # maybe (throwError $ error "expected non empty files") pure
   command <- NonEmptyArray.fromArray config.command # maybe (throwError $ error "expected non empty command") pure
 
-  let (event :: Event String) = Event.debounce (Milliseconds 100.0) (Chokidar.watch files)
+  let (event :: Event String) =
+        Event.debounce (Milliseconds 500.0) $
+        FRPEventExtra.distinct $ -- does nothing but just in case
+        Chokidar.watch files
 
   let command' = NonEmptyArray.uncons command
 
-  spawn <- withOneProcessATime
+  { spawn, killIfRunning } <- withOneProcessATime
 
   let onEvent :: String -> Effect Unit
       onEvent path = do
-         traceM { m: "onEvent", path }
+         -- | traceM { m: "onEvent", path }
 
          spawn (Node.ChildProcess.spawn command'.head command'.tail (Node.ChildProcess.defaultSpawnOptions { stdio = noInputOnlyOutput }))
 
-  void $ Event.subscribe event onEvent
+  stopChokidar <- Event.subscribe event onEvent
+
+  pure do
+     stopChokidar
+     killIfRunning

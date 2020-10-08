@@ -25,14 +25,16 @@ forget = unsafeCoerce
 noInputOnlyOutput :: Array (Maybe StdIOBehaviour)
 noInputOnlyOutput = [Just Ignore, Just (ShareStream (forget Node.Process.stdout)), Just (ShareStream (forget Node.Process.stderr))]
 
-withOneProcessATime :: Effect (Effect ChildProcess -> Effect Unit)
+withOneProcessATime :: Effect ({ spawn :: Effect ChildProcess -> Effect Unit, killIfRunning :: Effect Unit })
 withOneProcessATime = do
   latest <- Ref.new Nothing
 
+  let killIfRunning = Ref.read latest >>= maybe (pure unit) \process -> do
+        -- | traceM { process }
+        Node.ChildProcess.kill Data.Posix.Signal.SIGKILL process
+
   let spawn runProcess = do
-        Ref.read latest >>= maybe (pure unit) \process -> do
-           traceM { process }
-           Node.ChildProcess.kill Data.Posix.Signal.SIGKILL process
+        killIfRunning
 
         childProcess <- runProcess
 
@@ -40,4 +42,8 @@ withOneProcessATime = do
 
         pure unit
 
-  pure spawn
+  pure
+    { spawn
+    -- kill zombies
+    , killIfRunning
+    }
