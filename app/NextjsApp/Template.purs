@@ -67,7 +67,7 @@ template { targetData, title, headTags, bodyTags } =
         <> Array.catMaybes
         [ case targetData of
                TargetData__Server { livereloadPort } -> flip map livereloadPort \livereloadPort' ->
-                  """<script src="http://localhost:""" <> show livereloadPort' <> """/livereload.js"></script>"""
+                  """<script src="http://localhost:""" <> show livereloadPort' <> """/reload/reload.js"></script>"""
                TargetData__Mobile -> Nothing
         ]
         <> headTags

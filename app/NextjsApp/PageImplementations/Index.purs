@@ -48,7 +48,7 @@ render
   -> HH.ComponentHTML action ( mylink :: Slot NextjsApp.Link.Query NextjsApp.Link.Message Route ) AppM
 render _ =
   HH.div_
-  [ HH.text "asdfas"
+  [ HH.text "test"
   , HH.ul_ $
       allRoutes <#> \route ->
         HH.li_ $
