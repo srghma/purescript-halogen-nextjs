@@ -3,6 +3,8 @@ module NextjsApp.Template where
 import Protolude
 import Data.String.Yarn as String
 import Data.String.Common as String
+import SimpleXMLWithIndentation as SimpleXMLWithIndentation
+import Data.Array as Array
 
 data TargetData
   = TargetData__Mobile
@@ -10,6 +12,7 @@ data TargetData
     { prerenderedHtml :: String
     , prerenderedPagesManifest :: String
     , prerenderedPageData :: Maybe String
+    , livereloadPort :: Maybe Int
     }
 
 type TemplateConfig =
@@ -51,39 +54,25 @@ template { targetData, title, headTags, bodyTags } =
                   , """<meta name="msapplication-tap-highlight" content="no">"""
                   , """<meta name="viewport" content="initial-scale=1,width=device-width,viewport-fit=cover">"""
                   ]
-
-    indent :: String -> String
-    indent x = "  " <> x
-
-    unlinesIndent :: Array String -> String
-    unlinesIndent = String.unlines <<< map indent
-
-    tagStart x = "<" <> x <> ">"
-
-    tagEnd x = "</" <> x <> ">"
-
-    printProp (name /\ val) = name <> "=\"" <> val <> "\""
-
-    printProps = String.joinWith " " <<< map printProp
-
-    tagOneline :: String -> Array (String /\ String) -> String -> String
-    tagOneline tagName props content = tagStart (tagName <> " " <> printProps props) <> content <> tagEnd tagName
-
-    tagMultiLine :: String -> Array (String /\ String) -> Array String -> String
-    tagMultiLine tagName props content = String.unlines $ [ tagStart (tagName <> " " <> printProps props), unlinesIndent content, tagEnd tagName ]
   in String.unlines
     [ "<!DOCTYPE html>"
-    , tagMultiLine "html" []
-      [ tagMultiLine "head" [] $
+    , SimpleXMLWithIndentation.tagMultiLine "html" []
+      [ SimpleXMLWithIndentation.tagMultiLine "head" [] $
         [ meta
         , """<meta charset="utf-8"/>"""
-        , tagOneline "title" [] title
+        , SimpleXMLWithIndentation.tagOneline "title" [] title
         , """<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet">"""
         , """<link href="https://fonts.googleapis.com/css?family=Material+Icons&display=block" rel="stylesheet">"""
         ]
+        <> Array.catMaybes
+        [ case targetData of
+               TargetData__Server { livereloadPort } -> flip map livereloadPort \livereloadPort' ->
+                  """<script src="http://localhost:""" <> show livereloadPort' <> """/livereload.js"></script>"""
+               TargetData__Mobile -> Nothing
+        ]
         <> headTags
-      , tagMultiLine "body" [ "class" /\ "mdc-typography mdc-theme--background" ] $
-          [ tagOneline "div" [ "id" /\ "root" ] $
+      , SimpleXMLWithIndentation.tagMultiLine "body" [ "class" /\ "mdc-typography mdc-theme--background" ] $
+          [ SimpleXMLWithIndentation.tagOneline "div" [ "id" /\ "root" ] $
             case targetData of
                  TargetData__Server serverData -> serverData.prerenderedHtml
                  TargetData__Mobile -> ""

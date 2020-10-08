@@ -31,6 +31,7 @@ type PageSpecServerRendered =
   { pageData :: StaticOrDynamicPageData
   , component :: String
   , title :: String
+  , livereloadPort :: Maybe Int
   }
 
 pageTemplate :: NextjsApp.Manifest.ClientPagesManifest.ClientPagesManifest -> NextjsApp.Manifest.PageManifest.PageManifest -> PageSpecServerRendered -> String
@@ -42,6 +43,7 @@ pageTemplate clientPagesManifest currentPageManifest pageSpecResolved = Template
       case pageSpecResolved.pageData of
            StaticPageData -> Nothing
            DynamicPageData json -> Just $ ArgonautCore.stringify json
+    , livereloadPort: pageSpecResolved.livereloadPort
     }
   , headTags: (currentPageManifest.js <#> jsPreload) <> (currentPageManifest.css <#> css)
   , bodyTags: currentPageManifest.js <#> jsAsync

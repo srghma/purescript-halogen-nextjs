@@ -19,10 +19,12 @@ import Effect.Exception
 import Data.Argonaut.Parser as Data.Argonaut.Parser
 import Pathy hiding (Parser(..))
 import Pathy as Pathy
+import Data.Maybe as Maybe
 
 type Config =
   { rootPath :: Path Abs Dir
   , port :: Int
+  , livereloadPort :: Maybe Int
   }
 
 absDir :: ReadM (Path Abs Dir)
@@ -31,17 +33,25 @@ absDir = eitherReader $ \s -> case parseAbsDir posixParser s of
   Just a -> Right a
 
 configParser :: Parser Config
-configParser = { rootPath: _ , port: _ }
+configParser = { rootPath: _ , port: _, livereloadPort: _ }
       <$> option absDir
           ( long "root-path"
-         <> metavar "TARGET"
-         <> help "root path" )
+          <> metavar "TARGET"
+          <> help "root path"
+          )
       <*> option int
           ( long "port"
-         <> help "0 - means random port"
-         <> showDefault
-         <> value 0
-         <> metavar "INT" )
+          <> help "0 - means random port"
+          <> showDefault
+          <> value 0
+          <> metavar "INT"
+          )
+      <*> Maybe.optional
+          ( option int
+            ( long "livereload-port"
+            <> metavar "INT"
+            )
+          )
 
 opts :: ParserInfo Config
 opts = info (configParser <**> helper)

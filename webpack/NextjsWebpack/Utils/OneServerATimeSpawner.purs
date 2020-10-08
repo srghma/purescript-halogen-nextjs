@@ -26,15 +26,19 @@ import Node.ChildProcess as Node.ChildProcess
 import Node.Process as Node.Process
 import Node.Stream (Stream, Write)
 import Unsafe.Coerce (unsafeCoerce)
+import Data.Array as Array
+import Data.String.Yarn as String
+import Data.String.Common as String
 
 oneServerATimeSpawner :: Effect
   { spawnServer ::
     { serverFilePath :: String
     , port :: Int
+    , livereloadPort :: Int
     , compiliedClientDirPath :: String
     }
     -> Effect Unit
-  , cleanupServer :: Effect Unit
+  , killServerIfRunning :: Effect Unit
   }
 oneServerATimeSpawner = do
   { spawn, killIfRunning } <- withOneProcessATime
@@ -53,9 +57,16 @@ oneServerATimeSpawner = do
           , show config.port
           , "--root-path"
           , printPathPosixSandboxAny compiliedClientDirPath
+          , "--livereload-port"
+          , show config.livereloadPort
           ]
           (Node.ChildProcess.defaultSpawnOptions { stdio = noInputOnlyOutput })
 
-        log $ "[Server] running at port " <> show config.port <> ", path = " <> printPathPosixSandboxAny serverFilePath <> ", client dir = " <> printPathPosixSandboxAny compiliedClientDirPath
-    , cleanupServer: killIfRunning
+        log $ String.unlines $
+          [ "[Server] running at port " <> show config.port
+          , "                    path = " <> printPathPosixSandboxAny serverFilePath
+          , "                    client dir = " <> printPathPosixSandboxAny compiliedClientDirPath
+          , "                    livereloadPort = " <> show config.livereloadPort
+          ]
+    , killServerIfRunning: killIfRunning
     }

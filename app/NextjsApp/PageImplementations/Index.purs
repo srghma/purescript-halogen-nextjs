@@ -47,13 +47,16 @@ render
    . state
   -> HH.ComponentHTML action ( mylink :: Slot NextjsApp.Link.Query NextjsApp.Link.Message Route ) AppM
 render _ =
-  HH.ul_ $
-    allRoutes <#> \route ->
-      HH.li_ $
-        [ HH.slot
-          (SProxy :: SProxy "mylink")
-          route
-          NextjsApp.Link.component
-          { route, text: show route }
-          absurd
-        ]
+  HH.div_
+  [ HH.text "asdfas"
+  , HH.ul_ $
+      allRoutes <#> \route ->
+        HH.li_ $
+          [ HH.slot
+            (SProxy :: SProxy "mylink")
+            route
+            NextjsApp.Link.component
+            { route, text: show route }
+            absurd
+          ]
+  ]

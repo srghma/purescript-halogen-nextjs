@@ -1,5 +1,6 @@
 const RA = require('ramda-adjunct')
 const path = require('path')
+const tinylr = require('tiny-lr')
 
 const spagoDhall = './spago.dhall'
 
@@ -24,7 +25,19 @@ const cleanupCssModulesGenerator = require(spagoOptions.output + '/NextjsWebpack
   command: [ 'generate-halogen-css-modules', '-d', './app' ],
 })()
 
-const { spawnServer, cleanupServer } = require(spagoOptions.output + '/NextjsWebpack.Utils.OneServerATimeSpawner/index.js').oneServerATimeSpawner()
+const { spawnServer, killServerIfRunning } = require(spagoOptions.output + '/NextjsWebpack.Utils.OneServerATimeSpawner/index.js').oneServerATimeSpawner()
+
+const livereloadPort = 35729
+
+const tinylrServer = tinylr({
+  protocol: 'http',
+  port: livereloadPort,
+  hostname: 'localhost',
+})
+
+tinylrServer.listen(livereloadPort, function() {
+  console.log('[livereload] Listening on %s ...', livereloadPort)
+})
 
 require('webpack-spago-loader/watcher-job')({
   // additionalWatchGlobs: ['app/**/*.scss', 'src/**/*.scss'],
@@ -33,6 +46,8 @@ require('webpack-spago-loader/watcher-job')({
   onStart: () => {},
   onError: () => {},
   onSuccess: async () => {
+    killServerIfRunning()
+
     // clear cache
     console.log('clearing cache')
 
@@ -42,12 +57,6 @@ require('webpack-spago-loader/watcher-job')({
       }
     }
 
-    // wait webpack to end (you cannot)
-
-    // wait server to end
-
-    // start webpack
-
     require(spagoOptions.output + '/NextjsWebpack.Entries.Dev/index.js').runWebpack({
       onSuccess: function({ serverConfig, clientConfig }) {
         const serverFilePath = path.resolve(serverConfig.output.path, 'main.js') // hardcoded, dont know how to find (serverConfig.output.filename doesn't help)
@@ -56,7 +65,11 @@ require('webpack-spago-loader/watcher-job')({
           serverFilePath,
           port: 3000,
           compiliedClientDirPath: clientConfig.output.path,
+          livereloadPort
         })()
+
+        console.log('[livereload] sending refresh')
+        tinylrServer.alertClients("asdfasdf alert")
       }
     })()
   }
@@ -65,5 +78,5 @@ require('webpack-spago-loader/watcher-job')({
 process.on('beforeExit', function() {
   console.log('cleaning up server and chokidar')
   cleanupCssModulesGenerator()
-  cleanupServer()
+  killServerIfRunning()
 })
