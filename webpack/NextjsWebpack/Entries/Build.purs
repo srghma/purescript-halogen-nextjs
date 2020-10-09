@@ -33,7 +33,7 @@ main :: Effect Unit
 main = launchAff_ do
   root <- liftEffect cwd
 
-  (faviconFileBuffer :: Buffer) <- Node.FS.Aff.readFile (printPathPosixSandboxAny (root </> dir (SProxy :: SProxy "purescript-favicon-black.svg")))
+  (faviconFileBuffer :: Buffer) <- Node.FS.Aff.readFile (printPathPosixSandboxAny (root </> file (SProxy :: SProxy "purescript-favicon-black.svg")))
 
   (favIconResponse :: Favicons.FavIconResponse) <- Favicons.favicons faviconFileBuffer NextjsWebpack.FaviconsConfig.faviconsConfig
 
@@ -50,7 +50,7 @@ main = launchAff_ do
   let browserConfig = NextjsWebpack.WebpackConfig.Config.config
         { target: NextjsWebpack.WebpackConfig.Config.Target__Browser { entrypointsObject, favIconResponse }
         , watch: false
-        , production: false
+        , production: true
         , root
         , bundleAnalyze: false
         , spagoOutput
@@ -59,7 +59,7 @@ main = launchAff_ do
   let serverConfig = NextjsWebpack.WebpackConfig.Config.config
         { target: NextjsWebpack.WebpackConfig.Config.Target__Server
         , watch: false
-        , production: false
+        , production: true
         , root
         , bundleAnalyze: false
         , spagoOutput

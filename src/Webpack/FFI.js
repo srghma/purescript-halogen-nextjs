@@ -2,7 +2,7 @@ exports.webpackEntrypontName = function(entrypoint) { return entrypoint.name }
 
 exports.webpackEntrypontGetFiles = function(entrypoint) { return entrypoint.getFiles() }
 
-exports.rawSource = function(string) {
+exports._rawSource = function(string) {
   return new (require('webpack-sources').RawSource)(string)
 }
 

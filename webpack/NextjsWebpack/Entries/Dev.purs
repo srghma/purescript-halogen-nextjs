@@ -41,7 +41,7 @@ runWebpack
 runWebpack { onSuccess } = launchAff_ do
   root <- liftEffect cwd
 
-  (faviconFileBuffer :: Buffer) <- Node.FS.Aff.readFile (printPathPosixSandboxAny (root </> dir (SProxy :: SProxy "purescript-favicon-black.svg")))
+  (faviconFileBuffer :: Buffer) <- Node.FS.Aff.readFile (printPathPosixSandboxAny (root </> file (SProxy :: SProxy "purescript-favicon-black.svg")))
 
   (favIconResponse :: Favicons.FavIconResponse) <- Favicons.favicons faviconFileBuffer NextjsWebpack.FaviconsConfig.faviconsConfig
 

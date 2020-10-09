@@ -85,4 +85,7 @@ buildManifestPlugin pluginOptions = mkPluginSync "BuildManifestPlugin" \compilat
 
   let (json :: Json) = ArgonautCodecs.encodeJson manifest
 
-  runEffectFn3 compilationSetAsset compilation "build-manifest.json" (rawSource $ Argonaut.stringifyWithIndent 2 json)
+  runEffectFn3 compilationSetAsset compilation "build-manifest.json" (rawSourceFromString $ Argonaut.stringifyWithIndent 2 json)
+
+  for_ pluginOptions.favIconResponse.images \{ name, contents } -> runEffectFn3 compilationSetAsset compilation name (rawSourceFromBuffer contents)
+  for_ pluginOptions.favIconResponse.files \{ name, contents } -> runEffectFn3 compilationSetAsset compilation name (rawSourceFromBuffer contents)

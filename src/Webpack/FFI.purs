@@ -1,22 +1,30 @@
 module Webpack.FFI where
 
-import Effect.Uncurried
 import Data.Function.Uncurried
+import Effect.Uncurried
 import Protolude
+import Webpack.Types
 
 import Foreign (Foreign)
 import Foreign as Foreign
-import Foreign.Object (Object)
-import Foreign.Object as Object
 import Foreign.JsMap (JsMap)
 import Foreign.JsMap as JsMap
-import Webpack.Types
+import Foreign.Object (Object)
+import Foreign.Object as Object
+import Node.Buffer (Buffer)
+import Unsafe.Coerce (unsafeCoerce)
 
 foreign import webpackEntrypontName :: EffectFn1 WebpackEntrypont String
 
 foreign import webpackEntrypontGetFiles :: EffectFn1 WebpackEntrypont (Array String)
 
-foreign import rawSource :: String -> RawSource
+foreign import _rawSource :: Foreign -> RawSource
+
+rawSourceFromString :: String -> RawSource
+rawSourceFromString = _rawSource <<< unsafeCoerce
+
+rawSourceFromBuffer :: Buffer -> RawSource
+rawSourceFromBuffer = _rawSource <<< unsafeCoerce
 
 foreign import compilationSetAsset :: EffectFn3 Compilation String RawSource Unit
 

@@ -5,9 +5,9 @@
   "scripts": {
     "dev": "node --trace-deprecation ./webpack/dev.js",
     "dev:spago": "spago build --watch",
-    "build": "spago run --main NextjsWebpack.Build",
-    "serve:prod": "node --trace-deprecation ./.dist/server/main.js --port 3000 --root-path /home/srghma/projects/purescript-halogen-nextjs/.dist/client",
-    "serve:dev": "node --trace-deprecation ./.dist-dev/server/main.js --port 3000 --root-path /home/srghma/projects/purescript-halogen-nextjs/.dist-dev/client",
+    "build": "spago run --main NextjsWebpack.Entries.Build",
+    "serve:prod": "node --trace-deprecation ./.dist/server/main.js --port 3000 --root-path /home/srghma/projects/purescript-halogen-nextjs/.dist/client/",
+    "serve:dev": "node --trace-deprecation ./.dist-dev/server/main.js --port 3000 --root-path /home/srghma/projects/purescript-halogen-nextjs/.dist-dev/client/",
     "cordova:clean": "rm -frdv www && mkdir www",
     "cordova:build": "cordova build -- --webpack.config webpack/cordova-webpack.config.js --webpack.env.mode=production",
     "cordova:dev": "cordova run android -- --webpack.config webpack/cordova-webpack.config.js --webpack.env.mode=development",
