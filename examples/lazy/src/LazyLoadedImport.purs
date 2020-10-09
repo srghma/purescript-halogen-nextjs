@@ -1,6 +1,6 @@
 module Example.Lazy.LazyLoadedImport where
 
-import Protolude (Aff, Effect, discard, (<#>))
+import Protolude
 
 import Control.Promise (Promise)
 import Control.Promise as Promise

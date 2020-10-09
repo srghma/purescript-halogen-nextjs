@@ -1,13 +1,7 @@
 module ContribWebpackPlugins where
 
-import Control.Promise
-import Effect.Uncurried
-import Protolude
-import Webpack.Types
+import Webpack.Types (WebpackPluginInstance)
 
-import Data.Array as Array
-import Data.Nullable (Nullable, notNull)
-import Data.Nullable as Nullable
 
 foreign import _MiniCssExtractPlugin :: forall options . { | options } -> WebpackPluginInstance
 

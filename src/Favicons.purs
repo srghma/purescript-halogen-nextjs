@@ -3,10 +3,8 @@ module Favicons where
 import Protolude
 
 import Data.Nullable (Nullable)
-import Data.Nullable as Nullable
-import Effect.Uncurried
 import Node.Buffer (Buffer)
-import Effect.Aff.Compat
+import Effect.Aff.Compat (EffectFnAff, fromEffectFnAff)
 
 -- https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/favicons/index.d.ts
 type FaviconsConfig =

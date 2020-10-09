@@ -1,6 +1,6 @@
 module Example.TextNodes.Keyed (component) where
 
-import Protolude (Tuple(..), Unit, not, show, (<<<), (<>))
+import Protolude
 
 import Halogen as H
 import Halogen.HTML as HH

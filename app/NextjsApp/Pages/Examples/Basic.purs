@@ -1,6 +1,6 @@
 module NextjsApp.Pages.Examples.Basic (page) where
 
-import Protolude (Unit, liftAff, unit, ($))
+import Protolude
 import Example.Basic.Button as Example.Basic.Button
 import Nextjs.Page (Page, PageData(..), PageSpec, mkPage)
 import Halogen as H

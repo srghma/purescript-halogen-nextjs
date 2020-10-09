@@ -1,6 +1,6 @@
 module NextjsApp.Pages.Examples.DeeplyNested (page) where
 
-import Protolude (Unit, liftAff, unit, ($))
+import Protolude
 import Example.DeeplyNested.A as Example.DeeplyNested.A
 import Nextjs.Page (Page, PageData(..), PageSpec, mkPage)
 import Halogen as H

@@ -1,6 +1,6 @@
 module NextjsApp.Router.Client where
 
-import Protolude (Either(..), Maybe(..), Unit, Void, bind, discard, identity, pure, traceM, when, ($), (/=), (>>=))
+import Protolude
 
 import Halogen as H
 import Nextjs.Page as Nextjs.Page
@@ -8,7 +8,7 @@ import NextjsApp.PageLoader as NextjsApp.PageLoader
 import NextjsApp.Route as NextjsApp.Route
 import NextjsApp.AppM (AppM)
 import Nextjs.Api as Nextjs.Api
-import NextjsApp.Router.Shared
+import NextjsApp.Router.Shared (ChildSlots, ClientState, Query(..), maybeRenderPage)
 
 component
   :: H.Component Query ClientState Void AppM

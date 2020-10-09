@@ -12,35 +12,23 @@ module NextjsWebpack.GetClientPagesEntrypoints where
 -- script prefetched https://github.com/vercel/next.js/blob/3036463080d7905aa22da46e63f6c50dd50adc3c/packages/next/client/page-loader.js#L36-L49
 -- script added https://github.com/vercel/next.js/blob/42a328f3e44a560d45821a582beb257fdeea10af/packages/next/client/page-loader.js#L254
 
-import ModuleName
-import NextjsApp.Route
-import Pathy
+import ModuleName (ModuleName, printModuleName)
+import NextjsApp.Route (Route, RouteIdMapping)
+import Pathy (Abs, Dir, File, Name, Path, Rel, dir', file, file', joinName, (</>))
 import Protolude
-import Unsafe.Coerce
 
-import Control.Parallel (parSequence)
-import Data.Array as Array
 import Data.Array.NonEmpty (NonEmptyArray)
 import Data.Array.NonEmpty as NonEmptyArray
-import Data.Map (Map)
-import Data.Map as Map
-import Data.String as String
 import Data.String.NonEmpty (NonEmptyString)
 import Data.String.NonEmpty as NonEmptyString
-import Data.String.Regex as Regex
-import Data.String.Regex.Flags as Regex
-import Data.String.Regex.Unsafe as Regex
-import Firstline as Firstline
 import Node.FS.Stats as Node.FS.Stats
 import Protolude.Node as Protolude.Node
 import Record.Extra as Record.Extra
-import Record.Homogeneous as Record.Homogeneous
-import RecursiveReaddirAsync (DirOrFile(..), recursiveTreeList)
 import Record.ExtraSrghma as Record.ExtraSrghma
-import PathyExtra
+import PathyExtra (printPathPosixSandboxAny)
 import Data.Lens as Lens
 import NextjsApp.Route as NextjsApp.Route
-import Data.Newtype
+import Data.Newtype (wrap)
 
 -- | moduleNameToManifestPageId :: ModuleName -> String
 -- | moduleNameToManifestPageId (ModuleName m) = String.joinWith manifestPageIdSeparator (NonEmptyArray.toArray $ map NonEmptyString.toString m)

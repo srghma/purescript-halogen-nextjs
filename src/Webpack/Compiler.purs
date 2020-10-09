@@ -1,20 +1,14 @@
 module Webpack.Compiler where
 
-import Control.Promise
-import Effect.Uncurried
-import Data.Function.Uncurried
+import Effect.Uncurried (EffectFn2, mkEffectFn2, runEffectFn2)
+import Data.Function.Uncurried (Fn1, runFn1)
 import Protolude
 
 import Foreign (Foreign)
-import Foreign as Foreign
-import Pathy
-import Data.Nullable
+import Data.Nullable (Nullable)
 import Data.Nullable as Nullable
-import Data.Array as Array
-import Data.Array.NonEmpty (NonEmptyArray)
-import Data.Array.NonEmpty as NonEmptyArray
-import Unsafe.Coerce
-import Webpack.Types
+import Unsafe.Coerce (unsafeCoerce)
+import Webpack.Types (Configuration)
 
 -- https://github.com/DefinitelyTyped/DefinitelyTyped/blob/7bcd046f24df925802e1d1d04a7fd6f19b54cde0/types/webpack/index.d.ts#L1312
 type Compilation =

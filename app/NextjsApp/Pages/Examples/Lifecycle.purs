@@ -1,6 +1,6 @@
 module NextjsApp.Pages.Examples.Lifecycle (page) where
 
-import Protolude (Unit, liftAff, unit, ($))
+import Protolude
 import Example.Lifecycle.Main as Example.Lifecycle.Main
 import Nextjs.Page (Page, PageData(..), PageSpec, mkPage)
 import Halogen as H

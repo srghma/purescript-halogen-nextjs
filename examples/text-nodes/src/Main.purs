@@ -1,6 +1,6 @@
 module Example.TextNodes.Main (component) where
 
-import Protolude (Const, SProxy(..), Unit, Void, absurd, const, unit)
+import Protolude
 
 import Halogen as H
 import Halogen.HTML as HH

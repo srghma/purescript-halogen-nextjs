@@ -1,35 +1,18 @@
 module NextjsWebpack.Entries.Dev where
 
-import Pathy
-import PathyExtra
+import Pathy (dir, (</>))
+import PathyExtra (cwd)
 import Protolude
-import Webpack.Types
+import Webpack.Types (Configuration)
 
-import Affjax as Affjax
-import Ansi.Codes as Ansi
-import Ansi.Output as Ansi
-import Data.Argonaut.Core as ArgonautCore
-import Data.Argonaut.Decode as ArgonautCodecs
-import Data.String.Yarn as Yarn
-import Effect.Class.Console as Console
 import Effect.Uncurried (EffectFn1, runEffectFn1)
 import NextjsWebpack.GetClientPagesEntrypoints as NextjsWebpack.GetClientPagesEntrypoints
 import NextjsWebpack.WebpackConfig.Config as NextjsWebpack.WebpackConfig.Config
-import Node.Process as Node.Process
-import Options.Applicative as Options.Applicative
-import Protolude.Node as Protolude.Node
 import Unsafe.Coerce (unsafeCoerce)
 import Webpack.Compiler as Webpack.Compiler
 import Webpack.GetError as Webpack.GetError
 import Data.Array.NonEmpty (NonEmptyArray)
-import Data.Array.NonEmpty as NonEmptyArray
 import Data.String.NonEmpty (NonEmptyString)
-import Data.String.NonEmpty as NonEmptyString
-import Node.Buffer (Buffer)
-import Node.Buffer as Node.Buffer
-import Node.FS.Aff as Node.FS.Aff
-import Favicons as Favicons
-import NextjsWebpack.FaviconsConfig as NextjsWebpack.FaviconsConfig
 
 runWebpack
   :: { onSuccess :: EffectFn1

@@ -1,13 +1,7 @@
 module Webpack.Plugins where
 
-import Control.Promise
-import Effect.Uncurried
-import Protolude
-import Webpack.Types
+import Webpack.Types (WebpackPluginInstance)
 
-import Data.Array as Array
-import Data.Nullable (Nullable)
-import Data.Nullable as Nullable
 import Foreign (Foreign)
 
 foreign import webpack ::

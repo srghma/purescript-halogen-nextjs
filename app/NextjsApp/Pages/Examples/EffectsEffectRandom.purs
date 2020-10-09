@@ -1,6 +1,6 @@
 module NextjsApp.Pages.Examples.EffectsEffectRandom (page) where
 
-import Protolude (Unit, liftAff, unit, ($))
+import Protolude
 import Example.Effects.Effect.Random.Component as Example.Effects.Effect.Random.Component
 import Nextjs.Page (Page, PageData(..), PageSpec, mkPage)
 import Halogen as H

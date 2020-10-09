@@ -1,20 +1,11 @@
 module Webpack.GetError where
 
-import Control.Promise
-import Effect.Uncurried
-import Data.Function.Uncurried
 import Protolude
 
-import Foreign (Foreign)
-import Foreign as Foreign
-import Pathy
-import Data.Nullable
-import Data.Nullable as Nullable
 import Data.Array as Array
 import Data.Array.NonEmpty (NonEmptyArray)
 import Data.Array.NonEmpty as NonEmptyArray
-import Unsafe.Coerce
-import Webpack.Compiler
+import Webpack.Compiler (MultiStats)
 
 webpackGetErrors :: Maybe Error -> MultiStats -> Maybe (NonEmptyArray Error)
 webpackGetErrors = \error stats ->

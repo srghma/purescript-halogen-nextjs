@@ -1,6 +1,6 @@
 module NextjsApp.Pages.Login (page) where
 
-import Protolude (Unit, unit)
+import Protolude
 import NextjsApp.PageImplementations.Login as NextjsApp.PageImplementations.Login
 import Nextjs.Page (Page, PageData(..), PageSpec, mkPage)
 

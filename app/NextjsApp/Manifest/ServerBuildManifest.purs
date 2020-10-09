@@ -6,15 +6,13 @@ import Data.Argonaut.Decode (JsonDecodeError)
 import Data.Argonaut.Decode as ArgonautCodecs
 import Data.Argonaut.Decode.Parser as ArgonautCodecs
 import Effect.Console (log)
-import Nextjs.Utils as Nextjs.Utils
 import NextjsApp.Manifest.PageManifest as NextjsApp.Manifest.PageManifest
 import NextjsApp.Route as NextjsApp.Route
 import NextjsApp.Server.Config as NextjsApp.Server.Config
 import Node.Encoding as Node.Encoding
 import Node.FS.Sync as Node.FS.Sync
-import Node.Path as Node.Path
-import Pathy
-import PathyExtra
+import Pathy (file, (<.>), (</>))
+import PathyExtra (printPathPosixSandboxAny)
 
 type BuildManifest =
   { pages :: NextjsApp.Route.RouteIdMapping NextjsApp.Manifest.PageManifest.PageManifest

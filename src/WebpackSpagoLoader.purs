@@ -1,8 +1,7 @@
 module WebpackSpagoLoader where
 
-import Protolude
-import Webpack.Types
-import Effect.Uncurried
+import Webpack.Types (Rule)
+import Effect.Uncurried (EffectFn1)
 
 type SpagoOptions =
   { output :: String

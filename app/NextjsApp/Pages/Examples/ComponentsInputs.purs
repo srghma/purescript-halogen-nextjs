@@ -1,6 +1,6 @@
 module NextjsApp.Pages.Examples.ComponentsInputs (page) where
 
-import Protolude (Unit, liftAff, unit, ($))
+import Protolude
 import Example.Components.Inputs.Container as Container
 import Nextjs.Page (Page, PageData(..), PageSpec, mkPage)
 import Halogen as H

@@ -1,20 +1,13 @@
 module NextjsWebpack.Entries.Build where
 
-import Pathy
-import PathyExtra
+import Pathy (dir, file, (</>))
+import PathyExtra (cwd, printPathPosixSandboxAny)
 import Protolude
-import Webpack.Types
 
-import Affjax as Affjax
 import Ansi.Codes as Ansi
 import Ansi.Output as Ansi
-import Data.Argonaut.Core as ArgonautCore
-import Data.Argonaut.Decode as ArgonautCodecs
 import Data.Array.NonEmpty (NonEmptyArray)
-import Data.Array.NonEmpty as NonEmptyArray
 import Data.String.NonEmpty (NonEmptyString)
-import Data.String.NonEmpty as NonEmptyString
-import Data.String.Yarn as Yarn
 import Effect.Class.Console as Console
 import Favicons as Favicons
 import NextjsWebpack.FaviconsConfig as NextjsWebpack.FaviconsConfig
@@ -22,9 +15,6 @@ import NextjsWebpack.GetClientPagesEntrypoints as NextjsWebpack.GetClientPagesEn
 import NextjsWebpack.WebpackConfig.Config as NextjsWebpack.WebpackConfig.Config
 import Node.Buffer (Buffer)
 import Node.FS.Aff as Node.FS.Aff
-import Node.Process as Node.Process
-import Options.Applicative as Options.Applicative
-import Protolude.Node as Protolude.Node
 import Unsafe.Coerce (unsafeCoerce)
 import Webpack.Compiler as Webpack.Compiler
 import Webpack.GetError as Webpack.GetError

@@ -1,34 +1,13 @@
 module NextjsWebpack.Utils.OneServerATimeSpawner where
 
-import Control.Promise
-import Effect.Uncurried
-import NodeChildProcessExtra
-import Pathy
-import PathyExtra
+import NodeChildProcessExtra (noInputOnlyOutput, withOneProcessATime)
+import Pathy (Abs, Dir, File, Path, parseAbsDir, parseAbsFile, posixParser)
+import PathyExtra (printPathPosixSandboxAny)
 import Protolude
 
-import Chokidar as Chokidar
-import Data.Array.NonEmpty (NonEmptyArray)
-import Data.Array.NonEmpty as NonEmptyArray
-import Data.NonEmpty (NonEmpty(..))
-import Data.Posix.Signal as Data.Posix.Signal
-import Data.Time.Duration (Milliseconds(..))
 import Effect.Class.Console (log)
-import Effect.Ref as Ref
-import FRP.Event (Event)
-import FRP.Event as Event
-import FRP.Event.Time as Event
-import FRPEventExtra as FRPEventExtra
-import Foreign (Foreign)
-import Foreign as Foreign
-import Node.ChildProcess (StdIOBehaviour(..), ChildProcess)
 import Node.ChildProcess as Node.ChildProcess
-import Node.Process as Node.Process
-import Node.Stream (Stream, Write)
-import Unsafe.Coerce (unsafeCoerce)
-import Data.Array as Array
 import Data.String.Yarn as String
-import Data.String.Common as String
 
 oneServerATimeSpawner :: Effect
   { spawnServer ::

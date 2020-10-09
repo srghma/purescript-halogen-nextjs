@@ -1,10 +1,10 @@
 module NextjsApp.Router.Server where
 
-import Protolude (Maybe, Void, identity, ($))
+import Protolude
 
 import Halogen as H
 import NextjsApp.AppM (AppM)
-import NextjsApp.Router.Shared
+import NextjsApp.Router.Shared (CurrentPageInfo, Query, maybeRenderPage)
 
 serverComponent
   :: forall r

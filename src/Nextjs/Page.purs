@@ -1,7 +1,7 @@
 module Nextjs.Page where
 
 import NextjsApp.AppM (AppM)
-import Protolude (type (\/), Aff, Const, Either(..), Void, bind, pure, ($), (<#>))
+import Protolude
 
 import Affjax as Affjax
 import Data.Argonaut.Core as ArgonautCore

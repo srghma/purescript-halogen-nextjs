@@ -1,31 +1,20 @@
 module NextjsWebpack.WebpackConfig.Config where
 
-import ContribWebpackPlugins
-import Control.Promise
-import Effect.Uncurried
-import NodeUrlExtra
-import Pathy
-import PathyExtra
+import ContribWebpackPlugins (_BundleAnalyzerPlugin, _CleanWebpackPlugin, _HtmlWebpackPlugin, _MiniCssExtractPlugin, htmlWebpackPlugin__tags__toString)
+import Pathy (Abs, Dir, File, Path, dir, file, (</>))
+import PathyExtra (printPathPosixSandboxAny)
 import Protolude
-import Webpack.Plugins
-import Webpack.Types
+import Webpack.Plugins (webpack)
+import Webpack.Types (Configuration)
 
-import Data.Argonaut.Core (Json)
 import Data.Array as Array
-import Data.Codec.Argonaut (JsonCodec, JsonDecodeError(..))
-import Data.Codec.Argonaut as Codec.Argonaut
 import Data.Codec.Argonaut.Common as Codec.Argonaut
 import Data.Lens as Lens
-import Data.Lens.Iso as Lens
-import Data.Nullable (Nullable)
-import Data.Nullable as Nullable
 import Favicons (FavIconResponse)
-import Foreign (Foreign, unsafeToForeign)
 import Foreign as Foreign
 import Foreign.NullOrUndefined as Foreign.NullOrUndefined
-import Foreign.Object (Object)
 import Foreign.Object as Object
-import NextjsApp.Route (RouteIdMapping, RouteIdMappingRow, Route)
+import NextjsApp.Route (Route, RouteIdMapping)
 import NextjsApp.Route as NextjsApp.Route
 import NextjsApp.Template as NextjsApp.Template
 import NextjsWebpack.BuildManifestPlugin as NextjsWebpack.BuildManifestPlugin
@@ -35,7 +24,6 @@ import NextjsWebpack.WebpackConfig.Rules as NextjsWebpack.WebpackConfig.Rules
 import NextjsWebpack.WebpackConfig.SplitChunksConfig as NextjsWebpack.WebpackConfig.SplitChunksConfig
 import Node.URL as Node.URL
 import Record as Record
-import Unsafe.Coerce (unsafeCoerce)
 
 -- https://github.com/zeit/next.js/blob/450d4bd0f32a042fd452c81bc3850ec31306eab3/packages/next/next-server/lib/constants.ts#L35
 

@@ -1,6 +1,6 @@
 module NextjsApp.Pages.Examples.TextNodes (page) where
 
-import Protolude (Unit, liftAff, unit, ($))
+import Protolude
 import Example.TextNodes.Main as Example.TextNodes.Main
 import Nextjs.Page (Page, PageData(..), PageSpec, mkPage)
 import Halogen as H

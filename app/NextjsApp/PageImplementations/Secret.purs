@@ -1,12 +1,9 @@
 module NextjsApp.PageImplementations.Secret (component) where
 
 import Protolude
-import Halogen (Slot)
 import Halogen as H
 import Halogen.HTML as HH
 import NextjsApp.AppM (AppM)
-import NextjsApp.Link as NextjsApp.Link
-import NextjsApp.Route
 
 type Query = Const Void
 

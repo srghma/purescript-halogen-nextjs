@@ -1,13 +1,9 @@
 module Webpack.Types where
 
-import Data.String.Regex
-import Data.String.Regex.Flags
-import Data.String.Regex.Unsafe
-import Protolude
-import Node.Path
-import Foreign
+import Data.String.Regex (Regex)
+import Node.Path (FilePath)
+import Foreign (Foreign)
 import Foreign.Object (Object)
-import Foreign.Object as Object
 
 import Data.Nullable (Nullable)
 

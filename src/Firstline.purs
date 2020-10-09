@@ -1,12 +1,10 @@
 module Firstline where
 
-import Control.Promise
-import Effect.Uncurried
+import Control.Promise (Promise)
+import Effect.Uncurried (EffectFn1)
 import Protolude
 
-import Foreign (Foreign)
-import Foreign as Foreign
-import Pathy
+import Pathy (Abs, File, Path)
 
 firstline :: Path Abs File -> Aff String
 firstline = undefined

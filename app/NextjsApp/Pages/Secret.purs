@@ -1,6 +1,6 @@
 module NextjsApp.Pages.Secret (page) where
 
-import Protolude (Unit, unit)
+import Protolude
 import NextjsApp.PageImplementations.Secret as NextjsApp.PageImplementations.Secret
 import Nextjs.Page (Page, PageData(..), PageSpec, mkPage)
 

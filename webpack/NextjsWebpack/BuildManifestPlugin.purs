@@ -1,37 +1,27 @@
 module NextjsWebpack.BuildManifestPlugin where
 
-import Control.Promise
-import Data.Function.Uncurried
-import Effect.Uncurried
-import NextjsApp.Manifest.ServerBuildManifest
-import NextjsApp.Route
-import Pathy
 import Protolude
 import Protolude
-import Webpack.FFI
-import Webpack.Types
-
 import Data.Argonaut.Core (Json)
 import Data.Argonaut.Core as Argonaut
-import Data.Argonaut.Decode (JsonDecodeError)
-import Data.Argonaut.Decode as ArgonautCodecs
 import Data.Argonaut.Encode as ArgonautCodecs
 import Data.Array as Array
 import Data.Nullable (Nullable)
 import Data.Nullable as Nullable
 import Data.String.Utils as String
+import Effect.Uncurried (runEffectFn1, runEffectFn3)
 import Favicons (FavIconResponse)
-import Foreign (Foreign)
-import Foreign as Foreign
 import Foreign.JsMap (JsMap)
 import Foreign.JsMap as JsMap
-import Foreign.Object (Object)
-import Foreign.Object as Object
 import NextjsApp.Manifest.PageManifest as NextjsApp.Manifest.PageManifest
+import NextjsApp.Manifest.ServerBuildManifest (BuildManifest)
+import NextjsApp.Route (RouteIdMappingRow')
 import Record.Extra as Record.Extra
 import Record.ExtraSrghma as Record.ExtraSrghma
 import Type.Prelude (RProxy(..))
 import Unsafe.Coerce (unsafeCoerce)
+import Webpack.FFI (compilationGetEntrypoints, compilationSetAsset, mkPluginSync, rawSourceFromBuffer, rawSourceFromString, webpackEntrypontGetFiles)
+import Webpack.Types (WebpackEntrypont, WebpackPluginInstance)
 
 type EntrypointsRow a = RouteIdMappingRow' a ( main :: a )
 

@@ -21,8 +21,7 @@ import Web.HTML.HTMLElement                   as Web.HTML.HTMLElement
 import Web.HTML.HTMLHeadElement               as Web.HTML.HTMLHeadElement
 import Web.HTML.HTMLLinkElement               as Web.HTML.HTMLLinkElement
 import Web.HTML.HTMLScriptElement             as Web.HTML.HTMLScriptElement
-import Data.Lens                              as Lens
-import Data.Lens.Iso                          as Lens
+import Data.Lens as Lens
 
 -- https://github.com/vercel/next.js/blob/7dbdf1d89eef004170d8f2661b4b3c299962b1f8/packages/next/client/page-loader.js#L177
 

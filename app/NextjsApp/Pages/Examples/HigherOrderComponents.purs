@@ -1,6 +1,6 @@
 module NextjsApp.Pages.Examples.HigherOrderComponents (page) where
 
-import Protolude (Unit, liftAff, unit, ($))
+import Protolude
 import Example.HOC.Harness as Example.HOC.Harness
 import Nextjs.Page (Page, PageData(..), PageSpec, mkPage)
 import Halogen as H

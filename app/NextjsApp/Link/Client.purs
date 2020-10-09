@@ -1,6 +1,6 @@
 module NextjsApp.Link.Client where
 
-import Protolude (class MonadEffect, Unit, Void, bind, discard, traverse_, ($), (>>=))
+import Protolude
 
 import NextjsApp.AppM (EnvLinkHandleActions)
 import FRP.Event as FRP.Event

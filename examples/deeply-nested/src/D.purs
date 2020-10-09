@@ -1,6 +1,6 @@
 module Example.DeeplyNested.D (component) where
 
-import Prelude (Unit, Void, absurd, const, unit)
+import Prelude
 
 import Halogen as H
 import Halogen.HTML as HH

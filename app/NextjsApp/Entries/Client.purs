@@ -18,7 +18,7 @@ import NextjsApp.PageLoader as NextjsApp.PageLoader
 import NextjsApp.Route as NextjsApp.Route
 import NextjsApp.Router.Client as NextjsApp.Router.Client
 import NextjsApp.Router.Shared as NextjsApp.Router.Shared
-import Protolude (Aff, Effect, Maybe(..), Unit, bind, error, liftEffect, maybe, pure, throwError, void, ($), (<$>), (<<<), (>>=), (\/))
+import Protolude
 import Routing.Duplex as Routing.Duplex
 import Routing.PushState as Routing.PushState
 import Web.DOM.ParentNode as Web.DOM.ParentNode

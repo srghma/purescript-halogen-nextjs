@@ -1,17 +1,11 @@
 module Chokidar where
 
-import Control.Promise
-import Effect.Uncurried
+import Effect.Uncurried (EffectFn1, mkEffectFn1, runEffectFn1)
 import Protolude
 
-import Foreign (Foreign)
-import Foreign as Foreign
-import Pathy
 import Data.Array.NonEmpty (NonEmptyArray)
-import Data.Array.NonEmpty as NonEmptyArray
 import FRP.Event (Event)
 import FRP.Event as Event
-import Effect.Ref as Ref
 
 -- | data ChokidarEvent
 

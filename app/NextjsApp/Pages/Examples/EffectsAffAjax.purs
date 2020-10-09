@@ -1,6 +1,6 @@
 module NextjsApp.Pages.Examples.EffectsAffAjax (page) where
 
-import Protolude (Unit, liftAff, unit, ($))
+import Protolude
 import Example.Effects.Aff.Ajax.Component as Example.Effects.Aff.Ajax.Component
 import Nextjs.Page (Page, PageData(..), PageSpec, mkPage)
 import Halogen as H

@@ -1,30 +1,23 @@
 module NextjsApp.Route where
 
-import Data.Symbol
-import Effect.Exception.Unsafe
-import Protolude hiding ((/))
+import Data.Symbol (reflectSymbol)
+import Effect.Exception.Unsafe (unsafeThrow)
+import Protolude
 
 import Data.Argonaut.Decode (class DecodeJson)
 import Data.Argonaut.Decode.Generic.Rep (genericDecodeJson)
 import Data.Argonaut.Encode (class EncodeJson)
 import Data.Argonaut.Encode.Generic.Rep (genericEncodeJson)
 import Data.Array.NonEmpty (NonEmptyArray)
-import Data.Array.NonEmpty as NonEmptyArray
 import Data.Generic.Rep.Show (genericShow)
 import Data.Lens as Lens
 import Data.Lens.Iso as Lens
 import Data.String as String
 import Data.String.NonEmpty (NonEmptyString)
 import Data.String.NonEmpty as NonEmptyString
-import Data.String.Regex as Regex
-import Data.String.Regex.Flags as Regex
-import Data.String.Regex.Unsafe as Regex
 import Foreign.Object (Object)
 import Foreign.Object as Object
 import Record.ExtraSrghma as Record.ExtraSrghma
-import Routing.Duplex as Routing.Duplex
-import Routing.Duplex.Generic as Routing.Duplex
-import Routing.Duplex.Generic.Syntax ((/))
 import Type.Prelude (RProxy(..))
 import Unsafe.Coerce (unsafeCoerce)
 

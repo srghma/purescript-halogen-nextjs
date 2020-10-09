@@ -11,11 +11,10 @@ import Halogen.HTML as HH
 import Halogen.HTML.Events as HE
 import Halogen.HTML.Properties as HP
 import NextjsApp.Navigate as NextjsApp.Navigate
-import NextjsApp.Route as NextjsApp.Route
 import Routing.Duplex as Routing.Duplex
 import Web.Event.Event as Web.Event.Event
 import Web.UIEvent.MouseEvent as Web.UIEvent.MouseEvent
-import NextjsApp.Link.Types
+import NextjsApp.Link.Types (Action(..), Message, Query, State)
 import NextjsApp.Link.Lib (elementLabel)
 import NextjsApp.RouteDuplexCodec as NextjsApp.RouteDuplexCodec
 

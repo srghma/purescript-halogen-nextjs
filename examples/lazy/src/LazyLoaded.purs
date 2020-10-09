@@ -1,6 +1,6 @@
 module Example.Lazy.LazyLoaded (component) where
 
-import Protolude (Unit, const, unit)
+import Protolude
 
 import Halogen as H
 import Halogen.HTML as HH

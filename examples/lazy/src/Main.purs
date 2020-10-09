@@ -1,6 +1,6 @@
 module Example.Lazy.Main (component) where
 
-import Protolude (Aff, Const, Maybe(..), SProxy(..), Unit, Void, absurd, bind, const, discard, unit, ($))
+import Protolude
 
 import Effect.Class.Console (log)
 import Example.Lazy.LazyLoadedImport as Example.Lazy.LazyLoadedImport

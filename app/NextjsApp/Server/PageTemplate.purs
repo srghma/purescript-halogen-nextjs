@@ -4,11 +4,8 @@ import Protolude
 
 import Data.Argonaut.Core as ArgonautCore
 import Data.Argonaut.Encode as ArgonautCodecs
-import Data.String as String
 import NextjsApp.Manifest.ClientPagesManifest as NextjsApp.Manifest.ClientPagesManifest
 import NextjsApp.Manifest.PageManifest as NextjsApp.Manifest.PageManifest
-import Data.Nullable (Nullable)
-import Data.Nullable as Nullable
 import NextjsApp.Template as Template
 
 -- renderToStaticMarkup - https://github.com/zeit/next.js/blob/86236bc76bcfc69b4e704f06be5b29cda3c1908c/packages/next/next-server/server/render.tsx#L234

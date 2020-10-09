@@ -10,12 +10,16 @@ indent x = "  " <> x
 unlinesIndent :: Array String -> String
 unlinesIndent = String.unlines <<< map indent
 
+tagStart :: String -> String
 tagStart x = "<" <> x <> ">"
 
+tagEnd :: String -> String
 tagEnd x = "</" <> x <> ">"
 
+printProp :: Tuple String String -> String
 printProp (name /\ val) = name <> "=\"" <> val <> "\""
 
+printProps :: Array (Tuple String String) -> String
 printProps = String.joinWith " " <<< map printProp
 
 tagOneline :: String -> Array (String /\ String) -> String -> String

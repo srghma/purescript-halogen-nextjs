@@ -1,8 +1,7 @@
 module NextjsWebpack.FaviconsConfig where
 
-import Protolude
 import Data.Nullable as Nullable
-import Favicons
+import Favicons (FaviconsConfig)
 
 faviconsConfig :: Boolean -> FaviconsConfig
 faviconsConfig isProd =

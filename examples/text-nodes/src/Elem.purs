@@ -1,6 +1,6 @@
 module Example.TextNodes.Elem (component) where
 
-import Protolude (Unit, not, (<>))
+import Protolude
 
 import Halogen as H
 import Halogen.HTML as HH

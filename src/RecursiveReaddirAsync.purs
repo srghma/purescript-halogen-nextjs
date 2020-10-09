@@ -1,12 +1,12 @@
 module RecursiveReaddirAsync where
 
-import Control.Promise
-import Effect.Uncurried
+import Control.Promise (Promise)
+import Effect.Uncurried (EffectFn2)
 import Protolude
 
 import Foreign (Foreign)
 import Foreign as Foreign
-import Pathy
+import Pathy (Abs, Dir, File, Path)
 
 
 -- e.g. returns

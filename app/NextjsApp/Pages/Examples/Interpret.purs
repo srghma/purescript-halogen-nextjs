@@ -1,6 +1,6 @@
 module NextjsApp.Pages.Examples.Interpret (page) where
 
-import Protolude (Unit, liftAff, unit, ($))
+import Protolude
 import Example.Interpret.Main as Example.Interpret.Main
 import Nextjs.Page (Page, PageData(..), PageSpec, mkPage)
 import Halogen as H

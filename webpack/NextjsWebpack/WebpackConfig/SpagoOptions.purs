@@ -3,10 +3,10 @@ module NextjsWebpack.WebpackConfig.SpagoOptions where
 import Protolude
 
 import Data.String as String
-import WebpackSpagoLoader
-import Effect.Uncurried
-import Pathy
-import PathyExtra
+import WebpackSpagoLoader (SpagoOptions, getAbsoluteOutputDirFromSpago, getSourcesFromSpago)
+import Effect.Uncurried (runEffectFn1)
+import Pathy (Abs, File, Path)
+import PathyExtra (printPathPosixSandboxAny)
 
 spagoOptions :: Path Abs File -> Effect SpagoOptions
 spagoOptions spagoDhall = do

@@ -1,6 +1,6 @@
 module NextjsApp.Router.Mobile where
 
-import Protolude (Either(..), Maybe(..), Unit, Void, bind, discard, identity, pure, when, ($), (/=), (>>=))
+import Protolude
 
 import Halogen as H
 import Nextjs.Page as Nextjs.Page

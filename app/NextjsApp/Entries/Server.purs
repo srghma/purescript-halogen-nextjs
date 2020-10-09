@@ -1,7 +1,6 @@
 module NextjsApp.Entries.Server where
 
-import Pathy
-import PathyExtra
+import PathyExtra (printPathPosixSandboxAny)
 import Protolude
 
 import Affjax as Affjax

@@ -2,7 +2,7 @@ module NextjsApp.Link.Mobile where
 
 import Effect.Exception.Unsafe (unsafeThrow)
 import NextjsApp.AppM (EnvLinkHandleActions)
-import Protolude (pure, unit)
+import Protolude
 
 mkLinkHandleActions
   :: EnvLinkHandleActions

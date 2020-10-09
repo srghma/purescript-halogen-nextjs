@@ -1,6 +1,5 @@
 module ModuleName where
 
-import Pathy
 import Protolude
 
 import Data.Array as Array
@@ -9,10 +8,7 @@ import Data.Array.NonEmpty as NonEmptyArray
 import Data.String as String
 import Data.String.NonEmpty (NonEmptyString)
 import Data.String.NonEmpty as NonEmptyString
-import Data.String.Regex as Regex
-import Data.String.Regex.Flags as Regex
-import Data.String.Regex.Unsafe as Regex
-import Unsafe.Coerce
+import Unsafe.Coerce (unsafeCoerce)
 
 newtype ModuleName = ModuleName (NonEmptyArray NonEmptyString) -- e.g. [ 'Data', 'String' ]
 

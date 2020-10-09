@@ -2,12 +2,33 @@ module NextjsWebpack.WebpackConfig.SplitChunksConfig where
 
 import Protolude
 
-import Data.String.Regex.Unsafe as Regex
+import Data.String.Regex (Regex)
 import Data.String.Regex.Flags as Regex
+import Data.String.Regex.Unsafe as Regex
 
 -- from https://github.com/vercel/next.js/blob/90638c70010310ba19aa0f28847b6226fdd20339/packages/next/build/webpack-config.ts#L346
 -- this is default config from webpack site
-splitChunksConfig :: { totalPages :: Int } -> _
+splitChunksConfig :: { totalPages :: Int } -> { cacheGroups :: { commons :: { minChunks :: Int
+                                                                            , name :: String
+                                                                            , priority :: Int
+                                                                            }
+                                                               , default :: { minChunks :: Int
+                                                                            , priority :: Int
+                                                                            , reuseExistingChunk :: Boolean
+                                                                            }
+                                                               , defaultVendors :: { priority :: Int
+                                                                                   , test :: Regex
+                                                                                   }
+                                                               , styles :: { chunks :: String
+                                                                           , enforce :: Boolean
+                                                                           , minChunks :: Int
+                                                                           , name :: String
+                                                                           , reuseExistingChunk :: Boolean
+                                                                           , test :: Regex
+                                                                           }
+                                                               }
+                                              , chunks :: String
+                                              }
 splitChunksConfig { totalPages } =
   { chunks: "all"
 

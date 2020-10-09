@@ -1,11 +1,10 @@
 module NextjsApp.PageImplementations.Login (component) where
 
-import Material.Classes.LayoutGrid
+import Material.Classes.LayoutGrid (mdc_layout_grid, mdc_layout_grid____align_right, mdc_layout_grid__cell, mdc_layout_grid__cell____align_middle, mdc_layout_grid__cell____span_12, mdc_layout_grid__cell____span_12_phone, mdc_layout_grid__cell____span_3, mdc_layout_grid__inner)
 import Protolude
 
 import Data.Array as Array
 import Data.Lens.Record as Lens
-import Halogen (Slot)
 import Halogen as H
 import Halogen.HTML as HH
 import Halogen.HTML.Properties as HP
@@ -14,9 +13,6 @@ import HalogenMWC.TextField.Outlined as TextField.Outlined
 import HalogenMWC.Utils (setEfficiently)
 import NextjsApp.AppM (AppM)
 import NextjsApp.Blocks.PurescriptLogo (purescriptLogoSrc)
-import NextjsApp.Link as NextjsApp.Link
-import NextjsApp.PageImplementations.Login.Css as Css
-import NextjsApp.Route
 
 type Query = Const Void
 

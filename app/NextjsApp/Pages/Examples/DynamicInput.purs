@@ -8,7 +8,7 @@ import Data.Argonaut.Encode as ArgonautCodecs
 import Example.DynamicInput.Container as Example.DynamicInput.Container
 import Halogen as H
 import Nextjs.Page (Page, PageData(..), PageSpec, mkCodec, mkPage)
-import Protolude (Aff, Either, Maybe(..), liftAff, ($))
+import Protolude
 
 requestGraphql :: String -> Aff (Either Affjax.Error (Affjax.Response ArgonautCore.Json))
 requestGraphql query =

@@ -1,6 +1,6 @@
 module NextjsApp.Pages.Index (page) where
 
-import Protolude (Unit, unit)
+import Protolude
 import NextjsApp.PageImplementations.Index as NextjsApp.PageImplementations.Index
 import Nextjs.Page (Page, PageData(..), PageSpec, mkPage)
 

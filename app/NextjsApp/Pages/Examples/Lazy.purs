@@ -1,6 +1,6 @@
 module NextjsApp.Pages.Examples.Lazy (page) where
 
-import Protolude (Unit, liftAff, unit, ($))
+import Protolude
 import Example.Lazy.Main as Example.Lazy.Main
 import Nextjs.Page (Page, PageData(..), PageSpec, mkPage)
 import Halogen as H

@@ -1,7 +1,7 @@
 module NextjsApp.Pages.Examples.Ace (page) where
 
 import Nextjs.Page (Page, PageData(..), PageSpec, mkPage)
-import Protolude (Unit, liftAff, unit, ($))
+import Protolude
 import Halogen as H
 
 import Example.Ace.Container as Example.Ace.Container
