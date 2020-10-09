@@ -78,6 +78,7 @@
   },
   "dependencies": {
     "ace-builds": "^1.4.12",
+    "email-validator": "^2.0.4",
     "material-components-web": "~7.0.0",
     "xhr2": "^0.2.0"
   },
