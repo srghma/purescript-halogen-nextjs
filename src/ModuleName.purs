@@ -1,7 +1,6 @@
 module ModuleName where
 
 import Protolude
-
 import Data.Array as Array
 import Data.Array.NonEmpty (NonEmptyArray)
 import Data.Array.NonEmpty as NonEmptyArray
@@ -10,10 +9,13 @@ import Data.String.NonEmpty (NonEmptyString)
 import Data.String.NonEmpty as NonEmptyString
 import Unsafe.Coerce (unsafeCoerce)
 
-newtype ModuleName = ModuleName (NonEmptyArray NonEmptyString) -- e.g. [ 'Data', 'String' ]
+newtype ModuleName
+  = ModuleName (NonEmptyArray NonEmptyString) -- e.g. [ 'Data', 'String' ]
 
 derive instance newtypeModuleName :: Newtype ModuleName _
+
 derive newtype instance eqModuleName :: Eq ModuleName
+
 derive newtype instance ordModuleName :: Ord ModuleName
 
 printModuleName :: ModuleName -> NonEmptyString

@@ -4,7 +4,6 @@ import Data.Function.Uncurried (Fn2, runFn2)
 import Effect.Uncurried (EffectFn1, EffectFn2, EffectFn3, mkEffectFn2)
 import Protolude
 import Webpack.Types (Compilation, RawSource, WebpackEntrypont, WebpackPluginInstance)
-
 import Foreign (Foreign)
 import Foreign.JsMap (JsMap)
 import Node.Buffer (Buffer)
@@ -29,7 +28,8 @@ foreign import compilationGetEntrypoints :: EffectFn1 Compilation (JsMap String 
 foreign import mkPlugin :: Fn2 String (EffectFn2 Compilation (Effect Unit) Unit) WebpackPluginInstance
 
 mkPluginSync :: String -> (Compilation -> Effect Unit) -> WebpackPluginInstance
-mkPluginSync name doWork = runFn2 mkPlugin name $ mkEffectFn2 \compilation callback -> do
-  doWork compilation
-  callback
-
+mkPluginSync name doWork =
+  runFn2 mkPlugin name
+    $ mkEffectFn2 \compilation callback -> do
+        doWork compilation
+        callback

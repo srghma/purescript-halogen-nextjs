@@ -23,64 +23,61 @@ import Unsafe.Coerce (unsafeCoerce)
 import Webpack.FFI (compilationGetEntrypoints, compilationSetAsset, mkPluginSync, rawSourceFromBuffer, rawSourceFromString, webpackEntrypontGetFiles)
 import Webpack.Types (WebpackEntrypont, WebpackPluginInstance)
 
-type EntrypointsRow a = RouteIdMappingRow' a ( main :: a )
+type EntrypointsRow a
+  = RouteIdMappingRow' a ( main :: a )
 
 decodePages :: JsMap String WebpackEntrypont -> Effect { | EntrypointsRow WebpackEntrypont }
-decodePages obj = Record.Extra.sequenceRecord $ Record.ExtraSrghma.mapIndex doWork (RProxy :: forall type_ . RProxy (EntrypointsRow type_))
+decodePages obj = Record.Extra.sequenceRecord $ Record.ExtraSrghma.mapIndex doWork (RProxy :: forall type_. RProxy (EntrypointsRow type_))
   where
-    doWork s = JsMap.get s obj >>=
-      case _ of
-           Just x -> pure x
-           Nothing -> throwError $ error $ "cannot find " <> s
+  doWork s =
+    JsMap.get s obj
+      >>= case _ of
+          Just x -> pure x
+          Nothing -> throwError $ error $ "cannot find " <> s
 
 toCssAndJs :: String -> WebpackEntrypont -> Effect { css :: Array String, js :: Array String }
 toCssAndJs publicPath entrypoint = do
   -- | name <- runEffectFn1 webpackEntrypontName entrypoint
-
   (files :: Array String) <- runEffectFn1 webpackEntrypontGetFiles entrypoint <#> map (publicPath <> _)
-
-  let { yes: css, no: nonCss } = Array.partition (String.endsWith ".css") files
-
-  let { yes: js, no: other } = Array.partition (String.endsWith ".js") nonCss
-
+  let
+    { yes: css, no: nonCss } = Array.partition (String.endsWith ".css") files
+  let
+    { yes: js, no: other } = Array.partition (String.endsWith ".js") nonCss
   when (not $ Array.null other) (throwError $ error $ "unknown files: " <> show other)
-
   pure { css, js }
 
-type PluginOptions = { favIconResponse :: Maybe FavIconResponse }
+type PluginOptions
+  = { favIconResponse :: Maybe FavIconResponse }
 
 -- from https://github.com/vercel/next.js/blob/e125d905a0/packages/next/build/webpack/plugins/build-manifest-plugin.ts
 buildManifestPlugin :: PluginOptions -> WebpackPluginInstance
-buildManifestPlugin pluginOptions = mkPluginSync "BuildManifestPlugin" \compilation -> do
-  (entrypointValues :: JsMap String WebpackEntrypont) <- runEffectFn1 compilationGetEntrypoints compilation
-
-  let (publicPath :: Nullable String) = (unsafeCoerce compilation).options.output.publicPath
-
-  publicPath' <-
-    case Nullable.toMaybe publicPath of
-         Just x -> pure x
-         Nothing -> throwError $ error $ "no publicPath"
-
-  (entrypointValues' :: { | EntrypointsRow WebpackEntrypont }) <- decodePages entrypointValues
-
-  (entrypointValues'' :: { | EntrypointsRow NextjsApp.Manifest.PageManifest.PageManifest }) <- Record.Extra.sequenceRecord (Record.Extra.mapRecord (toCssAndJs publicPath') entrypointValues')
-
-  let main /\ pages = Record.ExtraSrghma.pop (SProxy :: SProxy "main") entrypointValues''
-
-  let (manifest :: BuildManifest) =
+buildManifestPlugin pluginOptions =
+  mkPluginSync "BuildManifestPlugin" \compilation -> do
+    (entrypointValues :: JsMap String WebpackEntrypont) <- runEffectFn1 compilationGetEntrypoints compilation
+    let
+      (publicPath :: Nullable String) = (unsafeCoerce compilation).options.output.publicPath
+    publicPath' <- case Nullable.toMaybe publicPath of
+      Just x -> pure x
+      Nothing -> throwError $ error $ "no publicPath"
+    (entrypointValues' :: { | EntrypointsRow WebpackEntrypont }) <- decodePages entrypointValues
+    (entrypointValues'' :: { | EntrypointsRow NextjsApp.Manifest.PageManifest.PageManifest }) <- Record.Extra.sequenceRecord (Record.Extra.mapRecord (toCssAndJs publicPath') entrypointValues')
+    let
+      main /\ pages = Record.ExtraSrghma.pop (SProxy :: SProxy "main") entrypointValues''
+    let
+      (manifest :: BuildManifest) =
         { pages
         , main
         , faviconsHtml: maybe [] _.html $ pluginOptions.favIconResponse
         }
-
-  let (json :: Json) = ArgonautCodecs.encodeJson manifest
-
-  runEffectFn3 compilationSetAsset compilation "build-manifest.json" (rawSourceFromString $ Argonaut.stringifyWithIndent 2 json)
-
-  case pluginOptions.favIconResponse of
-       Nothing -> pure unit
-       Just favIconResponse ->
-         let write = \{ name, contents } -> runEffectFn3 compilationSetAsset compilation name (rawSourceFromBuffer contents)
-          in do
+    let
+      (json :: Json) = ArgonautCodecs.encodeJson manifest
+    runEffectFn3 compilationSetAsset compilation "build-manifest.json" (rawSourceFromString $ Argonaut.stringifyWithIndent 2 json)
+    case pluginOptions.favIconResponse of
+      Nothing -> pure unit
+      Just favIconResponse ->
+        let
+          write = \{ name, contents } -> runEffectFn3 compilationSetAsset compilation name (rawSourceFromBuffer contents)
+        in
+          do
             for_ favIconResponse.images write
             for_ favIconResponse.files write

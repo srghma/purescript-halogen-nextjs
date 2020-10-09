@@ -2,7 +2,6 @@ module LoaderUtils where
 
 import Effect.Uncurried (EffectFn1, runEffectFn1)
 import Protolude
-
 import Webpack.Loader (LoaderContext)
 import Node.URL (Query)
 

@@ -16,25 +16,26 @@ requestGraphql query =
     Affjax.ResponseFormat.json
     graphqlUrl
     (Just $ Affjax.RequestBody.json $ ArgonautCodecs.encodeJson { query })
-
   where
-    graphqlUrl = "https://graphql.anilist.co/"
+  graphqlUrl = "https://graphql.anilist.co/"
 
-type ThisPageData =
-  { data ::
-    { "MediaTagCollection" :: Array
-      { id :: Int
-      , name :: String
+type ThisPageData
+  = { data ::
+      { "MediaTagCollection" ::
+        Array
+          { id :: Int
+          , name :: String
+          }
       }
     }
-  }
 
 pageSpec :: PageSpec ThisPageData
 pageSpec =
-  { pageData: DynamicPageData
-    { codec: mkCodec
-    , request: requestGraphql "query { MediaTagCollection { id name } }"
-    }
+  { pageData:
+    DynamicPageData
+      { codec: mkCodec
+      , request: requestGraphql "query { MediaTagCollection { id name } }"
+      }
   , component: H.hoist liftAff $ Example.DynamicInput.Container.component
   , title: "Halogen Example - DynamicInput"
   }

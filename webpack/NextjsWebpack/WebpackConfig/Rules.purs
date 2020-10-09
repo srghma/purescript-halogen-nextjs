@@ -1,7 +1,6 @@
 module NextjsWebpack.WebpackConfig.Rules where
 
 import Protolude
-
 import Webpack.Types (Rule)
 import WebpackSpagoLoader as WebpackSpagoLoader
 

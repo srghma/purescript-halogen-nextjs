@@ -10,11 +10,13 @@ data Action
   | Navigate Web.UIEvent.MouseEvent.MouseEvent
   | LinkIsInViewport H.SubscriptionId
 
-type State =
-  { route :: NextjsApp.Route.Route
-  , text :: String
-  }
+type State
+  = { route :: NextjsApp.Route.Route
+    , text :: String
+    }
 
-type Query = Const Void
+type Query
+  = Const Void
 
-type Message = Void
+type Message
+  = Void

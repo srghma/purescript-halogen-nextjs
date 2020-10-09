@@ -10,4 +10,3 @@ toQuery = unsafeCoerce
 
 fromQuery :: Query -> Object String
 fromQuery = unsafeCoerce
-

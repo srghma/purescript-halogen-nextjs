@@ -3,11 +3,9 @@ module RecursiveReaddirAsync where
 import Control.Promise (Promise)
 import Effect.Uncurried (EffectFn2)
 import Protolude
-
 import Foreign (Foreign)
 import Foreign as Foreign
 import Pathy (Abs, Dir, File, Path)
-
 
 -- e.g. returns
 -- [
@@ -32,24 +30,23 @@ import Pathy (Abs, Dir, File, Path)
 --     ]
 --   }
 -- ]
-
 data DirOrFile
   = DirOrFile__File (Path Abs File)
-    -- | { name     :: Name File
-    -- | , path     :: Path Abs Dir
-    -- | { fullname :: Path Abs File
-    -- | }
+  -- | { name     :: Name File
+  -- | , path     :: Path Abs Dir
+  -- | { fullname :: Path Abs File
+  -- | }
   | DirOrFile__Dir
     -- { name     :: Name Dir
     -- , path     :: Path Abs Dir
     { fullname :: Path Abs Dir
-    , content  :: Array DirOrFile
+    , content :: Array DirOrFile
     }
 
 recursiveTreeList :: Path Abs Dir -> { include :: Array String } -> Aff DirOrFile
 recursiveTreeList = undefined
   where
-    foreignToDirOrFile :: Foreign -> Foreign.F DirOrFile
-    foreignToDirOrFile = undefined
+  foreignToDirOrFile :: Foreign -> Foreign.F DirOrFile
+  foreignToDirOrFile = undefined
 
 foreign import _recursiveTreeList :: EffectFn2 String { include :: Array String } (Promise Foreign)

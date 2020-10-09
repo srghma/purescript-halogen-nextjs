@@ -38,10 +38,11 @@ getInitialRouteFromLocation = do
   initialRoute' <- maybe (throwError (error $ "Could not find initialRoute")) pure initialRoute
   pure initialRoute'
 
-intersectionObserverEventAndCallback :: Effect
-  { intersectionObserverCallback :: Array Web.IntersectionObserverEntry.IntersectionObserverEntry -> Web.IntersectionObserver.IntersectionObserver -> Effect Unit
-  , intersectionObserverEvent :: FRP.Event.Event (Array Web.IntersectionObserverEntry.IntersectionObserverEntry)
-  }
+intersectionObserverEventAndCallback ::
+  Effect
+    { intersectionObserverCallback :: Array Web.IntersectionObserverEntry.IntersectionObserverEntry -> Web.IntersectionObserver.IntersectionObserver -> Effect Unit
+    , intersectionObserverEvent :: FRP.Event.Event (Array Web.IntersectionObserverEntry.IntersectionObserverEntry)
+    }
 intersectionObserverEventAndCallback = do
   { event, push } <- FRP.Event.create
   pure
@@ -55,58 +56,51 @@ intersectionObserverOptions = Web.IntersectionObserver.defaultIntersectionObserv
 main :: Effect Unit
 main = do
   { window, document, body, head } <- getHtmlEntities
-
   { intersectionObserverEvent, intersectionObserverCallback } <- intersectionObserverEventAndCallback
   (intersectionObserver :: Web.IntersectionObserver.IntersectionObserver) <- Web.IntersectionObserver.create intersectionObserverCallback intersectionObserverOptions
-
   pageRegisteredEvent <- NextjsApp.PageLoader.createPageRegisteredEvent
-
   -- https://github.com/slamdata/purescript-routing/blob/v8.0.0/GUIDE.md
   -- https://github.com/natefaubion/purescript-routing-duplex/blob/v0.2.0/README.md
   pushStateInterface <- Routing.PushState.makeInterface
-
   Effect.Aff.launchAff_ do
     (clientPagesManifest :: NextjsApp.Manifest.ClientPagesManifest.ClientPagesManifest) <- NextjsApp.Manifest.ClientPagesManifest.getBuildManifest
-
     -- first we'll get the route the user landed on
     route <- getInitialRouteFromLocation
-
     page <- NextjsApp.PageLoader.loadPage clientPagesManifest document body head pageRegisteredEvent route
-
     (pageSpecWithInputBoxed :: Nextjs.Page.PageSpecWithInputBoxed) <-
-      Nextjs.Page.pageToPageSpecWithInputBoxedWivenInitialJson getPrerenderedJson page >>=
-      (throwError <<< error <<< ArgonautCodecs.printJsonDecodeError) \/ pure
-
-    let (env :: Env) =
-          { navigate: NextjsApp.Navigate.Client.navigate pushStateInterface
-          , linkHandleActions: NextjsApp.Link.Client.mkLinkHandleActions
+      Nextjs.Page.pageToPageSpecWithInputBoxedWivenInitialJson getPrerenderedJson page
+        >>= (throwError <<< error <<< ArgonautCodecs.printJsonDecodeError)
+        \/ pure
+    let
+      (env :: Env) =
+        { navigate: NextjsApp.Navigate.Client.navigate pushStateInterface
+        , linkHandleActions:
+          NextjsApp.Link.Client.mkLinkHandleActions
             { intersectionObserver
             , intersectionObserverEvent
             , clientPagesManifest
             , document
             , head
             }
+        }
+    let
+      initialState =
+        { pageRegisteredEvent
+        , clientPagesManifest
+        , htmlContextInfo:
+          { window
+          , document
+          , body
+          , head
           }
-
-    let initialState =
-          { pageRegisteredEvent
-          , clientPagesManifest
-          , htmlContextInfo:
-            { window
-            , document
-            , body
-            , head
-            }
-          , currentPageInfo: Just
+        , currentPageInfo:
+          Just
             { pageSpecWithInputBoxed
             , route
             }
-          }
-
-    let component = H.hoist (runAppM env) NextjsApp.Router.Client.component
-
+        }
+    let
+      component = H.hoist (runAppM env) NextjsApp.Router.Client.component
     rootElement <- Halogen.Aff.Util.awaitElement (Web.DOM.ParentNode.QuerySelector "#root")
-
     halogenIO <- Halogen.VDom.Driver.hydrateUI component initialState rootElement
-
     void $ liftEffect $ Routing.PushState.matchesWith (Routing.Duplex.parse NextjsApp.RouteDuplexCodec.routeCodec) (NextjsApp.Router.Shared.callNavigateQueryIfNew halogenIO) pushStateInterface

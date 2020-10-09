@@ -5,17 +5,23 @@ import Halogen as H
 import Halogen.HTML as HH
 import NextjsApp.AppM (AppM)
 
-type Query = Const Void
+type Query
+  = Const Void
 
-type Input = Unit
+type Input
+  = Unit
 
-type Message = Void
+type Message
+  = Void
 
-type State = Unit
+type State
+  = Unit
 
-type Action = Void
+type Action
+  = Void
 
-type ChildSlots = ()
+type ChildSlots
+  = ()
 
 component :: H.Component Query Input Message AppM
 component =

@@ -27,4 +27,3 @@ tagOneline tagName props content = tagStart (tagName <> " " <> printProps props)
 
 tagMultiLine :: String -> Array (String /\ String) -> Array String -> String
 tagMultiLine tagName props content = String.unlines $ [ tagStart (tagName <> " " <> printProps props), unlinesIndent content, tagEnd tagName ]
-
