@@ -129,7 +129,7 @@ formComponent = F.component (const formInput) formSpec
 
       render :: F.PublicState LoginForm st -> F.ComponentHTML LoginForm UserAction FormChildSlots m
       render state =
-        lmap (Halogen.Component.hoistSlot liftAff) $ HH.form_
+        lmap (Halogen.Component.hoistSlot liftAff) $ HH.form_ -- TODO: lift?
           [ HH.slot
               (SProxy :: SProxy "email")
               unit
