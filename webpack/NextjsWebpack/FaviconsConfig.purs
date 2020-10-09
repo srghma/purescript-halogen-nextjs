@@ -4,8 +4,8 @@ import Protolude
 import Data.Nullable as Nullable
 import Favicons
 
-faviconsConfig :: FaviconsConfig
-faviconsConfig =
+faviconsConfig :: Boolean -> FaviconsConfig
+faviconsConfig isProd =
   { path:                        "/"
   , appName:                     Nullable.notNull "Nextjs example app"
   , appShortName:                Nullable.notNull "Nextjs"
@@ -26,12 +26,12 @@ faviconsConfig =
   , pixel_art:                   false
   , loadManifestWithCredentials: false
   , icons:
-    { android:      false
+    { android:      isProd
     , appleIcon:    false
     , appleStartup: false
     , coast:        false
-    , favicons:     true
-    , firefox:      false
+    , favicons:     isProd
+    , firefox:      isProd
     , windows:      false
     , yandex:       false
     }

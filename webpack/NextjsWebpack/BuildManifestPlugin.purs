@@ -57,7 +57,7 @@ toCssAndJs publicPath entrypoint = do
 
   pure { css, js }
 
-type PluginOptions = { favIconResponse :: FavIconResponse }
+type PluginOptions = { favIconResponse :: Maybe FavIconResponse }
 
 -- from https://github.com/vercel/next.js/blob/e125d905a0/packages/next/build/webpack/plugins/build-manifest-plugin.ts
 buildManifestPlugin :: PluginOptions -> WebpackPluginInstance
@@ -80,12 +80,17 @@ buildManifestPlugin pluginOptions = mkPluginSync "BuildManifestPlugin" \compilat
   let (manifest :: BuildManifest) =
         { pages
         , main
-        , faviconsHtml: pluginOptions.favIconResponse.html
+        , faviconsHtml: maybe [] _.html $ pluginOptions.favIconResponse
         }
 
   let (json :: Json) = ArgonautCodecs.encodeJson manifest
 
   runEffectFn3 compilationSetAsset compilation "build-manifest.json" (rawSourceFromString $ Argonaut.stringifyWithIndent 2 json)
 
-  for_ pluginOptions.favIconResponse.images \{ name, contents } -> runEffectFn3 compilationSetAsset compilation name (rawSourceFromBuffer contents)
-  for_ pluginOptions.favIconResponse.files \{ name, contents } -> runEffectFn3 compilationSetAsset compilation name (rawSourceFromBuffer contents)
+  case pluginOptions.favIconResponse of
+       Nothing -> pure unit
+       Just favIconResponse ->
+         let write = \{ name, contents } -> runEffectFn3 compilationSetAsset compilation name (rawSourceFromBuffer contents)
+          in do
+            for_ favIconResponse.images write
+            for_ favIconResponse.files write

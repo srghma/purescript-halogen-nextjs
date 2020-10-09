@@ -26,6 +26,7 @@ import Data.Array.NonEmpty as NonEmptyArray
 import Data.String.NonEmpty (NonEmptyString)
 import Data.String.NonEmpty as NonEmptyString
 import Node.Buffer (Buffer)
+import Node.Buffer as Node.Buffer
 import Node.FS.Aff as Node.FS.Aff
 import Favicons as Favicons
 import NextjsWebpack.FaviconsConfig as NextjsWebpack.FaviconsConfig
@@ -41,11 +42,9 @@ runWebpack
 runWebpack { onSuccess } = launchAff_ do
   root <- liftEffect cwd
 
-  (faviconFileBuffer :: Buffer) <- Node.FS.Aff.readFile (printPathPosixSandboxAny (root </> file (SProxy :: SProxy "purescript-favicon-black.svg")))
-
-  (favIconResponse :: Favicons.FavIconResponse) <- Favicons.favicons faviconFileBuffer NextjsWebpack.FaviconsConfig.faviconsConfig
-
   let
+    production = false
+
     spagoOutput = root </> dir (SProxy :: SProxy "output")
 
     pagesModuleNamePrefix :: NonEmptyArray NonEmptyString
@@ -56,9 +55,9 @@ runWebpack { onSuccess } = launchAff_ do
   entrypointsObject <- NextjsWebpack.GetClientPagesEntrypoints.getClientPagesEntrypoints { pagesModuleNamePrefix, appDir, spagoAbsoluteOutputDir: spagoOutput }
 
   let clientConfig = NextjsWebpack.WebpackConfig.Config.config
-        { target: NextjsWebpack.WebpackConfig.Config.Target__Browser { entrypointsObject, favIconResponse }
+        { target: NextjsWebpack.WebpackConfig.Config.Target__Browser { entrypointsObject, favIconResponse: Nothing }
         , watch: false
-        , production: false
+        , production
         , root
         , bundleAnalyze: false
         , spagoOutput
@@ -67,7 +66,7 @@ runWebpack { onSuccess } = launchAff_ do
   let serverConfig = NextjsWebpack.WebpackConfig.Config.config
         { target: NextjsWebpack.WebpackConfig.Config.Target__Server
         , watch: false
-        , production: false
+        , production
         , root
         , bundleAnalyze: false
         , spagoOutput
