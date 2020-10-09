@@ -34,8 +34,20 @@ type PageSpecServerRendered =
   , livereloadPort :: Maybe Int
   }
 
-pageTemplate :: NextjsApp.Manifest.ClientPagesManifest.ClientPagesManifest -> NextjsApp.Manifest.PageManifest.PageManifest -> PageSpecServerRendered -> String
-pageTemplate clientPagesManifest currentPageManifest pageSpecResolved = Template.template
+pageTemplate
+  :: { faviconsHtml :: Array String
+     , clientPagesManifest :: NextjsApp.Manifest.ClientPagesManifest.ClientPagesManifest
+     , currentPageManifest :: NextjsApp.Manifest.PageManifest.PageManifest
+     , pageSpecResolved :: PageSpecServerRendered
+     }
+  -> String
+pageTemplate
+  { faviconsHtml
+  , clientPagesManifest
+  , currentPageManifest
+  , pageSpecResolved
+  }
+  = Template.template
   { targetData: Template.TargetData__Server
     { prerenderedHtml: pageSpecResolved.component
     , prerenderedPagesManifest: ArgonautCore.stringify (ArgonautCodecs.encodeJson clientPagesManifest)
@@ -44,6 +56,7 @@ pageTemplate clientPagesManifest currentPageManifest pageSpecResolved = Template
            StaticPageData -> Nothing
            DynamicPageData json -> Just $ ArgonautCore.stringify json
     , livereloadPort: pageSpecResolved.livereloadPort
+    , faviconsHtml
     }
   , headTags: (currentPageManifest.js <#> jsPreload) <> (currentPageManifest.css <#> css)
   , bodyTags: currentPageManifest.js <#> jsAsync

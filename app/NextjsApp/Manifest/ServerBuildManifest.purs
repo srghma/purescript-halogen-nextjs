@@ -19,6 +19,7 @@ import PathyExtra
 type BuildManifest =
   { pages :: NextjsApp.Route.RouteIdMapping NextjsApp.Manifest.PageManifest.PageManifest
   , main :: NextjsApp.Manifest.PageManifest.PageManifest
+  , faviconsHtml :: Array String
   }
 
 decodeBuildManifest :: String -> Either JsonDecodeError BuildManifest

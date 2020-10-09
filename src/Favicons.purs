@@ -4,24 +4,28 @@ import Protolude
 
 import Data.Nullable (Nullable)
 import Data.Nullable as Nullable
+import Effect.Uncurried
+import Node.Buffer (Buffer)
+import Effect.Aff.Compat
 
+-- https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/favicons/index.d.ts
 type FaviconsConfig =
-  { path                        :: String   -- Path for overriding default icons path. `string`
-  , appName                     :: String   -- Your application's name. `string`
-  , appShortName                :: String   -- Your application's short_name. `string`. Optional. If not set, appName will be used
-  , appDescription              :: String   -- Your application's description. `string`
-  , developerName               :: Nullable String                -- Your (or your developer's) name. `string`
-  , developerURL                :: Nullable String                -- Your (or your developer's) URL. `string`
+  { path                        :: String   -- Path for overriding default icons path. `String`
+  , appName                     :: Nullable String   -- Your application's name. `String`
+  , appShortName                :: Nullable String   -- Your application's short_name. `String`. Optional. If not set, appName will be used
+  , appDescription              :: Nullable String   -- Your application's description. `String`
+  , developerName               :: Nullable String                -- Your (or your developer's) name. `String`
+  , developerURL                :: Nullable String                -- Your (or your developer's) URL. `String`
   , dir                         :: String   -- Primary text direction for name, short_name, and description
   , lang                        :: String   -- Primary language for name and short_name
-  , background                  :: String   -- Background colour for flattened icons. `string`
-  , theme_color                 :: String   -- Theme color user for example in Android's task switcher. `string`
-  , appleStatusBarStyle         :: String   -- Style for Apple status bar: "black-translucent", "default", "black". `string`
-  , display                     :: String   -- Preferred display mode: "fullscreen", "standalone", "minimal-ui" or "browser". `string`
-  , orientation                 :: String   -- Default orientation: "any", "natural", "portrait" or "landscape". `string`
+  , background                  :: String   -- Background colour for flattened icons. `String`
+  , theme_color                 :: String   -- Theme color user for example in Android's task switcher. `String`
+  , appleStatusBarStyle         :: String   -- Style for Apple status bar: "black-translucent", "default", "black". `String`
+  , display                     :: String   -- Preferred display mode: "fullscreen", "standalone", "minimal-ui" or "browser". `String`
+  , orientation                 :: String   -- Default orientation: "any", "natural", "portrait" or "landscape". `String`
   , scope                       :: String   -- set of URLs that the browser considers within your app
-  , start_url                   :: String   -- Start URL when launching the application from a device. `string`
-  , version                     :: String   -- Your application's version string. `string`
+  , start_url                   :: String   -- Start URL when launching the application from a device. `String`
+  , version                     :: String   -- Your application's version String. `String`
   , logging                     :: Boolean  -- Print logs to console? `boolean`
   , pixel_art                   :: Boolean  -- Keeps pixels "sharp" when scaling up, for pixel art.  Only supported in offline mode.
   , loadManifestWithCredentials :: Boolean  -- Browsers don't send cookies when fetching a manifest, enable this to fix that. `boolean`
@@ -46,3 +50,14 @@ type FaviconsConfig =
       }
   }
 
+
+type FavIconResponse =
+  { images :: Array { name :: String, contents :: Buffer }
+  , files :: Array { name :: String, contents :: Buffer }
+  , html :: Array String
+  }
+
+foreign import _favicons :: Buffer -> FaviconsConfig -> EffectFnAff FavIconResponse
+
+favicons :: Buffer -> FaviconsConfig -> Aff FavIconResponse
+favicons buffer config = fromEffectFnAff (_favicons buffer config)

@@ -13,6 +13,7 @@ data TargetData
     , prerenderedPagesManifest :: String
     , prerenderedPageData :: Maybe String
     , livereloadPort :: Maybe Int
+    , faviconsHtml :: Array String
     }
 
 type TemplateConfig =
@@ -70,6 +71,9 @@ template { targetData, title, headTags, bodyTags } =
                   """<script src="http://localhost:""" <> show livereloadPort' <> """/reload/reload.js"></script>"""
                TargetData__Mobile -> Nothing
         ]
+        <> case targetData of
+                TargetData__Server { faviconsHtml } -> faviconsHtml
+                TargetData__Mobile -> []
         <> headTags
       , SimpleXMLWithIndentation.tagMultiLine "body" [ "class" /\ "mdc-typography mdc-theme--background" ] $
           [ SimpleXMLWithIndentation.tagOneline "div" [ "id" /\ "root" ] $

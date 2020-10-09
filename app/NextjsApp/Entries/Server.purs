@@ -44,17 +44,27 @@ data StaticOrDynamicPageData input
 
 renderPage
   :: forall c input
-   . NextjsApp.Server.Config.Config
-  -> NextjsApp.Route.Route
-  -> NextjsApp.Manifest.ClientPagesManifest.ClientPagesManifest
-  -> NextjsApp.Manifest.PageManifest.PageManifest
+   . { config              :: NextjsApp.Server.Config.Config
+     , buildManifest       :: NextjsApp.Manifest.ServerBuildManifest.BuildManifest
+     , route               :: NextjsApp.Route.Route
+     , clientPagesManifest :: NextjsApp.Manifest.ClientPagesManifest.ClientPagesManifest
+     , pageManifest        :: NextjsApp.Manifest.PageManifest.PageManifest
+     }
   -> Nextjs.Page.PageSpec input
   -> Hyper.Middleware
      Aff
      (Hyper.Conn Hyper.Node.HttpRequest (Hyper.Node.HttpResponse Hyper.StatusLineOpen) c)
      (Hyper.Conn Hyper.Node.HttpRequest (Hyper.Node.HttpResponse Hyper.ResponseEnded) c)
      Unit
-renderPage config route clientPagesManifest pageManifest page = IndexedMonad.do
+renderPage
+  { config
+  , buildManifest
+  , route
+  , clientPagesManifest
+  , pageManifest
+  }
+  page
+  = IndexedMonad.do
   (response :: Either Nextjs.Api.ApiError (StaticOrDynamicPageData input)) <-
     case page.pageData of
       (Nextjs.Page.DynamicPageData pageData) -> Hyper.lift' do
@@ -99,21 +109,32 @@ renderPage config route clientPagesManifest pageManifest page = IndexedMonad.do
                DynamicPageData { input, encoder } -> NextjsApp.Server.PageTemplate.DynamicPageData (encoder input)
 
         pageRendered :: String
-        pageRendered = NextjsApp.Server.PageTemplate.pageTemplate clientPagesManifest pageManifest { title: page.title, component, pageData: pageData', livereloadPort: config.livereloadPort }
+        pageRendered = NextjsApp.Server.PageTemplate.pageTemplate
+          { faviconsHtml: buildManifest.faviconsHtml
+          , clientPagesManifest
+          , currentPageManifest: pageManifest
+          , pageSpecResolved:
+            { title: page.title
+            , component
+            , pageData: pageData'
+            , livereloadPort: config.livereloadPort
+            }
+          }
       Hyper.writeStatus Hyper.statusOK
       Hyper.closeHeaders
       Hyper.respond pageRendered
 
 app
   :: ∀ c
-   . NextjsApp.Manifest.ServerBuildManifest.BuildManifest
-  -> NextjsApp.Server.Config.Config
+   . { buildManifest :: NextjsApp.Manifest.ServerBuildManifest.BuildManifest
+     , config :: NextjsApp.Server.Config.Config
+     }
   -> Hyper.Middleware
     Aff
     (Hyper.Conn Hyper.Node.HttpRequest (Hyper.Node.HttpResponse Hyper.StatusLineOpen) c)
     (Hyper.Conn Hyper.Node.HttpRequest (Hyper.Node.HttpResponse Hyper.ResponseEnded) c)
     Unit
-app buildManifest config = IndexedMonad.do
+app { buildManifest, config } = IndexedMonad.do
   request <- Hyper.getRequestData
 
   case Routing.Duplex.parse NextjsApp.RouteDuplexCodec.routeCodec request.url of
@@ -127,7 +148,16 @@ app buildManifest config = IndexedMonad.do
       let pageManifest = NextjsApp.Route.lookupFromRouteIdMapping route buildManifest.pages
       let mergedPageManifest = NextjsApp.Manifest.PageManifest.mergePageManifests buildManifest.main pageManifest
 
-      Nextjs.Page.unPage (renderPage config route buildManifest.pages mergedPageManifest) (NextjsApp.Route.lookupFromRouteIdMapping route NextjsApp.RouteToPageNonClient.routeIdMapping)
+      Nextjs.Page.unPage
+        (renderPage
+          { config
+          , buildManifest
+          , route
+          , clientPagesManifest: buildManifest.pages
+          , pageManifest: mergedPageManifest
+          }
+        )
+        (NextjsApp.Route.lookupFromRouteIdMapping route NextjsApp.RouteToPageNonClient.routeIdMapping)
 
 main :: Effect Unit
 main = launchAff_ do
@@ -145,4 +175,4 @@ main = launchAff_ do
   liftEffect $ Hyper.Node.runServer
     (Hyper.Node.defaultOptionsWithLogging { port = Hyper.Node.Port config.port })
     {}
-    (app buildManifest config # Hyper.Node.fileServer rootPath')
+    (app { buildManifest, config } # Hyper.Node.fileServer rootPath')

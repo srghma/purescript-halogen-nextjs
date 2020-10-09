@@ -19,6 +19,7 @@ import Data.Lens as Lens
 import Data.Lens.Iso as Lens
 import Data.Nullable (Nullable)
 import Data.Nullable as Nullable
+import Favicons (FavIconResponse)
 import Foreign (Foreign, unsafeToForeign)
 import Foreign as Foreign
 import Foreign.NullOrUndefined as Foreign.NullOrUndefined
@@ -39,7 +40,7 @@ import Unsafe.Coerce (unsafeCoerce)
 -- https://github.com/zeit/next.js/blob/450d4bd0f32a042fd452c81bc3850ec31306eab3/packages/next/next-server/lib/constants.ts#L35
 
 data Target
-  = Target__Browser { entrypointsObject :: RouteIdMapping ClientPagesLoaderOptions }
+  = Target__Browser { entrypointsObject :: RouteIdMapping ClientPagesLoaderOptions, favIconResponse :: FavIconResponse }
   | Target__Server
   | Target__Mobile { entrypointsObject :: RouteIdMapping ClientPagesLoaderOptions }
 
@@ -192,7 +193,7 @@ config { target, watch, production, root, bundleAnalyze, spagoOutput } =
         else Nothing
 
     , case target of
-          Target__Browser _ -> Just $ NextjsWebpack.BuildManifestPlugin.buildManifestPlugin
+          Target__Browser { favIconResponse } -> Just $ NextjsWebpack.BuildManifestPlugin.buildManifestPlugin { favIconResponse }
           _ -> Nothing
 
     , case target of

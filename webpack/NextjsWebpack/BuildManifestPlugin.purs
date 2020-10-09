@@ -20,6 +20,7 @@ import Data.Array as Array
 import Data.Nullable (Nullable)
 import Data.Nullable as Nullable
 import Data.String.Utils as String
+import Favicons (FavIconResponse)
 import Foreign (Foreign)
 import Foreign as Foreign
 import Foreign.JsMap (JsMap)
@@ -56,9 +57,11 @@ toCssAndJs publicPath entrypoint = do
 
   pure { css, js }
 
+type PluginOptions = { favIconResponse :: FavIconResponse }
+
 -- from https://github.com/vercel/next.js/blob/e125d905a0/packages/next/build/webpack/plugins/build-manifest-plugin.ts
-buildManifestPlugin :: WebpackPluginInstance
-buildManifestPlugin = mkPluginSync "BuildManifestPlugin" \compilation -> do
+buildManifestPlugin :: PluginOptions -> WebpackPluginInstance
+buildManifestPlugin pluginOptions = mkPluginSync "BuildManifestPlugin" \compilation -> do
   (entrypointValues :: JsMap String WebpackEntrypont) <- runEffectFn1 compilationGetEntrypoints compilation
 
   let (publicPath :: Nullable String) = (unsafeCoerce compilation).options.output.publicPath
@@ -77,6 +80,7 @@ buildManifestPlugin = mkPluginSync "BuildManifestPlugin" \compilation -> do
   let (manifest :: BuildManifest) =
         { pages
         , main
+        , faviconsHtml: pluginOptions.favIconResponse.html
         }
 
   let (json :: Json) = ArgonautCodecs.encodeJson manifest

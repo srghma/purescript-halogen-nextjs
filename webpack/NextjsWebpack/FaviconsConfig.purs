@@ -7,9 +7,9 @@ import Favicons
 faviconsConfig :: FaviconsConfig
 faviconsConfig =
   { path:                        "/"
-  , appName:                     "Nextjs example app"
-  , appShortName:                "Nextjs"
-  , appDescription:              "Example application for the best framework"
+  , appName:                     Nullable.notNull "Nextjs example app"
+  , appShortName:                Nullable.notNull "Nextjs"
+  , appDescription:              Nullable.notNull "Example application for the best framework"
   , developerName:               Nullable.null
   , developerURL:                Nullable.null
   , dir:                         "auto"
