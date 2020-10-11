@@ -1,10 +1,10 @@
-import { postgraphile, makePluginHook } from 'postgraphile'
-import GraphileSupporter from '@graphile/supporter'
-import { PgMutationUpsertPlugin } from 'postgraphile-upsert-plugin'
+const { postgraphile, makePluginHook } = require('postgraphile')
+const GraphileSupporter = require('@graphile/supporter')
+const { PgMutationUpsertPlugin } = require('postgraphile-upsert-plugin')
 
 // import ExportExcelSubscriptionPlugin from './ExportExcelSubscriptionPlugin'
 
-export default function initPostgraphile(
+module.exports = function initPostgraphile(
   {
     isProd,
     databaseUrl,

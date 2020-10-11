@@ -1,4 +1,9 @@
-drmaci && import__db__drop && import__db__migrate && import__deps__up
+```
+drmaci && import__db__drop && import__up_detach && import__db__migrate && import__db_tests
+
+yarn server:start
+```
+
 
 # purescript-halogen-nextjs
 

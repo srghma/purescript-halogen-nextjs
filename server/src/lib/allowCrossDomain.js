@@ -33,4 +33,4 @@ const allowCrossDomain = ({ corsAllowOrigin }) => (req, res, next) => {
   next()
 }
 
-export default allowCrossDomain
+module.exports = allowCrossDomain

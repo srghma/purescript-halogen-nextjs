@@ -29,6 +29,10 @@ pkgs.mkShell rec {
     nodePackages.node-pre-gyp
 
     waitforit
+    wait-for-postgres
+    shmig
+    db-tests-prepare
+    pg_prove
 
     (import ./dev-commands/all-commands.nix { inherit pkgs; })
   ];

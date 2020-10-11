@@ -1,10 +1,10 @@
-import express from 'express'
-import pg from 'pg'
+const express = require('express')
+const pg = require('pg')
 
-import initFacebookOauth from 'modules/initFacebookOauth'
-import initPostgraphile from 'modules/initPostgraphile'
+const initFacebookOauth = require('./modules/initFacebookOauth')
+const initPostgraphile = require('./modules/initPostgraphile')
 
-import allowCrossDomain from 'lib/allowCrossDomain'
+const allowCrossDomain = require('./lib/allowCrossDomain')
 
 const app = express()
 
@@ -13,6 +13,12 @@ const isProd = process.env.NODE_ENV === 'production'
 const rootPgPool = new pg.Pool({
   connectionString: process.env.DATABASE_URL,
 })
+
+function requiredEnvVar(envName) {
+  const value = process.env[envName]
+  if (!value) { throw new Error(`cannot find process.env.${envName}`) }
+  return value
+}
 
 if (process.env.CORS_ALLOW_ORIGIN) {
   if (isProd) {
@@ -32,9 +38,9 @@ if (process.env.CORS_ALLOW_ORIGIN) {
 if (process.env.FACEBOOK_APP_ID || process.env.FACEBOOK_APP_SECRET) {
   initFacebookOauth(app, {
     rootPgPool,
-    clientID:     process.env.FACEBOOK_APP_ID,
-    clientSecret: process.env.FACEBOOK_APP_SECRET,
-    jwtSecret:    process.env.JWT_SECRET,
+    clientID:     requiredEnvVar('FACEBOOK_APP_ID'),
+    clientSecret: requiredEnvVar('FACEBOOK_APP_SECRET'),
+    jwtSecret:    requiredEnvVar('JWT_SECRET'),
   })
 } else {
   console.warn(
@@ -45,15 +51,15 @@ if (process.env.FACEBOOK_APP_ID || process.env.FACEBOOK_APP_SECRET) {
 app.use(
   initPostgraphile({
     isProd,
-    databaseUrl:          process.env.DATABASE_URL,
-    exposedSchema:        process.env.EXPOSED_SCHEMA,
-    exportGqlSchemaPath:  process.env.EXPORT_GQL_SCHEMA,
-    exportJsonSchemaPath: process.env.EXPORT_JSON_SCHEMA,
-    jwtSecret:            process.env.JWT_SECRET,
+    databaseUrl:          requiredEnvVar('DATABASE_URL'),
+    exposedSchema:        requiredEnvVar('EXPOSED_SCHEMA'),
+    exportGqlSchemaPath:  requiredEnvVar('EXPORT_GQL_SCHEMA'),
+    exportJsonSchemaPath: requiredEnvVar('EXPORT_JSON_SCHEMA'),
+    jwtSecret:            requiredEnvVar('JWT_SECRET'),
   })
 )
 
-const server = app.listen(process.env.PORT, process.env.HOST, err => {
+const server = app.listen(requiredEnvVar('PORT'), requiredEnvVar('HOST'), err => {
   if (err) throw err
 
   console.log(

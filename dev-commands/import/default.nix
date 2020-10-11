@@ -1,6 +1,7 @@
 { pkgs, config }:
 
 with config;
+with (import ./lib.nix { inherit pkgs; });
 
 mkScripts {
   import__cat = ''
@@ -18,35 +19,45 @@ mkScripts {
       down
   '';
 
-  import__up = ''
+  import__up_detach = ''
     COMPOSE_PROJECT_NAME="nextjsdemo_import" \
       arion \
       --file docker/import.nix \
       --pkgs nix/pkgs.nix \
-      up
+      up --detach
   '';
 
-  import__db_tests = ''
-    COMPOSE_PROJECT_NAME="nextjsdemo_import" \
-      arion \
-      --file docker/import.nix \
-      --pkgs nix/pkgs.nix \
-      run --rm db_tests sh -eux -c '\
-        waitforit -host=$POSTGRES_HOST -port=$POSTGRES_PORT -timeout=30 && \
-        db-tests-prepare /db_tests/extensions && \
-        pg_prove -h $POSTGRES_HOST -p $POSTGRES_PORT -d $POSTGRES_DB -U $POSTGRES_USER --recurse --ext .sql /db_tests/tests/ \
-      '
+  import__db_tests = mkCommand migratorEnv ''
+    waitforit -host=$POSTGRES_HOST -port=$POSTGRES_PORT -timeout=30
+    PGPASSWORD=$POSTGRES_PASSWORD db-tests-prepare ./db_tests/extensions
+    PGPASSWORD=$POSTGRES_PASSWORD pg_prove -h $POSTGRES_HOST -p $POSTGRES_PORT -d $POSTGRES_DB -U $POSTGRES_USER --recurse --ext .sql ./db_tests/tests/
   '';
 
-  import__db__migrate = ''
-    COMPOSE_PROJECT_NAME="nextjsdemo_import" \
-      arion \
-      --file docker/import.nix \
-      --pkgs nix/pkgs.nix \
-      run --rm migrator sh -eux -c '\
-      waitforit -host=$HOST -port=$PORT -timeout=30 && \
-      wait-for-postgres --dbname=postgres://$LOGIN:$PASSWORD@$HOST:$PORT/$DATABASE && \
-      shmig -t postgresql -m /migrations -C always migrate'
+  import__db__migrate = mkCommand migratorEnv ''
+    waitforit -host=$POSTGRES_HOST -port=$POSTGRES_PORT -timeout=30
+    wait-for-postgres --dbname=postgres://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_DB
+
+    # for relative imports using \include command (shimg is using psql internally)
+    cd ./migrations
+
+    shmig -t postgresql \
+      -m ./ \
+      -C always \
+      -l $POSTGRES_USER \
+      -p $POSTGRES_PASSWORD \
+      -H $POSTGRES_HOST \
+      -P $POSTGRES_PORT \
+      -d $POSTGRES_DB \
+      migrate
+  '';
+
+  import__server = mkCommand serverEnv ''
+    waitforit -host=$POSTGRES_HOST -port=$POSTGRES_PORT -timeout=30
+    wait-for-postgres --dbname=postgres://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_DB
+
+    mkdir -p ./schemas
+
+    node --trace-deprecation ./server/src/index.js
   '';
 
   import__db__drop = ''

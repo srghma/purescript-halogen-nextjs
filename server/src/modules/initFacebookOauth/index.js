@@ -1,6 +1,6 @@
-import jwt from 'jwt-then'
-import passport from 'passport'
-import FacebookTokenStrategy from 'passport-facebook-token'
+const jwt = require('jwt-then')
+const passport = require('passport')
+const FacebookTokenStrategy = require('passport-facebook-token')
 
 // https://github.com/graphile/postgraphile/issues/635#issuecomment-346373323
 // https://github.com/passport/express-4.x-facebook-example/blob/master/server.js
@@ -8,7 +8,7 @@ import FacebookTokenStrategy from 'passport-facebook-token'
 // https://github.com/philipbrack/express-passport-facebook-token-example-client/blob/master/src/app/app.component.ts
 // https://github.com/graphile/examples/blob/bb0a3a24b8/server-koa2/middleware/installPassport.js
 
-export default function initFacebookOauth(
+module.exports = function initFacebookOauth(
   app,
   { rootPgPool, clientID, clientSecret, jwtSecret },
 ) {

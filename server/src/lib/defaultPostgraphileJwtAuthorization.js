@@ -32,9 +32,9 @@
 
 // https://www.graphile.org/postgraphile/jwk-verification/
 
-import jwt from 'jwt-then'
+const jwt = require('jwt-then')
 
-export default ({
+module.exports = ({
   // look pgDefaultRole option here https://www.graphile.org/postgraphile/usage-library/
   pgDefaultRole,
 
