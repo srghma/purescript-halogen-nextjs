@@ -60,6 +60,10 @@ mkScripts {
     node --trace-deprecation ./server/src/index.js
   '';
 
+  import__purescript-graphql-client-generator = ''
+    purescript-graphql-client-generator --input-json ./schemas/schema.json --output app/Api --api Api
+  '';
+
   import__db__drop = ''
     docker-volume-rm-if-exists nextjsdemo_import_postgres_data
   '';

@@ -53,6 +53,7 @@
   , "stringutils"
   , "foreign-js-map"
   , "node-child-process"
+  , "graphql-client"
   ]
 , packages = ./packages.dhall
 , sources =

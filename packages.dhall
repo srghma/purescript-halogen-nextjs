@@ -6,7 +6,7 @@ let overrides = {=}
 let additions = {=}
 
 in      upstream
-    //  https://raw.githubusercontent.com/srghma/my-purescript-package-sets/cfb9d0d/packages.dhall sha256:a8a17ee06f9ecc1fa0700608d67ef00644467a30e417437ba547d2d504bd2493
-          upstream.(https://raw.githubusercontent.com/srghma/my-purescript-package-sets/cfb9d0d/upstreamTypeChunk.dhall sha256:8a4543a6ab82a4873958510d701ebeaa6dc1729634f70871299b35e535b6a3cd)
+    //  https://raw.githubusercontent.com/srghma/my-purescript-package-sets/a3ca2f1/packages.dhall sha256:2832dc42620ebf7ab2603629aeb87d2d5143b1395787ca0208d70174d17b04c3
+          upstream.(https://raw.githubusercontent.com/srghma/my-purescript-package-sets/a3ca2f1/upstreamTypeChunk.dhall sha256:8a4543a6ab82a4873958510d701ebeaa6dc1729634f70871299b35e535b6a3cd)
     //  overrides
     //  additions
