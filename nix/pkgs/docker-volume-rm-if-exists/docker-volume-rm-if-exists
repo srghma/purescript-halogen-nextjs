@@ -1,0 +1,10 @@
+#!/bin/sh -e
+
+volume="$1"
+
+if docker volume list | grep "$volume" &>/dev/null; then
+  echo "removing volume $volume"
+  docker volume rm "$volume"
+else
+  echo "volume $volume don't exists, ignoring"
+fi

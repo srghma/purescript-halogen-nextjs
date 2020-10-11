@@ -17,3 +17,6 @@
 /core
 /www/
 /package-lock.json
+/config/ignored/*
+!/config/ignored/*.example
+.tmp-arion-*.yaml

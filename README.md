@@ -1,3 +1,5 @@
+drmaci && import__db__drop && import__db__migrate && import__deps__up
+
 # purescript-halogen-nextjs
 
 A server side rendering framework for purescript-halogen, like next.js is a framework for react,
