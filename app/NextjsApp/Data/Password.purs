@@ -1,10 +1,15 @@
 module NextjsApp.Data.Password where
 
 import Protolude
+
 import Data.String.NonEmpty (NonEmptyString)
 import Data.String.NonEmpty as NonEmptyString
+import Unsafe.Coerce (unsafeCoerce)
 
 newtype Password = Password NonEmptyString
+
+toString :: Password -> String
+toString = unsafeCoerce
 
 minPasswordLength :: Int
 minPasswordLength = 8

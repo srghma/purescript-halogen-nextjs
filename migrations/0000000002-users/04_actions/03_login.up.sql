@@ -10,15 +10,15 @@ begin
   where x.email = login.email;
 
   if v_user is null then
-    raise exception 'email not registered';
+    raise exception 'APP_EXCEPTION_LOGIN_EMAIL_NOT_REGISTERED';
   end if;
 
   if v_user.is_confirmed = false then
-    raise exception 'not confirmed';
+    raise exception 'APP_EXCEPTION_LOGIN_NOT_CONFIRMED';
   end if;
 
   if v_user.password_hash != crypt(login.password, v_user.password_hash) then
-    raise exception 'wrong password';
+    raise exception 'APP_EXCEPTION_LOGIN_WRONG_PASSWORD';
   end if;
 
   return ('app_user', v_user.id)::app_public.jwt;
