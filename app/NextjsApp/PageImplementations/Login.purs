@@ -27,21 +27,8 @@ import NextjsApp.Route as NextjsApp.Route
 import Halogen.Component as Halogen.Component
 import NextjsApp.PageImplementations.Login.Form
 import NextjsApp.Data.Password
-
-type Query
-  = Const Void
-
-type Input
-  = Unit
-
-type Message
-  = Void
-
-data Action
-  = Action__HandleLoginForm LoginDataValidated
-
-type ChildSlots
-  = ()
+import NextjsApp.PageImplementations.Login.Types
+import NextjsApp.PageImplementations.Login.Render
 
 component ::
   forall m r.
@@ -63,14 +50,5 @@ component =
                     -- | RegisterButtonClick Button.Message__Clicked -> traceM "RegisterButtonClick"
                     -- | SubmitButtonClick Button.Message__Clicked -> traceM "SubmitButtonClick"
                 }
-        , render:
-          \state ->
-            HH.div
-              [ HP.class_ mdc_layout_grid ]
-              [ HH.div
-                  [ HP.class_ mdc_layout_grid__inner ]
-                  [ HH.img [ HP.classes [ mdc_layout_grid__cell, mdc_layout_grid__cell____align_middle, mdc_layout_grid__cell____span_3 ], HP.alt "logo", HP.src purescriptLogoSrc ]
-                  , HH.slot F._formless unit formComponent unit Action__HandleLoginForm
-                  ]
-              ]
+        , render
         }
