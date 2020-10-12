@@ -47,7 +47,7 @@ newtype LoginForm r f = LoginForm (r (LoginFormRow f))
 
 derive instance newtypeLoginForm :: Newtype (LoginForm r f) _
 
--- equivalent to { name :: String, email :: V.Email, ... }
+-- equivalent to { email :: Email, ... }
 type LoginDataValidated = { | LoginFormRow F.OutputType }
 
 type FormChildSlots =

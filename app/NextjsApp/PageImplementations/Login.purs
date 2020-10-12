@@ -37,8 +37,6 @@ type Input
 type Message
   = Void
 
-type State = Unit
-
 data Action
   = Action__HandleLoginForm LoginDataValidated
 
