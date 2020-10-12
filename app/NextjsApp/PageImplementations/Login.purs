@@ -37,6 +37,7 @@ import Api.Object.LoginPayload as Api.Object.LoginPayload
 import NextjsApp.ApiUrl
 import Api.Scalars
 import Data.Array.NonEmpty as NonEmptyArray
+import NextjsApp.ServerExceptions as NextjsApp.ServerExceptions
 
 data LoginError
   = LoginError__NotConfirmed
@@ -77,11 +78,11 @@ component =
                                     Left (GraphQLClient.GraphQLError__User details _) ->
                                       let message = NonEmptyArray.head details # unwrap # _.message
                                        in Left $
-                                          case message of
-                                               "email not registered" -> LoginError__EmailNotRegistered
-                                               "not confirmed"        -> LoginError__NotConfirmed
-                                               "wrong password"       -> LoginError__WrongPassword
-                                               _                      -> LoginError__UnknownError message
+                                          case unit of
+                                               _ | message == NextjsApp.ServerExceptions.login_emailNotRegistered -> LoginError__EmailNotRegistered
+                                                 | message == NextjsApp.ServerExceptions.login_notConfirmed ->       LoginError__NotConfirmed
+                                                 | message == NextjsApp.ServerExceptions.login_wrongPassword ->      LoginError__WrongPassword
+                                                 | otherwise ->                                                      LoginError__UnknownError message
                                     Left error -> Left $ LoginError__UnknownError $ GraphQLClient.printGraphQLError error
                                     Right mjwt ->
                                       case join mjwt of
