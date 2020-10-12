@@ -41,4 +41,12 @@ data Action
   = Action__HandleLoginForm LoginDataValidated
 
 type ChildSlots
-  = ()
+  = ( formless :: H.Slot (F.Query LoginForm (Const Void) FormChildSlots) LoginDataValidated Unit )
+
+data LoginError
+  = LoginError__NotConfirmed
+  | LoginError__EmailNotRegistered
+  | LoginError__WrongPassword
+  | LoginError__UnknownError String
+
+type State = { loginError :: Maybe LoginError }

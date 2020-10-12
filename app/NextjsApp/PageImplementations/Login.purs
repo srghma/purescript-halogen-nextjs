@@ -29,6 +29,7 @@ import NextjsApp.Navigate as NextjsApp.Navigate
 import NextjsApp.Route as NextjsApp.Route
 import Halogen.Component as Halogen.Component
 import NextjsApp.PageImplementations.Login.Form
+import NextjsApp.Data.Password (Password)
 import NextjsApp.Data.Password as NextjsApp.Data.Password
 import NextjsApp.PageImplementations.Login.Types
 import NextjsApp.PageImplementations.Login.Render
@@ -39,11 +40,35 @@ import Api.Scalars
 import Data.Array.NonEmpty as NonEmptyArray
 import NextjsApp.ServerExceptions as NextjsApp.ServerExceptions
 
-data LoginError
-  = LoginError__NotConfirmed
-  | LoginError__EmailNotRegistered
-  | LoginError__WrongPassword
-  | LoginError__UnknownError String
+login :: { email :: Email, password :: Password } -> Aff (LoginError \/ Jwt)
+login loginDataValidated = do
+  response <-
+      GraphQLClient.graphqlMutationRequest apiUrl GraphQLClient.defaultRequestOptions $
+        Api.Mutation.login
+          { input:
+            { email: Email.toString loginDataValidated.email
+            , password: NextjsApp.Data.Password.toString loginDataValidated.password
+            , clientMutationId: GraphQLClient.Absent
+            }
+          }
+          (Api.Object.LoginPayload.jwt)
+
+  let (response' :: LoginError \/ Jwt) =
+        case response of
+            Left (GraphQLClient.GraphQLError__User details _) ->
+              let message = NonEmptyArray.head details # unwrap # _.message
+               in Left $
+                  case unit of
+                       _ | message == NextjsApp.ServerExceptions.login_emailNotRegistered -> LoginError__EmailNotRegistered
+                         | message == NextjsApp.ServerExceptions.login_notConfirmed ->       LoginError__NotConfirmed
+                         | message == NextjsApp.ServerExceptions.login_wrongPassword ->      LoginError__WrongPassword
+                         | otherwise ->                                                      LoginError__UnknownError message
+            Left error -> Left $ LoginError__UnknownError $ GraphQLClient.printGraphQLError error
+            Right mjwt ->
+              case join mjwt of
+                    Nothing -> Left $ LoginError__UnknownError "no jwt"
+                    Just jwt -> Right jwt
+  pure response'
 
 component ::
   forall m r.
@@ -53,47 +78,26 @@ component ::
   H.Component Query Input Message m
 component =
   H.mkComponent
-        { initialState: const unit
-        , eval:
-          H.mkEval
-            $ H.defaultEval
-                { handleAction =
-                  case _ of
-                       Action__HandleLoginForm loginDataValidated -> do
-                          traceM loginDataValidated
+    { initialState: const initialState
+    , eval:
+      H.mkEval
+        $ H.defaultEval
+            { handleAction =
+              case _ of
+                    Action__HandleLoginForm loginDataValidated -> do
+                      traceM loginDataValidated
 
-                          response <- liftAff $
-                              GraphQLClient.graphqlMutationRequest apiUrl GraphQLClient.defaultRequestOptions $
-                                Api.Mutation.login
-                                  { input:
-                                    { email: Email.toString loginDataValidated.email
-                                    , password: NextjsApp.Data.Password.toString loginDataValidated.password
-                                    , clientMutationId: GraphQLClient.Absent
-                                    }
-                                  }
-                                  (Api.Object.LoginPayload.jwt)
+                      liftAff (login loginDataValidated) >>=
+                        case _ of
+                            Left error -> H.modify_ _ { loginError = Just error }
+                            Right jwt -> pure unit
 
-                          let (response' :: LoginError \/ Jwt) =
-                                case response of
-                                    Left (GraphQLClient.GraphQLError__User details _) ->
-                                      let message = NonEmptyArray.head details # unwrap # _.message
-                                       in Left $
-                                          case unit of
-                                               _ | message == NextjsApp.ServerExceptions.login_emailNotRegistered -> LoginError__EmailNotRegistered
-                                                 | message == NextjsApp.ServerExceptions.login_notConfirmed ->       LoginError__NotConfirmed
-                                                 | message == NextjsApp.ServerExceptions.login_wrongPassword ->      LoginError__WrongPassword
-                                                 | otherwise ->                                                      LoginError__UnknownError message
-                                    Left error -> Left $ LoginError__UnknownError $ GraphQLClient.printGraphQLError error
-                                    Right mjwt ->
-                                      case join mjwt of
-                                            Nothing -> Left $ LoginError__UnknownError "no jwt"
-                                            Just jwt -> Right jwt
-
-
-                            -- | setTokenBrowser(token)
-                            -- | dispatch(stopSubmit(loginFormId))
-                            -- | Router.pushRoute('index')
-                          pure unit
-                }
-        , render
-        }
+                      -- | setTokenBrowser(token)
+                      -- | dispatch(stopSubmit(loginFormId))
+                      -- | Router.pushRoute('index')
+            }
+    , render
+    }
+  where
+    initialState :: State
+    initialState = { loginError: Nothing }
