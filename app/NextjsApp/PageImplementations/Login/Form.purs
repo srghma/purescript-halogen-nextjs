@@ -2,10 +2,11 @@ module NextjsApp.PageImplementations.Login.Form where
 
 import Material.Classes.LayoutGrid
 import NextjsApp.Data.Password
-import NextjsApp.Data.Password as Password
+import NextjsApp.Data.Password as NextjsApp.Data.Password
+import NextjsApp.Data.EmailFromString
+import NextjsApp.Data.EmailFromString as NextjsApp.Data.EmailFromString
 import Protolude
 
-import Api.Object.User (isConfirmed)
 import Api.Object.User as Api.Object.User
 import Api.Query as Api.Query
 import Data.Array as Array
@@ -36,10 +37,6 @@ import NextjsApp.ApiUrl
 data UserAction
   = UserAction__RegisterButtonClick Button.Message
 
-data EmailError
-  = EmailError__Invalid
-  | EmailError__InUse Boolean
-
 type LoginFormRow f =
   ( email    :: f EmailError    String Email
   , password :: f PasswordError String Password
@@ -59,11 +56,6 @@ type FormChildSlots =
   , "submit-button" :: H.Slot (Const Void) Button.Message Unit
   )
 
-isEmailTaken :: Email -> Aff (Maybe Boolean)
-isEmailTaken email = GraphQLClient.graphqlQueryRequest apiUrl GraphQLClient.defaultRequestOptions query >>= (throwError <<< error <<< GraphQLClient.printGraphQLError) \/ pure
-  where
-    query = Api.Query.userByEmail { email: Email.toString email } (Api.Object.User.isConfirmed)
-
 formComponent ::
   forall m r.
   MonadAsk { navigate :: NextjsApp.Route.Route -> Effect Unit | r } m =>
@@ -76,14 +68,8 @@ formComponent = F.component (const formInput) formSpec
     formInput =
       { initialInputs: Nothing -- same as: Just (F.wrapInputFields { name: "", age: "" })
       , validators: LoginForm
-          { password: F.hoistFnE_ $ Password.fromString
-          , email: F.hoistFnME_ $ Email.fromString >>>
-            case _ of
-              Nothing -> pure $ Left EmailError__Invalid
-              Just email -> liftAff (isEmailTaken email) >>=
-                case _ of
-                     Nothing -> pure $ Right email
-                     Just isConfirmed -> pure $ Left $ EmailError__InUse isConfirmed
+          { password: F.hoistFnE_ $ NextjsApp.Data.Password.fromString
+          , email: F.hoistFnME_ NextjsApp.Data.EmailFromString.fromString
           }
       }
 
