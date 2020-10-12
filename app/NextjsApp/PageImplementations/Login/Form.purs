@@ -2,6 +2,7 @@ module NextjsApp.PageImplementations.Login.Form where
 
 import Material.Classes.LayoutGrid
 import NextjsApp.Data.Password
+import NextjsApp.Data.Password as Password
 import Protolude
 
 import Api.Object.User (isConfirmed)
@@ -39,10 +40,6 @@ data EmailError
   = EmailError__Invalid
   | EmailError__InUse Boolean
 
-data PasswordError
-  = PasswordError__TooShort
-  | PasswordError__TooLong
-
 type LoginFormRow f =
   ( email    :: f EmailError    String Email
   , password :: f PasswordError String Password
@@ -79,16 +76,7 @@ formComponent = F.component (const formInput) formSpec
     formInput =
       { initialInputs: Nothing -- same as: Just (F.wrapInputFields { name: "", age: "" })
       , validators: LoginForm
-          { password: F.hoistFnE_ $ NonEmptyString.fromString >>>
-            case _ of
-                 Nothing -> Left $ PasswordError__TooShort
-                 Just str ->
-                        let
-                          l = NonEmptyString.length str
-                        in case unit of
-                          _ | l < minPasswordLength -> Left $ PasswordError__TooShort
-                            | l > maxPasswordLength -> Left $ PasswordError__TooLong
-                            | otherwise -> Right $ Password str
+          { password: F.hoistFnE_ $ Password.fromString
           , email: F.hoistFnME_ $ Email.fromString >>>
             case _ of
               Nothing -> pure $ Left EmailError__Invalid
