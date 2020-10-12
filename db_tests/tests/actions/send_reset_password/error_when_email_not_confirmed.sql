@@ -25,7 +25,7 @@ prepare do_stuff as
 
 select throws_ok(
   'do_stuff',
-  'not confirmed'
+  'APP__EXCEPTION__SEND_RESET_PASSWORD__EMAIL_NOT_CONFIRMED'
 );
 
 -- Test body END

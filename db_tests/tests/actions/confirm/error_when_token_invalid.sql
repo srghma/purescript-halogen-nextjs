@@ -44,7 +44,7 @@ prepare do_things as
 
 select throws_ok(
   'do_things',
-  'confirmation token is invalid or you are already confirmed'
+  'APP__EXCEPTION__CONFIRM__TOKEN_IS_INVALID_OR_YOU_ARE_ALREADY_CONFIRMED'
 );
 
 -- Check user wasn't changed

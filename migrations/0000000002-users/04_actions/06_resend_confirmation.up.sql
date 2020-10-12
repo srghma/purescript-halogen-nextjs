@@ -36,11 +36,11 @@ begin
     where x.email = resend_confirmation.email;
 
   if v_user is null then
-    raise exception 'email not registered';
+    raise exception 'APP__EXCEPTION__RESEND_CONFIRMATION__NOT_REGISTERED';
   end if;
 
   if v_user.is_confirmed = true then
-    raise exception 'already confirmed';
+    raise exception 'APP__EXCEPTION__RESEND_CONFIRMATION__ALREADY_CONFIRMED';
   end if;
 
   -- Send confirmation email

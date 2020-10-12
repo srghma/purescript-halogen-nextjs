@@ -20,12 +20,12 @@ begin
     where x.email = send_reset_password.email;
 
   if v_user is null then
-    raise exception 'email not registered';
+    raise exception 'APP__EXCEPTION__SEND_RESET_PASSWORD__EMAIL_NOT_REGISTERED';
   end if;
 
   -- Only confirmed user can reset password
   if v_user.is_confirmed = false then
-    raise exception 'not confirmed';
+    raise exception 'APP__EXCEPTION__SEND_RESET_PASSWORD__EMAIL_NOT_CONFIRMED';
   end if;
 
   -- Fetch or generate reset token

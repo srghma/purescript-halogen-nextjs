@@ -2,7 +2,6 @@
 
 begin;
 
-\include constants.sql
 \include 0000000001-start/01_prelude.up.sql
 \include 0000000001-start/02_current_user_id_or_null.up.sql
 \include 0000000001-start/03_current_user_id_required.up.sql

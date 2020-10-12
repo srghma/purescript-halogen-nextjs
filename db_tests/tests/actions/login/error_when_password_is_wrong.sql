@@ -22,7 +22,7 @@ prepare do_stuff as
 
 select throws_ok(
   'do_stuff',
-  'wrong password'
+  'APP__EXCEPTION__LOGIN__WRONG_PASSWORD'
 );
 
 select finish();

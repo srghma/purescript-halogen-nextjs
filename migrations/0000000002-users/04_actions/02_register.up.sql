@@ -12,7 +12,7 @@ begin
   where x.email = register.email;
 
   if v_user.id is not null then
-    raise exception 'email already registered';
+    raise exception 'APP__EXCEPTION__REGISTER__ALREADY_REGISTERED';
   end if;
 
   -- Insert the new user

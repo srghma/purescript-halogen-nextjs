@@ -10,7 +10,7 @@ begin
     and x.confirmation_token = confirm.token;
 
   if v_user is null then
-    raise exception 'confirmation token is invalid or you are already confirmed';
+    raise exception 'APP__EXCEPTION__CONFIRM__TOKEN_IS_INVALID_OR_YOU_ARE_ALREADY_CONFIRMED';
   end if;
 
   update app_public.users

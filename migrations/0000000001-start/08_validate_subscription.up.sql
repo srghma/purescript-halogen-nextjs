@@ -20,11 +20,11 @@ begin
     if user_id = app_public.current_user_id_required() then
       return 'CANCEL_ALL_SUBSCRIPTIONS'::text;
     else
-      raise exception 'invalid_user';
+      raise exception 'APP__EXCEPTION__VALIDATE_SUBSCRIPTION__INVALID_USER';
     end if;
   else
-    raise exception 'unknown_topic';
-  end if;
+    raise exception 'APP__EXCEPTION__VALIDATE_SUBSCRIPTION__UNKNOWN_TOPIC';
+  END if;
 end;
 $$ language plpgsql volatile security definer;
 

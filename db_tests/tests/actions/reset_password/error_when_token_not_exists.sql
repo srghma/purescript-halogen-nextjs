@@ -22,7 +22,7 @@ prepare do_stuff as
 
 select throws_ok(
   'do_stuff',
-  'token is invalid'
+  'APP__EXCEPTION__RESET_PASSWORD__TOKEN_IS_INVALID'
 );
 
 -- Test body END

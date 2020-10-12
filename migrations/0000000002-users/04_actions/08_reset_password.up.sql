@@ -10,12 +10,12 @@ begin
     where x.reset_password_token = reset_password.token;
 
   if v_user is null then
-    raise exception 'token is invalid';
+    raise exception 'APP__EXCEPTION__RESET_PASSWORD__TOKEN_IS_INVALID';
   end if;
 
   -- Only confirmed user can reset password
   if v_user.is_confirmed = false then
-    raise exception 'not confirmed';
+    raise exception 'APP__EXCEPTION__RESET_PASSWORD__USER_NOT_CONFIRMED';
   end if;
 
   update app_public.users
