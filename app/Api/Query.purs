@@ -21,7 +21,7 @@ import Api.Scopes
   )
 import Data.Maybe (Maybe)
 import Api.Enum.PostsOrderBy (PostsOrderBy)
-import Api.InputObject (PostCondition) as Api.InputObject
+import Api.InputObject as Api.InputObject
 
 query :: forall r . SelectionSet
                     Scope__RootQuery

@@ -13,7 +13,7 @@ import Api.Scopes (Scope__User, Scope__PostsConnection)
 import Api.Scalars (Id, Uuid, Datetime, Cursor)
 import Data.Maybe (Maybe)
 import Api.Enum.PostsOrderBy (PostsOrderBy)
-import Api.InputObject (PostCondition) as Api.InputObject
+import Api.InputObject as Api.InputObject
 import Type.Row (type (+))
 
 id :: SelectionSet Scope__User Id
