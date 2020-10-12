@@ -37,9 +37,10 @@ config ::
   , root :: Path Abs Dir
   , bundleAnalyze :: Boolean
   , spagoOutput :: Path Abs Dir
+  , apiUrl :: String
   } ->
   Configuration
-config { target, watch, production, root, bundleAnalyze, spagoOutput } =
+config { target, watch, production, root, bundleAnalyze, spagoOutput, apiUrl } =
   { watch
   , target:
     case target of
@@ -162,13 +163,19 @@ config { target, watch, production, root, bundleAnalyze, spagoOutput } =
                   Target__Mobile _ -> "index.css"
               }
       , Just $ webpack._DefinePlugin
-          $ case target of
-              Target__Server ->
-                Foreign.unsafeToForeign
-                  -- for purescript-ace on node environment: dont throw "undefined" exception, just make `var ace = false`
-                  { "ace": false
-                  }
-              _ -> Foreign.unsafeToForeign {}
+          $ let
+              common =
+                { "process.env.API_URL": show apiUrl
+                }
+            in
+              case target of
+                Target__Server ->
+                    Foreign.unsafeToForeign $ Record.union common
+                    -- for purescript-ace on node environment: dont throw "undefined" exception, just make `var ace = false`
+                    { "ace": false
+                    }
+                _ -> Foreign.unsafeToForeign $ Record.union common
+                    {}
       , case target of
           Target__Server ->
             Just

@@ -26,6 +26,8 @@ runWebpack { onSuccess } =
   launchAff_ do
     root <- liftEffect cwd
     let
+      apiUrl = "http://localhost:5000/graphql"
+
       production = false
 
       spagoOutput = root </> dir (SProxy :: SProxy "output")
@@ -44,6 +46,7 @@ runWebpack { onSuccess } =
           , root
           , bundleAnalyze: false
           , spagoOutput
+          , apiUrl
           }
     let
       serverConfig =
@@ -54,6 +57,7 @@ runWebpack { onSuccess } =
           , root
           , bundleAnalyze: false
           , spagoOutput
+          , apiUrl
           }
     liftEffect
       $ Webpack.Compiler.webpackCompilerRunMulti (Webpack.Compiler.webpackCompilerMulti [ clientConfig, serverConfig ]) \merror stats -> case Webpack.GetError.webpackGetErrors merror stats of

@@ -1,7 +1,12 @@
 module NextjsApp.PageImplementations.Login.Form where
 
+import Material.Classes.LayoutGrid
+import NextjsApp.Data.Password
 import Protolude
 
+import Api.Object.User (isConfirmed)
+import Api.Object.User as Api.Object.User
+import Api.Query as Api.Query
 import Data.Array as Array
 import Data.Either (Either(..))
 import Data.Email (Email)
@@ -13,26 +18,26 @@ import Data.String.NonEmpty (NonEmptyString)
 import Data.String.NonEmpty as NonEmptyString
 import Data.Variant (Variant, inj)
 import Formless as F
+import GraphQLClient as GraphQLClient
 import Halogen as H
+import Halogen.Component as Halogen.Component
 import Halogen.HTML as HH
 import Halogen.HTML.Properties as HP
 import HalogenMWC.Button as Button
 import HalogenMWC.TextField.Outlined as TextField.Outlined
 import HalogenMWC.Utils (setEfficiently)
-import Material.Classes.LayoutGrid
 import NextjsApp.AppM (AppM)
 import NextjsApp.Blocks.PurescriptLogo (purescriptLogoSrc)
 import NextjsApp.Navigate as NextjsApp.Navigate
 import NextjsApp.Route as NextjsApp.Route
-import Halogen.Component as Halogen.Component
-import NextjsApp.Data.Password
+import NextjsApp.ApiUrl
 
 data UserAction
   = UserAction__RegisterButtonClick Button.Message
 
 data EmailError
   = EmailError__Invalid
-  | EmailError__InUse
+  | EmailError__InUse Boolean
 
 data PasswordError
   = PasswordError__TooShort
@@ -57,8 +62,10 @@ type FormChildSlots =
   , "submit-button" :: H.Slot (Const Void) Button.Message Unit
   )
 
-isEmailTaken :: Email -> Aff Boolean
-isEmailTaken email = if Email.toString email == "taken@gmail.com" then pure true else pure false
+isEmailTaken :: Email -> Aff (Maybe Boolean)
+isEmailTaken email = GraphQLClient.graphqlQueryRequest apiUrl GraphQLClient.defaultRequestOptions query >>= (throwError <<< error <<< GraphQLClient.printGraphQLError) \/ pure
+  where
+    query = Api.Query.userByEmail { email: Email.toString email } (Api.Object.User.isConfirmed)
 
 formComponent ::
   forall m r.
@@ -85,7 +92,10 @@ formComponent = F.component (const formInput) formSpec
           , email: F.hoistFnME_ $ Email.fromString >>>
             case _ of
               Nothing -> pure $ Left EmailError__Invalid
-              Just email -> liftAff (isEmailTaken email) >>= if _ then pure $ Left EmailError__InUse else pure $ Right email
+              Just email -> liftAff (isEmailTaken email) >>=
+                case _ of
+                     Nothing -> pure $ Right email
+                     Just isConfirmed -> pure $ Left $ EmailError__InUse isConfirmed
           }
       }
 
@@ -122,8 +132,8 @@ formComponent = F.component (const formInput) formSpec
               )
           , HH.text case F.getError _email state.form of
               Nothing -> ""
-              Just EmailError__InUse -> "Email is in use"
               Just EmailError__Invalid -> "Email is invalid"
+              Just (EmailError__InUse isConfirmed) -> "Email is in use" <> if isConfirmed then " and is confirmed" else ", but is not confirmed"
           , HH.slot
               (SProxy :: SProxy "password")
               unit
