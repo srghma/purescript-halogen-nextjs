@@ -100,6 +100,9 @@ formComponent = F.component (const formInput) formSpec
         case _ of
              UserAction__RegisterButtonClick _ -> NextjsApp.Navigate.navigate NextjsApp.Route.Signup
 
+      _password = SProxy :: SProxy "password"
+      _email = SProxy :: SProxy "email"
+
       render :: F.PublicState LoginForm st -> F.ComponentHTML LoginForm UserAction FormChildSlots m
       render state =
         lmap (Halogen.Component.hoistSlot liftAff) $ HH.form_ -- TODO: lift?
@@ -164,7 +167,4 @@ formComponent = F.component (const formInput) formSpec
                       ]
                   ]
           ]
-        where
-        _password = SProxy :: SProxy "password"
-        _email = SProxy :: SProxy "email"
 
