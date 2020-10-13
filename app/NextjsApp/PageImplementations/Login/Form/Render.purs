@@ -33,7 +33,6 @@ import NextjsApp.AppM (AppM)
 import NextjsApp.Blocks.PurescriptLogo (purescriptLogoSrc)
 import NextjsApp.Navigate as NextjsApp.Navigate
 import NextjsApp.Route as NextjsApp.Route
-import NextjsApp.ApiUrl
 
 _password = SProxy :: SProxy "password"
 _email = SProxy :: SProxy "email"

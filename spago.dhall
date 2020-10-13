@@ -54,6 +54,7 @@
   , "foreign-js-map"
   , "node-child-process"
   , "graphql-client"
+  , "browser-cookies"
   ]
 , packages = ./packages.dhall
 , sources =

@@ -32,7 +32,6 @@ import NextjsApp.AppM (AppM)
 import NextjsApp.Blocks.PurescriptLogo (purescriptLogoSrc)
 import NextjsApp.Navigate as NextjsApp.Navigate
 import NextjsApp.Route as NextjsApp.Route
-import NextjsApp.ApiUrl
 
 data UserAction
   = UserAction__RegisterButtonClick Button.Message

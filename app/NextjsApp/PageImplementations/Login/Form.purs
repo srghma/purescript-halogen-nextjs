@@ -36,7 +36,6 @@ import NextjsApp.AppM (AppM)
 import NextjsApp.Blocks.PurescriptLogo (purescriptLogoSrc)
 import NextjsApp.Navigate as NextjsApp.Navigate
 import NextjsApp.Route as NextjsApp.Route
-import NextjsApp.ApiUrl
 import NextjsApp.PageImplementations.Login.Form.Render
 import NextjsApp.PageImplementations.Login.Form.Types
 
