@@ -113,6 +113,18 @@ component =
                                   -- | because for security reasons cookies should be stored either
                                   -- | - in memory
                                   -- | - in httpOnly cookies (we use)
+                                  -- |
+                                  -- | local storage is not safe because available in all sites in domain (https://stormpath.com/blog/where-to-store-your-jwts-cookies-vs-html5-web-storage)
+                                  -- | what if other site in domain compromised? what if node_modules dep compromised?
+                                  -- |
+                                  -- | TODO: auth and refresh token
+                                  -- | TODO: expiration in jwt https://www.graphile.org/postgraphile/postgresql-schema-design/#logging-in ?
+
+                                  -- | https://github.com/dijam/graphile-jwt-example
+                                  -- | https://github.com/graphile/postgraphile/issues/501 (if you're a browser you'll automatically use the cookie (no other code required), but if you're a non-browser client (like a native or command line application) then you can use the traditional Authorization header approach)
+
+
+                                  -- | https://youtu.be/cSOKJRfkTDc?t=1515 - XSRF-TOKEN cookie is not httpOnly?????
                                   , httpOnly: true
 
                                   -- TODO:
@@ -122,7 +134,11 @@ component =
                                   , samesite: Nothing
 
                                   , domain: NextjsApp.NodeEnv.jwtDomain
-                                  , path: Nothing -- same as Just "/" ?
+
+                                  -- | make accessiable for all pages
+                                  -- | because Nothing is the same as `Just currentPage` (If the server omits the Path attribute, the user agent will use the "directory" of the request-uri's path component as the default value)
+                                  -- | https://stackoverflow.com/questions/43324480/how-does-a-browser-handle-cookie-with-no-path-and-no-domain
+                                  , path: Just "/"
                                   }
                                 }
 

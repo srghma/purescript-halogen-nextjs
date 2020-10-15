@@ -165,7 +165,9 @@ config { target, watch, production, root, bundleAnalyze, spagoOutput, apiUrl } =
       , Just $ webpack._DefinePlugin
           $ let
               common =
-                { "process.env.API_URL": show apiUrl
+                { "process.env.apiUrl": show apiUrl
+                , "process.env.isProduction": show production
+                , "process.env.jwtKey": show "myjwtkey"
                 }
             in
               case target of
