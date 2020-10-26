@@ -57,7 +57,7 @@ mkScripts {
 
     mkdir -p ./schemas
 
-    node --trace-deprecation ./server/src/index.js
+    spago run --main ApiServer.Main
   '';
 
   import__purescript-graphql-client-generator = ''

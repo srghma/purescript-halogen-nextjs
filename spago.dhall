@@ -61,6 +61,7 @@
   [ "app/**/*.purs"
   , "src/**/*.purs"
   , "test/**/*.purs"
+  , "api-server/**/*.purs"
   , "webpack/**/*.purs"
   , "examples/ace/**/*.purs"
   , "examples/basic/**/*.purs"

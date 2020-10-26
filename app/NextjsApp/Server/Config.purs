@@ -30,7 +30,7 @@ absDir :: ReadM (Path Abs Dir)
 absDir =
   eitherReader
     $ \s -> case parseAbsDir posixParser s of
-        Nothing -> Left $ "Can't parse as Int: `" <> show s <> "`"
+        Nothing -> Left $ "Can't parse as abs dir: `" <> show s <> "`"
         Just a -> Right a
 
 configParser :: Parser Config
