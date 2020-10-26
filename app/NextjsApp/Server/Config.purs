@@ -19,6 +19,7 @@ import Data.Argonaut.Parser as Data.Argonaut.Parser
 import Pathy hiding (Parser(..))
 import Pathy as Pathy
 import Data.Maybe as Maybe
+import PathyOptparse as PathyOptparse
 
 type Config
   = { rootPath :: Path Abs Dir
@@ -26,17 +27,10 @@ type Config
     , livereloadPort :: Maybe Int
     }
 
-absDir :: ReadM (Path Abs Dir)
-absDir =
-  eitherReader
-    $ \s -> case parseAbsDir posixParser s of
-        Nothing -> Left $ "Can't parse as abs dir: `" <> show s <> "`"
-        Just a -> Right a
-
 configParser :: Parser Config
 configParser =
   { rootPath: _, port: _, livereloadPort: _ }
-    <$> option absDir
+    <$> option PathyOptparse.absDirPosixParser
         ( long "root-path"
             <> metavar "TARGET"
             <> help "root path"
@@ -62,4 +56,16 @@ opts =
         <> progDesc "starts server"
         <> header "server - starts server"
     )
- -- | getPortFromEnv :: Effect Int -- | getPortFromEnv = NodeProcess.Process.lookupEnv "PORT" >>= -- |   (case _ of -- |     Nothing -> do -- |       Console.log $ Ansi.withGraphics (Ansi.foreground Ansi.BrightGreen) $ "Using random port" -- |       pure 0 -- |     Just portString -> -- |       case Integers.fromString portString of -- |         Nothing -> Protolude.Node.exitWith 1 $ "Cannot parse PORT: " <> portString -- |         Just port -> do -- |           Console.log $ Ansi.withGraphics (Ansi.foreground Ansi.BrightGreen) $ "Using port: " <> show port -- |           pure port -- |   )
+
+getPortOrRandomPortFromEnv :: Effect Int
+getPortOrRandomPortFromEnv = NodeProcess.Process.lookupEnv "PORT" >>=
+  case _ of
+       Nothing -> do
+         Console.log $ Ansi.withGraphics (Ansi.foreground Ansi.BrightGreen) $ "Using random port"
+         pure 0
+       Just portString ->
+         case Integers.fromString portString of
+           Nothing -> Protolude.Node.exitWith 1 $ "Cannot parse PORT: " <> portString
+           Just port -> do
+             Console.log $ Ansi.withGraphics (Ansi.foreground Ansi.BrightGreen) $ "Using port: " <> show port
+             pure port

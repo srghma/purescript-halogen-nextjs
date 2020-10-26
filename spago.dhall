@@ -55,6 +55,7 @@
   , "node-child-process"
   , "graphql-client"
   , "browser-cookies"
+  , "express"
   ]
 , packages = ./packages.dhall
 , sources =

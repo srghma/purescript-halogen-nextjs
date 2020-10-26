@@ -6,12 +6,13 @@ import Effect.Console (log)
 import Node.Express.App (App, listenHttp, get)
 import Node.Express.Response (send)
 import Node.HTTP (Server)
+import Pathy (Path, Abs, File, Dir)
 
 data ConfigTarget
   = Production
   | Development
-    { exportGqlSchemaPath  :: Pathy Abs File
-    , exportJsonSchemaPath :: Pathy Abs File
+    { exportGqlSchemaPath  :: Path Abs File
+    , exportJsonSchemaPath :: Path Abs File
     }
 
 -- from args
@@ -21,11 +22,6 @@ type Config =
   , databaseUrl   :: String
   , exposedSchema :: String
   , target        :: ConfigTarget
-  }
-
--- from envs
-type SecretConfig =
-  { jwtSecret :: String
   }
 
 app :: App
