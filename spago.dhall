@@ -56,6 +56,7 @@
   , "graphql-client"
   , "browser-cookies"
   , "express"
+  , "envparse"
   ]
 , packages = ./packages.dhall
 , sources =
