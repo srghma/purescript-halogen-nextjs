@@ -1,33 +1,27 @@
 module ApiServer.Main where
 
-import Prelude hiding (apply)
+import Data.Maybe
+import Pathy
+import Protolude
+
+import ApiServer.Config as ApiServer.Config
+import Control.Monad.Error.Class (throwError)
+import Data.NonEmpty (NonEmpty(..))
+import Data.String.NonEmpty (NonEmptyString)
+import Data.String.NonEmpty as NonEmptyString
 import Effect (Effect)
 import Effect.Console (log)
-import Node.Express.App (App, listenHttp, get)
-import Node.Express.Response (send)
-import Node.HTTP (Server)
-import Pathy (Path, Abs, File, Dir)
+import Env as Env
+import Node.Express.App as Express
+import Node.Express.Response as Express
+import Options.Applicative as Options.Applicative
 
-data ConfigTarget
-  = Production
-  | Development
-    { exportGqlSchemaPath  :: Path Abs File
-    , exportJsonSchemaPath :: Path Abs File
-    }
+app :: Express.App
+app = Express.get "/" $ Express.send "Hello, World!"
 
--- from args
-type Config =
-  { port          :: Int
-  , host          :: String
-  , databaseUrl   :: String
-  , exposedSchema :: String
-  , target        :: ConfigTarget
-  }
-
-app :: App
-app = get "/" $ send "Hello, World!"
-
-main :: Effect Server
+main :: Effect Unit
 main = do
-  listenHttp app 8080 \_ ->
+  config <- ApiServer.Config.config
+
+  void $ Express.listenHttp app 8080 \_ ->
     log $ "Listening on " <> show 8080

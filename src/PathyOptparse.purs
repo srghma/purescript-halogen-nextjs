@@ -6,6 +6,7 @@ import Pathy as Pathy
 import Data.Maybe as Maybe
 import Effect.Exception
 import Options.Applicative
+import PathyExtra
 
 createPosixParser parse name =
   eitherReader
@@ -18,3 +19,15 @@ absDirPosixParser = createPosixParser parseAbsDir "posix abs dir"
 
 absFilePosixParser :: ReadM (Path Abs File)
 absFilePosixParser = createPosixParser parseAbsFile "posix abs file"
+
+relDirPosixParser :: ReadM (Path Rel Dir)
+relDirPosixParser = createPosixParser parseRelDir "posix rel dir"
+
+relFilePosixParser :: ReadM (Path Rel File)
+relFilePosixParser = createPosixParser parseRelFile "posix rel file"
+
+anyFilePosixParser :: ReadM AnyFile
+anyFilePosixParser = createPosixParser parseAnyFile "posix any file"
+
+anyDirPosixParser :: ReadM AnyDir
+anyDirPosixParser = createPosixParser parseAnyDir "posix any dir"

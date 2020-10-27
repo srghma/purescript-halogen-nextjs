@@ -57,15 +57,15 @@ opts =
         <> header "server - starts server"
     )
 
-getPortOrRandomPortFromEnv :: Effect Int
-getPortOrRandomPortFromEnv = NodeProcess.Process.lookupEnv "PORT" >>=
-  case _ of
-       Nothing -> do
-         Console.log $ Ansi.withGraphics (Ansi.foreground Ansi.BrightGreen) $ "Using random port"
-         pure 0
-       Just portString ->
-         case Integers.fromString portString of
-           Nothing -> Protolude.Node.exitWith 1 $ "Cannot parse PORT: " <> portString
-           Just port -> do
-             Console.log $ Ansi.withGraphics (Ansi.foreground Ansi.BrightGreen) $ "Using port: " <> show port
-             pure port
+-- | getPortOrRandomPortFromEnv :: Effect Int
+-- | getPortOrRandomPortFromEnv = NodeProcess.Process.lookupEnv "PORT" >>=
+-- |   case _ of
+-- |        Nothing -> do
+-- |          Console.log $ Ansi.withGraphics (Ansi.foreground Ansi.BrightGreen) $ "Using random port"
+-- |          pure 0
+-- |        Just portString ->
+-- |          case Integers.fromString portString of
+-- |            Nothing -> Protolude.Node.exitWith 1 $ "Cannot parse PORT: " <> portString
+-- |            Just port -> do
+-- |              Console.log $ Ansi.withGraphics (Ansi.foreground Ansi.BrightGreen) $ "Using port: " <> show port
+-- |              pure port

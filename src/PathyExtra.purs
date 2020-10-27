@@ -2,7 +2,7 @@ module PathyExtra where
 
 import Protolude
 import Node.Process as Node.Process
-import Pathy (class IsDirOrFile, class IsRelOrAbs, Abs, Dir, Path, parseAbsDir, posixParser, posixPrinter, printPath, sandboxAny)
+import Pathy
 import Data.String as String
 
 mkDirAbsoluteIfNotAlready :: String -> String
@@ -23,3 +23,9 @@ cwd =
 
 printPathPosixSandboxAny :: ∀ a b. IsRelOrAbs a ⇒ IsDirOrFile b ⇒ Path a b → String
 printPathPosixSandboxAny = printPath posixPrinter <<< sandboxAny
+
+parseAnyFile :: Parser -> String -> Maybe AnyFile
+parseAnyFile p = parsePath p (const Nothing) (const Nothing) (Just <<< Right) (Just <<< Left) Nothing
+
+parseAnyDir :: Parser -> String -> Maybe AnyDir
+parseAnyDir p = parsePath p (Just <<< Right) (Just <<< Left) (const Nothing) (const Nothing) Nothing
