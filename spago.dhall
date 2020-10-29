@@ -57,6 +57,7 @@
   , "browser-cookies"
   , "express"
   , "envparse"
+  , "postgresql-client"
   ]
 , packages = ./packages.dhall
 , sources =
