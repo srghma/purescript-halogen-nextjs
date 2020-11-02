@@ -56,6 +56,7 @@
   , "graphql-client"
   , "browser-cookies"
   , "express"
+  , "express-passport"
   , "envparse"
   , "postgresql-client"
   ]

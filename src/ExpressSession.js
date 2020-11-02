@@ -1,1 +1,3 @@
-exports.expressSession = require("express-session")
+exports.expressSession = function() {
+  return require("express-session")
+}

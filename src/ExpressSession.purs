@@ -15,7 +15,8 @@ data ExpressSession
 
 data ExpressSessionStore
 
-foreign import expressSession :: ExpressSession
+-- get singleton
+foreign import expressSession :: Effect ExpressSession
 
 type ExpressSessionConfigCookie__Internal =
   { path :: String
