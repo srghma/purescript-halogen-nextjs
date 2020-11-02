@@ -15,12 +15,15 @@ import Env as Env
 import Node.Express.App as Express
 import Node.Express.Response as Express
 import Options.Applicative as Options.Applicative
+import ApiServer.Gql as ApiServer.Gql
 
 app :: Express.App
 app = Express.get "/" $ Express.send "Hello, World!"
 
 main :: Effect Unit
 main = do
+  traceM ApiServer.Gql.typeDefs
+
   config <- ApiServer.Config.config
 
   void $ Express.listenHttp app 8080 \_ ->

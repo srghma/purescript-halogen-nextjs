@@ -7,7 +7,7 @@ import Data.Function.Uncurried (Fn3)
 import Data.Nullable (Nullable)
 import Data.Nullable as Nullable
 import Data.Time.Duration (Milliseconds(..))
-import Node.Express.Types (Request)
+import Node.Express.Types (Request, Middleware)
 import Node.HTTP.Client (Response)
 import Unsafe.Coerce (unsafeCoerce)
 
@@ -76,8 +76,6 @@ type ExpressSessionConfig =
   , secret :: String
   , unset :: Unset
   }
-
-type Middleware = Fn3 Request Response (Effect Unit) (Effect Unit)
 
 convertConfigCookie :: ExpressSessionConfigCookie -> ExpressSessionConfigCookie__Internal
 convertConfigCookie config =
