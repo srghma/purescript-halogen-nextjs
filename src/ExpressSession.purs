@@ -7,7 +7,6 @@ import Data.Function.Uncurried (Fn3)
 import Data.Nullable (Nullable)
 import Data.Nullable as Nullable
 import Data.Time.Duration (Milliseconds(..))
-import Hyper.Cookies (maxAge)
 import Node.Express.Types (Request)
 import Node.HTTP.Client (Response)
 import Unsafe.Coerce (unsafeCoerce)
@@ -121,4 +120,3 @@ createMiddleware expressSession config = createMiddleware' expressSession (conve
   where
     createMiddleware' :: ExpressSession -> ExpressSessionConfig__Internal -> Middleware
     createMiddleware' = unsafeCoerce Data.Function.apply
-
