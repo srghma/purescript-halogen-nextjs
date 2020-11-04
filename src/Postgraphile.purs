@@ -58,7 +58,7 @@ type PostgraphileOptions =
       Request
       (Promise AppUserClaims)
 
-  , websocketMiddlewares :: Middleware
+  , websocketMiddlewares :: Array Middleware
   , additionalGraphQLContextFromRequest ::
       EffectFn1
       Request

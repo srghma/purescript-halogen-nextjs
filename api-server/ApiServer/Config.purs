@@ -34,7 +34,7 @@ type Config =
 
   -- listen to, before the proxy
   , port         :: Int    -- e.g. "3000"
-  , host         :: String -- e.g. "127.0.0.1"
+  , hostname         :: String -- e.g. "127.0.0.1"
 
   -- for callbackURL, after the proxy
   , rootUrl :: String -- e.g. "http://mysite"
@@ -47,7 +47,7 @@ type Config =
   , databaseAuthenticatorUser     :: String
   , databaseAuthenticatorPassword :: NonEmptyString
 
-  , oauthGithubClientId       :: String
+  , oauthGithubClientId     :: String
   , oauthGithubClientSecret :: NonEmptyString
 
   , sessionSecret             :: NonEmptyString
@@ -76,7 +76,7 @@ config = do
     { target
 
     , port: cliConfig.port
-    , host: cliConfig.host
+    , hostname: cliConfig.hostname
 
     , rootUrl: cliConfig.rootUrl
 
@@ -88,7 +88,7 @@ config = do
     , databaseAuthenticatorUser:     cliConfig.databaseAuthenticatorUser
     , databaseAuthenticatorPassword: envConfig.databaseAuthenticatorPassword
 
-    , oauthGithubClientId:       cliConfig.oauthGithubClientId
+    , oauthGithubClientId:     cliConfig.oauthGithubClientId
     , oauthGithubClientSecret: envConfig.oauthGithubClientSecret
 
     , sessionSecret: envConfig.sessionSecret

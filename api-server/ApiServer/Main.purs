@@ -1,23 +1,31 @@
+-- | !!!!
+-- | THIS IS IMPLEMENTED BASED ON
+-- | https://github.com/graphile/bootstrap-react-apollo/tree/master/server/middleware
+
 module ApiServer.Main where
 
 import Data.Maybe
+import Effect.Uncurried
 import Pathy
 import Protolude
 
 import ApiServer.Config as ApiServer.Config
 import ApiServer.DatabasePools as ApiServer.DatabasePools
 import ApiServer.Passport as ApiServer.Passport
+import ApiServer.Postgraphile as ApiServer.Postgraphile
 import ApiServer.SessionMiddleware as ApiServer.SessionMiddleware
-import Control.Monad.Error.Class (throwError)
 import Data.NonEmpty (NonEmpty(..))
 import Data.String.NonEmpty (NonEmptyString)
 import Data.String.NonEmpty as NonEmptyString
 import Effect (Effect)
 import Effect.Console (log)
 import Env as Env
+import Node.Express.App (useExternal)
 import Node.Express.App as Express
 import Node.Express.Response as Express
 import Options.Applicative as Options.Applicative
+import Postgraphile as Postgraphile
+import Node.HTTP as Node.HTTP
 
 app :: Express.App
 app = Express.get "/" $ Express.send "Hello, World!"
@@ -48,8 +56,36 @@ main = do
     , rootUrl:                 config.rootUrl
     }
 
-  -- TODO: enhanceHttpServerWithSubscriptions
-  httpServer <- Express.listenHttp app 8080 \_ ->
-    log $ "Listening on " <> show 8080
+  let middlewares = [sessionMiddleware] <> passportMiddlewareAndRoutes.middlewares
 
-  pure unit
+  let postgraphileMiddleware = ApiServer.Postgraphile.mkMiddleware
+        { authPgPool:            pools.authPgPool
+        , rootPgPool:            pools.rootPgPool
+        , websocketMiddlewares:  middlewares
+        , target:                config.target
+        , databaseName:          config.databaseName
+        , databaseHost:          config.databaseHost
+        , databasePort:          config.databasePort
+        , databaseOwnerUser:     config.databaseOwnerUser
+        , databaseOwnerPassword: config.databaseOwnerPassword
+        }
+
+  expressApp <- Express.mkApplication
+
+  flip Express.apply expressApp do
+     for_ middlewares Express.useExternal
+     Express.useExternal postgraphileMiddleware
+
+  -- TODO: enhanceHttpServerWithSubscriptions
+  httpServer <- Express._httpServer expressApp
+
+  runEffectFn2 Postgraphile.enhanceHttpServerWithSubscriptions httpServer postgraphileMiddleware
+
+  Node.HTTP.listen
+    httpServer
+    { backlog: Nothing
+    , hostname: config.hostname
+    , port: config.port
+    }
+    do
+      log $ "Listening on " <> show config.hostname <> ":" <> show config.port

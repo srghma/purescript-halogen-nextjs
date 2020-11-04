@@ -12,7 +12,7 @@ type CliConfig =
   , exportJsonSchemaPath :: Maybe AnyFile
 
   , port    :: Int
-  , host    :: String
+  , hostname    :: String
   , rootUrl :: String
 
   , databaseName              :: String
@@ -37,8 +37,8 @@ configParser = ado
         <> metavar "INT"
     )
 
-  host <- option str
-    ( long "host"
+  hostname <- option str
+    ( long "hostname"
         <> showDefault
         <> value "localhost"
         <> metavar "HOST"
@@ -52,7 +52,7 @@ configParser = ado
     )
 
   databaseName              <- option str $ long "database-name" <> metavar "NAME"
-  databaseHost              <- option str $ long "database-host" <> metavar "NAME"
+  databaseHost              <- option str $ long "database-hostname" <> metavar "NAME"
   databasePort              <- Maybe.optional $ option int $ long "database-port" <> metavar "NAME"
   databaseOwnerUser         <- option str $ long "database-owner-user" <> metavar "NAME"
   databaseAuthenticatorUser <- option str $ long "database-authenticator-user" <> metavar "NAME"
@@ -65,7 +65,7 @@ configParser = ado
     { exportGqlSchemaPath
     , exportJsonSchemaPath
     , port
-    , host
+    , hostname
     , rootUrl
     , databaseName
     , databaseHost

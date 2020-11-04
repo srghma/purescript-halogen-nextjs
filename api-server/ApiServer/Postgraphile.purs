@@ -12,6 +12,8 @@ import Protolude
 import Control.Promise (Promise)
 import Data.Nullable (Nullable)
 import Data.Nullable as Nullable
+import Data.String.NonEmpty (NonEmptyString)
+import Data.String.NonEmpty as NonEmptyString
 import Node.Express.App as Express
 import Node.HTTP as Node.HTTP
 import Postgraphile as Postgraphile
@@ -19,7 +21,7 @@ import Postgraphile as Postgraphile
 postgraphileOptions :: _ -> PostgraphileOptions
 postgraphileOptions config =
   { pluginHook: makePluginHook [pgPubsub]
-  , ownerConnectionString: config.databaseUrl
+  , ownerConnectionString: "postgres://" <> config.databaseOwnerUser <> ":" <> NonEmptyString.toString config.databaseOwnerPassword <> "@" <> config.databaseHost <> "/" <> config.databaseName
   , subscriptions: true
   , simpleSubscriptions: true
   , enableQueryBatching: true
@@ -93,15 +95,25 @@ mkMiddleware
   { authPgPool
   , rootPgPool
   , websocketMiddlewares
-  , databaseUrl
   , target
+
+  , databaseName
+  , databaseHost
+  , databasePort
+  , databaseOwnerUser
+  , databaseOwnerPassword
+
   } =
     runFn3
     Postgraphile.postgraphile
     authPgPool
     "app_public"
     ( postgraphileOptions
-      { databaseUrl
+      { databaseName
+      , databaseHost
+      , databasePort
+      , databaseOwnerUser
+      , databaseOwnerPassword
       , target
       , websocketMiddlewares
       , rootPgPool
