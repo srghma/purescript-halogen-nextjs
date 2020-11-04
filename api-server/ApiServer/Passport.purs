@@ -1,19 +1,21 @@
 module ApiServer.Passport where
 
 import NextjsApp.NodeEnv
+import Node.Express.Handler
 import Node.Express.Passport
 import Node.Express.Types
 import Protolude
 
+import Data.NonEmpty (NonEmpty(..))
 import Data.Time.Duration (Days(..))
 import Data.Time.Duration as Duration
 import Database.PostgreSQL (Pool)
-import Node.Express.Handler (HandlerM(..))
 import Node.Express.Passport as Passport
-import Node.Express.Response (redirect)
 import Node.Express.Response as Express
 import PassportGithub as PassportGithub
 import Type.Prelude (Proxy(..))
+import Data.String.NonEmpty (NonEmptyString)
+import Data.String.NonEmpty as NonEmptyString
 
 passportMethods =
   let
@@ -29,25 +31,25 @@ passportMethods =
     , passportStrategyGithub: PassportGithub.passportStrategyGithub proxyUser proxyInfo
     }
 
-passport :: _ -> _
-passport { githubKey, githubSecretKey, rootUrl, rootPgPool } = do
-  passport <- Passport.getPassport
+passportMiddlewareAndRoutes :: _ -> Effect { middlewares :: Array Middleware, routes :: Array (Tuple String Handler) }
+passportMiddlewareAndRoutes config = do
+  (passport :: Passport) <- Passport.getPassport
 
   passportMethods.addSerializeUser passport \req user -> undefined
   passportMethods.addDeserializeUser passport \req json -> pure undefined
 
-  let githubCallbackPath = "/auth/" <> unwrap PassportGithub.githubStrategyId <> "/callback"
+  let githubCallbackPath = "/auth/github/callback"
 
   Passport.useStrategy passport PassportGithub.githubStrategyId $
     passportMethods.passportStrategyGithub
-    { clientId: githubKey
-    , clientSecret: githubSecretKey
+    { clientId: config.oauthGithubClientId
+    , clientSecret: NonEmptyString.toString config.oauthGithubClientSecret
     , includeEmail: true
-    , callbackURL: rootUrl <> githubCallbackPath
+    , callbackURL: config.rootUrl <> githubCallbackPath
     }
     \request accesstoken refreshtoken params profile -> undefined
 
-  let (githubHandler :: HandlerM Unit) =
+  let (githubHandler :: Handler) =
         passportMethods.authenticate
         passport
         PassportGithub.githubStrategyId
@@ -67,7 +69,7 @@ passport { githubKey, githubSecretKey, rootUrl, rootPgPool } = do
       [ "/logout" /\ do
           Passport.logOut
           Express.redirect "/"
-      , ("/auth/" <> unwrap PassportGithub.githubStrategyId) /\ do
+      , "/auth/github" /\ do
           undefined -- setReturnTo
       , githubCallbackPath /\ githubHandler
       ]

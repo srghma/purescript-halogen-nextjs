@@ -4,29 +4,37 @@ import NextjsApp.NodeEnv
 import Node.Express.Types
 import Protolude
 
+import ApiServer.Config
 import ConnectPgSimple as ConnectPgSimple
 import Data.Time.Duration (Days(..))
 import Data.Time.Duration as Duration
 import Database.PostgreSQL (Pool)
 import ExpressSession (ExpiresCookieCalculation(..), ExpressSessionStore, SameSite(..), Unset(..))
 import ExpressSession as ExpressSession
+import Data.String.NonEmpty (NonEmptyString)
+import Data.String.NonEmpty as NonEmptyString
 
 sessionMiddleware
-  :: { isProduction :: Boolean
+  :: { target :: ConfigTarget
      , rootPgPool :: Pool
-     , secret :: String
+     , sessionSecret :: NonEmptyString
      }
    -> Effect Middleware
-sessionMiddleware { isProduction, rootPgPool, secret } = do
+sessionMiddleware config = do
   expressSession <- ExpressSession.expressSession
 
   let (store :: ExpressSessionStore) =
         ConnectPgSimple.mkExpressSessionStore
         expressSession
-        { pool: rootPgPool
+        { pool: config.rootPgPool
         , schemaName: "app_private"
         , tableName: "user_sessions"
         }
+
+  let isProduction =
+        case config.target of
+            Production -> true
+            _ -> false
 
   -- https://github.com/graphile/bootstrap-react-apollo/blob/fbeab7b9c2/server/middleware/installSession.js
   pure $ ExpressSession.createMiddleware expressSession
@@ -44,6 +52,6 @@ sessionMiddleware { isProduction, rootPgPool, secret } = do
     , resave: false
     , rolling: true
     , store
-    , secret
+    , secret: NonEmptyString.toString config.sessionSecret
     , unset: Unset__Destroy
     }

@@ -10,41 +10,71 @@ import Options.Applicative
 type CliConfig =
   { exportGqlSchemaPath  :: Maybe AnyFile
   , exportJsonSchemaPath :: Maybe AnyFile
-  , port                 :: Int
-  , host                 :: String
-  , databaseUrl          :: String
-  , exposedSchema        :: String
+
+  , port    :: Int
+  , host    :: String
+  , rootUrl :: String
+
+  , databaseName              :: String
+  , databaseHost              :: String
+  , databasePort              :: Maybe Int
+  , databaseOwnerUser         :: String
+  , databaseAuthenticatorUser :: String
+
   , isProdunction        :: Boolean
+  , oauthGithubClientId :: String
   }
 
 configParser :: Parser CliConfig
-configParser =
-  { exportGqlSchemaPath:  _
-  , exportJsonSchemaPath: _
-  , port:                 _
-  , host:                 _
-  , databaseUrl:          _
-  , exposedSchema:        _
-  , isProdunction:        _
-  }
-    <$> Maybe.optional (option PathyOptparse.anyFilePosixParser (long "export-gql-schema-path" <> metavar "ANYFILE"))
-    <*> Maybe.optional (option PathyOptparse.anyFilePosixParser (long "export-json-schema-path" <> metavar "ANYFILE"))
-    <*> option int
-        ( long "port"
-            <> help "0 - means random port"
-            <> showDefault
-            <> value 0
-            <> metavar "INT"
-        )
-    <*> option str
-        ( long "host"
-            <> showDefault
-            <> value "localhost"
-            <> metavar "HOST"
-        )
-    <*> option str (long "database-url" <> metavar "URL")
-    <*> option str (long "exposed-schema" <> metavar "NAME")
-    <*> switch (long "produnction")
+configParser = ado
+  exportGqlSchemaPath  <- Maybe.optional $ option PathyOptparse.anyFilePosixParser $ long "export-gql-schema-path" <> metavar "ANYFILE"
+  exportJsonSchemaPath <- Maybe.optional $ option PathyOptparse.anyFilePosixParser $ long "export-json-schema-path" <> metavar "ANYFILE"
+
+  port <- option int
+    ( long "port"
+        <> showDefault
+        <> value 3000
+        <> metavar "INT"
+    )
+
+  host <- option str
+    ( long "host"
+        <> showDefault
+        <> value "localhost"
+        <> metavar "HOST"
+    )
+
+  rootUrl <- option str
+    ( long "rootUrl"
+        <> showDefault
+        <> value "http://localhost:3000"
+        <> metavar "URL"
+    )
+
+  databaseName              <- option str $ long "database-name" <> metavar "NAME"
+  databaseHost              <- option str $ long "database-host" <> metavar "NAME"
+  databasePort              <- Maybe.optional $ option int $ long "database-port" <> metavar "NAME"
+  databaseOwnerUser         <- option str $ long "database-owner-user" <> metavar "NAME"
+  databaseAuthenticatorUser <- option str $ long "database-authenticator-user" <> metavar "NAME"
+
+  oauthGithubClientId <- option str $ long "oauth-github-client-id" <> metavar "CLIENTID"
+
+  isProdunction <- switch $ long "produnction"
+
+  in
+    { exportGqlSchemaPath
+    , exportJsonSchemaPath
+    , port
+    , host
+    , rootUrl
+    , databaseName
+    , databaseHost
+    , databasePort
+    , databaseOwnerUser
+    , databaseAuthenticatorUser
+    , isProdunction
+    , oauthGithubClientId
+    }
 
 opts :: ParserInfo CliConfig
 opts =

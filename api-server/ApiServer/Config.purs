@@ -4,9 +4,8 @@ import Data.Maybe
 import Pathy
 import Protolude
 
-import ApiServer.CliConfig as ApiServer.CliConfig
-import ApiServer.EnvConfig (EnvConfig)
-import ApiServer.EnvConfig as ApiServer.EnvConfig
+import ApiServer.DatabasePools as ApiServer.DatabasePools
+import ApiServer.Passport as ApiServer.Passport
 import Control.Monad.Error.Class (throwError)
 import Data.NonEmpty (NonEmpty(..))
 import Data.String.NonEmpty (NonEmptyString)
@@ -17,6 +16,8 @@ import Env as Env
 import Node.Express.App as Express
 import Node.Express.Response as Express
 import Options.Applicative as Options.Applicative
+import ApiServer.CliConfig as ApiServer.CliConfig
+import ApiServer.EnvConfig as ApiServer.EnvConfig
 
 type DevelopmentConfigTarget =
   { exportGqlSchemaPath  :: AnyFile
@@ -29,12 +30,27 @@ data ConfigTarget
 
 -- from args
 type Config =
-  { target        :: ConfigTarget
-  , port          :: Int
-  , host          :: String
-  , databaseUrl   :: String
-  , exposedSchema :: String
-  , jwtSecret     :: NonEmptyString
+  { target       :: ConfigTarget
+
+  -- listen to, before the proxy
+  , port         :: Int    -- e.g. "3000"
+  , host         :: String -- e.g. "127.0.0.1"
+
+  -- for callbackURL, after the proxy
+  , rootUrl :: String -- e.g. "http://mysite"
+
+  , databaseName :: String
+  , databaseHost :: String
+  , databasePort :: Maybe Int
+  , databaseOwnerUser             :: String
+  , databaseOwnerPassword         :: NonEmptyString
+  , databaseAuthenticatorUser     :: String
+  , databaseAuthenticatorPassword :: NonEmptyString
+
+  , oauthGithubClientId       :: String
+  , oauthGithubClientSecret :: NonEmptyString
+
+  , sessionSecret             :: NonEmptyString
   }
 
 config :: Effect Config
@@ -58,10 +74,22 @@ config = do
 
   pure
     { target
-    , port:          cliConfig.port
-    , host:          cliConfig.host
-    , databaseUrl:   cliConfig.databaseUrl
-    , exposedSchema: cliConfig.exposedSchema
-    , jwtSecret:     envConfig.jwtSecret
-    }
 
+    , port: cliConfig.port
+    , host: cliConfig.host
+
+    , rootUrl: cliConfig.rootUrl
+
+    , databaseName:                  cliConfig.databaseName
+    , databaseHost:                  cliConfig.databaseHost
+    , databasePort:                  cliConfig.databasePort
+    , databaseOwnerUser:             cliConfig.databaseOwnerUser
+    , databaseOwnerPassword:         envConfig.databaseOwnerPassword
+    , databaseAuthenticatorUser:     cliConfig.databaseAuthenticatorUser
+    , databaseAuthenticatorPassword: envConfig.databaseAuthenticatorPassword
+
+    , oauthGithubClientId:       cliConfig.oauthGithubClientId
+    , oauthGithubClientSecret: envConfig.oauthGithubClientSecret
+
+    , sessionSecret: envConfig.sessionSecret
+    }
