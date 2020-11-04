@@ -65,11 +65,17 @@ In the `client.entry.css` and `client.entry.js`
 ### TODO:
 
 [x] Finish https://github.com/srghma/generate-halogen-css-modules to generate FFI for css files ending with `.module.css`
+
 [x] `yarn dev` should also reaload when css file in `app` dir changes
+
 [ ] PWA with service worker https://pursuit.purescript.org/packages/purescript-workers/ using workbox-webpack-plugin
+
 [ ] An example with cookies authentication and secure page
+
 [ ] Move reusable parts into the separate package, publish to pursuit and npm
+
 [ ] https://www.npmjs.com/package/livereload and custom https://www.npmjs.com/package/webpack-livereload-plugin for dev
+
 [ ] update "title" on client when user visits new page
 
 ![example](https://i.imgur.com/VF5UY5s.png)
