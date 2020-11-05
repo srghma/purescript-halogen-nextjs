@@ -73,10 +73,8 @@ main = do
   expressApp <- Express.mkApplication
 
   flip Express.apply expressApp do
-     for_ middlewares Express.useExternal
-     Express.useExternal postgraphileMiddleware
+     for_ (middlewares <> [postgraphileMiddleware]) Express.useExternal
 
-  -- TODO: enhanceHttpServerWithSubscriptions
   httpServer <- Express._httpServer expressApp
 
   runEffectFn2 Postgraphile.enhanceHttpServerWithSubscriptions httpServer postgraphileMiddleware

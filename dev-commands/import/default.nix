@@ -29,13 +29,19 @@ mkScripts {
 
   import__db_tests = mkCommand migratorEnv ''
     waitforit -host=$POSTGRES_HOST -port=$POSTGRES_PORT -timeout=30
-    PGPASSWORD=$POSTGRES_PASSWORD db-tests-prepare ./db_tests/extensions
-    PGPASSWORD=$POSTGRES_PASSWORD pg_prove -h $POSTGRES_HOST -p $POSTGRES_PORT -d $POSTGRES_DB -U $POSTGRES_USER --recurse --ext .sql ./db_tests/tests/
+
+    PGPASSWORD=$DATABASE_OWNER_PASSWORD \
+      DB_TESTS_PREPARE_ARGS="--quiet -h $POSTGRES_HOST -p $POSTGRES_PORT -d $DATABASE_NAME -U $DATABASE_OWNER" \
+      db-tests-prepare ./db_tests/extensions
+
+    PGPASSWORD=$DATABASE_OWNER_PASSWORD \
+      pg_prove -h $POSTGRES_HOST -p $POSTGRES_PORT -d $DATABASE_NAME -U $DATABASE_OWNER --recurse --ext .sql ./db_tests/tests/
   '';
 
   import__db__migrate = mkCommand migratorEnv ''
     waitforit -host=$POSTGRES_HOST -port=$POSTGRES_PORT -timeout=30
-    wait-for-postgres --dbname=postgres://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_DB
+
+    wait-for-postgres --dbname=postgres://$DATABASE_OWNER:$DATABASE_OWNER_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$DATABASE_NAME
 
     # for relative imports using \include command (shimg is using psql internally)
     cd ./migrations
@@ -43,21 +49,33 @@ mkScripts {
     shmig -t postgresql \
       -m ./ \
       -C always \
-      -l $POSTGRES_USER \
-      -p $POSTGRES_PASSWORD \
+      -l $DATABASE_OWNER \
+      -p $DATABASE_OWNER_PASSWORD \
       -H $POSTGRES_HOST \
       -P $POSTGRES_PORT \
-      -d $POSTGRES_DB \
+      -d $DATABASE_NAME \
       migrate
   '';
 
   import__server = mkCommand serverEnv ''
     waitforit -host=$POSTGRES_HOST -port=$POSTGRES_PORT -timeout=30
-    wait-for-postgres --dbname=postgres://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_DB
+
+    wait-for-postgres --dbname=postgres://$DATABASE_OWNER:$DATABASE_OWNER_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$DATABASE_NAME
 
     mkdir -p ./schemas
 
-    spago run --main ApiServer.Main
+    spago run --main ApiServer.Main \
+      --export-gql-schema-path "${pkgs.rootProjectDir}/schemas/schema.graphql" \
+      --export-json-schema-path "${pkgs.rootProjectDir}/schemas/schema.json" \
+      --port 3000 \
+      --hostname localhost \
+      --rootUrl "http://localhost:3000" \
+      --database-name "$DATABASE_NAME" \
+      --database-hostname "$POSTGRES_HOST" \
+      --database-port "$POSTGRES_PORT" \
+      --database-owner-user NAME \
+      --database-authenticator-user NAME \
+      --oauth-github-client-id "(import "${pkgs.rootProjectDir}/config/ignored/github-oauth.nix").CLIENT_ID"
   '';
 
   import__purescript-graphql-client-generator = ''

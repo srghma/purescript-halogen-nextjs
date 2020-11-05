@@ -11,21 +11,16 @@ let
 
     set -euxo pipefail
 
-    PG_ARGS="--quiet -h $POSTGRES_HOST -p $POSTGRES_PORT -d $POSTGRES_DB -U $POSTGRES_USER"
-
-    psql $PG_ARGS -f ${pgtap}/share/postgresql/extension/pgtap--1.1.0.sql
-
-    psql $PG_ARGS -f $1/find_missing_indexes_on_foreign_keys.sql
-    psql $PG_ARGS -f $1/has_column.sql
-    psql $PG_ARGS -f $1/random_between.sql
-    psql $PG_ARGS -f $1/random_boolean.sql
-    psql $PG_ARGS -f $1/random_email.sql
-    psql $PG_ARGS -f $1/random_enum.sql
-    psql $PG_ARGS -f $1/random_string.sql
-
-    psql $PG_ARGS -f ${pgtest}/pgtest.sql
-
-    psql $PG_ARGS -f $1/allow_app_roles_execute_pgtap_functions.sql
+    psql $DB_TESTS_PREPARE_ARGS -f ${pgtap}/share/postgresql/extension/pgtap--1.1.0.sql
+    psql $DB_TESTS_PREPARE_ARGS -f $1/find_missing_indexes_on_foreign_keys.sql
+    psql $DB_TESTS_PREPARE_ARGS -f $1/has_column.sql
+    psql $DB_TESTS_PREPARE_ARGS -f $1/random_between.sql
+    psql $DB_TESTS_PREPARE_ARGS -f $1/random_boolean.sql
+    psql $DB_TESTS_PREPARE_ARGS -f $1/random_email.sql
+    psql $DB_TESTS_PREPARE_ARGS -f $1/random_enum.sql
+    psql $DB_TESTS_PREPARE_ARGS -f $1/random_string.sql
+    psql $DB_TESTS_PREPARE_ARGS -f ${pgtest}/pgtest.sql
+    psql $DB_TESTS_PREPARE_ARGS -f $1/allow_app_roles_execute_pgtap_functions.sql
   '';
 
   name = "db-tests-prepare";
