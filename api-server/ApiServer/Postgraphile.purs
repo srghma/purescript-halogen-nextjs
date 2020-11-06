@@ -10,13 +10,18 @@ import Postgraphile
 import Protolude
 
 import Control.Promise (Promise)
+import Control.Promise as Promise
+import Data.Array as Array
 import Data.Nullable (Nullable)
 import Data.Nullable as Nullable
 import Data.String.NonEmpty (NonEmptyString)
 import Data.String.NonEmpty as NonEmptyString
+import Foreign.Object as Object
 import Node.Express.App as Express
 import Node.HTTP as Node.HTTP
 import Postgraphile as Postgraphile
+import ApiServer.PassportMethodsFixed as ApiServer.PassportMethodsFixed
+import Node.Express.Passport as Passport
 
 postgraphileOptions :: _ -> PostgraphileOptions
 postgraphileOptions config =
@@ -84,11 +89,19 @@ postgraphileOptions config =
       { pgSkipInstallingWatchFixtures: true
       }
 
-  , pgSettings: mkEffectFn1 \req -> undefined
+  , pgSettings: mkEffectFn1 \req -> Promise.fromAff $ liftEffect do
+     (user :: Maybe String) <- ApiServer.PassportMethodsFixed.passportMethods.getUser req
+     pure $ Object.fromFoldable $ Array.catMaybes
+      [ Just $ "role" /\ config.databaseVisitorUser
+      , user <#> \user -> "jwt.claims.user_id" /\ user
+      ]
 
   , websocketMiddlewares: config.websocketMiddlewares
 
-  , additionalGraphQLContextFromRequest: mkEffectFn1 \req -> undefined
+  , additionalGraphQLContextFromRequest: mkEffectFn1 \req -> Promise.fromAff $ liftEffect $ pure
+      { rootPgPool: config.rootPgPool
+      , login: mkEffectFn1 \user -> ApiServer.PassportMethodsFixed.passportMethods.logIn user Passport.defaultLoginOptions Nothing req
+      }
   }
 
 mkMiddleware
@@ -102,6 +115,7 @@ mkMiddleware
   , databasePort
   , databaseOwnerUser
   , databaseOwnerPassword
+  , databaseVisitorUser
 
   } =
     runFn3
@@ -114,6 +128,7 @@ mkMiddleware
       , databasePort
       , databaseOwnerUser
       , databaseOwnerPassword
+      , databaseVisitorUser
       , target
       , websocketMiddlewares
       , rootPgPool

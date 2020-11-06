@@ -68,6 +68,7 @@ main = do
         , databasePort:          config.databasePort
         , databaseOwnerUser:     config.databaseOwnerUser
         , databaseOwnerPassword: config.databaseOwnerPassword
+        , databaseVisitorUser:   config.databaseVisitorUser
         }
 
   expressApp <- Express.mkApplication

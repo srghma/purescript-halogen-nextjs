@@ -16,32 +16,19 @@ import PassportGithub as PassportGithub
 import Type.Prelude (Proxy(..))
 import Data.String.NonEmpty (NonEmptyString)
 import Data.String.NonEmpty as NonEmptyString
-
-passportMethods =
-  let
-    proxyUser :: Proxy String
-    proxyUser = Proxy
-
-    proxyInfo :: Proxy Void
-    proxyInfo = Proxy
-  in
-    { addSerializeUser: Passport.addSerializeUser proxyUser
-    , addDeserializeUser: Passport.addDeserializeUser proxyUser
-    , authenticate: Passport.authenticate proxyUser proxyInfo
-    , passportStrategyGithub: PassportGithub.passportStrategyGithub proxyUser proxyInfo
-    }
+import ApiServer.PassportMethodsFixed as ApiServer.PassportMethodsFixed
 
 passportMiddlewareAndRoutes :: _ -> Effect { middlewares :: Array Middleware, routes :: Array (Tuple String Handler) }
 passportMiddlewareAndRoutes config = do
   (passport :: Passport) <- Passport.getPassport
 
-  passportMethods.addSerializeUser passport \req user -> undefined
-  passportMethods.addDeserializeUser passport \req json -> pure undefined
+  ApiServer.PassportMethodsFixed.passportMethods.addSerializeUser passport \req user -> undefined
+  ApiServer.PassportMethodsFixed.passportMethods.addDeserializeUser passport \req json -> pure undefined
 
   let githubCallbackPath = "/auth/github/callback"
 
   Passport.useStrategy passport PassportGithub.githubStrategyId $
-    passportMethods.passportStrategyGithub
+    ApiServer.PassportMethodsFixed.passportMethods.passportStrategyGithub
     { clientID: config.oauthGithubClientID
     , clientSecret: NonEmptyString.toString config.oauthGithubClientSecret
     , includeEmail: true
@@ -50,7 +37,7 @@ passportMiddlewareAndRoutes config = do
     \request accesstoken refreshtoken params profile -> undefined
 
   let (githubHandler :: Handler) =
-        passportMethods.authenticate
+        ApiServer.PassportMethodsFixed.passportMethods.authenticate
         passport
         PassportGithub.githubStrategyId
         ( Passport.defaultAuthenticateOptions
