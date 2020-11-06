@@ -45,7 +45,7 @@ type User =
 
 type ContextInjectedByUsRow r =
   ( rootPgPool :: Pool
-  , login :: EffectFn1 Void Unit
+  , login :: User -> Effect Unit
   | r )
 
 type ContextInjectedByPostgraphileRow r =
