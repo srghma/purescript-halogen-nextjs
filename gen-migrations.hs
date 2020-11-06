@@ -100,7 +100,7 @@ main = Turtle.sh $ do
 
   let (dirTreeWithOnlySqlFiles :: DirTree (MigrationRoot, RelativeToMigrationPath)) =
         System.Directory.Tree.filterDir
-          (filterDirTreeByFilename (\n -> System.FilePath.takeExtensions n == ".up.sql"))
+          (filterDirTreeByFilename (\n -> ".up.sql" `Data.List.isSuffixOf` System.FilePath.takeExtensions n))
           dirTree
 
   migrationTree :: MigrationTree <- liftIO $ dirTreeToMigrationTree dirTreeWithOnlySqlFiles

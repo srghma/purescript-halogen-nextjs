@@ -4,27 +4,22 @@
 
 begin;
 
-\include 0000000002-users/01_entities/01_users/01_table.up.sql
-\include 0000000002-users/01_entities/01_users/02_triggers.up.sql
-\include 0000000002-users/01_entities/01_users/03_policies.up.sql
-\include 0000000002-users/01_entities/01_users/04_computable_columns/01_full_name.up.sql
-\include 0000000002-users/01_entities/02_user_oauths/01_table.up.sql
-\include 0000000002-users/01_entities/02_user_oauths/02_triggers.up.sql
-\include 0000000002-users/01_entities/02_user_oauths/03_policies.up.sql
-\include 0000000002-users/02_utils/01_next_users_confirmation_token.up.sql
-\include 0000000002-users/02_utils/02_next_users_reset_password_token.up.sql
-\include 0000000002-users/03_queries/01_current_user.up.sql
-\include 0000000002-users/04_actions/01_rabbitmq/01_send_confirmation_mail.up.sql
-\include 0000000002-users/04_actions/01_rabbitmq/02_send_reset_password_mail.up.sql
-\include 0000000002-users/04_actions/01_rabbitmq/03_send_welcome_mail.up.sql
-\include 0000000002-users/04_actions/01_rabbitmq/04_send_password_was_changed_mail.up.sql
-\include 0000000002-users/04_actions/02_register.up.sql
-\include 0000000002-users/04_actions/03_login.up.sql
-\include 0000000002-users/04_actions/04_login_or_register_oauth.up.sql
-\include 0000000002-users/04_actions/05_confirm.up.sql
-\include 0000000002-users/04_actions/06_resend_confirmation.up.sql
-\include 0000000002-users/04_actions/07_send_reset_password.up.sql
-\include 0000000002-users/04_actions/08_reset_password.up.sql
+\include 0000000002-users/01_app_public.tables.users.up.sql
+\include 0000000002-users/02_app_public.functions.current_user.up.sql
+\include 0000000002-users/03_app_private.user_secrets.create.up.sql
+\include 0000000002-users/04_app_public.tables.user_emails.up.sql
+\include 0000000002-users/05_app_private.tables.user_email_secrets.up.sql
+\include 0000000002-users/06_app_public.tables.user_authentications.up.sql
+\include 0000000002-users/07_app_private.tables.user_authentication_secrets.up.sql
+\include 0000000002-users/08_app_public.functions.forgot_password.up.sql
+\include 0000000002-users/09_app_private.functions.login.up.sql
+\include 0000000002-users/10_app_public.functions.reset_password.up.sql
+\include 0000000002-users/11_app_private.functions.really_create_user.up.sql
+\include 0000000002-users/12_app_private.functions.register_user.up.sql
+\include 0000000002-users/13_app_private.functions.link_or_register_user.up.sql
+\include 0000000002-users/14_app_private.user_secrets.up.sql
+\include 0000000002-users/15_app_private.tables.user_sessions.up.sql
+\include 0000000002-users/16_app_public.functions.verify_user_email.up.sql
 
 
 commit;
