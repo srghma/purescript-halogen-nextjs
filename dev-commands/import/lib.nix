@@ -46,10 +46,5 @@ rec {
         DATABASE_NAME
         POSTGRES_HOST
         POSTGRES_PORT;
-
-      JWT_SECRET        = "change_me";
-
-      # BABEL_CACHE_PATH   = "/tmp/babel-cache"; # by default babel-node will cache to node_modules/.cache, but in our case it's read-only
-      GRAPHILE_LICENSE   = builtins.readFile "${pkgs.rootProjectDir}/config/ignored/graphile-license";
     };
 }

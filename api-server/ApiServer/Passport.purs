@@ -42,7 +42,7 @@ passportMiddlewareAndRoutes config = do
 
   Passport.useStrategy passport PassportGithub.githubStrategyId $
     passportMethods.passportStrategyGithub
-    { clientId: config.oauthGithubClientId
+    { clientID: config.oauthGithubClientID
     , clientSecret: NonEmptyString.toString config.oauthGithubClientSecret
     , includeEmail: true
     , callbackURL: config.rootUrl <> githubCallbackPath

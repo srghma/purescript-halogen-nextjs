@@ -64,18 +64,26 @@ mkScripts {
 
     mkdir -p ./schemas
 
-    spago run --main ApiServer.Main \
-      --export-gql-schema-path "${pkgs.rootProjectDir}/schemas/schema.graphql" \
-      --export-json-schema-path "${pkgs.rootProjectDir}/schemas/schema.json" \
-      --port 3000 \
-      --hostname localhost \
-      --rootUrl "http://localhost:3000" \
-      --database-name "$DATABASE_NAME" \
-      --database-hostname "$POSTGRES_HOST" \
-      --database-port "$POSTGRES_PORT" \
-      --database-owner-user NAME \
-      --database-authenticator-user NAME \
-      --oauth-github-client-id "(import "${pkgs.rootProjectDir}/config/ignored/github-oauth.nix").CLIENT_ID"
+    # GRAPHILE_LICENSE   = builtins.readFile "${pkgs.rootProjectDir}/config/ignored/graphile-license";
+
+    sessionSecret="${(import "${pkgs.rootProjectDir}/config/ignored/passwords.nix").SESSION_SECRET}" \
+    databaseOwnerPassword="${(import "${pkgs.rootProjectDir}/config/ignored/passwords.nix").DATABASE_OWNER_PASSWORD}" \
+    databaseAuthenticatorPassword="${(import "${pkgs.rootProjectDir}/config/ignored/passwords.nix").DATABASE_AUTHENTICATOR_PASSWORD}" \
+    oauthGithubClientSecret="${(import "${pkgs.rootProjectDir}/config/ignored/github-oauth.nix").CLIENT_SECRET}" \
+      spago run --main ApiServer.Main --node-args '\
+        --export-gql-schema-path "${pkgs.rootProjectDir}/schemas/schema.graphql" \
+        --export-json-schema-path "${pkgs.rootProjectDir}/schemas/schema.json" \
+        --port 3000 \
+        --hostname localhost \
+        --rootUrl "http://localhost:3000" \
+        --database-name "${(import "${pkgs.rootProjectDir}/config/public/database.nix").DATABASE_NAME}" \
+        --database-hostname "$POSTGRES_HOST" \
+        --database-port "$POSTGRES_PORT" \
+        --database-owner-user "${(import "${pkgs.rootProjectDir}/config/public/database.nix").DATABASE_OWNER}" \
+        --database-authenticator-user "${(import "${pkgs.rootProjectDir}/config/public/database.nix").DATABASE_AUTHENTICATOR}" \
+        --database-visitor-user "${(import "${pkgs.rootProjectDir}/config/public/database.nix").DATABASE_VISITOR}" \
+        --oauth-github-client-id "${(import "${pkgs.rootProjectDir}/config/ignored/github-oauth.nix").CLIENT_ID}" \
+      '
   '';
 
   import__purescript-graphql-client-generator = ''

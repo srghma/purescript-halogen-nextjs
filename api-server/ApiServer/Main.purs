@@ -51,7 +51,7 @@ main = do
     }
 
   passportMiddlewareAndRoutes <- ApiServer.Passport.passportMiddlewareAndRoutes
-    { oauthGithubClientId:     config.oauthGithubClientId
+    { oauthGithubClientID:     config.oauthGithubClientID
     , oauthGithubClientSecret: config.oauthGithubClientSecret
     , rootUrl:                 config.rootUrl
     }

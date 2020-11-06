@@ -64,11 +64,13 @@ login loginDataValidated = do
                    GraphQLClient.GraphQLError__UnexpectedPayload decodeError _jsonBody -> LoginError__UnknownError $ Data.Argonaut.Decode.printJsonDecodeError decodeError
                    GraphQLClient.GraphQLError__User details _pissiblyParsedData ->
                      let message = NonEmptyArray.head details # unwrap # _.message
-                      in case unit of
-                              _ | message == NextjsApp.ServerExceptions.login_emailNotRegistered -> LoginError__EmailNotRegistered
-                                | message == NextjsApp.ServerExceptions.login_notConfirmed ->       LoginError__NotConfirmed
-                                | message == NextjsApp.ServerExceptions.login_wrongPassword ->      LoginError__WrongPassword
-                                | otherwise ->                                                      LoginError__UnknownError message
+                      in LoginError__UnknownError message
+
+                      -- | in case unit of
+                      -- |         _ | message == NextjsApp.ServerExceptions.login_emailNotRegistered -> LoginError__EmailNotRegistered
+                      -- |           | message == NextjsApp.ServerExceptions.login_notConfirmed ->       LoginError__NotConfirmed
+                      -- |           | message == NextjsApp.ServerExceptions.login_wrongPassword ->      LoginError__WrongPassword
+                      -- |           | otherwise ->                                                      LoginError__UnknownError message
             Right mjwt ->
               case join mjwt of
                     Nothing -> Left $ LoginError__UnknownError "Unexpected payload: no JWT"

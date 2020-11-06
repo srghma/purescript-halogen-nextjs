@@ -22,7 +22,7 @@ githubStrategyId = StrategyId "github"
 -------------------------------------------------
 
 type PassportStrategyGithubOptions
-  = { clientId :: String
+  = { clientID :: String
     , clientSecret :: String
     , includeEmail :: Boolean
     , callbackURL :: String

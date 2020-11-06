@@ -1,6 +1,6 @@
 const { makeExtendSchemaPlugin, gql } = require("graphile-utils");
 
-exports.passportLoginPlugin = makeExtendSchemaPlugin(build => ({
+exports.mkPassportLoginPlugin = mkResolvers => makeExtendSchemaPlugin(build => ({
   typeDefs: gql`
     input RegisterInput {
       username: String!
@@ -28,10 +28,5 @@ exports.passportLoginPlugin = makeExtendSchemaPlugin(build => ({
       login(input: LoginInput!): LoginPayload
     }
   `,
-  resolvers: {
-    Mutation: {
-      register: require("./PassportLoginPluginAsyncFunctions.js").register,
-      login: require("./PassportLoginPluginAsyncFunctions.js").login
-    },
-  },
+  resolvers: mkResolvers(build)
 }));
