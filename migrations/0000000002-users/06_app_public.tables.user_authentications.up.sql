@@ -14,9 +14,9 @@ create index on app_public.user_authentications (user_id);
 alter table app_public.user_authentications enable row level security;
 
 create trigger _100_timestamps
-  before insert or update on app_public.user_authentications
+  before update on app_public.user_authentications
   for each row
-  execute function app_private.tg__timestamps();
+  execute function app_private.tg__set_updated_at();
 
 comment on table app_public.user_authentications is
   E'@omit all\nContains information about the login providers this user has used, so that they may disconnect them should they wish.';

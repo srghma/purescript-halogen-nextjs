@@ -1,7 +1,7 @@
 
 \set schema $$'app_public'$$ :: name
 \set table $$'posts'$$ :: name
-\set role $$'app_anonymous'$$
+\set role $$'app_visitor'$$
 
 begin;
 

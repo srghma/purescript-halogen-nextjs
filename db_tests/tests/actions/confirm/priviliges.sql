@@ -19,7 +19,7 @@ SELECT function_privs_are(
   :schema,
   :func,
   :args,
-  'app_anonymous',
+  'app_visitor',
   '{"EXECUTE"}'
 );
 

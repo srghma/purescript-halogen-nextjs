@@ -12,7 +12,7 @@ select no_plan();
 select
   encode(gen_random_bytes(4), 'hex') as token
 into temporary table myvars;
-grant select on table myvars to app_anonymous, app_user;
+grant select on table myvars to app_visitor, app_user;
 
 insert into app_public.users
   (

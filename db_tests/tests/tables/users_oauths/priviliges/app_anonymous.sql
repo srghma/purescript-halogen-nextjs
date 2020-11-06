@@ -1,7 +1,7 @@
 
 \set schema $$'app_public'$$
 \set table $$'user_oauths'$$
-\set role $$'app_anonymous'$$
+\set role $$'app_visitor'$$
 
 begin;
 

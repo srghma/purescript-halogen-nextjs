@@ -38,9 +38,9 @@ comment on column app_public.users.is_admin is
   E'If true, the user has elevated privileges.';
 
 create trigger _100_timestamps
-  before insert or update on app_public.users
+  before update on app_public.users
   for each row
-  execute function app_private.tg__timestamps();
+  execute function app_private.tg__set_updated_at();
 
 create function app_private.tg_users__make_first_user_admin() returns trigger as $$
 begin

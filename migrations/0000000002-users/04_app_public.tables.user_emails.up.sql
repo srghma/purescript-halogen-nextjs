@@ -13,9 +13,9 @@ create unique index uniq_user_emails_verified_email on app_public.user_emails(em
 alter table app_public.user_emails enable row level security;
 
 create trigger _100_timestamps
-  before insert or update on app_public.user_emails
+  before update on app_public.user_emails
   for each row
-  execute function app_private.tg__timestamps();
+  execute function app_private.tg__set_updated_at();
 
 -- `@omit all` because there's no point exposing `allUserEmails` - you can only
 -- see your own, and having this behaviour can lead to bad practices from

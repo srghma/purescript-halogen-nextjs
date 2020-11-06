@@ -1,5 +1,5 @@
 
-\set role $$'app_anonymous'$$
+\set role $$'app_visitor'$$
 
 begin;
 

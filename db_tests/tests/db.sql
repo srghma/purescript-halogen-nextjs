@@ -21,7 +21,7 @@ select schemas_are(array[
 
 select roles_are(array[
   'app_admin',
-  'app_anonymous',
+  'app_visitor',
   'app_user',
   'pg_stat_scan_tables',
   'pg_read_all_settings',
@@ -35,7 +35,7 @@ select users_are(array[
 ]);
 
 select groups_are(array[
-  'app_anonymous',
+  'app_visitor',
   'app_user',
   'pg_stat_scan_tables',
   'pg_read_all_settings',

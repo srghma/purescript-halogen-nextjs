@@ -15,7 +15,7 @@ create temp table rabbitmq__send_confirmation_mail__calls(
   arguments json
 );
 
-grant select on table rabbitmq__send_confirmation_mail__calls to app_anonymous, app_user;
+grant select on table rabbitmq__send_confirmation_mail__calls to app_visitor, app_user;
 
 create or replace function app_private.rabbitmq__send_confirmation_mail(a_user app_public.users) returns void as $$
 begin
