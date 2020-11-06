@@ -86,4 +86,4 @@ main = do
     , port: config.port
     }
     do
-      log $ "Listening on " <> show config.hostname <> ":" <> show config.port
+      log $ "Listening on " <> config.hostname <> ":" <> show config.port <> ", public url " <> config.rootUrl
