@@ -1,5 +1,5 @@
 create table app_private.user_authentication_secrets (
-  user_authentication_id int not null primary key references app_public.user_authentications on delete cascade,
+  user_authentication_id uuid not null primary key references app_public.user_authentications on delete cascade default uuid_generate_v4(),
   details jsonb not null default '{}'::jsonb
 );
 

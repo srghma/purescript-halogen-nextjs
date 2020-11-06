@@ -78,7 +78,7 @@ in
       postgres = {
         service =
           {
-            image = "postgres:10";
+            image = "postgres:13";
 
             volumes = [
               "postgres_data:/var/lib/postgresql/data"

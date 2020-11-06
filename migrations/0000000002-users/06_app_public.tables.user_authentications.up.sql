@@ -1,6 +1,6 @@
 create table app_public.user_authentications (
-  id serial primary key,
-  user_id int not null references app_public.users on delete cascade,
+  id uuid not null primary key default uuid_generate_v4(),
+  user_id uuid not null references app_public.users on delete cascade,
   service text not null,
   identifier text not null,
   details jsonb not null default '{}'::jsonb,
@@ -16,7 +16,7 @@ alter table app_public.user_authentications enable row level security;
 create trigger _100_timestamps
   before insert or update on app_public.user_authentications
   for each row
-  execute procedure app_private.tg__timestamps();
+  execute function app_private.tg__timestamps();
 
 comment on table app_public.user_authentications is
   E'@omit all\nContains information about the login providers this user has used, so that they may disconnect them should they wish.';

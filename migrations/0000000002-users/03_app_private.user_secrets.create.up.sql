@@ -1,5 +1,5 @@
 create table app_private.user_secrets (
-  user_id int not null primary key references app_public.users on delete cascade,
+  user_id uuid not null primary key references app_public.users on delete cascade,
   password_hash text,
   reset_password_token text,
   reset_password_token_generated_at timestamptz,
@@ -22,7 +22,7 @@ $$ language plpgsql volatile set search_path from current;
 create trigger _500_insert_secrets
   after insert on app_public.users
   for each row
-  execute procedure app_private.tg_user_secrets__insert_with_user();
+  execute function app_private.tg_user_secrets__insert_with_user();
 
 comment on function app_private.tg_user_secrets__insert_with_user() is
   E'Ensures that every user record has an associated user_secret record.';

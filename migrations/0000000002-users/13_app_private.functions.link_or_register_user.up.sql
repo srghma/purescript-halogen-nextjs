@@ -6,7 +6,7 @@ create function app_private.link_or_register_user(
   f_auth_details json
 ) returns app_public.users as $$
 declare
-  v_matched_user_id int;
+  v_matched_user_id uuid;
   v_matched_authentication_id int;
   v_email citext;
   v_name text;

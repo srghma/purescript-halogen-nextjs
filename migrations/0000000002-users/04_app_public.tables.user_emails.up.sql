@@ -1,6 +1,6 @@
 create table app_public.user_emails (
-  id serial primary key,
-  user_id int not null default app_public.current_user_id_or_null() references app_public.users on delete cascade,
+  id uuid not null primary key default uuid_generate_v4(),
+  user_id uuid not null default app_public.current_user_id_or_null() references app_public.users on delete cascade,
   email citext not null check (email ~ '[^@]+@[^@]+\.[^@]+'),
   is_verified boolean not null default false,
   created_at timestamptz not null default now(),
@@ -15,7 +15,7 @@ alter table app_public.user_emails enable row level security;
 create trigger _100_timestamps
   before insert or update on app_public.user_emails
   for each row
-  execute procedure app_private.tg__timestamps();
+  execute function app_private.tg__timestamps();
 
 -- `@omit all` because there's no point exposing `allUserEmails` - you can only
 -- see your own, and having this behaviour can lead to bad practices from

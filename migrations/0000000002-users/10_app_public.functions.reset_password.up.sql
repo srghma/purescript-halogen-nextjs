@@ -1,4 +1,4 @@
-create function app_public.reset_password(user_id int, token text, new_password text) returns app_public.users as $$
+create function app_public.reset_password(user_id uuid, token text, new_password text) returns app_public.users as $$
 declare
   v_user app_public.users;
   v_user_email app_public.user_emails;
@@ -92,5 +92,5 @@ begin
 end;
 $$ language plpgsql strict volatile security definer set search_path from current;
 
-comment on function app_public.reset_password(user_id int, token text, new_password text) is
+comment on function app_public.reset_password(user_id uuid, token text, new_password text) is
   E'After triggering forgotPassword, you''ll be sent a reset token. Combine this with your user ID and a new password to reset your password.';

@@ -1,5 +1,5 @@
 create table app_public.users (
-  id serial primary key,
+  id uuid not null primary key default uuid_generate_v4(),
   username citext not null unique check(length(username) >= 2 and length(username) <= 24 and username ~ '^[a-zA-Z]([a-zA-Z0-9][_]?)+$'),
   name text check(name <> ''),
   avatar_url text check(avatar_url ~ '^https?://[^/]+'),
@@ -40,7 +40,7 @@ comment on column app_public.users.is_admin is
 create trigger _100_timestamps
   before insert or update on app_public.users
   for each row
-  execute procedure app_private.tg__timestamps();
+  execute function app_private.tg__timestamps();
 
 create function app_private.tg_users__make_first_user_admin() returns trigger as $$
 begin
@@ -54,4 +54,4 @@ $$ language plpgsql volatile set search_path from current;
 create trigger _200_make_first_user_admin
   before insert on app_public.users
   for each row
-  execute procedure app_private.tg_users__make_first_user_admin();
+  execute function app_private.tg_users__make_first_user_admin();
