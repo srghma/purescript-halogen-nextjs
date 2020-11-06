@@ -42,7 +42,7 @@ begin
     (v_username, name, avatar_url)
     returning * into v_user;
 
-	-- Add the user's email
+  -- Add the user's email
   if email is not null then
     insert into app_public.user_emails (user_id, email, is_verified)
     values (v_user.id, email, email_is_verified);

@@ -1,21 +1,23 @@
 create table app_public.users (
   id serial primary key,
   username citext not null unique check(length(username) >= 2 and length(username) <= 24 and username ~ '^[a-zA-Z]([a-zA-Z0-9][_]?)+$'),
-  name text,
+  name text check(name <> ''),
   avatar_url text check(avatar_url ~ '^https?://[^/]+'),
   is_admin boolean not null default false,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
 alter table app_public.users enable row level security;
 
 create policy select_all on app_public.users for select using (true);
-create policy update_self on app_public.users for update using (id = app_public.current_user_id());
-create policy delete_self on app_public.users for delete using (id = app_public.current_user_id());
-grant select on app_public.users to :DATABASE_VISITOR;
+create policy update_self on app_public.users for update using (id = app_public.current_user_id_or_null());
+create policy delete_self on app_public.users for delete using (id = app_public.current_user_id_or_null());
+
+grant select on app_public.users to app_visitor;
 -- NOTE: `insert` is not granted, because we'll handle that separately
-grant update(name, avatar_url) on app_public.users to :DATABASE_VISITOR;
-grant delete on app_public.users to :DATABASE_VISITOR;
+grant update(name, avatar_url) on app_public.users to app_visitor;
+grant delete on app_public.users to app_visitor;
 
 -- By doing `@omit all` we prevent the `allUsers` field from appearing in our
 -- GraphQL schema.  User discovery is still possible by browsing the rest of

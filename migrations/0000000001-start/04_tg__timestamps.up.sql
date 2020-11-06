@@ -1,3 +1,10 @@
+/* create function app_private.tg__set_updated_at() returns trigger as $$ */
+/* begin */
+/*   new.updated_at := current_timestamp; */
+/*   return new; */
+/* end; */
+/* $$ language plpgsql; */
+
 create function app_private.tg__timestamps() returns trigger as $$
 begin
   NEW.created_at = (case when TG_OP = 'INSERT' then NOW() else OLD.created_at end);
@@ -5,4 +12,5 @@ begin
   return NEW;
 end;
 $$ language plpgsql volatile set search_path from current;
+
 comment on function app_private.tg__timestamps() is E'This trigger should be called on all tables with created_at, updated_at - it ensures that they cannot be manipulated and that updated_at will always be larger than the previous updated_at.';

@@ -22,7 +22,8 @@ begin
     and
       v_user_secret.reset_password_attempts >= 20
     ) then
-      raise exception 'Password reset locked - too many reset attempts' using errcode = 'LOCKD';
+      -- Password reset locked - too many reset attempts
+      raise exception 'APP_EXCEPTION__RESET_PASSWORD__ACCOUNT_LOCKED_TOO_MANY_ATTEMPTS' using errcode = 'LOCKD';
     end if;
 
     -- Not too many reset attempts, let's check the token
@@ -63,14 +64,30 @@ begin
       -- Wrong token, bump all the attempt tracking figures
       update app_private.user_secrets
       set
-        reset_password_attempts = (case when first_failed_reset_password_attempt is null or first_failed_reset_password_attempt < now() - v_reset_max_duration then 1 else reset_password_attempts + 1 end),
-        first_failed_reset_password_attempt = (case when first_failed_reset_password_attempt is null or first_failed_reset_password_attempt < now() - v_reset_max_duration then now() else first_failed_reset_password_attempt end)
+        reset_password_attempts = (
+          case
+          when first_failed_reset_password_attempt is null
+            or first_failed_reset_password_attempt < now() - v_reset_max_duration
+            then 1
+          else reset_password_attempts + 1
+          end
+        ),
+
+        first_failed_reset_password_attempt = (
+          case when first_failed_reset_password_attempt is null
+            or first_failed_reset_password_attempt < now() - v_reset_max_duration
+            then now()
+          else first_failed_reset_password_attempt
+          end
+        )
       where user_secrets.user_id = v_user.id;
-      raise exception 'Invalid token' using errcode='INVLD';
+      /* Invalid token */
+      raise exception 'APP_EXCEPTION__RESET_PASSWORD__INVALID_TOKEN' using errcode='INVLD';
     end if;
   else
     -- No user with that id was found
-    raise exception 'Invalid user ID' using errcode='INVLD';
+    /* Invalid user ID */
+    raise exception 'APP_EXCEPTION__RESET_PASSWORD__INVALID_USER_ID' using errcode='INVLD';
   end if;
 end;
 $$ language plpgsql strict volatile security definer set search_path from current;

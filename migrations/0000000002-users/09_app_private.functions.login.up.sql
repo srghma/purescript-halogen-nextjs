@@ -33,7 +33,8 @@ begin
     and
       v_user_secret.password_attempts >= 20
     ) then
-      raise exception 'User account locked - too many login attempts' using errcode = 'LOCKD';
+      --  User account locked - too many login attempts
+      raise exception 'APP_EXCEPTION__LOGIN__ACCOUNT_LOCKED_TOO_MANY_ATTEMPTS' using errcode = 'LOCKD';
     end if;
 
     -- Not too many login attempts, let's check the password
@@ -47,8 +48,21 @@ begin
       -- Wrong password, bump all the attempt tracking figures
       update app_private.user_secrets
       set
-        password_attempts = (case when first_failed_password_attempt is null or first_failed_password_attempt < now() - v_login_attempt_window_duration then 1 else password_attempts + 1 end),
-        first_failed_password_attempt = (case when first_failed_password_attempt is null or first_failed_password_attempt < now() - v_login_attempt_window_duration then now() else first_failed_password_attempt end)
+        password_attempts = (
+          case
+          when first_failed_password_attempt is null
+            or first_failed_password_attempt < now() - v_login_attempt_window_duration
+            then 1
+          else password_attempts + 1 end
+        ),
+
+        first_failed_password_attempt = (
+          case
+          when first_failed_password_attempt is null
+            or first_failed_password_attempt < now() - v_login_attempt_window_duration
+            then now()
+          else first_failed_password_attempt end
+        )
       where user_id = v_user.id;
       return null;
     end if;

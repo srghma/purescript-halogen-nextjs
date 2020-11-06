@@ -14,7 +14,8 @@ begin
   RETURNING * INTO v_user_email;
 
   if v_user_email is NULL THEN
-    raise exception 'verification token is invalid or expired' using errcode='INVLD';
+    /* verification token is invalid or expired */
+    raise exception 'APP_EXCEPTION__VERIFY_USER_EMAIL__TOKEN_INVALID_OR_EXPIRED' using errcode='INVLD';
   end if;
 
   return v_user_email;

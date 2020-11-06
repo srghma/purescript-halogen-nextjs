@@ -34,7 +34,7 @@ prepare do_stuff as
 
 select throws_ok(
   'do_stuff',
-  'APP__EXCEPTION__RESEND_CONFIRMATION__NOT_REGISTERED'
+  'APP_EXCEPTION__RESEND_CONFIRMATION__NOT_REGISTERED'
 );
 
 -- Test body END

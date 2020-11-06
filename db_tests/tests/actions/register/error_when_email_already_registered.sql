@@ -28,7 +28,7 @@ prepare do_stuff as
 
 select throws_ok(
   'do_stuff',
-  'APP__EXCEPTION__REGISTER__ALREADY_REGISTERED'
+  'APP_EXCEPTION__REGISTER__ALREADY_REGISTERED'
 );
 
 select finish();

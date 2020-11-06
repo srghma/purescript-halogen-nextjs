@@ -22,7 +22,7 @@ prepare do_stuff as
 
 select throws_ok(
   'do_stuff',
-  'APP__EXCEPTION__LOGIN__EMAIL_NOT_REGISTERED'
+  'APP_EXCEPTION__LOGIN__EMAIL_NOT_REGISTERED'
 );
 
 select finish();

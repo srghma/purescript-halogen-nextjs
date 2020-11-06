@@ -1,7 +1,7 @@
 create table app_public.posts (
   id                       uuid                                   primary key default uuid_generate_v4(),
   name                     varchar(255)                           not null CHECK (name <> ''),
-  content                  varchar(255)                           not null default '',
+  content                  varchar(255)                           not null CHECK (name <> ''),
 
   user_id
     uuid

@@ -40,7 +40,7 @@ prepare do_stuff as
 
 select throws_ok(
   'do_stuff',
-  'APP__EXCEPTION__RESEND_CONFIRMATION__ALREADY_CONFIRMED'
+  'APP_EXCEPTION__RESEND_CONFIRMATION__ALREADY_CONFIRMED'
 );
 
 -- Test body END

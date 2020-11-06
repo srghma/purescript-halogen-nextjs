@@ -1,11 +1,12 @@
--- Create schemas
+-- tables and functions to be exposed to graphql
+create schema app_public;
+grant usage on schema app_public to app_visitor;
+alter default privileges in schema app_public grant usage, select on sequences to app_visitor;
 
-create schema app_public; -- tables and functions to be exposed to graphql
-create schema app_hidden; -- same privileges as app_public, but simply not exposed to graphql
-create schema app_private; -- secrets that require elevated privileges to access
+-- same privileges as app_public, but simply not exposed to graphql
+create schema app_hidden;
+grant usage on schema app_hidden to app_visitor;
+alter default privileges in schema app_hidden grant usage, select on sequences to app_visitor;
 
--- Roles and schema grants -------------------------------------------------------
-
-grant usage on schema app_public to app_anonymous, app_user;
-grant usage on schema app_hidden to app_anonymous, app_user;
-grant usage on schema app_private to app_user;
+-- secrets that require elevated privileges to access
+create schema app_private;

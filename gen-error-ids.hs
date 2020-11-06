@@ -102,7 +102,7 @@ main = Turtle.sh $ do
               catMaybes
               $ map (`atMay` 0)
               $ traceShowId
-              $ (content =~ [re|APP__EXCEPTION__[A-Z_]+|] :: [[Text]])
+              $ (content =~ [re|APP_EXCEPTION__[A-Z_]+|] :: [[Text]])
 
         return exceptions
 
@@ -110,12 +110,12 @@ main = Turtle.sh $ do
 
   let (dirTreeWithOnlySqlFiles :: DirTree [Text]) =
         System.Directory.Tree.filterDir
-          (filterDirTreeByFilename (\n -> System.FilePath.takeExtensions n == ".up.sql"))
+          (filterDirTreeByFilename (\n -> ".up.sql" `List.isSuffixOf` System.FilePath.takeExtensions n))
           dirTree
 
   migrationTree :: [Text] <- liftIO $ dirTreeToMigrationTree dirTreeWithOnlySqlFiles
 
-  let toFunctionName x = Text.intercalate "_" $ map (Cases.process Cases.lower Cases.camel) $ Text.splitOn "__" $ maybeDo Text.stripPrefix "APP__EXCEPTION__" x
+  let toFunctionName x = Text.intercalate "_" $ map (Cases.process Cases.lower Cases.camel) $ Text.splitOn "__" $ maybeDo Text.stripPrefix "APP_EXCEPTION__" x
 
   let fileContent :: Text = Text.unlines $
         [ "module NextjsApp.ServerExceptions where"

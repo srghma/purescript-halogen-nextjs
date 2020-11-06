@@ -23,7 +23,8 @@ begin
     limit 1;
 
   if v_matched_user_id is not null and f_user_id is not null and v_matched_user_id <> f_user_id then
-    raise exception 'A different user already has this account linked.' using errcode='TAKEN';
+    /* A different user already has this account linked. */
+    raise exception 'APP_EXCEPTION__LINK_OR_REGISTER_USER__DIFFERENT_ACCOUNT_ALREADY_LINKED' using errcode='TAKEN';
   end if;
 
   v_email = f_profile ->> 'email';
@@ -73,7 +74,9 @@ begin
       -- -> f_user_id is not null (because the if clause above)
       -- -> v_matched_authentication_id is not null (because of the separate if block above creating a user_authentications)
       -- -> contradiction.
-      raise exception 'This should not occur';
+
+      /* This should not occur */
+      raise exception 'APP_EXCEPTION__RESET_PASSWORD__SHOULD_NOT_OCCUR';
     end if;
   end if;
 end;

@@ -3,7 +3,7 @@
    script
    --nix
    --nix-packages zlib
-   --resolver lts-14.22
+   --resolver lts-16.17
    --package turtle
    --package protolude
    --package directory
