@@ -100,7 +100,7 @@ postgraphileOptions config =
 
   , additionalGraphQLContextFromRequest: mkEffectFn1 \req -> Promise.fromAff $ liftEffect $ pure
       { rootPgPool: config.rootPgPool
-      , login: mkEffectFn1 \user -> ApiServer.PassportMethodsFixed.passportMethods.logIn user Passport.defaultLoginOptions Nothing req
+      , login: \user -> ApiServer.PassportMethodsFixed.passportMethods.logIn user Passport.defaultLoginOptions Nothing req
       }
   }
 

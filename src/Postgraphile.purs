@@ -56,7 +56,7 @@ type PostgraphileOptions =
       Request
       ( Promise
         { rootPgPool :: Pool
-        , login :: EffectFn1 String Unit
+        , login :: String -> Effect Unit
         }
       )
   }
