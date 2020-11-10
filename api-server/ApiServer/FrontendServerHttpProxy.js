@@ -22,7 +22,9 @@ exports._installFrontendServerProxy = function installFrontendServer(httpServer,
     })
   })
 
-  httpServer.on("upgrade", (req, socket, head) => {
-    proxy.ws(req, socket, head)
-  })
+  // DONT PROXY WEBSOCKET ON DEV TO CLIENT SSR SERVER
+  // because Postgraphile of this api server will handle it
+  // httpServer.on("upgrade", (req, socket, head) => {
+  //   proxy.ws(req, socket, head)
+  // })
 }

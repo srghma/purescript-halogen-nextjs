@@ -23,12 +23,7 @@ import NextjsWebpack.WebpackConfig.Rules as NextjsWebpack.WebpackConfig.Rules
 import NextjsWebpack.WebpackConfig.SplitChunksConfig as NextjsWebpack.WebpackConfig.SplitChunksConfig
 import Node.URL as Node.URL
 import Record as Record
-
--- https://github.com/zeit/next.js/blob/450d4bd0f32a042fd452c81bc3850ec31306eab3/packages/next/next-server/lib/constants.ts#L35
-data Target
-  = Target__Browser { entrypointsObject :: RouteIdMapping ClientPagesLoaderOptions, favIconResponse :: Maybe FavIconResponse }
-  | Target__Server
-  | Target__Mobile { entrypointsObject :: RouteIdMapping ClientPagesLoaderOptions }
+import NextjsWebpack.WebpackConfig.Types
 
 config ::
   { target :: Target
@@ -139,7 +134,7 @@ config { target, watch, production, root, bundleAnalyze, spagoOutput, apiUrl } =
     case target of
       Target__Server -> Foreign.unsafeToForeign false
       _ -> if production then Foreign.unsafeToForeign false else Foreign.unsafeToForeign "eval"
-  , "module": { rules: NextjsWebpack.WebpackConfig.Rules.rules { spagoAbsoluteOutputDir: printPathPosixSandboxAny spagoOutput, production } }
+  , "module": { rules: NextjsWebpack.WebpackConfig.Rules.rules { target, spagoAbsoluteOutputDir: printPathPosixSandboxAny spagoOutput, production } }
   , resolve:
     { extensions: [ ".purs", ".js" ]
     }

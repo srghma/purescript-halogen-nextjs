@@ -1,4 +1,3 @@
-const RA = require('ramda-adjunct')
 const path = require('path')
 const express = require('express')
 const reload = require('reload')
@@ -53,7 +52,7 @@ const livereloadPort = 35729
       killServerIfRunning()
 
       // clear cache
-      console.log('clearing cache')
+      console.log('clearing resolve.cache')
 
       for (const cachePath in require.cache) {
         if (cachePath.startsWith(spagoOptions.output)) {
@@ -67,7 +66,7 @@ const livereloadPort = 35729
 
           spawnServer({
             serverFilePath,
-            port: 3000,
+            port: 3001,
             compiliedClientDirPath: clientConfig.output.path,
             livereloadPort
           })()

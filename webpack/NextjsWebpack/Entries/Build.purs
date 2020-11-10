@@ -12,6 +12,7 @@ import Favicons as Favicons
 import NextjsWebpack.FaviconsConfig as NextjsWebpack.FaviconsConfig
 import NextjsWebpack.GetClientPagesEntrypoints as NextjsWebpack.GetClientPagesEntrypoints
 import NextjsWebpack.WebpackConfig.Config as NextjsWebpack.WebpackConfig.Config
+import NextjsWebpack.WebpackConfig.Types
 import Node.Buffer (Buffer)
 import Node.FS.Aff as Node.FS.Aff
 import Unsafe.Coerce (unsafeCoerce)
@@ -39,7 +40,7 @@ main =
     let
       browserConfig =
         NextjsWebpack.WebpackConfig.Config.config
-          { target: NextjsWebpack.WebpackConfig.Config.Target__Browser { entrypointsObject, favIconResponse: Just favIconResponse }
+          { target: Target__Browser { entrypointsObject, favIconResponse: Just favIconResponse }
           , watch: false
           , production
           , root
@@ -50,7 +51,7 @@ main =
     let
       serverConfig =
         NextjsWebpack.WebpackConfig.Config.config
-          { target: NextjsWebpack.WebpackConfig.Config.Target__Server
+          { target: Target__Server
           , watch: false
           , production
           , root

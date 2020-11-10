@@ -6,10 +6,8 @@ import Foreign (Foreign)
 import Foreign.Object (Object)
 import Data.Nullable (Nullable)
 
-data LoaderOptions
-
 type UseElement
-  = { loader :: String, options :: Nullable LoaderOptions }
+  = { loader :: String, options :: Foreign }
 
 type Rule
   = { test :: Regex, use :: Array UseElement }

@@ -1,4 +1,4 @@
-module FrontendServerHttpProxy where
+module ApiServer.FrontendServerHttpProxy where
 
 import Data.Function.Uncurried
 import Effect

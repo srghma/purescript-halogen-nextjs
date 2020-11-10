@@ -7,6 +7,7 @@ import Webpack.Types (Configuration)
 import Effect.Uncurried (EffectFn1, runEffectFn1)
 import NextjsWebpack.GetClientPagesEntrypoints as NextjsWebpack.GetClientPagesEntrypoints
 import NextjsWebpack.WebpackConfig.Config as NextjsWebpack.WebpackConfig.Config
+import NextjsWebpack.WebpackConfig.Types
 import Unsafe.Coerce (unsafeCoerce)
 import Webpack.Compiler as Webpack.Compiler
 import Webpack.GetError as Webpack.GetError
@@ -40,7 +41,7 @@ runWebpack { onSuccess } =
     let
       clientConfig =
         NextjsWebpack.WebpackConfig.Config.config
-          { target: NextjsWebpack.WebpackConfig.Config.Target__Browser { entrypointsObject, favIconResponse: Nothing }
+          { target: Target__Browser { entrypointsObject, favIconResponse: Nothing }
           , watch: false
           , production
           , root
@@ -51,7 +52,7 @@ runWebpack { onSuccess } =
     let
       serverConfig =
         NextjsWebpack.WebpackConfig.Config.config
-          { target: NextjsWebpack.WebpackConfig.Config.Target__Server
+          { target: Target__Server
           , watch: false
           , production
           , root
