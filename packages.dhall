@@ -1,7 +1,8 @@
 let upstream =
-      https://github.com/purescript/package-sets/releases/download/psc-0.13.8-20201007/packages.dhall sha256:35633f6f591b94d216392c9e0500207bb1fec42dd355f4fecdfd186956567b6b
+      https://github.com/purescript/package-sets/releases/download/psc-0.13.8-20201021/packages.dhall
 
-in  (     upstream
-    //  /home/srghma/projects/my-purescript-package-sets/packages.dhall upstream.(/home/srghma/projects/my-purescript-package-sets/upstreamTypeChunk.dhall)
-    )
-  with affjax.version = "v11.0.0"
+in  ( upstream
+    ⫽ /home/srghma/projects/my-purescript-package-sets/packages.dhall
+        upstream.(/home/srghma/projects/my-purescript-package-sets/upstreamTypeChunk.dhall)
+        )
+    with affjax.version = "v11.0.0"
