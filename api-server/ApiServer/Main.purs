@@ -26,7 +26,7 @@ import Node.Express.Response as Express
 import Options.Applicative as Options.Applicative
 import Postgraphile as Postgraphile
 import Node.HTTP as Node.HTTP
-import ApiServer.FrontendServerHttpProxy as ApiServer.FrontendServerHttpProxy
+-- | import ApiServer.FrontendServerHttpProxy as ApiServer.FrontendServerHttpProxy
 
 app :: Express.App
 app = Express.get "/" $ Express.send "Hello, World!"
@@ -81,12 +81,12 @@ main = do
 
   runEffectFn2 Postgraphile.enhanceHttpServerWithSubscriptions httpServer postgraphileMiddleware
 
-  case config.target of
-       ApiServer.Config.Development developmentConfig -> do
-         let url = "http://localhost:" <> show developmentConfig.clientPort
-         log $ "Proxying client on " <> url
-         ApiServer.FrontendServerHttpProxy.installFrontendServerProxy httpServer expressApp url
-       _ -> pure unit
+  -- | case config.target of
+  -- |      ApiServer.Config.Development developmentConfig -> do
+  -- |        let url = "http://localhost:" <> show developmentConfig.clientPort
+  -- |        log $ "Proxying client on " <> url
+  -- |        ApiServer.FrontendServerHttpProxy.installFrontendServerProxy httpServer expressApp url
+  -- |      _ -> pure unit
 
   Node.HTTP.listen
     httpServer
