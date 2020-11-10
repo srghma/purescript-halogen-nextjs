@@ -20,6 +20,8 @@ data WebpackEntrypont
 
 data Compilation
 
+data Assets
+
 data RawSource
 
 data WebpackPluginInstance

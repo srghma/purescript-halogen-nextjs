@@ -2,14 +2,16 @@ module NextjsWebpack.BuildManifestPlugin where
 
 import Protolude
 import Protolude
+
 import Data.Argonaut.Core (Json)
 import Data.Argonaut.Core as Argonaut
 import Data.Argonaut.Encode as ArgonautCodecs
 import Data.Array as Array
+import Data.Function.Uncurried
 import Data.Nullable (Nullable)
 import Data.Nullable as Nullable
 import Data.String.Utils as String
-import Effect.Uncurried (runEffectFn1, runEffectFn3)
+import Effect.Uncurried
 import Favicons (FavIconResponse)
 import Foreign.JsMap (JsMap)
 import Foreign.JsMap as JsMap
@@ -20,11 +22,13 @@ import Record.Extra as Record.Extra
 import Record.ExtraSrghma as Record.ExtraSrghma
 import Type.Prelude (RProxy(..))
 import Unsafe.Coerce (unsafeCoerce)
-import Webpack.FFI (compilationGetEntrypoints, compilationSetAsset, mkPluginSync, rawSourceFromBuffer, rawSourceFromString, webpackEntrypontGetFiles)
-import Webpack.Types (WebpackEntrypont, WebpackPluginInstance)
+import Webpack.FFI (compilationGetEntrypoints, setAsset, rawSourceFromBuffer, rawSourceFromString, webpackEntrypontGetFiles)
+import Webpack.Types
 
 type EntrypointsRow a
   = RouteIdMappingRow' a ( main :: a )
+
+foreign import mkNextJsBuildManifest :: EffectFn2 Compilation Assets Unit -> WebpackPluginInstance
 
 decodePages :: JsMap String WebpackEntrypont -> Effect { | EntrypointsRow WebpackEntrypont }
 decodePages obj = Record.Extra.sequenceRecord $ Record.ExtraSrghma.mapIndex doWork (RProxy :: forall type_. RProxy (EntrypointsRow type_))
@@ -52,7 +56,7 @@ type PluginOptions
 -- from https://github.com/vercel/next.js/blob/e125d905a0/packages/next/build/webpack/plugins/build-manifest-plugin.ts
 buildManifestPlugin :: PluginOptions -> WebpackPluginInstance
 buildManifestPlugin pluginOptions =
-  mkPluginSync "BuildManifestPlugin" \compilation -> do
+  mkNextJsBuildManifest $ mkEffectFn2 \compilation assets -> do
     (entrypointValues :: JsMap String WebpackEntrypont) <- runEffectFn1 compilationGetEntrypoints compilation
     let
       (publicPath :: Nullable String) = (unsafeCoerce compilation).options.output.publicPath
@@ -71,13 +75,12 @@ buildManifestPlugin pluginOptions =
         }
     let
       (json :: Json) = ArgonautCodecs.encodeJson manifest
-    runEffectFn3 compilationSetAsset compilation "build-manifest.json" (rawSourceFromString $ Argonaut.stringifyWithIndent 2 json)
+
+    runEffectFn3 setAsset assets "build-manifest.json" (rawSourceFromString $ Argonaut.stringifyWithIndent 2 json)
+
     case pluginOptions.favIconResponse of
       Nothing -> pure unit
-      Just favIconResponse ->
-        let
-          write = \{ name, contents } -> runEffectFn3 compilationSetAsset compilation name (rawSourceFromBuffer contents)
-        in
-          do
-            for_ favIconResponse.images write
-            for_ favIconResponse.files write
+      Just favIconResponse -> do
+          let write { name, contents } = runEffectFn3 setAsset assets name (rawSourceFromBuffer contents)
+          for_ favIconResponse.images write
+          for_ favIconResponse.files write
