@@ -18,6 +18,7 @@ rules { target, spagoAbsoluteOutputDir, production } =
   <> scssAndImagesRules { production }
   <> case target of
           Target__Server ->
+            -- for https://github.com/purescript-contrib/purescript-ace/blob/e991e47a6f63ab49274572088b978a7cda288814/src/Ace.js#L3
             [ { test: Regex.unsafeRegex "ace-builds" Regex.noFlags
               , use: [ { loader: "null-loader", options: Foreign.NullOrUndefined.undefined } ]
               }
