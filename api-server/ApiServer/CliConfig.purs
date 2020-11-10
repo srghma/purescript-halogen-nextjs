@@ -10,6 +10,7 @@ import Options.Applicative
 type CliConfig =
   { exportGqlSchemaPath  :: Maybe AnyFile
   , exportJsonSchemaPath :: Maybe AnyFile
+  , clientPort :: Maybe Int
 
   , port    :: Int
   , hostname    :: String
@@ -31,26 +32,10 @@ configParser = ado
   exportGqlSchemaPath  <- Maybe.optional $ option PathyOptparse.anyFilePosixParser $ long "export-gql-schema-path" <> metavar "ANYFILE"
   exportJsonSchemaPath <- Maybe.optional $ option PathyOptparse.anyFilePosixParser $ long "export-json-schema-path" <> metavar "ANYFILE"
 
-  port <- option int
-    ( long "port"
-        <> showDefault
-        <> value 3000
-        <> metavar "INT"
-    )
-
-  hostname <- option str
-    ( long "hostname"
-        <> showDefault
-        <> value "localhost"
-        <> metavar "HOST"
-    )
-
-  rootUrl <- option str
-    ( long "rootUrl"
-        <> showDefault
-        <> value "http://localhost:3000"
-        <> metavar "URL"
-    )
+  port       <- option int $ long "port" <> showDefault <> value 3000 <> metavar "INT"
+  clientPort <- Maybe.optional $ option int $ long "client-port" <> metavar "INT"
+  hostname   <- option str $ long "hostname" <> showDefault <> value "localhost" <> metavar "HOST"
+  rootUrl    <- option str $ long "rootUrl" <> showDefault <> value "http://localhost:3000" <> metavar "URL"
 
   databaseName              <- option str $ long "database-name" <> metavar "NAME"
   databaseHost              <- option str $ long "database-hostname" <> metavar "NAME"
@@ -66,6 +51,7 @@ configParser = ado
   in
     { exportGqlSchemaPath
     , exportJsonSchemaPath
+    , clientPort
     , port
     , hostname
     , rootUrl
@@ -81,8 +67,4 @@ configParser = ado
 
 opts :: ParserInfo CliConfig
 opts =
-  info (configParser <**> helper)
-    ( fullDesc
-        <> progDesc "starts server"
-        <> header "server - starts server"
-    )
+  info (configParser <**> helper) $ fullDesc <> progDesc "starts server" <> header "server - starts server"

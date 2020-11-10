@@ -19,14 +19,15 @@ import Options.Applicative as Options.Applicative
 import ApiServer.CliConfig as ApiServer.CliConfig
 import ApiServer.EnvConfig as ApiServer.EnvConfig
 
-type DevelopmentConfigTarget =
+type DevelopmentConfig =
   { exportGqlSchemaPath  :: AnyFile
   , exportJsonSchemaPath :: AnyFile
+  , clientPort :: Int
   }
 
 data ConfigTarget
   = Production
-  | Development DevelopmentConfigTarget
+  | Development DevelopmentConfig
 
 -- from args
 type Config =
@@ -64,12 +65,14 @@ config = do
       then pure Production
       else do
         let
-            (developmentConfigTarget :: Maybe DevelopmentConfigTarget) =
+            (developmentConfigTarget :: Maybe DevelopmentConfig) =
               { exportGqlSchemaPath: _
               , exportJsonSchemaPath: _
+              , clientPort: _
               }
               <$> cliConfig.exportGqlSchemaPath
               <*> cliConfig.exportJsonSchemaPath
+              <*> cliConfig.clientPort
 
         maybe (throwError $ error "invalid developmentConfigTarget") (pure <<< Development) developmentConfigTarget
 

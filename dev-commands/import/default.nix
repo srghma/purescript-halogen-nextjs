@@ -74,6 +74,7 @@ mkScripts {
         --export-gql-schema-path "${pkgs.rootProjectDir}/schemas/schema.graphql" \
         --export-json-schema-path "${pkgs.rootProjectDir}/schemas/schema.json" \
         --port 3000 \
+        --client-port 3001 \
         --hostname localhost \
         --rootUrl "http://localhost:3000" \
         --database-name "${(import "${pkgs.rootProjectDir}/config/public/database.nix").DATABASE_NAME}" \

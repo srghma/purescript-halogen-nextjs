@@ -79,9 +79,9 @@ config { target, watch, production, root, bundleAnalyze, spagoOutput, apiUrl } =
         Target__Mobile _ -> "./" -- from https://github.com/jantimon/html-webpack-plugin/issues/488
     , libraryTarget:
       case target of
-        Target__Server -> "commonjs2"
-        Target__Browser _ -> "var"
-        Target__Mobile _ -> "var"
+        Target__Server -> Foreign.unsafeToForeign "commonjs2"
+        Target__Browser _ -> Foreign.NullOrUndefined.undefined
+        Target__Mobile _ -> Foreign.NullOrUndefined.undefined
     -- This saves chunks with the name given via `import()`
     , chunkFilename:
       case target of
@@ -153,13 +153,13 @@ config { target, watch, production, root, bundleAnalyze, spagoOutput, apiUrl } =
           $ _MiniCssExtractPlugin
               { filename:
                 case target of
-                  Target__Browser _ -> if production then "css/[name].[hash].css" else "css/[name].css"
-                  Target__Server -> if production then "css/[name].[hash].css" else "css/[name].css"
+                  Target__Browser _ -> if production then "css/[name].[fullhash].css" else "css/[name].css"
+                  Target__Server -> if production then "css/[name].[fullhash].css" else "css/[name].css"
                   Target__Mobile _ -> "index.css"
               , chunkFilename:
                 case target of
-                  Target__Browser _ -> if production then "css/[id].[hash].css" else "css/[id].css"
-                  Target__Server -> if production then "css/[id].[hash].css" else "css/[id].css"
+                  Target__Browser _ -> if production then "css/[id].[fullhash].css" else "css/[id].css"
+                  Target__Server -> if production then "css/[id].[fullhash].css" else "css/[id].css"
                   Target__Mobile _ -> "index.css"
               }
       , Just $ webpack._DefinePlugin
@@ -218,7 +218,7 @@ config { target, watch, production, root, bundleAnalyze, spagoOutput, apiUrl } =
           _ -> Nothing
       ]
   , optimization:
-    { noEmitOnErrors: true
+    { emitOnErrors: false
     , splitChunks:
       case target of
         Target__Browser { entrypointsObject } ->

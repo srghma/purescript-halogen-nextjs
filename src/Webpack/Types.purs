@@ -35,7 +35,7 @@ type Configuration
     , node :: Foreign
     , optimization ::
       { minimize :: Boolean
-      , noEmitOnErrors :: Boolean
+      , emitOnErrors :: Boolean
       , nodeEnv :: Boolean
       , runtimeChunk :: Foreign
       , splitChunks :: Foreign
@@ -43,7 +43,7 @@ type Configuration
     , output ::
       { chunkFilename :: Foreign
       , filename :: String
-      , libraryTarget :: String
+      , libraryTarget :: Foreign
       , path :: FilePath -- Path Abs Dir
       , publicPath :: String
       }
