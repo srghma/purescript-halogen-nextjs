@@ -5,38 +5,37 @@ import GraphQLClient
   , Scope__RootQuery
   , selectionForCompositeField
   , graphqlDefaultResponseFunctorOrScalarDecoderTransformer
+  , toGraphQLArguments
   , selectionForField
   , graphqlDefaultResponseScalarDecoder
-  , toGraphQLArguments
   , Optional
   )
-import Api.Scalars (Id, Cursor, Uuid)
-import Type.Row (type (+))
 import Api.Scopes
-  ( Scope__Node
-  , Scope__PostsConnection
+  ( Scope__User
+  , Scope__Node
   , Scope__Post
-  , Scope__UserOauth
-  , Scope__User
+  , Scope__PostsConnection
+  , Scope__UserAuthentication
+  , Scope__UserEmail
   )
 import Data.Maybe (Maybe)
+import Api.Scalars (Id, Uuid, Cursor)
+import Type.Row (type (+))
+import Api.InputObject (PostCondition) as Api.InputObject
 import Api.Enum.PostsOrderBy (PostsOrderBy)
-import Api.InputObject as Api.InputObject
 
-query :: forall r . SelectionSet
-                    Scope__RootQuery
-                    r -> SelectionSet
-                         Scope__RootQuery
-                         r
-query = selectionForCompositeField
-        "query"
-        []
-        graphqlDefaultResponseFunctorOrScalarDecoderTransformer
+currentUser :: forall r . SelectionSet
+                          Scope__User
+                          r -> SelectionSet
+                               Scope__RootQuery
+                               (Maybe
+                                r)
+currentUser = selectionForCompositeField
+              "currentUser"
+              []
+              graphqlDefaultResponseFunctorOrScalarDecoderTransformer
 
-id :: SelectionSet Scope__RootQuery Id
-id = selectionForField "id" [] graphqlDefaultResponseScalarDecoder
-
-type NodeInputRowRequired r = ( id :: Id | r )
+type NodeInputRowRequired r = ( nodeId :: Id | r )
 
 type NodeInput = { | NodeInputRowRequired + () }
 
@@ -52,128 +51,10 @@ node input = selectionForCompositeField
               input)
              graphqlDefaultResponseFunctorOrScalarDecoderTransformer
 
-type AllPostsInputRowOptional r = ( first :: Optional Int
-                                  , last :: Optional Int
-                                  , offset :: Optional Int
-                                  , before :: Optional Cursor
-                                  , after :: Optional Cursor
-                                  , orderBy :: Optional (Array PostsOrderBy)
-                                  , condition :: Optional
-                                                 Api.InputObject.PostCondition
-                                  | r
-                                  )
+nodeId :: SelectionSet Scope__RootQuery Id
+nodeId = selectionForField "nodeId" [] graphqlDefaultResponseScalarDecoder
 
-type AllPostsInput = { | AllPostsInputRowOptional + () }
-
-allPosts :: forall r . AllPostsInput -> SelectionSet
-                                        Scope__PostsConnection
-                                        r -> SelectionSet
-                                             Scope__RootQuery
-                                             (Maybe
-                                              r)
-allPosts input = selectionForCompositeField
-                 "allPosts"
-                 (toGraphQLArguments
-                  input)
-                 graphqlDefaultResponseFunctorOrScalarDecoderTransformer
-
-type PostByRowIdInputRowRequired r = ( rowId :: Uuid | r )
-
-type PostByRowIdInput = { | PostByRowIdInputRowRequired + () }
-
-postByRowId :: forall r . PostByRowIdInput -> SelectionSet
-                                              Scope__Post
-                                              r -> SelectionSet
-                                                   Scope__RootQuery
-                                                   (Maybe
-                                                    r)
-postByRowId input = selectionForCompositeField
-                    "postByRowId"
-                    (toGraphQLArguments
-                     input)
-                    graphqlDefaultResponseFunctorOrScalarDecoderTransformer
-
-type UserOauthByRowIdInputRowRequired r = ( rowId :: Uuid | r )
-
-type UserOauthByRowIdInput = { | UserOauthByRowIdInputRowRequired + () }
-
-userOauthByRowId :: forall r . UserOauthByRowIdInput -> SelectionSet
-                                                        Scope__UserOauth
-                                                        r -> SelectionSet
-                                                             Scope__RootQuery
-                                                             (Maybe
-                                                              r)
-userOauthByRowId input = selectionForCompositeField
-                         "userOauthByRowId"
-                         (toGraphQLArguments
-                          input)
-                         graphqlDefaultResponseFunctorOrScalarDecoderTransformer
-
-type UserOauthByServiceAndServiceIdentifierInputRowRequired r = ( service :: String
-                                                                , serviceIdentifier :: String
-                                                                | r
-                                                                )
-
-type UserOauthByServiceAndServiceIdentifierInput = {
-| UserOauthByServiceAndServiceIdentifierInputRowRequired + ()
-}
-
-userOauthByServiceAndServiceIdentifier :: forall r . UserOauthByServiceAndServiceIdentifierInput -> SelectionSet
-                                                                                                    Scope__UserOauth
-                                                                                                    r -> SelectionSet
-                                                                                                         Scope__RootQuery
-                                                                                                         (Maybe
-                                                                                                          r)
-userOauthByServiceAndServiceIdentifier input = selectionForCompositeField
-                                               "userOauthByServiceAndServiceIdentifier"
-                                               (toGraphQLArguments
-                                                input)
-                                               graphqlDefaultResponseFunctorOrScalarDecoderTransformer
-
-type UserByRowIdInputRowRequired r = ( rowId :: Uuid | r )
-
-type UserByRowIdInput = { | UserByRowIdInputRowRequired + () }
-
-userByRowId :: forall r . UserByRowIdInput -> SelectionSet
-                                              Scope__User
-                                              r -> SelectionSet
-                                                   Scope__RootQuery
-                                                   (Maybe
-                                                    r)
-userByRowId input = selectionForCompositeField
-                    "userByRowId"
-                    (toGraphQLArguments
-                     input)
-                    graphqlDefaultResponseFunctorOrScalarDecoderTransformer
-
-type UserByEmailInputRowRequired r = ( email :: String | r )
-
-type UserByEmailInput = { | UserByEmailInputRowRequired + () }
-
-userByEmail :: forall r . UserByEmailInput -> SelectionSet
-                                              Scope__User
-                                              r -> SelectionSet
-                                                   Scope__RootQuery
-                                                   (Maybe
-                                                    r)
-userByEmail input = selectionForCompositeField
-                    "userByEmail"
-                    (toGraphQLArguments
-                     input)
-                    graphqlDefaultResponseFunctorOrScalarDecoderTransformer
-
-currentUser :: forall r . SelectionSet
-                          Scope__User
-                          r -> SelectionSet
-                               Scope__RootQuery
-                               (Maybe
-                                r)
-currentUser = selectionForCompositeField
-              "currentUser"
-              []
-              graphqlDefaultResponseFunctorOrScalarDecoderTransformer
-
-type PostInputRowRequired r = ( id :: Id | r )
+type PostInputRowRequired r = ( id :: Uuid | r )
 
 type PostInput = { | PostInputRowRequired + () }
 
@@ -189,23 +70,58 @@ post input = selectionForCompositeField
               input)
              graphqlDefaultResponseFunctorOrScalarDecoderTransformer
 
-type UserOauthInputRowRequired r = ( id :: Id | r )
+type PostByNodeIdInputRowRequired r = ( nodeId :: Id | r )
 
-type UserOauthInput = { | UserOauthInputRowRequired + () }
+type PostByNodeIdInput = { | PostByNodeIdInputRowRequired + () }
 
-userOauth :: forall r . UserOauthInput -> SelectionSet
-                                          Scope__UserOauth
-                                          r -> SelectionSet
-                                               Scope__RootQuery
-                                               (Maybe
-                                                r)
-userOauth input = selectionForCompositeField
-                  "userOauth"
-                  (toGraphQLArguments
-                   input)
-                  graphqlDefaultResponseFunctorOrScalarDecoderTransformer
+postByNodeId :: forall r . PostByNodeIdInput -> SelectionSet
+                                                Scope__Post
+                                                r -> SelectionSet
+                                                     Scope__RootQuery
+                                                     (Maybe
+                                                      r)
+postByNodeId input = selectionForCompositeField
+                     "postByNodeId"
+                     (toGraphQLArguments
+                      input)
+                     graphqlDefaultResponseFunctorOrScalarDecoderTransformer
 
-type UserInputRowRequired r = ( id :: Id | r )
+type PostsInputRowOptional r = ( after :: Optional Cursor
+                               , before :: Optional Cursor
+                               , condition :: Optional
+                                              Api.InputObject.PostCondition
+                               , first :: Optional Int
+                               , last :: Optional Int
+                               , offset :: Optional Int
+                               , orderBy :: Optional (Array PostsOrderBy)
+                               | r
+                               )
+
+type PostsInput = { | PostsInputRowOptional + () }
+
+posts :: forall r . PostsInput -> SelectionSet
+                                  Scope__PostsConnection
+                                  r -> SelectionSet
+                                       Scope__RootQuery
+                                       (Maybe
+                                        r)
+posts input = selectionForCompositeField
+              "posts"
+              (toGraphQLArguments
+               input)
+              graphqlDefaultResponseFunctorOrScalarDecoderTransformer
+
+query :: forall r . SelectionSet
+                    Scope__RootQuery
+                    r -> SelectionSet
+                         Scope__RootQuery
+                         r
+query = selectionForCompositeField
+        "query"
+        []
+        graphqlDefaultResponseFunctorOrScalarDecoderTransformer
+
+type UserInputRowRequired r = ( id :: Uuid | r )
 
 type UserInput = { | UserInputRowRequired + () }
 
@@ -220,3 +136,143 @@ user input = selectionForCompositeField
              (toGraphQLArguments
               input)
              graphqlDefaultResponseFunctorOrScalarDecoderTransformer
+
+type UserAuthenticationInputRowRequired r = ( id :: Uuid | r )
+
+type UserAuthenticationInput = { | UserAuthenticationInputRowRequired + () }
+
+userAuthentication :: forall r . UserAuthenticationInput -> SelectionSet
+                                                            Scope__UserAuthentication
+                                                            r -> SelectionSet
+                                                                 Scope__RootQuery
+                                                                 (Maybe
+                                                                  r)
+userAuthentication input = selectionForCompositeField
+                           "userAuthentication"
+                           (toGraphQLArguments
+                            input)
+                           graphqlDefaultResponseFunctorOrScalarDecoderTransformer
+
+type UserAuthenticationByNodeIdInputRowRequired r = ( nodeId :: Id | r )
+
+type UserAuthenticationByNodeIdInput = {
+| UserAuthenticationByNodeIdInputRowRequired + ()
+}
+
+userAuthenticationByNodeId :: forall r . UserAuthenticationByNodeIdInput -> SelectionSet
+                                                                            Scope__UserAuthentication
+                                                                            r -> SelectionSet
+                                                                                 Scope__RootQuery
+                                                                                 (Maybe
+                                                                                  r)
+userAuthenticationByNodeId input = selectionForCompositeField
+                                   "userAuthenticationByNodeId"
+                                   (toGraphQLArguments
+                                    input)
+                                   graphqlDefaultResponseFunctorOrScalarDecoderTransformer
+
+type UserAuthenticationByServiceAndIdentifierInputRowRequired r = ( identifier :: String
+                                                                  , service :: String
+                                                                  | r
+                                                                  )
+
+type UserAuthenticationByServiceAndIdentifierInput = {
+| UserAuthenticationByServiceAndIdentifierInputRowRequired + ()
+}
+
+userAuthenticationByServiceAndIdentifier :: forall r . UserAuthenticationByServiceAndIdentifierInput -> SelectionSet
+                                                                                                        Scope__UserAuthentication
+                                                                                                        r -> SelectionSet
+                                                                                                             Scope__RootQuery
+                                                                                                             (Maybe
+                                                                                                              r)
+userAuthenticationByServiceAndIdentifier input = selectionForCompositeField
+                                                 "userAuthenticationByServiceAndIdentifier"
+                                                 (toGraphQLArguments
+                                                  input)
+                                                 graphqlDefaultResponseFunctorOrScalarDecoderTransformer
+
+type UserByNodeIdInputRowRequired r = ( nodeId :: Id | r )
+
+type UserByNodeIdInput = { | UserByNodeIdInputRowRequired + () }
+
+userByNodeId :: forall r . UserByNodeIdInput -> SelectionSet
+                                                Scope__User
+                                                r -> SelectionSet
+                                                     Scope__RootQuery
+                                                     (Maybe
+                                                      r)
+userByNodeId input = selectionForCompositeField
+                     "userByNodeId"
+                     (toGraphQLArguments
+                      input)
+                     graphqlDefaultResponseFunctorOrScalarDecoderTransformer
+
+type UserByUsernameInputRowRequired r = ( username :: String | r )
+
+type UserByUsernameInput = { | UserByUsernameInputRowRequired + () }
+
+userByUsername :: forall r . UserByUsernameInput -> SelectionSet
+                                                    Scope__User
+                                                    r -> SelectionSet
+                                                         Scope__RootQuery
+                                                         (Maybe
+                                                          r)
+userByUsername input = selectionForCompositeField
+                       "userByUsername"
+                       (toGraphQLArguments
+                        input)
+                       graphqlDefaultResponseFunctorOrScalarDecoderTransformer
+
+type UserEmailInputRowRequired r = ( id :: Uuid | r )
+
+type UserEmailInput = { | UserEmailInputRowRequired + () }
+
+userEmail :: forall r . UserEmailInput -> SelectionSet
+                                          Scope__UserEmail
+                                          r -> SelectionSet
+                                               Scope__RootQuery
+                                               (Maybe
+                                                r)
+userEmail input = selectionForCompositeField
+                  "userEmail"
+                  (toGraphQLArguments
+                   input)
+                  graphqlDefaultResponseFunctorOrScalarDecoderTransformer
+
+type UserEmailByNodeIdInputRowRequired r = ( nodeId :: Id | r )
+
+type UserEmailByNodeIdInput = { | UserEmailByNodeIdInputRowRequired + () }
+
+userEmailByNodeId :: forall r . UserEmailByNodeIdInput -> SelectionSet
+                                                          Scope__UserEmail
+                                                          r -> SelectionSet
+                                                               Scope__RootQuery
+                                                               (Maybe
+                                                                r)
+userEmailByNodeId input = selectionForCompositeField
+                          "userEmailByNodeId"
+                          (toGraphQLArguments
+                           input)
+                          graphqlDefaultResponseFunctorOrScalarDecoderTransformer
+
+type UserEmailByUserIdAndEmailInputRowRequired r = ( email :: String
+                                                   , userId :: Uuid
+                                                   | r
+                                                   )
+
+type UserEmailByUserIdAndEmailInput = {
+| UserEmailByUserIdAndEmailInputRowRequired + ()
+}
+
+userEmailByUserIdAndEmail :: forall r . UserEmailByUserIdAndEmailInput -> SelectionSet
+                                                                          Scope__UserEmail
+                                                                          r -> SelectionSet
+                                                                               Scope__RootQuery
+                                                                               (Maybe
+                                                                                r)
+userEmailByUserIdAndEmail input = selectionForCompositeField
+                                  "userEmailByUserIdAndEmail"
+                                  (toGraphQLArguments
+                                   input)
+                                  graphqlDefaultResponseFunctorOrScalarDecoderTransformer

@@ -1,5 +1,5 @@
-exports.apiUrl = process.env.apiUrl
 
-exports.isProduction = process.env.isProduction
-
-exports.jwtKey = process.env.jwtKey
+exports.env = {
+  apiUrl:       process.env.apiUrl,
+  isProduction: process.env.isProduction,
+}

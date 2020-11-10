@@ -10,7 +10,6 @@ import Protolude
 
 import Affjax as Affjax
 import Api.Mutation as Api.Mutation
-import Api.Object.LoginPayload as Api.Object.LoginPayload
 import Api.Object.User as Api.Object.User
 import Api.Query as Api.Query
 import Browser.Cookie as Browser.Cookie
@@ -43,10 +42,10 @@ import NextjsApp.Navigate as NextjsApp.Navigate
 import NextjsApp.Route as NextjsApp.Route
 import NextjsApp.ServerExceptions as NextjsApp.ServerExceptions
 
-login :: { email :: Email, password :: Password } -> Aff (LoginError \/ Jwt)
+login :: { email :: Email, password :: Password } -> Aff (Maybe LoginError)
 login loginDataValidated = do
   response <-
-      GraphQLClient.graphqlMutationRequest NextjsApp.NodeEnv.apiUrl GraphQLClient.defaultRequestOptions $
+      GraphQLClient.graphqlMutationRequest NextjsApp.NodeEnv.env.apiUrl GraphQLClient.defaultRequestOptions $
         Api.Mutation.login
           { input:
             { email: Email.toString loginDataValidated.email
@@ -54,11 +53,11 @@ login loginDataValidated = do
             , clientMutationId: GraphQLClient.Absent
             }
           }
-          (Api.Object.LoginPayload.jwt)
+          (pure unit)
 
-  let (response' :: LoginError \/ Jwt) =
+  let (response' :: Maybe LoginError) =
         case response of
-            Left error -> Left $
+            Left error -> Just $
               case error of
                    GraphQLClient.GraphQLError__Affjax affjaxError -> LoginError__UnknownError $ Affjax.printError affjaxError
                    GraphQLClient.GraphQLError__UnexpectedPayload decodeError _jsonBody -> LoginError__UnknownError $ Data.Argonaut.Decode.printJsonDecodeError decodeError
@@ -71,10 +70,8 @@ login loginDataValidated = do
                       -- |           | message == NextjsApp.ServerExceptions.login_notConfirmed ->       LoginError__NotConfirmed
                       -- |           | message == NextjsApp.ServerExceptions.login_wrongPassword ->      LoginError__WrongPassword
                       -- |           | otherwise ->                                                      LoginError__UnknownError message
-            Right mjwt ->
-              case join mjwt of
-                    Nothing -> Left $ LoginError__UnknownError "Unexpected payload: no JWT"
-                    Just jwt -> Right jwt
+            Right u -> Nothing
+
   pure response'
 
 component ::
@@ -97,54 +94,8 @@ component =
                       liftAff (login loginDataValidated) >>=
                         case _ of
                             Left error -> H.modify_ _ { loginError = Just error }
-                            Right jwt -> do
-                               liftEffect $ Browser.Cookie.setCookie $ Browser.Cookie.SetCookie
-                                { cookie: Browser.Cookie.Cookie
-                                  { key: NextjsApp.NodeEnv.jwtKey
-                                  , value: unwrap jwt
-                                  }
-                                , opts: Just $ Browser.Cookie.CookieOpts
-                                  { maxAge: Just NextjsApp.NodeEnv.jwtMaxAgeInSeconds
-                                  , expires: Nothing -- instead of date of expiration, we will use maxAge instead
-                                  , secure: NextjsApp.NodeEnv.isProduction
-
-                                  -- | disallow access from js (in case app has XSS vulnerabilities)
-                                  -- | check https://medium.com/@ryanchenkie_40935/react-authentication-how-to-store-jwt-in-a-cookie-346519310e81
-                                  -- | TODO: csrf
-                                  -- |
-                                  -- | because for security reasons cookies should be stored either
-                                  -- | - in memory
-                                  -- | - in httpOnly cookies (we use)
-                                  -- |
-                                  -- | local storage is not safe because available in all sites in domain (https://stormpath.com/blog/where-to-store-your-jwts-cookies-vs-html5-web-storage)
-                                  -- | what if other site in domain compromised? what if node_modules dep compromised?
-                                  -- |
-                                  -- | TODO: auth and refresh token
-                                  -- | TODO: expiration in jwt https://www.graphile.org/postgraphile/postgresql-schema-design/#logging-in ?
-
-                                  -- | https://github.com/dijam/graphile-jwt-example
-                                  -- | https://github.com/graphile/postgraphile/issues/501 (if you're a browser you'll automatically use the cookie (no other code required), but if you're a non-browser client (like a native or command line application) then you can use the traditional Authorization header approach)
-
-
-                                  -- | https://youtu.be/cSOKJRfkTDc?t=1515 - XSRF-TOKEN cookie is not httpOnly?????
-                                  , httpOnly: true
-
-                                  -- TODO:
-                                  -- Nothing (default in old browsers) - allow cors
-                                  -- Just Strict - disallow
-                                  -- Just Lax (default in new browsers) - disallow, except for links in <a>
-                                  , samesite: Nothing
-
-                                  , domain: NextjsApp.NodeEnv.jwtDomain
-
-                                  -- | make accessiable for all pages
-                                  -- | because Nothing is the same as `Just currentPage` (If the server omits the Path attribute, the user agent will use the "directory" of the request-uri's path component as the default value)
-                                  -- | https://stackoverflow.com/questions/43324480/how-does-a-browser-handle-cookie-with-no-path-and-no-domain
-                                  , path: Just "/"
-                                  }
-                                }
-
-                               NextjsApp.Navigate.navigate NextjsApp.Route.Secret
+                            Right jwt ->
+                              NextjsApp.Navigate.navigate NextjsApp.Route.Secret
             }
     , render
     }

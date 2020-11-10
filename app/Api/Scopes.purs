@@ -1,20 +1,14 @@
 module Api.Scopes where
 
-data Scope__ConfirmPayload
+data Scope__CreateUserEmailPayload
 
-data Scope__CreatePostPayload
+data Scope__DeleteUserAuthenticationPayload
 
-data Scope__CreateUserOauthPayload
-
-data Scope__CreateUserPayload
-
-data Scope__DeletePostPayload
-
-data Scope__DeleteUserOauthPayload
+data Scope__DeleteUserEmailPayload
 
 data Scope__DeleteUserPayload
 
-data Scope__LoginPayload
+data Scope__ForgotPasswordPayload
 
 data Scope__PageInfo
 
@@ -24,32 +18,28 @@ data Scope__PostsConnection
 
 data Scope__PostsEdge
 
-data Scope__RegisterPayload
-
-data Scope__ResendConfirmationPayload
-
 data Scope__ResetPasswordPayload
-
-data Scope__SendResetPasswordPayload
-
-data Scope__UpdatePostPayload
-
-data Scope__UpdateUserOauthPayload
 
 data Scope__UpdateUserPayload
 
-data Scope__UpsertPostPayload
-
-data Scope__UpsertUserOauthPayload
-
-data Scope__UpsertUserPayload
-
 data Scope__User
 
-data Scope__UserOauth
+data Scope__UserAuthentication
 
-data Scope__UserOauthsEdge
+data Scope__UserAuthenticationsEdge
+
+data Scope__UserEmail
+
+data Scope__UserEmailsConnection
+
+data Scope__UserEmailsEdge
 
 data Scope__UsersEdge
+
+data Scope__VerifyUserEmailPayload
+
+data Scope__WebLoginPayload
+
+data Scope__WebRegisterPayload
 
 data Scope__Node

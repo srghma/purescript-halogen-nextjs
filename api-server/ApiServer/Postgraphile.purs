@@ -25,21 +25,36 @@ import Node.Express.Passport as Passport
 
 postgraphileOptions :: _ -> PostgraphileOptions
 postgraphileOptions config =
-  { pluginHook: makePluginHook [pgPubsub]
+  { pluginHook: makePluginHook [pgPubsub, graphileSupporter]
   , ownerConnectionString: "postgres://" <> config.databaseOwnerUser <> ":" <> NonEmptyString.toString config.databaseOwnerPassword <> "@" <> config.databaseHost <> "/" <> config.databaseName
+
   , subscriptions: true
   , simpleSubscriptions: true
+  -- | subscriptionAuthorizationFunction: 'app_hidden.validate_subscription',
+
   , enableQueryBatching: true
   , dynamicJson: true
   , ignoreRBAC: false
   , ignoreIndexes: false
   , setofFunctionsContainNulls: false
+
   , graphiql:
       case config.target of
            Development _ -> true
            _ -> false
   , enhanceGraphiql: true
+
   , disableQueryLog: true
+
+  -- when false (default):
+  -- 1. `id` field on table is exposed as `id: <TYPE>` in schema
+  -- 2. on schema added field `nodeId: ID` - globally unique id, base64 encoded string "<TABLE_NAME>:<PRIM_KEY>"
+  -- when true:
+  -- 1. `id` field on table is exposed as `rowId: <TYPE>` in schema
+  -- 2. on schema added field `id: ID` - globally unique id, base64 encoded string "<TABLE_NAME>:<PRIM_KEY>"
+  , classicIds: true
+  , enableCors: true
+
   , extendedErrors:
       case config.target of
            Development _ ->
@@ -61,6 +76,7 @@ postgraphileOptions config =
              , "routine"
              ]
            _ -> ["errcode"]
+
   , showErrorStack:
       case config.target of
            Development _ -> true
@@ -70,6 +86,7 @@ postgraphileOptions config =
       case config.target of
            Development _ -> true
            _ -> false
+
   , sortExport: true
   , exportGqlSchemaPath:
       case config.target of
@@ -82,6 +99,7 @@ postgraphileOptions config =
 
   , appendPlugins:
       [ pgSimplifyInflectorPlugin
+      , pgMutationUpsertPlugin
       , passportLoginPlugin
       ]
 

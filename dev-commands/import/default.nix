@@ -64,8 +64,8 @@ mkScripts {
 
     mkdir -p ./schemas
 
-    # GRAPHILE_LICENSE   = builtins.readFile "${pkgs.rootProjectDir}/config/ignored/graphile-license";
 
+    GRAPHILE_LICENSE="${pkgs.lib.fileContents "${pkgs.rootProjectDir}/config/ignored/graphile-license"}" \
     sessionSecret="${(import "${pkgs.rootProjectDir}/config/ignored/passwords.nix").SESSION_SECRET}" \
     databaseOwnerPassword="${(import "${pkgs.rootProjectDir}/config/ignored/passwords.nix").DATABASE_OWNER_PASSWORD}" \
     databaseAuthenticatorPassword="${(import "${pkgs.rootProjectDir}/config/ignored/passwords.nix").DATABASE_AUTHENTICATOR_PASSWORD}" \

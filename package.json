@@ -98,7 +98,7 @@
     "pg": "^8.4.2",
     "postgraphile": "4.9.2",
     "postgraphile-upsert-plugin": "^1.0.5",
-    "purescript-graphql-client": "git+https://github.com/purescript-graphql-client/purescript-graphql-client#edb15c9101c8c79772ee182de5945d4edaf84382",
+    "purescript-graphql-client": "git+https://github.com/purescript-graphql-client/purescript-graphql-client#89a7ba850222dd0118840c83fc099c8ff649be6c",
     "xhr2": "^0.2.0"
   },
   "cordova": {

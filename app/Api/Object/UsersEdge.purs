@@ -14,12 +14,7 @@ import Api.Scalars (Cursor)
 cursor :: SelectionSet Scope__UsersEdge (Maybe Cursor)
 cursor = selectionForField "cursor" [] graphqlDefaultResponseScalarDecoder
 
-node :: forall r . SelectionSet
-                   Scope__User
-                   r -> SelectionSet
-                        Scope__UsersEdge
-                        (Maybe
-                         r)
+node :: forall r . SelectionSet Scope__User r -> SelectionSet Scope__UsersEdge r
 node = selectionForCompositeField
        "node"
        []

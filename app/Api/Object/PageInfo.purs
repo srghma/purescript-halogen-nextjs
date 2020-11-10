@@ -6,6 +6,9 @@ import Api.Scopes (Scope__PageInfo)
 import Data.Maybe (Maybe)
 import Api.Scalars (Cursor)
 
+endCursor :: SelectionSet Scope__PageInfo (Maybe Cursor)
+endCursor = selectionForField "endCursor" [] graphqlDefaultResponseScalarDecoder
+
 hasNextPage :: SelectionSet Scope__PageInfo Boolean
 hasNextPage = selectionForField
               "hasNextPage"
@@ -23,6 +26,3 @@ startCursor = selectionForField
               "startCursor"
               []
               graphqlDefaultResponseScalarDecoder
-
-endCursor :: SelectionSet Scope__PageInfo (Maybe Cursor)
-endCursor = selectionForField "endCursor" [] graphqlDefaultResponseScalarDecoder

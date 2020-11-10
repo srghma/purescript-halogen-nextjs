@@ -1,18 +1,20 @@
 module NextjsWebpack.WebpackConfig.Config where
 
-import ContribWebpackPlugins (_BundleAnalyzerPlugin, _CleanWebpackPlugin, _HtmlWebpackPlugin, _MiniCssExtractPlugin, htmlWebpackPlugin__tags__toString)
-import Pathy (Abs, Dir, File, Path, dir, file, (</>))
-import PathyExtra (printPathPosixSandboxAny)
+import NextjsWebpack.WebpackConfig.Types
 import Protolude
-import Webpack.Plugins (webpack)
-import Webpack.Types (Configuration)
+
+import ContribWebpackPlugins (_BundleAnalyzerPlugin, _CleanWebpackPlugin, _HtmlWebpackPlugin, _MiniCssExtractPlugin, htmlWebpackPlugin__tags__toString)
 import Data.Array as Array
 import Data.Codec.Argonaut.Common as Codec.Argonaut
 import Data.Lens as Lens
 import Favicons (FavIconResponse)
 import Foreign as Foreign
 import Foreign.NullOrUndefined as Foreign.NullOrUndefined
+import Foreign.Object (Object)
 import Foreign.Object as Object
+import Heterogeneous.Mapping (hmap)
+import HeterogeneousExtraShow as HeterogeneousExtraShow
+import NextjsApp.NodeEnv as NextjsApp.NodeEnv
 import NextjsApp.Route (Route, RouteIdMapping)
 import NextjsApp.Route as NextjsApp.Route
 import NextjsApp.Template as NextjsApp.Template
@@ -22,8 +24,17 @@ import NextjsWebpack.IsomorphicClientPagesLoader as NextjsWebpack.IsomorphicClie
 import NextjsWebpack.WebpackConfig.Rules as NextjsWebpack.WebpackConfig.Rules
 import NextjsWebpack.WebpackConfig.SplitChunksConfig as NextjsWebpack.WebpackConfig.SplitChunksConfig
 import Node.URL as Node.URL
+import Pathy (Abs, Dir, File, Path, dir, file, (</>))
+import PathyExtra (printPathPosixSandboxAny)
 import Record as Record
-import NextjsWebpack.WebpackConfig.Types
+import Webpack.Plugins (webpack)
+import Webpack.Types (Configuration)
+
+changeKey :: forall a . (String -> String) -> Object a -> Object a
+changeKey f o =
+  (Object.toUnfoldable o :: Array (Tuple String a))
+  # map (\(Tuple k v) -> Tuple (f k) v)
+  # Object.fromFoldable
 
 config ::
   { target :: Target
@@ -32,10 +43,9 @@ config ::
   , root :: Path Abs Dir
   , bundleAnalyze :: Boolean
   , spagoOutput :: Path Abs Dir
-  , apiUrl :: String
   } ->
   Configuration
-config { target, watch, production, root, bundleAnalyze, spagoOutput, apiUrl } =
+config { target, watch, production, root, bundleAnalyze, spagoOutput } =
   { watch
   , target:
     case target of
@@ -159,20 +169,24 @@ config { target, watch, production, root, bundleAnalyze, spagoOutput, apiUrl } =
               }
       , Just $ webpack._DefinePlugin
           $ let
-              common =
-                { "process.env.apiUrl": show apiUrl
-                , "process.env.isProduction": show production
-                , "process.env.jwtKey": show "myjwtkey"
+              (commonEnv :: NextjsApp.NodeEnv.Env) =
+                { apiUrl: "/graphql"
+                , isProduction: production
                 }
+
+              commonEnv' =
+                commonEnv
+                # hmap HeterogeneousExtraShow.Show
+                # Object.fromHomogeneous
+                # changeKey (\x -> "process.env." <> x)
+                # map Foreign.unsafeToForeign
             in
               case target of
-                Target__Server ->
-                    Foreign.unsafeToForeign $ Record.union common
+                Target__Server -> Object.union commonEnv' $ Object.fromHomogeneous
                     -- for purescript-ace on node environment: dont throw "undefined" exception, just make `var ace = false`
-                    { "ace": false
+                    { "ace": Foreign.unsafeToForeign false
                     }
-                _ -> Foreign.unsafeToForeign $ Record.union common
-                    {}
+                _ -> commonEnv'
       , case target of
           Target__Server ->
             Just

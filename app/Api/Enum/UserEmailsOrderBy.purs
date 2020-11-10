@@ -1,4 +1,4 @@
-module Api.Enum.PostsOrderBy where
+module Api.Enum.UserEmailsOrderBy where
 
 import Data.Generic.Rep (class Generic)
 import Data.Show (class Show)
@@ -12,8 +12,8 @@ import GraphQLClient
   , ArgumentValue(..)
   )
 
--- | original name - PostsOrderBy
-data PostsOrderBy
+-- | original name - UserEmailsOrderBy
+data UserEmailsOrderBy
   = IdAsc
   | IdDesc
   | Natural
@@ -22,16 +22,16 @@ data PostsOrderBy
   | UserIdAsc
   | UserIdDesc
 
-derive instance genericPostsOrderBy :: Generic PostsOrderBy _
+derive instance genericUserEmailsOrderBy :: Generic UserEmailsOrderBy _
 
-instance showPostsOrderBy :: Show PostsOrderBy where
+instance showUserEmailsOrderBy :: Show UserEmailsOrderBy where
   show = genericShow
 
-derive instance eqPostsOrderBy :: Eq PostsOrderBy
+derive instance eqUserEmailsOrderBy :: Eq UserEmailsOrderBy
 
-derive instance ordPostsOrderBy :: Ord PostsOrderBy
+derive instance ordUserEmailsOrderBy :: Ord UserEmailsOrderBy
 
-fromToMap :: Array (Tuple String PostsOrderBy)
+fromToMap :: Array (Tuple String UserEmailsOrderBy)
 fromToMap = [ Tuple "ID_ASC" IdAsc
             , Tuple "ID_DESC" IdDesc
             , Tuple "NATURAL" Natural
@@ -41,12 +41,14 @@ fromToMap = [ Tuple "ID_ASC" IdAsc
             , Tuple "USER_ID_DESC" UserIdDesc
             ]
 
-instance postsOrderByGraphQLDefaultResponseScalarDecoder :: GraphQLDefaultResponseScalarDecoder
-                                                            PostsOrderBy where
-  graphqlDefaultResponseScalarDecoder = enumDecoder "PostsOrderBy" fromToMap
+instance userEmailsOrderByGraphQLDefaultResponseScalarDecoder :: GraphQLDefaultResponseScalarDecoder
+                                                                 UserEmailsOrderBy where
+  graphqlDefaultResponseScalarDecoder = enumDecoder
+                                        "UserEmailsOrderBy"
+                                        fromToMap
 
-instance postsOrderByToGraphQLArgumentValue :: ToGraphQLArgumentValue
-                                               PostsOrderBy where
+instance userEmailsOrderByToGraphQLArgumentValue :: ToGraphQLArgumentValue
+                                                    UserEmailsOrderBy where
   toGraphQLArgumentValue =
     case _ of
       IdAsc -> ArgumentValueEnum "ID_ASC"

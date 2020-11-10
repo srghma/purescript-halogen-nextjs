@@ -11,7 +11,7 @@ import Database.PostgreSQL (Pool)
 
 -- TypeDefs
 
-type RegisterInput =
+type WebRegisterInput =
   { username  :: String
   , email     :: String
   , password  :: String
@@ -19,16 +19,16 @@ type RegisterInput =
   , avatarUrl :: Nullable String
   }
 
-type RegisterPayload =
+type WebRegisterPayload =
   { user :: User
   }
 
-type LoginInput =
+type WebLoginInput =
   { username :: String
   , password :: String
   }
 
-type LoginPayload =
+type WebLoginPayload =
   { user :: User
   }
 
@@ -62,10 +62,10 @@ data QueryBuilder
 data SelectGraphQLResultFromTable__Result
 
 type MutationsImplementation =
-  { register ::
+  { webRegister ::
       EffectFn5
       FnArgMutation
-      { input :: RegisterInput
+      { input :: WebRegisterInput
       }
       Context
       FnArgResolveInfo
@@ -76,10 +76,10 @@ type MutationsImplementation =
         (Promise SelectGraphQLResultFromTable__Result)
       }
       (Promise { "data" :: SelectGraphQLResultFromTable__Result })
-  , login ::
+  , webLogin ::
       EffectFn5
       FnArgMutation
-      { input :: LoginInput
+      { input :: WebLoginInput
       }
       Context
       FnArgResolveInfo
@@ -101,7 +101,7 @@ foreign import mkPassportLoginPlugin :: MkResolvers -> PostgraphileAppendPlugin
 passportLoginPlugin :: PostgraphileAppendPlugin
 passportLoginPlugin = mkPassportLoginPlugin \build ->
   { "Mutation":
-    { register: mkEffectFn5 \mutation args context resolveInfo { selectGraphQLResultFromTable } -> undefined
-    , login: mkEffectFn5 \mutation args context resolveInfo { selectGraphQLResultFromTable } -> undefined
+    { webRegister: mkEffectFn5 \mutation args context resolveInfo { selectGraphQLResultFromTable } -> undefined
+    , webLogin: mkEffectFn5 \mutation args context resolveInfo { selectGraphQLResultFromTable } -> undefined
     }
   }

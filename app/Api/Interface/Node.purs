@@ -8,19 +8,28 @@ import GraphQLClient
   , exhaustiveFragmentSelection
   , buildFragment
   )
-import Api.Scopes (Scope__Node, Scope__Post, Scope__User, Scope__UserOauth)
+import Api.Scopes
+  ( Scope__Node
+  , Scope__Post
+  , Scope__User
+  , Scope__UserAuthentication
+  , Scope__UserEmail
+  )
 import Api.Scalars (Id)
 import Data.Maybe (Maybe(..))
 import Prelude (pure)
 
-id :: SelectionSet Scope__Node Id
-id = selectionForField "id" [] graphqlDefaultResponseScalarDecoder
+nodeId :: SelectionSet Scope__Node Id
+nodeId = selectionForField "nodeId" [] graphqlDefaultResponseScalarDecoder
 
 type Fragments decodesTo = { onPost :: SelectionSet Scope__Post decodesTo
                            , onQuery :: SelectionSet Scope__RootQuery decodesTo
                            , onUser :: SelectionSet Scope__User decodesTo
-                           , onUserOauth :: SelectionSet
-                                            Scope__UserOauth
+                           , onUserAuthentication :: SelectionSet
+                                                     Scope__UserAuthentication
+                                                     decodesTo
+                           , onUserEmail :: SelectionSet
+                                            Scope__UserEmail
                                             decodesTo
                            }
 
@@ -32,7 +41,10 @@ fragments selections = exhaustiveFragmentSelection
                        [ buildFragment "Post" selections.onPost
                        , buildFragment "Query" selections.onQuery
                        , buildFragment "User" selections.onUser
-                       , buildFragment "UserOauth" selections.onUserOauth
+                       , buildFragment
+                         "UserAuthentication"
+                         selections.onUserAuthentication
+                       , buildFragment "UserEmail" selections.onUserEmail
                        ]
 
 maybeFragments :: forall decodesTo . Fragments (Maybe decodesTo)
@@ -42,6 +54,8 @@ maybeFragments = { onPost: pure
                             Nothing
                  , onUser: pure
                            Nothing
-                 , onUserOauth: pure
+                 , onUserAuthentication: pure
+                                         Nothing
+                 , onUserEmail: pure
                                 Nothing
                  }

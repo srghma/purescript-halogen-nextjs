@@ -1,216 +1,319 @@
 module Api.InputObject where
 
-import GraphQLClient (Optional)
-import Api.Scalars (Uuid, Datetime, Id)
+import GraphQLClient
+  (Optional, class ToGraphQLArgumentValue, toGraphQLArgumentValue)
+import Api.Scalars (Uuid, Id)
+import Data.Generic.Rep (class Generic)
+import Data.Newtype (class Newtype)
 
 -- | original name - PostCondition
-type PostCondition = { rowId :: Optional Uuid
-                     , name :: Optional String
-                     , content :: Optional String
-                     , userId :: Optional Uuid
-                     , createdAt :: Optional Datetime
-                     , updatedAt :: Optional Datetime
-                     }
+newtype PostCondition = PostCondition { id :: Optional Uuid
+                                      , userId :: Optional Uuid
+                                      }
 
--- | original name - CreatePostInput
-type CreatePostInput = { clientMutationId :: Optional String
-                       , post :: PostInput
-                       }
+derive instance genericPostCondition :: Generic PostCondition _
 
--- | original name - PostInput
-type PostInput = { rowId :: Optional Uuid
-                 , name :: String
-                 , content :: Optional String
-                 , userId :: Uuid
-                 , createdAt :: Optional Datetime
-                 , updatedAt :: Optional Datetime
-                 }
+derive instance newtypePostCondition :: Newtype PostCondition _
 
--- | original name - CreateUserOauthInput
-type CreateUserOauthInput = { clientMutationId :: Optional String
-                            , userOauth :: UserOauthInput
-                            }
+instance toGraphQLArgumentValuePostCondition :: ToGraphQLArgumentValue
+                                                PostCondition where
+  toGraphQLArgumentValue (PostCondition x) = toGraphQLArgumentValue x
 
--- | original name - UserOauthInput
-type UserOauthInput = { rowId :: Optional Uuid
-                      , service :: String
-                      , serviceIdentifier :: String
-                      , createdAt :: Optional Datetime
-                      , updatedAt :: Optional Datetime
-                      }
+-- | original name - UserEmailCondition
+newtype UserEmailCondition = UserEmailCondition { id :: Optional Uuid
+                                                , userId :: Optional Uuid
+                                                }
 
--- | original name - CreateUserInput
-type CreateUserInput = { clientMutationId :: Optional String
-                       , user :: UserInput
-                       }
+derive instance genericUserEmailCondition :: Generic UserEmailCondition _
 
--- | original name - UserInput
-type UserInput = { rowId :: Optional Uuid
-                 , firstName :: String
-                 , lastName :: String
-                 , email :: String
-                 , avatarUrl :: Optional String
-                 , createdAt :: Optional Datetime
-                 , updatedAt :: Optional Datetime
-                 }
+derive instance newtypeUserEmailCondition :: Newtype UserEmailCondition _
 
--- | original name - UpdatePostInput
-type UpdatePostInput = { clientMutationId :: Optional String
-                       , id :: Id
-                       , postPatch :: PostPatch
-                       }
+instance toGraphQLArgumentValueUserEmailCondition :: ToGraphQLArgumentValue
+                                                     UserEmailCondition where
+  toGraphQLArgumentValue (UserEmailCondition x) = toGraphQLArgumentValue x
 
--- | original name - PostPatch
-type PostPatch = { rowId :: Optional Uuid
-                 , name :: Optional String
-                 , content :: Optional String
-                 , userId :: Optional Uuid
-                 , createdAt :: Optional Datetime
-                 , updatedAt :: Optional Datetime
-                 }
+-- | original name - CreateUserEmailInput
+newtype CreateUserEmailInput = CreateUserEmailInput { clientMutationId :: Optional
+                                                                          String
+                                                    , userEmail :: UserEmailInput
+                                                    }
 
--- | original name - UpdatePostByRowIdInput
-type UpdatePostByRowIdInput = { clientMutationId :: Optional String
-                              , postPatch :: PostPatch
-                              , rowId :: Uuid
-                              }
+derive instance genericCreateUserEmailInput :: Generic CreateUserEmailInput _
 
--- | original name - UpdateUserOauthInput
-type UpdateUserOauthInput = { clientMutationId :: Optional String
-                            , id :: Id
-                            , userOauthPatch :: UserOauthPatch
-                            }
+derive instance newtypeCreateUserEmailInput :: Newtype CreateUserEmailInput _
 
--- | original name - UserOauthPatch
-type UserOauthPatch = { rowId :: Optional Uuid
-                      , service :: Optional String
-                      , serviceIdentifier :: Optional String
-                      , createdAt :: Optional Datetime
-                      , updatedAt :: Optional Datetime
-                      }
+instance toGraphQLArgumentValueCreateUserEmailInput :: ToGraphQLArgumentValue
+                                                       CreateUserEmailInput where
+  toGraphQLArgumentValue (CreateUserEmailInput x) = toGraphQLArgumentValue x
 
--- | original name - UpdateUserOauthByRowIdInput
-type UpdateUserOauthByRowIdInput = { clientMutationId :: Optional String
-                                   , userOauthPatch :: UserOauthPatch
-                                   , rowId :: Uuid
-                                   }
+-- | original name - UserEmailInput
+newtype UserEmailInput = UserEmailInput { email :: String }
 
--- | original name - UpdateUserOauthByServiceAndServiceIdentifierInput
-type UpdateUserOauthByServiceAndServiceIdentifierInput = { clientMutationId :: Optional
-                                                                               String
-                                                         , userOauthPatch :: UserOauthPatch
-                                                         , service :: String
-                                                         , serviceIdentifier :: String
-                                                         }
+derive instance genericUserEmailInput :: Generic UserEmailInput _
 
--- | original name - UpdateUserInput
-type UpdateUserInput = { clientMutationId :: Optional String
-                       , id :: Id
-                       , userPatch :: UserPatch
-                       }
+derive instance newtypeUserEmailInput :: Newtype UserEmailInput _
 
--- | original name - UserPatch
-type UserPatch = { rowId :: Optional Uuid
-                 , firstName :: Optional String
-                 , lastName :: Optional String
-                 , email :: Optional String
-                 , avatarUrl :: Optional String
-                 , createdAt :: Optional Datetime
-                 , updatedAt :: Optional Datetime
-                 }
-
--- | original name - UpdateUserByRowIdInput
-type UpdateUserByRowIdInput = { clientMutationId :: Optional String
-                              , userPatch :: UserPatch
-                              , rowId :: Uuid
-                              }
-
--- | original name - UpdateUserByEmailInput
-type UpdateUserByEmailInput = { clientMutationId :: Optional String
-                              , userPatch :: UserPatch
-                              , email :: String
-                              }
-
--- | original name - DeletePostInput
-type DeletePostInput = { clientMutationId :: Optional String, id :: Id }
-
--- | original name - DeletePostByRowIdInput
-type DeletePostByRowIdInput = { clientMutationId :: Optional String
-                              , rowId :: Uuid
-                              }
-
--- | original name - DeleteUserOauthInput
-type DeleteUserOauthInput = { clientMutationId :: Optional String, id :: Id }
-
--- | original name - DeleteUserOauthByRowIdInput
-type DeleteUserOauthByRowIdInput = { clientMutationId :: Optional String
-                                   , rowId :: Uuid
-                                   }
-
--- | original name - DeleteUserOauthByServiceAndServiceIdentifierInput
-type DeleteUserOauthByServiceAndServiceIdentifierInput = { clientMutationId :: Optional
-                                                                               String
-                                                         , service :: String
-                                                         , serviceIdentifier :: String
-                                                         }
+instance toGraphQLArgumentValueUserEmailInput :: ToGraphQLArgumentValue
+                                                 UserEmailInput where
+  toGraphQLArgumentValue (UserEmailInput x) = toGraphQLArgumentValue x
 
 -- | original name - DeleteUserInput
-type DeleteUserInput = { clientMutationId :: Optional String, id :: Id }
+newtype DeleteUserInput = DeleteUserInput { clientMutationId :: Optional String
+                                          , id :: Uuid
+                                          }
 
--- | original name - DeleteUserByRowIdInput
-type DeleteUserByRowIdInput = { clientMutationId :: Optional String
-                              , rowId :: Uuid
-                              }
+derive instance genericDeleteUserInput :: Generic DeleteUserInput _
 
--- | original name - DeleteUserByEmailInput
-type DeleteUserByEmailInput = { clientMutationId :: Optional String
-                              , email :: String
-                              }
+derive instance newtypeDeleteUserInput :: Newtype DeleteUserInput _
 
--- | original name - ConfirmInput
-type ConfirmInput = { clientMutationId :: Optional String, token :: String }
+instance toGraphQLArgumentValueDeleteUserInput :: ToGraphQLArgumentValue
+                                                  DeleteUserInput where
+  toGraphQLArgumentValue (DeleteUserInput x) = toGraphQLArgumentValue x
 
--- | original name - LoginInput
-type LoginInput = { clientMutationId :: Optional String
-                  , email :: String
-                  , password :: String
-                  }
+-- | original name - DeleteUserAuthenticationInput
+newtype DeleteUserAuthenticationInput = DeleteUserAuthenticationInput { clientMutationId :: Optional
+                                                                                            String
+                                                                      , id :: Uuid
+                                                                      }
 
--- | original name - RegisterInput
-type RegisterInput = { clientMutationId :: Optional String
-                     , firstName :: String
-                     , lastName :: String
-                     , email :: String
-                     , password :: String
-                     }
+derive instance genericDeleteUserAuthenticationInput :: Generic DeleteUserAuthenticationInput _
 
--- | original name - ResendConfirmationInput
-type ResendConfirmationInput = { clientMutationId :: Optional String
-                               , email :: String
-                               }
+derive instance newtypeDeleteUserAuthenticationInput :: Newtype DeleteUserAuthenticationInput _
+
+instance toGraphQLArgumentValueDeleteUserAuthenticationInput :: ToGraphQLArgumentValue
+                                                                DeleteUserAuthenticationInput where
+  toGraphQLArgumentValue (DeleteUserAuthenticationInput x) = toGraphQLArgumentValue
+                                                             x
+
+-- | original name - DeleteUserAuthenticationByNodeIdInput
+newtype DeleteUserAuthenticationByNodeIdInput = DeleteUserAuthenticationByNodeIdInput { clientMutationId :: Optional
+                                                                                                            String
+                                                                                      , nodeId :: Id
+                                                                                      }
+
+derive instance genericDeleteUserAuthenticationByNodeIdInput :: Generic DeleteUserAuthenticationByNodeIdInput _
+
+derive instance newtypeDeleteUserAuthenticationByNodeIdInput :: Newtype DeleteUserAuthenticationByNodeIdInput _
+
+instance toGraphQLArgumentValueDeleteUserAuthenticationByNodeIdInput :: ToGraphQLArgumentValue
+                                                                        DeleteUserAuthenticationByNodeIdInput where
+  toGraphQLArgumentValue (DeleteUserAuthenticationByNodeIdInput x) = toGraphQLArgumentValue
+                                                                     x
+
+-- | original name - DeleteUserAuthenticationByServiceAndIdentifierInput
+newtype DeleteUserAuthenticationByServiceAndIdentifierInput = DeleteUserAuthenticationByServiceAndIdentifierInput { clientMutationId :: Optional
+                                                                                                                                        String
+                                                                                                                  , identifier :: String
+                                                                                                                  , service :: String
+                                                                                                                  }
+
+derive instance genericDeleteUserAuthenticationByServiceAndIdentifierInput :: Generic DeleteUserAuthenticationByServiceAndIdentifierInput _
+
+derive instance newtypeDeleteUserAuthenticationByServiceAndIdentifierInput :: Newtype DeleteUserAuthenticationByServiceAndIdentifierInput _
+
+instance toGraphQLArgumentValueDeleteUserAuthenticationByServiceAndIdentifierInput :: ToGraphQLArgumentValue
+                                                                                      DeleteUserAuthenticationByServiceAndIdentifierInput where
+  toGraphQLArgumentValue (DeleteUserAuthenticationByServiceAndIdentifierInput x) = toGraphQLArgumentValue
+                                                                                   x
+
+-- | original name - DeleteUserByNodeIdInput
+newtype DeleteUserByNodeIdInput = DeleteUserByNodeIdInput { clientMutationId :: Optional
+                                                                                String
+                                                          , nodeId :: Id
+                                                          }
+
+derive instance genericDeleteUserByNodeIdInput :: Generic DeleteUserByNodeIdInput _
+
+derive instance newtypeDeleteUserByNodeIdInput :: Newtype DeleteUserByNodeIdInput _
+
+instance toGraphQLArgumentValueDeleteUserByNodeIdInput :: ToGraphQLArgumentValue
+                                                          DeleteUserByNodeIdInput where
+  toGraphQLArgumentValue (DeleteUserByNodeIdInput x) = toGraphQLArgumentValue x
+
+-- | original name - DeleteUserByUsernameInput
+newtype DeleteUserByUsernameInput = DeleteUserByUsernameInput { clientMutationId :: Optional
+                                                                                    String
+                                                              , username :: String
+                                                              }
+
+derive instance genericDeleteUserByUsernameInput :: Generic DeleteUserByUsernameInput _
+
+derive instance newtypeDeleteUserByUsernameInput :: Newtype DeleteUserByUsernameInput _
+
+instance toGraphQLArgumentValueDeleteUserByUsernameInput :: ToGraphQLArgumentValue
+                                                            DeleteUserByUsernameInput where
+  toGraphQLArgumentValue (DeleteUserByUsernameInput x) = toGraphQLArgumentValue
+                                                         x
+
+-- | original name - DeleteUserEmailInput
+newtype DeleteUserEmailInput = DeleteUserEmailInput { clientMutationId :: Optional
+                                                                          String
+                                                    , id :: Uuid
+                                                    }
+
+derive instance genericDeleteUserEmailInput :: Generic DeleteUserEmailInput _
+
+derive instance newtypeDeleteUserEmailInput :: Newtype DeleteUserEmailInput _
+
+instance toGraphQLArgumentValueDeleteUserEmailInput :: ToGraphQLArgumentValue
+                                                       DeleteUserEmailInput where
+  toGraphQLArgumentValue (DeleteUserEmailInput x) = toGraphQLArgumentValue x
+
+-- | original name - DeleteUserEmailByNodeIdInput
+newtype DeleteUserEmailByNodeIdInput = DeleteUserEmailByNodeIdInput { clientMutationId :: Optional
+                                                                                          String
+                                                                    , nodeId :: Id
+                                                                    }
+
+derive instance genericDeleteUserEmailByNodeIdInput :: Generic DeleteUserEmailByNodeIdInput _
+
+derive instance newtypeDeleteUserEmailByNodeIdInput :: Newtype DeleteUserEmailByNodeIdInput _
+
+instance toGraphQLArgumentValueDeleteUserEmailByNodeIdInput :: ToGraphQLArgumentValue
+                                                               DeleteUserEmailByNodeIdInput where
+  toGraphQLArgumentValue (DeleteUserEmailByNodeIdInput x) = toGraphQLArgumentValue
+                                                            x
+
+-- | original name - DeleteUserEmailByUserIdAndEmailInput
+newtype DeleteUserEmailByUserIdAndEmailInput = DeleteUserEmailByUserIdAndEmailInput { clientMutationId :: Optional
+                                                                                                          String
+                                                                                    , email :: String
+                                                                                    , userId :: Uuid
+                                                                                    }
+
+derive instance genericDeleteUserEmailByUserIdAndEmailInput :: Generic DeleteUserEmailByUserIdAndEmailInput _
+
+derive instance newtypeDeleteUserEmailByUserIdAndEmailInput :: Newtype DeleteUserEmailByUserIdAndEmailInput _
+
+instance toGraphQLArgumentValueDeleteUserEmailByUserIdAndEmailInput :: ToGraphQLArgumentValue
+                                                                       DeleteUserEmailByUserIdAndEmailInput where
+  toGraphQLArgumentValue (DeleteUserEmailByUserIdAndEmailInput x) = toGraphQLArgumentValue
+                                                                    x
+
+-- | original name - ForgotPasswordInput
+newtype ForgotPasswordInput = ForgotPasswordInput { clientMutationId :: Optional
+                                                                        String
+                                                  , email :: String
+                                                  }
+
+derive instance genericForgotPasswordInput :: Generic ForgotPasswordInput _
+
+derive instance newtypeForgotPasswordInput :: Newtype ForgotPasswordInput _
+
+instance toGraphQLArgumentValueForgotPasswordInput :: ToGraphQLArgumentValue
+                                                      ForgotPasswordInput where
+  toGraphQLArgumentValue (ForgotPasswordInput x) = toGraphQLArgumentValue x
 
 -- | original name - ResetPasswordInput
-type ResetPasswordInput = { clientMutationId :: Optional String
-                          , token :: String
-                          , newPassword :: String
-                          }
+newtype ResetPasswordInput = ResetPasswordInput { clientMutationId :: Optional
+                                                                      String
+                                                , newPassword :: String
+                                                , token :: String
+                                                , userId :: Uuid
+                                                }
 
--- | original name - SendResetPasswordInput
-type SendResetPasswordInput = { clientMutationId :: Optional String
-                              , email :: String
+derive instance genericResetPasswordInput :: Generic ResetPasswordInput _
+
+derive instance newtypeResetPasswordInput :: Newtype ResetPasswordInput _
+
+instance toGraphQLArgumentValueResetPasswordInput :: ToGraphQLArgumentValue
+                                                     ResetPasswordInput where
+  toGraphQLArgumentValue (ResetPasswordInput x) = toGraphQLArgumentValue x
+
+-- | original name - UpdateUserInput
+newtype UpdateUserInput = UpdateUserInput { clientMutationId :: Optional String
+                                          , id :: Uuid
+                                          , patch :: UserPatch
+                                          }
+
+derive instance genericUpdateUserInput :: Generic UpdateUserInput _
+
+derive instance newtypeUpdateUserInput :: Newtype UpdateUserInput _
+
+instance toGraphQLArgumentValueUpdateUserInput :: ToGraphQLArgumentValue
+                                                  UpdateUserInput where
+  toGraphQLArgumentValue (UpdateUserInput x) = toGraphQLArgumentValue x
+
+-- | original name - UserPatch
+newtype UserPatch = UserPatch { avatarUrl :: Optional String
+                              , name :: Optional String
                               }
 
--- | original name - UpsertPostInput
-type UpsertPostInput = { clientMutationId :: Optional String
-                       , post :: PostInput
-                       }
+derive instance genericUserPatch :: Generic UserPatch _
 
--- | original name - UpsertUserOauthInput
-type UpsertUserOauthInput = { clientMutationId :: Optional String
-                            , userOauth :: UserOauthInput
-                            }
+derive instance newtypeUserPatch :: Newtype UserPatch _
 
--- | original name - UpsertUserInput
-type UpsertUserInput = { clientMutationId :: Optional String
-                       , user :: UserInput
-                       }
+instance toGraphQLArgumentValueUserPatch :: ToGraphQLArgumentValue UserPatch where
+  toGraphQLArgumentValue (UserPatch x) = toGraphQLArgumentValue x
+
+-- | original name - UpdateUserByNodeIdInput
+newtype UpdateUserByNodeIdInput = UpdateUserByNodeIdInput { clientMutationId :: Optional
+                                                                                String
+                                                          , nodeId :: Id
+                                                          , patch :: UserPatch
+                                                          }
+
+derive instance genericUpdateUserByNodeIdInput :: Generic UpdateUserByNodeIdInput _
+
+derive instance newtypeUpdateUserByNodeIdInput :: Newtype UpdateUserByNodeIdInput _
+
+instance toGraphQLArgumentValueUpdateUserByNodeIdInput :: ToGraphQLArgumentValue
+                                                          UpdateUserByNodeIdInput where
+  toGraphQLArgumentValue (UpdateUserByNodeIdInput x) = toGraphQLArgumentValue x
+
+-- | original name - UpdateUserByUsernameInput
+newtype UpdateUserByUsernameInput = UpdateUserByUsernameInput { clientMutationId :: Optional
+                                                                                    String
+                                                              , patch :: UserPatch
+                                                              , username :: String
+                                                              }
+
+derive instance genericUpdateUserByUsernameInput :: Generic UpdateUserByUsernameInput _
+
+derive instance newtypeUpdateUserByUsernameInput :: Newtype UpdateUserByUsernameInput _
+
+instance toGraphQLArgumentValueUpdateUserByUsernameInput :: ToGraphQLArgumentValue
+                                                            UpdateUserByUsernameInput where
+  toGraphQLArgumentValue (UpdateUserByUsernameInput x) = toGraphQLArgumentValue
+                                                         x
+
+-- | original name - VerifyUserEmailInput
+newtype VerifyUserEmailInput = VerifyUserEmailInput { clientMutationId :: Optional
+                                                                          String
+                                                    , token :: String
+                                                    }
+
+derive instance genericVerifyUserEmailInput :: Generic VerifyUserEmailInput _
+
+derive instance newtypeVerifyUserEmailInput :: Newtype VerifyUserEmailInput _
+
+instance toGraphQLArgumentValueVerifyUserEmailInput :: ToGraphQLArgumentValue
+                                                       VerifyUserEmailInput where
+  toGraphQLArgumentValue (VerifyUserEmailInput x) = toGraphQLArgumentValue x
+
+-- | original name - WebLoginInput
+newtype WebLoginInput = WebLoginInput { password :: String, username :: String }
+
+derive instance genericWebLoginInput :: Generic WebLoginInput _
+
+derive instance newtypeWebLoginInput :: Newtype WebLoginInput _
+
+instance toGraphQLArgumentValueWebLoginInput :: ToGraphQLArgumentValue
+                                                WebLoginInput where
+  toGraphQLArgumentValue (WebLoginInput x) = toGraphQLArgumentValue x
+
+-- | original name - WebRegisterInput
+newtype WebRegisterInput = WebRegisterInput { avatarUrl :: Optional String
+                                            , email :: String
+                                            , name :: Optional String
+                                            , password :: String
+                                            , username :: String
+                                            }
+
+derive instance genericWebRegisterInput :: Generic WebRegisterInput _
+
+derive instance newtypeWebRegisterInput :: Newtype WebRegisterInput _
+
+instance toGraphQLArgumentValueWebRegisterInput :: ToGraphQLArgumentValue
+                                                   WebRegisterInput where
+  toGraphQLArgumentValue (WebRegisterInput x) = toGraphQLArgumentValue x

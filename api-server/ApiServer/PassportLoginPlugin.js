@@ -2,7 +2,7 @@ const { makeExtendSchemaPlugin, gql } = require("graphile-utils");
 
 exports.mkPassportLoginPlugin = mkResolvers => makeExtendSchemaPlugin(build => ({
   typeDefs: gql`
-    input RegisterInput {
+    input WebRegisterInput {
       username: String!
       email: String!
       password: String!
@@ -10,22 +10,22 @@ exports.mkPassportLoginPlugin = mkResolvers => makeExtendSchemaPlugin(build => (
       avatarUrl: String
     }
 
-    type RegisterPayload {
+    type WebRegisterPayload {
       user: User! @pgField
     }
 
-    input LoginInput {
+    input WebLoginInput {
       username: String!
       password: String!
     }
 
-    type LoginPayload {
+    type WebLoginPayload {
       user: User! @pgField
     }
 
     extend type Mutation {
-      register(input: RegisterInput!): RegisterPayload
-      login(input: LoginInput!): LoginPayload
+      webRegister(input: WebRegisterInput!): WebRegisterPayload
+      webLogin(input: WebLoginInput!): WebLoginPayload
     }
   `,
   resolvers: mkResolvers(build)

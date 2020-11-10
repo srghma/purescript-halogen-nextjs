@@ -1,4 +1,4 @@
-module Api.Object.PostsConnection where
+module Api.Object.UserEmailsConnection where
 
 import GraphQLClient
   ( SelectionSet
@@ -8,12 +8,16 @@ import GraphQLClient
   , graphqlDefaultResponseScalarDecoder
   )
 import Api.Scopes
-  (Scope__PostsEdge, Scope__PostsConnection, Scope__Post, Scope__PageInfo)
+  ( Scope__UserEmailsEdge
+  , Scope__UserEmailsConnection
+  , Scope__UserEmail
+  , Scope__PageInfo
+  )
 
 edges :: forall r . SelectionSet
-                    Scope__PostsEdge
+                    Scope__UserEmailsEdge
                     r -> SelectionSet
-                         Scope__PostsConnection
+                         Scope__UserEmailsConnection
                          (Array
                           r)
 edges = selectionForCompositeField
@@ -22,9 +26,9 @@ edges = selectionForCompositeField
         graphqlDefaultResponseFunctorOrScalarDecoderTransformer
 
 nodes :: forall r . SelectionSet
-                    Scope__Post
+                    Scope__UserEmail
                     r -> SelectionSet
-                         Scope__PostsConnection
+                         Scope__UserEmailsConnection
                          (Array
                           r)
 nodes = selectionForCompositeField
@@ -35,14 +39,14 @@ nodes = selectionForCompositeField
 pageInfo :: forall r . SelectionSet
                        Scope__PageInfo
                        r -> SelectionSet
-                            Scope__PostsConnection
+                            Scope__UserEmailsConnection
                             r
 pageInfo = selectionForCompositeField
            "pageInfo"
            []
            graphqlDefaultResponseFunctorOrScalarDecoderTransformer
 
-totalCount :: SelectionSet Scope__PostsConnection Int
+totalCount :: SelectionSet Scope__UserEmailsConnection Int
 totalCount = selectionForField
              "totalCount"
              []

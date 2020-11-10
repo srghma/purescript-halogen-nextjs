@@ -17,9 +17,11 @@ data PostgraphileAppendPlugin
 
 foreign import postgraphile :: Fn3 Pool String PostgraphileOptions Middleware
 foreign import makePluginHook :: Array PostgraphileServerPlugin -> PostgraphileServerPluginHook
+foreign import graphileSupporter :: PostgraphileServerPlugin
 foreign import enhanceHttpServerWithSubscriptions :: EffectFn2 Node.HTTP.Server Middleware Unit
 foreign import pgPubsub :: PostgraphileServerPlugin
 foreign import pgSimplifyInflectorPlugin :: PostgraphileAppendPlugin
+foreign import pgMutationUpsertPlugin :: PostgraphileAppendPlugin
 
 type PostgraphileOptions =
   { pluginHook                 :: PostgraphileServerPluginHook

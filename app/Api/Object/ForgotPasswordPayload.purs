@@ -1,4 +1,4 @@
-module Api.Object.SendResetPasswordPayload where
+module Api.Object.ForgotPasswordPayload where
 
 import GraphQLClient
   ( SelectionSet
@@ -8,10 +8,10 @@ import GraphQLClient
   , selectionForCompositeField
   , graphqlDefaultResponseFunctorOrScalarDecoderTransformer
   )
-import Api.Scopes (Scope__SendResetPasswordPayload)
+import Api.Scopes (Scope__ForgotPasswordPayload)
 import Data.Maybe (Maybe)
 
-clientMutationId :: SelectionSet Scope__SendResetPasswordPayload (Maybe String)
+clientMutationId :: SelectionSet Scope__ForgotPasswordPayload (Maybe String)
 clientMutationId = selectionForField
                    "clientMutationId"
                    []
@@ -20,10 +20,13 @@ clientMutationId = selectionForField
 query :: forall r . SelectionSet
                     Scope__RootQuery
                     r -> SelectionSet
-                         Scope__SendResetPasswordPayload
+                         Scope__ForgotPasswordPayload
                          (Maybe
                           r)
 query = selectionForCompositeField
         "query"
         []
         graphqlDefaultResponseFunctorOrScalarDecoderTransformer
+
+success :: SelectionSet Scope__ForgotPasswordPayload (Maybe Boolean)
+success = selectionForField "success" [] graphqlDefaultResponseScalarDecoder

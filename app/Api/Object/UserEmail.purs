@@ -1,4 +1,4 @@
-module Api.Object.Post where
+module Api.Object.UserEmail where
 
 import GraphQLClient
   ( SelectionSet
@@ -7,32 +7,35 @@ import GraphQLClient
   , selectionForCompositeField
   , graphqlDefaultResponseFunctorOrScalarDecoderTransformer
   )
-import Api.Scopes (Scope__Post, Scope__User)
+import Api.Scopes (Scope__UserEmail, Scope__User)
 import Api.Scalars (Datetime, Uuid, Id)
 import Data.Maybe (Maybe)
 
-content :: SelectionSet Scope__Post String
-content = selectionForField "content" [] graphqlDefaultResponseScalarDecoder
-
-createdAt :: SelectionSet Scope__Post Datetime
+createdAt :: SelectionSet Scope__UserEmail Datetime
 createdAt = selectionForField "createdAt" [] graphqlDefaultResponseScalarDecoder
 
-id :: SelectionSet Scope__Post Uuid
+email :: SelectionSet Scope__UserEmail String
+email = selectionForField "email" [] graphqlDefaultResponseScalarDecoder
+
+id :: SelectionSet Scope__UserEmail Uuid
 id = selectionForField "id" [] graphqlDefaultResponseScalarDecoder
 
-name :: SelectionSet Scope__Post String
-name = selectionForField "name" [] graphqlDefaultResponseScalarDecoder
+isVerified :: SelectionSet Scope__UserEmail Boolean
+isVerified = selectionForField
+             "isVerified"
+             []
+             graphqlDefaultResponseScalarDecoder
 
-nodeId :: SelectionSet Scope__Post Id
+nodeId :: SelectionSet Scope__UserEmail Id
 nodeId = selectionForField "nodeId" [] graphqlDefaultResponseScalarDecoder
 
-updatedAt :: SelectionSet Scope__Post Datetime
+updatedAt :: SelectionSet Scope__UserEmail Datetime
 updatedAt = selectionForField "updatedAt" [] graphqlDefaultResponseScalarDecoder
 
 user :: forall r . SelectionSet
                    Scope__User
                    r -> SelectionSet
-                        Scope__Post
+                        Scope__UserEmail
                         (Maybe
                          r)
 user = selectionForCompositeField
@@ -40,5 +43,5 @@ user = selectionForCompositeField
        []
        graphqlDefaultResponseFunctorOrScalarDecoderTransformer
 
-userId :: SelectionSet Scope__Post Uuid
+userId :: SelectionSet Scope__UserEmail Uuid
 userId = selectionForField "userId" [] graphqlDefaultResponseScalarDecoder

@@ -1,4 +1,4 @@
-module Api.Object.PostsEdge where
+module Api.Object.UserEmailsEdge where
 
 import GraphQLClient
   ( SelectionSet
@@ -7,14 +7,18 @@ import GraphQLClient
   , selectionForCompositeField
   , graphqlDefaultResponseFunctorOrScalarDecoderTransformer
   )
-import Api.Scopes (Scope__PostsEdge, Scope__Post)
+import Api.Scopes (Scope__UserEmailsEdge, Scope__UserEmail)
 import Data.Maybe (Maybe)
 import Api.Scalars (Cursor)
 
-cursor :: SelectionSet Scope__PostsEdge (Maybe Cursor)
+cursor :: SelectionSet Scope__UserEmailsEdge (Maybe Cursor)
 cursor = selectionForField "cursor" [] graphqlDefaultResponseScalarDecoder
 
-node :: forall r . SelectionSet Scope__Post r -> SelectionSet Scope__PostsEdge r
+node :: forall r . SelectionSet
+                   Scope__UserEmail
+                   r -> SelectionSet
+                        Scope__UserEmailsEdge
+                        r
 node = selectionForCompositeField
        "node"
        []

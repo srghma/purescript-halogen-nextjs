@@ -4,9 +4,9 @@ import GraphQLClient
   ( SelectionSet
   , selectionForField
   , graphqlDefaultResponseScalarDecoder
+  , Scope__RootQuery
   , selectionForCompositeField
   , graphqlDefaultResponseFunctorOrScalarDecoderTransformer
-  , Scope__RootQuery
   , Optional
   , toGraphQLArguments
   )
@@ -21,17 +21,6 @@ clientMutationId = selectionForField
                    []
                    graphqlDefaultResponseScalarDecoder
 
-user :: forall r . SelectionSet
-                   Scope__User
-                   r -> SelectionSet
-                        Scope__UpdateUserPayload
-                        (Maybe
-                         r)
-user = selectionForCompositeField
-       "user"
-       []
-       graphqlDefaultResponseFunctorOrScalarDecoderTransformer
-
 query :: forall r . SelectionSet
                     Scope__RootQuery
                     r -> SelectionSet
@@ -42,6 +31,17 @@ query = selectionForCompositeField
         "query"
         []
         graphqlDefaultResponseFunctorOrScalarDecoderTransformer
+
+user :: forall r . SelectionSet
+                   Scope__User
+                   r -> SelectionSet
+                        Scope__UpdateUserPayload
+                        (Maybe
+                         r)
+user = selectionForCompositeField
+       "user"
+       []
+       graphqlDefaultResponseFunctorOrScalarDecoderTransformer
 
 type UserEdgeInputRowOptional r = ( orderBy :: Optional (Array UsersOrderBy)
                                   | r
