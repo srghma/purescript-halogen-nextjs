@@ -1,4 +1,4 @@
-module Api.Object.DeleteUserEmailPayload where
+module Api.Object.UpsertUserEmailPayload where
 
 import GraphQLClient
   ( SelectionSet
@@ -11,32 +11,25 @@ import GraphQLClient
   , toGraphQLArguments
   )
 import Api.Scopes
-  ( Scope__DeleteUserEmailPayload
+  ( Scope__UpsertUserEmailPayload
   , Scope__User
   , Scope__UserEmail
   , Scope__UserEmailsEdge
   )
 import Data.Maybe (Maybe)
-import Api.Scalars (Id)
 import Api.Enum.UserEmailsOrderBy (UserEmailsOrderBy)
 import Type.Row (type (+))
 
-clientMutationId :: SelectionSet Scope__DeleteUserEmailPayload (Maybe String)
+clientMutationId :: SelectionSet Scope__UpsertUserEmailPayload (Maybe String)
 clientMutationId = selectionForField
                    "clientMutationId"
                    []
                    graphqlDefaultResponseScalarDecoder
 
-deletedUserEmailId :: SelectionSet Scope__DeleteUserEmailPayload (Maybe Id)
-deletedUserEmailId = selectionForField
-                     "deletedUserEmailId"
-                     []
-                     graphqlDefaultResponseScalarDecoder
-
 query :: forall r . SelectionSet
                     Scope__RootQuery
                     r -> SelectionSet
-                         Scope__DeleteUserEmailPayload
+                         Scope__UpsertUserEmailPayload
                          (Maybe
                           r)
 query = selectionForCompositeField
@@ -47,7 +40,7 @@ query = selectionForCompositeField
 user :: forall r . SelectionSet
                    Scope__User
                    r -> SelectionSet
-                        Scope__DeleteUserEmailPayload
+                        Scope__UpsertUserEmailPayload
                         (Maybe
                          r)
 user = selectionForCompositeField
@@ -58,7 +51,7 @@ user = selectionForCompositeField
 userEmail :: forall r . SelectionSet
                         Scope__UserEmail
                         r -> SelectionSet
-                             Scope__DeleteUserEmailPayload
+                             Scope__UpsertUserEmailPayload
                              (Maybe
                               r)
 userEmail = selectionForCompositeField
@@ -77,7 +70,7 @@ type UserEmailEdgeInput = { | UserEmailEdgeInputRowOptional + () }
 userEmailEdge :: forall r . UserEmailEdgeInput -> SelectionSet
                                                   Scope__UserEmailsEdge
                                                   r -> SelectionSet
-                                                       Scope__DeleteUserEmailPayload
+                                                       Scope__UpsertUserEmailPayload
                                                        (Maybe
                                                         r)
 userEmailEdge input = selectionForCompositeField

@@ -4,18 +4,19 @@ import Api.InputObject
   ( CreateUserEmailInput
   , DeleteUserInput
   , DeleteUserAuthenticationInput
-  , DeleteUserAuthenticationByNodeIdInput
+  , DeleteUserAuthenticationByIdInput
   , DeleteUserAuthenticationByServiceAndIdentifierInput
-  , DeleteUserByNodeIdInput
+  , DeleteUserByIdInput
   , DeleteUserByUsernameInput
   , DeleteUserEmailInput
-  , DeleteUserEmailByNodeIdInput
+  , DeleteUserEmailByIdInput
   , DeleteUserEmailByUserIdAndEmailInput
   , ForgotPasswordInput
   , ResetPasswordInput
   , UpdateUserInput
-  , UpdateUserByNodeIdInput
+  , UpdateUserByIdInput
   , UpdateUserByUsernameInput
+  , UpsertUserEmailInput
   , VerifyUserEmailInput
   , WebLoginInput
   , WebRegisterInput
@@ -36,6 +37,7 @@ import Api.Scopes
   , Scope__ForgotPasswordPayload
   , Scope__ResetPasswordPayload
   , Scope__UpdateUserPayload
+  , Scope__UpsertUserEmailPayload
   , Scope__VerifyUserEmailPayload
   , Scope__WebLoginPayload
   , Scope__WebRegisterPayload
@@ -98,25 +100,25 @@ deleteUserAuthentication input = selectionForCompositeField
                                   input)
                                  graphqlDefaultResponseFunctorOrScalarDecoderTransformer
 
-type DeleteUserAuthenticationByNodeIdInputRowRequired r = ( input :: Api.InputObject.DeleteUserAuthenticationByNodeIdInput
-                                                          | r
-                                                          )
+type DeleteUserAuthenticationByIdInputRowRequired r = ( input :: Api.InputObject.DeleteUserAuthenticationByIdInput
+                                                      | r
+                                                      )
 
-type DeleteUserAuthenticationByNodeIdInput = {
-| DeleteUserAuthenticationByNodeIdInputRowRequired + ()
+type DeleteUserAuthenticationByIdInput = {
+| DeleteUserAuthenticationByIdInputRowRequired + ()
 }
 
-deleteUserAuthenticationByNodeId :: forall r . DeleteUserAuthenticationByNodeIdInput -> SelectionSet
-                                                                                        Scope__DeleteUserAuthenticationPayload
-                                                                                        r -> SelectionSet
-                                                                                             Scope__RootMutation
-                                                                                             (Maybe
-                                                                                              r)
-deleteUserAuthenticationByNodeId input = selectionForCompositeField
-                                         "deleteUserAuthenticationByNodeId"
-                                         (toGraphQLArguments
-                                          input)
-                                         graphqlDefaultResponseFunctorOrScalarDecoderTransformer
+deleteUserAuthenticationById :: forall r . DeleteUserAuthenticationByIdInput -> SelectionSet
+                                                                                Scope__DeleteUserAuthenticationPayload
+                                                                                r -> SelectionSet
+                                                                                     Scope__RootMutation
+                                                                                     (Maybe
+                                                                                      r)
+deleteUserAuthenticationById input = selectionForCompositeField
+                                     "deleteUserAuthenticationById"
+                                     (toGraphQLArguments
+                                      input)
+                                     graphqlDefaultResponseFunctorOrScalarDecoderTransformer
 
 type DeleteUserAuthenticationByServiceAndIdentifierInputRowRequired r = ( input :: Api.InputObject.DeleteUserAuthenticationByServiceAndIdentifierInput
                                                                         | r
@@ -138,23 +140,23 @@ deleteUserAuthenticationByServiceAndIdentifier input = selectionForCompositeFiel
                                                         input)
                                                        graphqlDefaultResponseFunctorOrScalarDecoderTransformer
 
-type DeleteUserByNodeIdInputRowRequired r = ( input :: Api.InputObject.DeleteUserByNodeIdInput
-                                            | r
-                                            )
+type DeleteUserByIdInputRowRequired r = ( input :: Api.InputObject.DeleteUserByIdInput
+                                        | r
+                                        )
 
-type DeleteUserByNodeIdInput = { | DeleteUserByNodeIdInputRowRequired + () }
+type DeleteUserByIdInput = { | DeleteUserByIdInputRowRequired + () }
 
-deleteUserByNodeId :: forall r . DeleteUserByNodeIdInput -> SelectionSet
-                                                            Scope__DeleteUserPayload
-                                                            r -> SelectionSet
-                                                                 Scope__RootMutation
-                                                                 (Maybe
-                                                                  r)
-deleteUserByNodeId input = selectionForCompositeField
-                           "deleteUserByNodeId"
-                           (toGraphQLArguments
-                            input)
-                           graphqlDefaultResponseFunctorOrScalarDecoderTransformer
+deleteUserById :: forall r . DeleteUserByIdInput -> SelectionSet
+                                                    Scope__DeleteUserPayload
+                                                    r -> SelectionSet
+                                                         Scope__RootMutation
+                                                         (Maybe
+                                                          r)
+deleteUserById input = selectionForCompositeField
+                       "deleteUserById"
+                       (toGraphQLArguments
+                        input)
+                       graphqlDefaultResponseFunctorOrScalarDecoderTransformer
 
 type DeleteUserByUsernameInputRowRequired r = ( input :: Api.InputObject.DeleteUserByUsernameInput
                                               | r
@@ -192,25 +194,23 @@ deleteUserEmail input = selectionForCompositeField
                          input)
                         graphqlDefaultResponseFunctorOrScalarDecoderTransformer
 
-type DeleteUserEmailByNodeIdInputRowRequired r = ( input :: Api.InputObject.DeleteUserEmailByNodeIdInput
-                                                 | r
-                                                 )
+type DeleteUserEmailByIdInputRowRequired r = ( input :: Api.InputObject.DeleteUserEmailByIdInput
+                                             | r
+                                             )
 
-type DeleteUserEmailByNodeIdInput = {
-| DeleteUserEmailByNodeIdInputRowRequired + ()
-}
+type DeleteUserEmailByIdInput = { | DeleteUserEmailByIdInputRowRequired + () }
 
-deleteUserEmailByNodeId :: forall r . DeleteUserEmailByNodeIdInput -> SelectionSet
-                                                                      Scope__DeleteUserEmailPayload
-                                                                      r -> SelectionSet
-                                                                           Scope__RootMutation
-                                                                           (Maybe
-                                                                            r)
-deleteUserEmailByNodeId input = selectionForCompositeField
-                                "deleteUserEmailByNodeId"
-                                (toGraphQLArguments
-                                 input)
-                                graphqlDefaultResponseFunctorOrScalarDecoderTransformer
+deleteUserEmailById :: forall r . DeleteUserEmailByIdInput -> SelectionSet
+                                                              Scope__DeleteUserEmailPayload
+                                                              r -> SelectionSet
+                                                                   Scope__RootMutation
+                                                                   (Maybe
+                                                                    r)
+deleteUserEmailById input = selectionForCompositeField
+                            "deleteUserEmailById"
+                            (toGraphQLArguments
+                             input)
+                            graphqlDefaultResponseFunctorOrScalarDecoderTransformer
 
 type DeleteUserEmailByUserIdAndEmailInputRowRequired r = ( input :: Api.InputObject.DeleteUserEmailByUserIdAndEmailInput
                                                          | r
@@ -286,23 +286,23 @@ updateUser input = selectionForCompositeField
                     input)
                    graphqlDefaultResponseFunctorOrScalarDecoderTransformer
 
-type UpdateUserByNodeIdInputRowRequired r = ( input :: Api.InputObject.UpdateUserByNodeIdInput
-                                            | r
-                                            )
+type UpdateUserByIdInputRowRequired r = ( input :: Api.InputObject.UpdateUserByIdInput
+                                        | r
+                                        )
 
-type UpdateUserByNodeIdInput = { | UpdateUserByNodeIdInputRowRequired + () }
+type UpdateUserByIdInput = { | UpdateUserByIdInputRowRequired + () }
 
-updateUserByNodeId :: forall r . UpdateUserByNodeIdInput -> SelectionSet
-                                                            Scope__UpdateUserPayload
-                                                            r -> SelectionSet
-                                                                 Scope__RootMutation
-                                                                 (Maybe
-                                                                  r)
-updateUserByNodeId input = selectionForCompositeField
-                           "updateUserByNodeId"
-                           (toGraphQLArguments
-                            input)
-                           graphqlDefaultResponseFunctorOrScalarDecoderTransformer
+updateUserById :: forall r . UpdateUserByIdInput -> SelectionSet
+                                                    Scope__UpdateUserPayload
+                                                    r -> SelectionSet
+                                                         Scope__RootMutation
+                                                         (Maybe
+                                                          r)
+updateUserById input = selectionForCompositeField
+                       "updateUserById"
+                       (toGraphQLArguments
+                        input)
+                       graphqlDefaultResponseFunctorOrScalarDecoderTransformer
 
 type UpdateUserByUsernameInputRowRequired r = ( input :: Api.InputObject.UpdateUserByUsernameInput
                                               | r
@@ -321,6 +321,24 @@ updateUserByUsername input = selectionForCompositeField
                              (toGraphQLArguments
                               input)
                              graphqlDefaultResponseFunctorOrScalarDecoderTransformer
+
+type UpsertUserEmailInputRowRequired r = ( input :: Api.InputObject.UpsertUserEmailInput
+                                         | r
+                                         )
+
+type UpsertUserEmailInput = { | UpsertUserEmailInputRowRequired + () }
+
+upsertUserEmail :: forall r . UpsertUserEmailInput -> SelectionSet
+                                                      Scope__UpsertUserEmailPayload
+                                                      r -> SelectionSet
+                                                           Scope__RootMutation
+                                                           (Maybe
+                                                            r)
+upsertUserEmail input = selectionForCompositeField
+                        "upsertUserEmail"
+                        (toGraphQLArguments
+                         input)
+                        graphqlDefaultResponseFunctorOrScalarDecoderTransformer
 
 type VerifyUserEmailInputRowRequired r = ( input :: Api.InputObject.VerifyUserEmailInput
                                          | r

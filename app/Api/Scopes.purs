@@ -10,6 +10,8 @@ data Scope__DeleteUserPayload
 
 data Scope__ForgotPasswordPayload
 
+data Scope__ListenPayload
+
 data Scope__PageInfo
 
 data Scope__Post
@@ -21,6 +23,8 @@ data Scope__PostsEdge
 data Scope__ResetPasswordPayload
 
 data Scope__UpdateUserPayload
+
+data Scope__UpsertUserEmailPayload
 
 data Scope__User
 

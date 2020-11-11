@@ -8,7 +8,7 @@ import GraphQLClient
   , graphqlDefaultResponseFunctorOrScalarDecoderTransformer
   )
 import Api.Scopes (Scope__UserEmail, Scope__User)
-import Api.Scalars (Datetime, Uuid, Id)
+import Api.Scalars (Datetime, Id, Uuid)
 import Data.Maybe (Maybe)
 
 createdAt :: SelectionSet Scope__UserEmail Datetime
@@ -17,7 +17,7 @@ createdAt = selectionForField "createdAt" [] graphqlDefaultResponseScalarDecoder
 email :: SelectionSet Scope__UserEmail String
 email = selectionForField "email" [] graphqlDefaultResponseScalarDecoder
 
-id :: SelectionSet Scope__UserEmail Uuid
+id :: SelectionSet Scope__UserEmail Id
 id = selectionForField "id" [] graphqlDefaultResponseScalarDecoder
 
 isVerified :: SelectionSet Scope__UserEmail Boolean
@@ -26,8 +26,8 @@ isVerified = selectionForField
              []
              graphqlDefaultResponseScalarDecoder
 
-nodeId :: SelectionSet Scope__UserEmail Id
-nodeId = selectionForField "nodeId" [] graphqlDefaultResponseScalarDecoder
+rowId :: SelectionSet Scope__UserEmail Uuid
+rowId = selectionForField "rowId" [] graphqlDefaultResponseScalarDecoder
 
 updatedAt :: SelectionSet Scope__UserEmail Datetime
 updatedAt = selectionForField "updatedAt" [] graphqlDefaultResponseScalarDecoder

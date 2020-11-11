@@ -22,11 +22,11 @@ clientMutationId = selectionForField
                    []
                    graphqlDefaultResponseScalarDecoder
 
-deletedUserNodeId :: SelectionSet Scope__DeleteUserPayload (Maybe Id)
-deletedUserNodeId = selectionForField
-                    "deletedUserNodeId"
-                    []
-                    graphqlDefaultResponseScalarDecoder
+deletedUserId :: SelectionSet Scope__DeleteUserPayload (Maybe Id)
+deletedUserId = selectionForField
+                "deletedUserId"
+                []
+                graphqlDefaultResponseScalarDecoder
 
 query :: forall r . SelectionSet
                     Scope__RootQuery

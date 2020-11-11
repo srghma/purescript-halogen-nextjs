@@ -45,8 +45,8 @@ A point in time as described by the [ISO
 """
 scalar Datetime
 
-"""All input for the `deleteUserAuthenticationByNodeId` mutation."""
-input DeleteUserAuthenticationByNodeIdInput {
+"""All input for the `deleteUserAuthenticationById` mutation."""
+input DeleteUserAuthenticationByIdInput {
   """
   An arbitrary string value with no semantic meaning. Will be included in the
   payload verbatim. May be used to track mutations by the client.
@@ -56,7 +56,7 @@ input DeleteUserAuthenticationByNodeIdInput {
   """
   The globally unique `ID` which will identify a single `UserAuthentication` to be deleted.
   """
-  nodeId: ID!
+  id: ID!
 }
 
 """
@@ -83,7 +83,7 @@ input DeleteUserAuthenticationInput {
   payload verbatim. May be used to track mutations by the client.
   """
   clientMutationId: String
-  id: UUID!
+  rowId: UUID!
 }
 
 """The output of our delete `UserAuthentication` mutation."""
@@ -93,7 +93,7 @@ type DeleteUserAuthenticationPayload {
   unchanged and unused. May be used by a client to track mutations.
   """
   clientMutationId: String
-  deletedUserAuthenticationNodeId: ID
+  deletedUserAuthenticationId: ID
 
   """
   Our root query field type. Allows us to run any query from our mutation payload.
@@ -110,8 +110,8 @@ type DeleteUserAuthenticationPayload {
   ): UserAuthenticationsEdge
 }
 
-"""All input for the `deleteUserByNodeId` mutation."""
-input DeleteUserByNodeIdInput {
+"""All input for the `deleteUserById` mutation."""
+input DeleteUserByIdInput {
   """
   An arbitrary string value with no semantic meaning. Will be included in the
   payload verbatim. May be used to track mutations by the client.
@@ -121,7 +121,7 @@ input DeleteUserByNodeIdInput {
   """
   The globally unique `ID` which will identify a single `User` to be deleted.
   """
-  nodeId: ID!
+  id: ID!
 }
 
 """All input for the `deleteUserByUsername` mutation."""
@@ -136,8 +136,8 @@ input DeleteUserByUsernameInput {
   username: String!
 }
 
-"""All input for the `deleteUserEmailByNodeId` mutation."""
-input DeleteUserEmailByNodeIdInput {
+"""All input for the `deleteUserEmailById` mutation."""
+input DeleteUserEmailByIdInput {
   """
   An arbitrary string value with no semantic meaning. Will be included in the
   payload verbatim. May be used to track mutations by the client.
@@ -147,7 +147,7 @@ input DeleteUserEmailByNodeIdInput {
   """
   The globally unique `ID` which will identify a single `UserEmail` to be deleted.
   """
-  nodeId: ID!
+  id: ID!
 }
 
 """All input for the `deleteUserEmailByUserIdAndEmail` mutation."""
@@ -170,7 +170,7 @@ input DeleteUserEmailInput {
   payload verbatim. May be used to track mutations by the client.
   """
   clientMutationId: String
-  id: UUID!
+  rowId: UUID!
 }
 
 """The output of our delete `UserEmail` mutation."""
@@ -180,7 +180,7 @@ type DeleteUserEmailPayload {
   unchanged and unused. May be used by a client to track mutations.
   """
   clientMutationId: String
-  deletedUserEmailNodeId: ID
+  deletedUserEmailId: ID
 
   """
   Our root query field type. Allows us to run any query from our mutation payload.
@@ -209,7 +209,7 @@ input DeleteUserInput {
   clientMutationId: String
 
   """Unique identifier for the user."""
-  id: UUID!
+  rowId: UUID!
 }
 
 """The output of our delete `User` mutation."""
@@ -219,7 +219,7 @@ type DeleteUserPayload {
   unchanged and unused. May be used by a client to track mutations.
   """
   clientMutationId: String
-  deletedUserNodeId: ID
+  deletedUserId: ID
 
   """
   Our root query field type. Allows us to run any query from our mutation payload.
@@ -261,6 +261,15 @@ type ForgotPasswordPayload {
   success: Boolean
 }
 
+type ListenPayload {
+  """
+  Our root query field type. Allows us to run any query from our subscription payload.
+  """
+  query: Query
+  relatedNode: Node
+  relatedNodeId: ID
+}
+
 """
 The root mutation type which contains root level fields which mutate data.
 """
@@ -290,11 +299,11 @@ type Mutation {
   ): DeleteUserAuthenticationPayload
 
   """Deletes a single `UserAuthentication` using its globally unique id."""
-  deleteUserAuthenticationByNodeId(
+  deleteUserAuthenticationById(
     """
     The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
     """
-    input: DeleteUserAuthenticationByNodeIdInput!
+    input: DeleteUserAuthenticationByIdInput!
   ): DeleteUserAuthenticationPayload
 
   """Deletes a single `UserAuthentication` using a unique key."""
@@ -306,11 +315,11 @@ type Mutation {
   ): DeleteUserAuthenticationPayload
 
   """Deletes a single `User` using its globally unique id."""
-  deleteUserByNodeId(
+  deleteUserById(
     """
     The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
     """
-    input: DeleteUserByNodeIdInput!
+    input: DeleteUserByIdInput!
   ): DeleteUserPayload
 
   """Deletes a single `User` using a unique key."""
@@ -330,11 +339,11 @@ type Mutation {
   ): DeleteUserEmailPayload
 
   """Deletes a single `UserEmail` using its globally unique id."""
-  deleteUserEmailByNodeId(
+  deleteUserEmailById(
     """
     The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
     """
-    input: DeleteUserEmailByNodeIdInput!
+    input: DeleteUserEmailByIdInput!
   ): DeleteUserEmailPayload
 
   """Deletes a single `UserEmail` using a unique key."""
@@ -376,11 +385,11 @@ type Mutation {
   ): UpdateUserPayload
 
   """Updates a single `User` using its globally unique id and a patch."""
-  updateUserByNodeId(
+  updateUserById(
     """
     The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
     """
-    input: UpdateUserByNodeIdInput!
+    input: UpdateUserByIdInput!
   ): UpdateUserPayload
 
   """Updates a single `User` using a unique key and a patch."""
@@ -390,6 +399,14 @@ type Mutation {
     """
     input: UpdateUserByUsernameInput!
   ): UpdateUserPayload
+
+  """Upserts a single `UserEmail`."""
+  upsertUserEmail(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpsertUserEmailInput!
+  ): UpsertUserEmailPayload
 
   """
   After you add an email address, you will receive an email with a verification
@@ -420,7 +437,7 @@ interface Node {
   """
   A globally unique identifier. Can be used in various places throughout the system to identify this single value.
   """
-  nodeId: ID!
+  id: ID!
 }
 
 """Information about pagination in a connection."""
@@ -441,13 +458,13 @@ type PageInfo {
 type Post implements Node {
   content: String!
   createdAt: Datetime!
-  id: UUID!
-  name: String!
 
   """
   A globally unique identifier. Can be used in various places throughout the system to identify this single value.
   """
-  nodeId: ID!
+  id: ID!
+  name: String!
+  rowId: UUID!
   updatedAt: Datetime!
 
   """Reads a single `User` that is related to this `Post`."""
@@ -459,8 +476,8 @@ type Post implements Node {
 A condition to be used against `Post` object types. All fields are tested for equality and combined with a logical ‘and.’
 """
 input PostCondition {
-  """Checks for equality with the object’s `id` field."""
-  id: UUID
+  """Checks for equality with the object’s `rowId` field."""
+  rowId: UUID
 
   """Checks for equality with the object’s `userId` field."""
   userId: UUID
@@ -508,22 +525,22 @@ type Query implements Node {
   """The currently logged in user (or null if not logged in)."""
   currentUser: User
 
-  """Fetches an object given its globally unique `ID`."""
-  node(
-    """The globally unique `ID`."""
-    nodeId: ID!
-  ): Node
-
   """
   The root query type must be a `Node` to work well with Relay 1 mutations. This just resolves to `query`.
   """
-  nodeId: ID!
-  post(id: UUID!): Post
+  id: ID!
+
+  """Fetches an object given its globally unique `ID`."""
+  node(
+    """The globally unique `ID`."""
+    id: ID!
+  ): Node
+  post(rowId: UUID!): Post
 
   """Reads a single `Post` using its globally unique `ID`."""
-  postByNodeId(
+  postById(
     """The globally unique `ID` to be used in selecting a single `Post`."""
-    nodeId: ID!
+    id: ID!
   ): Post
 
   """Reads and enables pagination through a set of `Post`."""
@@ -560,30 +577,31 @@ type Query implements Node {
   which can only query top level fields if they are in a particular form.
   """
   query: Query!
-  user(id: UUID!): User
-  userAuthentication(id: UUID!): UserAuthentication
+  user(rowId: UUID!): User
+  userAuthentication(rowId: UUID!): UserAuthentication
 
   """Reads a single `UserAuthentication` using its globally unique `ID`."""
-  userAuthenticationByNodeId(
+  userAuthenticationById(
     """
     The globally unique `ID` to be used in selecting a single `UserAuthentication`.
     """
-    nodeId: ID!
+    id: ID!
   ): UserAuthentication
   userAuthenticationByServiceAndIdentifier(identifier: String!, service: String!): UserAuthentication
 
   """Reads a single `User` using its globally unique `ID`."""
-  userByNodeId(
+  userById(
     """The globally unique `ID` to be used in selecting a single `User`."""
-    nodeId: ID!
+    id: ID!
   ): User
   userByUsername(username: String!): User
-  userEmail(id: UUID!): UserEmail
+  userByUsernameOrEmail(usernameOrEmail: String): User
+  userEmail(rowId: UUID!): UserEmail
 
   """Reads a single `UserEmail` using its globally unique `ID`."""
-  userEmailByNodeId(
+  userEmailById(
     """The globally unique `ID` to be used in selecting a single `UserEmail`."""
-    nodeId: ID!
+    id: ID!
   ): UserEmail
   userEmailByUserIdAndEmail(email: String!, userId: UUID!): UserEmail
 }
@@ -621,8 +639,15 @@ type ResetPasswordPayload {
   ): UsersEdge
 }
 
-"""All input for the `updateUserByNodeId` mutation."""
-input UpdateUserByNodeIdInput {
+"""
+The root subscription type: contains realtime events you can subscribe to with the `subscription` operation.
+"""
+type Subscription {
+  listen(topic: String!): ListenPayload!
+}
+
+"""All input for the `updateUserById` mutation."""
+input UpdateUserByIdInput {
   """
   An arbitrary string value with no semantic meaning. Will be included in the
   payload verbatim. May be used to track mutations by the client.
@@ -632,7 +657,7 @@ input UpdateUserByNodeIdInput {
   """
   The globally unique `ID` which will identify a single `User` to be updated.
   """
-  nodeId: ID!
+  id: ID!
 
   """
   An object where the defined keys will be set on the `User` being updated.
@@ -665,13 +690,13 @@ input UpdateUserInput {
   """
   clientMutationId: String
 
-  """Unique identifier for the user."""
-  id: UUID!
-
   """
   An object where the defined keys will be set on the `User` being updated.
   """
   patch: UserPatch!
+
+  """Unique identifier for the user."""
+  rowId: UUID!
 }
 
 """The output of our update `User` mutation."""
@@ -697,25 +722,60 @@ type UpdateUserPayload {
   ): UsersEdge
 }
 
+"""All input for the upsert `UserEmail` mutation."""
+input UpsertUserEmailInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """The `UserEmail` to be upserted by this mutation."""
+  userEmail: UserEmailInput!
+}
+
+"""The output of our upsert `UserEmail` mutation."""
+type UpsertUserEmailPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """Reads a single `User` that is related to this `UserEmail`."""
+  user: User
+
+  """The `UserEmail` that was upserted by this mutation."""
+  userEmail: UserEmail
+
+  """An edge for our `UserEmail`. May be used by Relay 1."""
+  userEmailEdge(
+    """The method to use when ordering `UserEmail`."""
+    orderBy: [UserEmailsOrderBy!] = [PRIMARY_KEY_ASC]
+  ): UserEmailsEdge
+}
+
 """A user who can log in to the application."""
 type User implements Node {
   """Optional avatar URL."""
   avatarUrl: String
   createdAt: Datetime!
 
-  """Unique identifier for the user."""
-  id: UUID!
+  """
+  A globally unique identifier. Can be used in various places throughout the system to identify this single value.
+  """
+  id: ID!
 
   """If true, the user has elevated privileges."""
   isAdmin: Boolean!
 
   """Public-facing name (or pseudonym) of the user."""
   name: String
-
-  """
-  A globally unique identifier. Can be used in various places throughout the system to identify this single value.
-  """
-  nodeId: ID!
 
   """Reads and enables pagination through a set of `Post`."""
   posts(
@@ -745,6 +805,9 @@ type User implements Node {
     """The method to use when ordering `Post`."""
     orderBy: [PostsOrderBy!] = [PRIMARY_KEY_ASC]
   ): PostsConnection!
+
+  """Unique identifier for the user."""
+  rowId: UUID!
   updatedAt: Datetime!
 
   """Reads and enables pagination through a set of `UserEmail`."""
@@ -785,15 +848,15 @@ Contains information about the login providers this user has used, so that they 
 """
 type UserAuthentication implements Node {
   createdAt: Datetime!
-  id: UUID!
-
-  """A unique identifier for the user within the login service."""
-  identifier: String!
 
   """
   A globally unique identifier. Can be used in various places throughout the system to identify this single value.
   """
-  nodeId: ID!
+  id: ID!
+
+  """A unique identifier for the user within the login service."""
+  identifier: String!
+  rowId: UUID!
 
   """The login service used, e.g. `twitter` or `github`."""
   service: String!
@@ -826,18 +889,18 @@ type UserEmail implements Node {
 
   """The users email address, in `a@b.c` format."""
   email: String!
-  id: UUID!
+
+  """
+  A globally unique identifier. Can be used in various places throughout the system to identify this single value.
+  """
+  id: ID!
 
   """
   True if the user has is_verified their email address (by clicking the link in
   the email we sent them, or logging in with a social login provider), false otherwise.
   """
   isVerified: Boolean!
-
-  """
-  A globally unique identifier. Can be used in various places throughout the system to identify this single value.
-  """
-  nodeId: ID!
+  rowId: UUID!
   updatedAt: Datetime!
 
   """Reads a single `User` that is related to this `UserEmail`."""
@@ -850,8 +913,8 @@ A condition to be used against `UserEmail` object types. All fields are tested
 for equality and combined with a logical ‘and.’
 """
 input UserEmailCondition {
-  """Checks for equality with the object’s `id` field."""
-  id: UUID
+  """Checks for equality with the object’s `rowId` field."""
+  rowId: UUID
 
   """Checks for equality with the object’s `userId` field."""
   userId: UUID

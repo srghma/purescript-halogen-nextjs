@@ -25,4 +25,4 @@ fromString = Email.fromString >>>
 isEmailTaken :: Email -> Aff (Maybe Boolean)
 isEmailTaken email = GraphQLClient.graphqlQueryRequest NextjsApp.NodeEnv.env.apiUrl GraphQLClient.defaultRequestOptions query >>= (throwError <<< error <<< GraphQLClient.printGraphQLError) \/ pure
   where
-    query = Api.Query.userByEmail { email: Email.toString email } (Api.Object.User.isConfirmed)
+    query = undefined { email: Email.toString email } undefined

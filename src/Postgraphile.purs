@@ -25,6 +25,8 @@ foreign import pgMutationUpsertPlugin :: PostgraphileAppendPlugin
 
 type PostgraphileOptions =
   { pluginHook                 :: PostgraphileServerPluginHook
+  , classicIds                 :: Boolean
+  , enableCors                 :: Boolean
   , ownerConnectionString      :: String
   , subscriptions              :: Boolean
   , simpleSubscriptions        :: Boolean
@@ -43,6 +45,7 @@ type PostgraphileOptions =
   , exportGqlSchemaPath        :: Nullable String
   , exportJsonSchemaPath       :: Nullable String
   , appendPlugins              :: Array PostgraphileAppendPlugin
+
   , graphileBuildOptions ::
     { pgSkipInstallingWatchFixtures :: Boolean
     }

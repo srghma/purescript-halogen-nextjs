@@ -35,21 +35,6 @@ derive newtype instance graphQlDefaultResponseScalarDecoderDatetime :: GraphQLDe
 
 derive newtype instance toGraphQlArgumentValueDatetime :: ToGraphQLArgumentValue Datetime
 
--- | original name - UUID
-newtype Uuid = Uuid String
-
-derive instance newtypeUuid :: Newtype Uuid _
-
-derive newtype instance eqUuid :: Eq Uuid
-
-derive newtype instance ordUuid :: Ord Uuid
-
-derive newtype instance showUuid :: Show Uuid
-
-derive newtype instance graphQlDefaultResponseScalarDecoderUuid :: GraphQLDefaultResponseScalarDecoder Uuid
-
-derive newtype instance toGraphQlArgumentValueUuid :: ToGraphQLArgumentValue Uuid
-
 -- | original name - Cursor
 newtype Cursor = Cursor String
 
@@ -64,3 +49,18 @@ derive newtype instance showCursor :: Show Cursor
 derive newtype instance graphQlDefaultResponseScalarDecoderCursor :: GraphQLDefaultResponseScalarDecoder Cursor
 
 derive newtype instance toGraphQlArgumentValueCursor :: ToGraphQLArgumentValue Cursor
+
+-- | original name - UUID
+newtype Uuid = Uuid String
+
+derive instance newtypeUuid :: Newtype Uuid _
+
+derive newtype instance eqUuid :: Eq Uuid
+
+derive newtype instance ordUuid :: Ord Uuid
+
+derive newtype instance showUuid :: Show Uuid
+
+derive newtype instance graphQlDefaultResponseScalarDecoderUuid :: GraphQLDefaultResponseScalarDecoder Uuid
+
+derive newtype instance toGraphQlArgumentValueUuid :: ToGraphQLArgumentValue Uuid

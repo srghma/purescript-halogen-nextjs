@@ -12,7 +12,7 @@ import GraphQLClient
 import Api.Scopes
   (Scope__User, Scope__PostsConnection, Scope__UserEmailsConnection)
 import Data.Maybe (Maybe)
-import Api.Scalars (Datetime, Uuid, Id, Cursor)
+import Api.Scalars (Datetime, Id, Cursor, Uuid)
 import Api.InputObject (PostCondition, UserEmailCondition) as Api.InputObject
 import Api.Enum.PostsOrderBy (PostsOrderBy)
 import Type.Row (type (+))
@@ -24,7 +24,7 @@ avatarUrl = selectionForField "avatarUrl" [] graphqlDefaultResponseScalarDecoder
 createdAt :: SelectionSet Scope__User Datetime
 createdAt = selectionForField "createdAt" [] graphqlDefaultResponseScalarDecoder
 
-id :: SelectionSet Scope__User Uuid
+id :: SelectionSet Scope__User Id
 id = selectionForField "id" [] graphqlDefaultResponseScalarDecoder
 
 isAdmin :: SelectionSet Scope__User Boolean
@@ -32,9 +32,6 @@ isAdmin = selectionForField "isAdmin" [] graphqlDefaultResponseScalarDecoder
 
 name :: SelectionSet Scope__User (Maybe String)
 name = selectionForField "name" [] graphqlDefaultResponseScalarDecoder
-
-nodeId :: SelectionSet Scope__User Id
-nodeId = selectionForField "nodeId" [] graphqlDefaultResponseScalarDecoder
 
 type PostsInputRowOptional r = ( after :: Optional Cursor
                                , before :: Optional Cursor
@@ -59,6 +56,9 @@ posts input = selectionForCompositeField
               (toGraphQLArguments
                input)
               graphqlDefaultResponseFunctorOrScalarDecoderTransformer
+
+rowId :: SelectionSet Scope__User Uuid
+rowId = selectionForField "rowId" [] graphqlDefaultResponseScalarDecoder
 
 updatedAt :: SelectionSet Scope__User Datetime
 updatedAt = selectionForField "updatedAt" [] graphqlDefaultResponseScalarDecoder

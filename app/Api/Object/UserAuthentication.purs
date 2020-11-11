@@ -3,12 +3,12 @@ module Api.Object.UserAuthentication where
 import GraphQLClient
   (SelectionSet, selectionForField, graphqlDefaultResponseScalarDecoder)
 import Api.Scopes (Scope__UserAuthentication)
-import Api.Scalars (Datetime, Uuid, Id)
+import Api.Scalars (Datetime, Id, Uuid)
 
 createdAt :: SelectionSet Scope__UserAuthentication Datetime
 createdAt = selectionForField "createdAt" [] graphqlDefaultResponseScalarDecoder
 
-id :: SelectionSet Scope__UserAuthentication Uuid
+id :: SelectionSet Scope__UserAuthentication Id
 id = selectionForField "id" [] graphqlDefaultResponseScalarDecoder
 
 identifier :: SelectionSet Scope__UserAuthentication String
@@ -17,8 +17,8 @@ identifier = selectionForField
              []
              graphqlDefaultResponseScalarDecoder
 
-nodeId :: SelectionSet Scope__UserAuthentication Id
-nodeId = selectionForField "nodeId" [] graphqlDefaultResponseScalarDecoder
+rowId :: SelectionSet Scope__UserAuthentication Uuid
+rowId = selectionForField "rowId" [] graphqlDefaultResponseScalarDecoder
 
 service :: SelectionSet Scope__UserAuthentication String
 service = selectionForField "service" [] graphqlDefaultResponseScalarDecoder

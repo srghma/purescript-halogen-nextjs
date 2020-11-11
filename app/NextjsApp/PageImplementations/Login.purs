@@ -46,14 +46,15 @@ login :: { email :: Email, password :: Password } -> Aff (Maybe LoginError)
 login loginDataValidated = do
   response <-
       GraphQLClient.graphqlMutationRequest NextjsApp.NodeEnv.env.apiUrl GraphQLClient.defaultRequestOptions $
-        Api.Mutation.login
+        -- | Api.Mutation.login
+        undefined
           { input:
             { email: Email.toString loginDataValidated.email
             , password: NextjsApp.Data.Password.toString loginDataValidated.password
             , clientMutationId: GraphQLClient.Absent
             }
           }
-          (pure unit)
+          (undefined)
 
   let (response' :: Maybe LoginError) =
         case response of
@@ -92,10 +93,11 @@ component =
                       traceM loginDataValidated
 
                       liftAff (login loginDataValidated) >>=
-                        case _ of
-                            Left error -> H.modify_ _ { loginError = Just error }
-                            Right jwt ->
-                              NextjsApp.Navigate.navigate NextjsApp.Route.Secret
+                        undefined
+                        -- | case _ of
+                        -- |     Left error -> H.modify_ _ { loginError = Just error }
+                        -- |     Right jwt ->
+                        -- |       NextjsApp.Navigate.navigate NextjsApp.Route.Secret
             }
     , render
     }

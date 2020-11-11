@@ -8,7 +8,7 @@ import GraphQLClient
   , graphqlDefaultResponseFunctorOrScalarDecoderTransformer
   )
 import Api.Scopes (Scope__Post, Scope__User)
-import Api.Scalars (Datetime, Uuid, Id)
+import Api.Scalars (Datetime, Id, Uuid)
 import Data.Maybe (Maybe)
 
 content :: SelectionSet Scope__Post String
@@ -17,14 +17,14 @@ content = selectionForField "content" [] graphqlDefaultResponseScalarDecoder
 createdAt :: SelectionSet Scope__Post Datetime
 createdAt = selectionForField "createdAt" [] graphqlDefaultResponseScalarDecoder
 
-id :: SelectionSet Scope__Post Uuid
+id :: SelectionSet Scope__Post Id
 id = selectionForField "id" [] graphqlDefaultResponseScalarDecoder
 
 name :: SelectionSet Scope__Post String
 name = selectionForField "name" [] graphqlDefaultResponseScalarDecoder
 
-nodeId :: SelectionSet Scope__Post Id
-nodeId = selectionForField "nodeId" [] graphqlDefaultResponseScalarDecoder
+rowId :: SelectionSet Scope__Post Uuid
+rowId = selectionForField "rowId" [] graphqlDefaultResponseScalarDecoder
 
 updatedAt :: SelectionSet Scope__Post Datetime
 updatedAt = selectionForField "updatedAt" [] graphqlDefaultResponseScalarDecoder

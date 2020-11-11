@@ -19,8 +19,8 @@ import Api.Scalars (Id)
 import Data.Maybe (Maybe(..))
 import Prelude (pure)
 
-nodeId :: SelectionSet Scope__Node Id
-nodeId = selectionForField "nodeId" [] graphqlDefaultResponseScalarDecoder
+id :: SelectionSet Scope__Node Id
+id = selectionForField "id" [] graphqlDefaultResponseScalarDecoder
 
 type Fragments decodesTo = { onPost :: SelectionSet Scope__Post decodesTo
                            , onQuery :: SelectionSet Scope__RootQuery decodesTo
