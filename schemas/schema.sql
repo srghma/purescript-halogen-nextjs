@@ -283,21 +283,7 @@ declare
   v_user_secret app_private.user_secrets;
   v_login_attempt_window_duration interval = interval '6 hours';
 begin
-  select users.* into v_user
-  from app_public.users
-  where
-    -- Match username against users username, or any verified email address
-    (
-      users.username = login.username
-    or
-      exists(
-        select 1
-        from app_public.user_emails
-        where user_id = users.id
-        and is_verified is true
-        and email = login.username::citext
-      )
-    );
+  select users.* into v_user from app_public.user_by_username_or_email(username);
 
   if not (v_user is null) then
     -- Load their secrets
@@ -853,6 +839,32 @@ COMMENT ON FUNCTION app_public.reset_password(user_id uuid, token text, new_pass
 
 
 --
+-- Name: user_by_username_or_email(text); Type: FUNCTION; Schema: app_public; Owner: -
+--
+
+CREATE FUNCTION app_public.user_by_username_or_email(username_or_email text) RETURNS app_public.users
+    LANGUAGE sql STABLE
+    SET search_path TO '$user', 'public'
+    AS $$
+  select users.*
+  from app_public.users
+  where
+    -- Match username against users username, or any verified email address
+    (
+      users.username = user_by_username_or_email.username_or_email
+    or
+      exists(
+        select 1
+        from app_public.user_emails
+        where user_id = users.id
+        and is_verified is true
+        and email = user_by_username_or_email.username_or_email::citext
+      )
+    );
+$$;
+
+
+--
 -- Name: user_emails; Type: TABLE; Schema: app_public; Owner: -
 --
 
@@ -982,8 +994,8 @@ CREATE TABLE app_private.user_secrets (
     reset_password_token text,
     reset_password_token_generated_at timestamp with time zone,
     first_failed_reset_password_attempt timestamp with time zone,
-    reset_password_attempts integer DEFAULT 0 NOT NULL,
     first_failed_password_attempt timestamp with time zone,
+    reset_password_attempts integer DEFAULT 0 NOT NULL,
     password_attempts integer DEFAULT 0 NOT NULL
 );
 
