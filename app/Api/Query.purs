@@ -224,13 +224,10 @@ userByUsername input = selectionForCompositeField
                         input)
                        graphqlDefaultResponseFunctorOrScalarDecoderTransformer
 
-type UserByUsernameOrEmailInputRowOptional r = ( usernameOrEmail :: Optional
-                                                                    String
-                                               | r
-                                               )
+type UserByUsernameOrEmailInputRowRequired r = ( usernameOrEmail :: String | r )
 
 type UserByUsernameOrEmailInput = {
-| UserByUsernameOrEmailInputRowOptional + ()
+| UserByUsernameOrEmailInputRowRequired + ()
 }
 
 userByUsernameOrEmail :: forall r . UserByUsernameOrEmailInput -> SelectionSet

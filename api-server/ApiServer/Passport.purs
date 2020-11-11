@@ -1,6 +1,5 @@
 module ApiServer.Passport where
 
-import NextjsApp.NodeEnv
 import Node.Express.Handler
 import Node.Express.Passport
 import Node.Express.Types

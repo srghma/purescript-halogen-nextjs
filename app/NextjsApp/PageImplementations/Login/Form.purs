@@ -7,16 +7,14 @@ module NextjsApp.PageImplementations.Login.Form
 import Material.Classes.LayoutGrid
 import NextjsApp.Data.Password
 import NextjsApp.Data.Password as NextjsApp.Data.Password
-import NextjsApp.Data.EmailFromString
-import NextjsApp.Data.EmailFromString as NextjsApp.Data.EmailFromString
+import NextjsApp.Queries.IsUsernameOrEmailTaken
+import NextjsApp.Queries.IsUsernameOrEmailTaken as NextjsApp.Queries.IsUsernameOrEmailTaken
 import Protolude
 
 import Api.Object.User as Api.Object.User
 import Api.Query as Api.Query
 import Data.Array as Array
 import Data.Either (Either(..))
-import Data.Email (Email)
-import Data.Email as Email
 import Data.Int as Int
 import Data.Lens.Record as Lens
 import Data.Maybe (Maybe(..))
@@ -52,7 +50,7 @@ formComponent = F.component (const formInput) formSpec
       { initialInputs: Nothing -- same as: Just (F.wrapInputFields { name: "", age: "" })
       , validators: LoginForm
           { password: F.hoistFnE_ $ NextjsApp.Data.Password.fromString
-          , email: F.hoistFnME_ NextjsApp.Data.EmailFromString.fromString
+          , usernameOrEmail: F.hoistFnME_ (\s -> liftAff $ NextjsApp.Queries.IsUsernameOrEmailTaken.fromString s)
           }
       }
 

@@ -14,4 +14,7 @@ create function app_public.user_by_username_or_email(username_or_email text) ret
         and email = user_by_username_or_email.username_or_email::citext
       )
     );
-$$ language sql stable set search_path from current;
+$$ language sql
+  stable
+  strict -- all args are required
+  set search_path from current;

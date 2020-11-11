@@ -843,7 +843,7 @@ COMMENT ON FUNCTION app_public.reset_password(user_id uuid, token text, new_pass
 --
 
 CREATE FUNCTION app_public.user_by_username_or_email(username_or_email text) RETURNS app_public.users
-    LANGUAGE sql STABLE
+    LANGUAGE sql STABLE STRICT
     SET search_path TO '$user', 'public'
     AS $$
   select users.*

@@ -595,7 +595,7 @@ type Query implements Node {
     id: ID!
   ): User
   userByUsername(username: String!): User
-  userByUsernameOrEmail(usernameOrEmail: String): User
+  userByUsernameOrEmail(usernameOrEmail: String!): User
   userEmail(rowId: UUID!): UserEmail
 
   """Reads a single `UserEmail` using its globally unique `ID`."""

@@ -8,8 +8,6 @@ import Protolude
 
 import Data.Array as Array
 import Data.Either (Either(..))
-import Data.Email (Email)
-import Data.Email as Email
 import Data.Int as Int
 import Data.Lens.Record as Lens
 import Data.Maybe (Maybe(..))
@@ -34,8 +32,7 @@ import NextjsApp.PageImplementations.Login.Types
 renderError :: Maybe LoginError -> String
 renderError = maybe ""
   case _ of
-       LoginError__NotConfirmed       -> "Email not confirmed"
-       LoginError__EmailNotRegistered -> "Email not registered"
+       LoginError__UsernameOrEmailNotRegistered -> "Username or email not registered or not confirmed"
        LoginError__WrongPassword      -> "Wrong password"
        LoginError__UnknownError error -> "Unknown error: " <> error
 

@@ -4,16 +4,14 @@ import NextjsApp.PageImplementations.Login.Form.Types
 import Material.Classes.LayoutGrid
 import NextjsApp.Data.Password
 import NextjsApp.Data.Password as NextjsApp.Data.Password
-import NextjsApp.Data.EmailFromString
-import NextjsApp.Data.EmailFromString as NextjsApp.Data.EmailFromString
+import NextjsApp.Queries.IsUsernameOrEmailTaken
+import NextjsApp.Queries.IsUsernameOrEmailTaken as NextjsApp.Queries.IsUsernameOrEmailTaken
 import Protolude
 
 import Api.Object.User as Api.Object.User
 import Api.Query as Api.Query
 import Data.Array as Array
 import Data.Either (Either(..))
-import Data.Email (Email)
-import Data.Email as Email
 import Data.Int as Int
 import Data.Lens.Record as Lens
 import Data.Maybe (Maybe(..))
@@ -35,29 +33,33 @@ import NextjsApp.Navigate as NextjsApp.Navigate
 import NextjsApp.Route as NextjsApp.Route
 
 _password = SProxy :: SProxy "password"
-_email = SProxy :: SProxy "email"
+_usernameOrEmail = SProxy :: SProxy "usernameOrEmail"
 
 render :: forall st . F.PublicState LoginForm st -> F.ComponentHTML LoginForm UserAction FormChildSlots Aff
 render state =
   HH.form_ -- TODO: lift?
     [ HH.slot
-        (SProxy :: SProxy "email")
+        (SProxy :: SProxy "usernameOrEmail")
         unit
         TextField.Outlined.outlined
         ( TextField.Outlined.defaultConfig
-            { label = TextField.Outlined.LabelConfig__With { id: "email", labelText: "Email" }
-            , value = (F.getInput _email state.form :: String)
+            { label = TextField.Outlined.LabelConfig__With { id: "usernameOrEmail", labelText: "Username / email" }
+            , value = (F.getInput _usernameOrEmail state.form :: String)
             , additionalClassesRoot = [ mdc_layout_grid__cell, mdc_layout_grid__cell____span_12 ]
             }
         )
         (\(message :: TextField.Outlined.Message) ->
           case message of
-               TextField.Outlined.Message__Input string -> F.setValidate _email string
+               TextField.Outlined.Message__Input string -> F.setValidate _usernameOrEmail string
         )
-    , HH.text case F.getError _email state.form of
-        Nothing -> ""
-        Just EmailError__Invalid -> "Email is invalid"
-        Just (EmailError__InUse isConfirmed) -> "Email is in use" <> if isConfirmed then " and is confirmed" else ", but is not confirmed"
+    , HH.text $
+        maybe
+        ""
+        (case _ of
+              NonTakenUsernameOrEmail__Error__Empty -> "Username or email is empty"
+              NonTakenUsernameOrEmail__Error__InUse -> "Username or email is in use"
+        ) $
+        F.getError _usernameOrEmail state.form
     , HH.slot
         (SProxy :: SProxy "password")
         unit

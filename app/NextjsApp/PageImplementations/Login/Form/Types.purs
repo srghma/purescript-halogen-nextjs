@@ -3,16 +3,14 @@ module NextjsApp.PageImplementations.Login.Form.Types where
 import Material.Classes.LayoutGrid
 import NextjsApp.Data.Password
 import NextjsApp.Data.Password as NextjsApp.Data.Password
-import NextjsApp.Data.EmailFromString
-import NextjsApp.Data.EmailFromString as NextjsApp.Data.EmailFromString
+import NextjsApp.Queries.IsUsernameOrEmailTaken
+import NextjsApp.Queries.IsUsernameOrEmailTaken as NextjsApp.Queries.IsUsernameOrEmailTaken
 import Protolude
 
 import Api.Object.User as Api.Object.User
 import Api.Query as Api.Query
 import Data.Array as Array
 import Data.Either (Either(..))
-import Data.Email (Email)
-import Data.Email as Email
 import Data.Int as Int
 import Data.Lens.Record as Lens
 import Data.Maybe (Maybe(..))
@@ -37,7 +35,7 @@ data UserAction
   = UserAction__RegisterButtonClick Button.Message
 
 type LoginFormRow f =
-  ( email    :: f EmailError    String Email
+  ( usernameOrEmail :: f NonTakenUsernameOrEmail__Error String NonTakenUsernameOrEmail
   , password :: f PasswordError String Password
   )
 
@@ -49,7 +47,7 @@ derive instance newtypeLoginForm :: Newtype (LoginForm r f) _
 type LoginDataValidated = { | LoginFormRow F.OutputType }
 
 type FormChildSlots =
-  ( email :: H.Slot (Const Void) TextField.Outlined.Message Unit
+  ( usernameOrEmail :: H.Slot (Const Void) TextField.Outlined.Message Unit
   , password :: H.Slot (Const Void) TextField.Outlined.Message Unit
   , "register-button" :: H.Slot (Const Void) Button.Message Unit
   , "submit-button" :: H.Slot (Const Void) Button.Message Unit

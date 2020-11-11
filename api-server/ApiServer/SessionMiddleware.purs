@@ -1,6 +1,5 @@
 module ApiServer.SessionMiddleware where
 
-import NextjsApp.NodeEnv
 import Node.Express.Types
 import Protolude
 

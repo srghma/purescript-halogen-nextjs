@@ -4,8 +4,6 @@ import Protolude
 
 import Data.Array as Array
 import Data.Either (Either(..))
-import Data.Email (Email)
-import Data.Email as Email
 import Data.Int as Int
 import Data.Lens.Record as Lens
 import Data.Maybe (Maybe(..))
@@ -44,8 +42,7 @@ type ChildSlots
   = ( formless :: H.Slot (F.Query LoginForm (Const Void) FormChildSlots) LoginDataValidated Unit )
 
 data LoginError
-  = LoginError__NotConfirmed
-  | LoginError__EmailNotRegistered
+  = LoginError__UsernameOrEmailNotRegistered
   | LoginError__WrongPassword
   | LoginError__UnknownError String
 
