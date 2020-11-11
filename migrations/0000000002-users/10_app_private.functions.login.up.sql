@@ -4,21 +4,7 @@ declare
   v_user_secret app_private.user_secrets;
   v_login_attempt_window_duration interval = interval '6 hours';
 begin
-  select users.* into v_user
-  from app_public.users
-  where
-    -- Match username against users username, or any verified email address
-    (
-      users.username = login.username
-    or
-      exists(
-        select 1
-        from app_public.user_emails
-        where user_id = users.id
-        and is_verified is true
-        and email = login.username::citext
-      )
-    );
+  select users.* into v_user from app_public.user_by_username_or_email(username);
 
   if not (v_user is null) then
     -- Load their secrets

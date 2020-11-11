@@ -38,6 +38,11 @@ mkScripts {
       pg_prove -h $POSTGRES_HOST -p $POSTGRES_PORT -d $DATABASE_NAME -U $DATABASE_OWNER --recurse --ext .sql ./db_tests/tests/
   '';
 
+  import__db__dump_schema = mkCommand migratorEnv ''
+    DATABASE_URL=postgres://$DATABASE_OWNER:$DATABASE_OWNER_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$DATABASE_NAME \
+      dump-schema
+  '';
+
   import__db__migrate = mkCommand migratorEnv ''
     waitforit -host=$POSTGRES_HOST -port=$POSTGRES_PORT -timeout=30
 

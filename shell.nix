@@ -33,6 +33,8 @@ pkgs.mkShell rec {
     shmig
     db-tests-prepare
     pg_prove
+    dump-schema
+    postgresql
 
     (import ./dev-commands/all-commands.nix { inherit pkgs; })
   ];
