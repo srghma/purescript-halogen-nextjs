@@ -20,5 +20,5 @@ config = rec {
 in
 
 builtins.concatLists [
-  (import ./import/default.nix { inherit pkgs config; })
+  (import ./dev/default.nix { inherit pkgs config; })
 ]

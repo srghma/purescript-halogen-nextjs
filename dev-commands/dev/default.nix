@@ -4,14 +4,14 @@ with config;
 with (import ./lib.nix { inherit pkgs; });
 
 mkScripts {
-  import__cat = ''
+  dev__cat = ''
     arion \
       --file docker/import.nix \
       --pkgs nix/pkgs.nix \
       cat
   '';
 
-  import__down = ''
+  dev__down = ''
     COMPOSE_PROJECT_NAME="nextjsdemo_import" \
       arion \
       --file docker/import.nix \
@@ -19,7 +19,7 @@ mkScripts {
       down
   '';
 
-  import__up_detach = ''
+  dev__up_detach = ''
     COMPOSE_PROJECT_NAME="nextjsdemo_import" \
       arion \
       --file docker/import.nix \
@@ -27,7 +27,7 @@ mkScripts {
       up --detach
   '';
 
-  import__db_tests = mkCommand migratorEnv ''
+  dev__db_tests = mkCommand migratorEnv ''
     waitforit -host=$POSTGRES_HOST -port=$POSTGRES_PORT -timeout=30
 
     PGPASSWORD=$DATABASE_OWNER_PASSWORD \
@@ -38,12 +38,12 @@ mkScripts {
       pg_prove -h $POSTGRES_HOST -p $POSTGRES_PORT -d $DATABASE_NAME -U $DATABASE_OWNER --recurse --ext .sql ./db_tests/tests/
   '';
 
-  import__db__dump_schema = mkCommand migratorEnv ''
+  dev__db__dump_schema = mkCommand migratorEnv ''
     DATABASE_URL=postgres://$DATABASE_OWNER:$DATABASE_OWNER_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$DATABASE_NAME \
       dump-schema
   '';
 
-  import__db__migrate = mkCommand migratorEnv ''
+  dev__db__migrate = mkCommand migratorEnv ''
     waitforit -host=$POSTGRES_HOST -port=$POSTGRES_PORT -timeout=30
 
     wait-for-postgres --dbname=postgres://$DATABASE_OWNER:$DATABASE_OWNER_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$DATABASE_NAME
@@ -62,7 +62,7 @@ mkScripts {
       migrate
   '';
 
-  import__server = mkCommand serverEnv ''
+  dev__server = mkCommand serverEnv ''
     waitforit -host=$POSTGRES_HOST -port=$POSTGRES_PORT -timeout=30
 
     wait-for-postgres --dbname=postgres://$DATABASE_OWNER:$DATABASE_OWNER_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$DATABASE_NAME
@@ -92,11 +92,11 @@ mkScripts {
       '
   '';
 
-  import__purescript-graphql-client-generator = ''
+  dev__purescript-graphql-client-generator = ''
     purescript-graphql-client-generator --input-json ./schemas/schema.json --output app/Api --api Api
   '';
 
-  import__db__drop = ''
+  dev__db__drop = ''
     docker-volume-rm-if-exists nextjsdemo_import_postgres_data
   '';
 }
