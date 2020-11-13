@@ -11,20 +11,20 @@ import Pathy (Abs, Dir, File, Path)
 -- [
 --   {
 --     name: 'Basic.purs',
---     path: '/home/srghma/projects/purescript-halogen-nextjs/app/Nextjs/Pages',
---     fullname: '/home/srghma/projects/purescript-halogen-nextjs/app/Nextjs/Pages/Basic.purs',
+--     path: '/home/srghma/projects/purescript-halogen-nextjs/client/Nextjs/Pages',
+--     fullname: '/home/srghma/projects/purescript-halogen-nextjs/client/Nextjs/Pages/Basic.purs',
 --     isDirectory: false
 --   },
 --   {
 --     name: 'Buttons',
---     path: '/home/srghma/projects/purescript-halogen-nextjs/app/Nextjs/Pages',
---     fullname: '/home/srghma/projects/purescript-halogen-nextjs/app/Nextjs/Pages/Buttons',
+--     path: '/home/srghma/projects/purescript-halogen-nextjs/client/Nextjs/Pages',
+--     fullname: '/home/srghma/projects/purescript-halogen-nextjs/client/Nextjs/Pages/Buttons',
 --     isDirectory: true,
 --     content: [
 --       {
 --         name: 'Buttons.purs',
---         path: '/home/srghma/projects/purescript-halogen-nextjs/app/Nextjs/Pages/Buttons',
---         fullname: '/home/srghma/projects/purescript-halogen-nextjs/app/Nextjs/Pages/Buttons/Buttons.purs',
+--         path: '/home/srghma/projects/purescript-halogen-nextjs/client/Nextjs/Pages/Buttons',
+--         fullname: '/home/srghma/projects/purescript-halogen-nextjs/client/Nextjs/Pages/Buttons/Buttons.purs',
 --         isDirectory: false
 --       },
 --     ]

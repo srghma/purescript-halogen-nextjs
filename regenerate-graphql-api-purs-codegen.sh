@@ -4,7 +4,7 @@ set -euxo pipefail
 
 ###################################
 
-rm -rfd ./app/Api
+rm -rfd ./packages/client/NextjsGraphqlApi
 
 ./node_modules/.bin/purescript-graphql-client-generator \
-  --input-json ./schemas/schema.json --output ./app/Api --api Api
+  --input-json ./schemas/schema.json --output ./packages/client/NextjsGraphqlApi --api NextjsGraphqlApi

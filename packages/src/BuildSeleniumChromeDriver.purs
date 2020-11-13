@@ -1,4 +1,4 @@
-module Lib.BuildMyDriver where
+module BuildSeleniumChromeDriver where
 
 import Prelude
 import Test.Spec (Spec, describe, it)

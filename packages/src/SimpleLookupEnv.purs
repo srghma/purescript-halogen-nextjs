@@ -1,4 +1,4 @@
-module Lib.LookupEnv where
+module SimpleLookupEnv where
 
 import Prelude
 import Data.Maybe

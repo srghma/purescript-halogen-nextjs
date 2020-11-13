@@ -1,4 +1,4 @@
-module ApiServer.Config where
+module FeatureTests.Config where
 
 import Data.Maybe
 import Pathy

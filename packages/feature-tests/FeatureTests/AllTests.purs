@@ -1,4 +1,4 @@
-module Test.AllTests where
+module FeatureTests.AllTests where
 
 import Prelude
 import Test.Spec (describe)

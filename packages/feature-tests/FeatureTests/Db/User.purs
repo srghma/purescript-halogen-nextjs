@@ -1,4 +1,4 @@
-module Lib.Db.User where
+module FeatureTests.Db.User where
 
 import Prelude
 import Foreign.Class (class Decode, class Encode)

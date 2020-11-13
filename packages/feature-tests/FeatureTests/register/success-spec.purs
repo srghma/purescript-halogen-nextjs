@@ -1,4 +1,4 @@
-module FeatureTests.Register.SuccessSpec where
+module FeatureTests.register.success-spec where
 
 import Prelude
 import Test.Spec (Spec, describe, it)

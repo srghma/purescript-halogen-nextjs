@@ -2,7 +2,7 @@
 , dependencies = ./dependencies.dhall
 , packages = ./packages.dhall
 , sources =
-  [ "app/**/*.purs"
+  [ "packages/client/**/*.purs"
   , "src/**/*.purs"
   , "test/**/*.purs"
   , "webpack/**/*.purs"

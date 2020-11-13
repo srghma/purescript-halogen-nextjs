@@ -2,7 +2,7 @@
 -- | THIS IS IMPLEMENTED BASED ON
 -- | https://github.com/graphile/bootstrap-react-apollo/tree/master/server/middleware
 
-module ApiServer.Main where
+module FeatureTests.Main where
 
 import Data.Maybe
 import Effect.Uncurried

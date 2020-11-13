@@ -1,4 +1,4 @@
-module FeatureTests.Login.SuccessSpec where
+module FeatureTests.login.success-spec where
 
 import Prelude
 import Control.Monad.Error.Class

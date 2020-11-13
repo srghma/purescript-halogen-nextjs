@@ -38,21 +38,21 @@ yarn build && yarn serve
 
 2. Where pages are stored?
 
-Page is a top level purescript file in the `app/pages` directory (e.g. `app/pages/Foo.purs`)
+Page is a top level purescript file in the `packages/client/pages` directory (e.g. `packages/client/pages/Foo.purs`)
 
 Page should export the `page :: Page` object (which is a `PageSpec` object, but with existentially hidden `input` type
 argument)
 
 3. What is a meaning of `.deps.js` files?
 
-If there is a file in the `app/pages/` directory ending with `.deps.js` (e.g. `app/pages/Foo.deps.js`) - it will be
+If there is a file in the `packages/client/pages/` directory ending with `.deps.js` (e.g. `packages/client/pages/Foo.deps.js`) - it will be
 required before the page is loaded
 
 (Check [createClientPagesEntrypoints.js](https://github.com/srghma/purescript-halogen-nextjs/blob/0e26569df6452dc1e7983d6f629448e70e4e6f2c/webpack/config/createClientPagesEntrypoints.js#L71)
 and [isomorphic-client-pages-loader](https://github.com/srghma/purescript-halogen-nextjs/blob/0e26569df6452dc1e7983d6f629448e70e4e6f2c/webpack/lib/isomorphic-client-pages-loader.js#L30-L33)
 to see how it works)
 
-You can use `app/pages/Foo.deps.js` to add per page css files (it's just for splitting css, the css is global, i.e.
+You can use `packages/client/pages/Foo.deps.js` to add per page css files (it's just for splitting css, the css is global, i.e.
 the `<link rel="stylesheet" ...>` element is not removed after you go to the some other page)
 
 Or You can use it for adding per page js dependencies (like ace npm package, that will be loaded only for `Ace.purs` page)

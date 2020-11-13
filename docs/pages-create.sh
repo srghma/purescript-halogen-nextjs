@@ -1,6 +1,6 @@
 pages-create () {
-  mkdir -p ~/projects/purescript-halogen-nextjs/app/Nextjs/Pages/$1
-  cat > ~/projects/purescript-halogen-nextjs/app/Nextjs/Pages/$1/$2.purs <<- EOM
+  mkdir -p ~/projects/purescript-halogen-nextjs/client/Nextjs/Pages/$1
+  cat > ~/projects/purescript-halogen-nextjs/client/Nextjs/Pages/$1/$2.purs <<- EOM
 module Nextjs.Pages.$1.$2 (page) where
 
 import Nextjs.Lib.Page (Page, PageData(..), PageSpec, mkPage)
@@ -19,18 +19,18 @@ page :: Page
 page = mkPage pageSpec
 EOM
 
-  mkdir -p ~/projects/purescript-halogen-nextjs/app/Nextjs/Pages/$1
-  cat > ~/projects/purescript-halogen-nextjs/app/Nextjs/Pages/$1/$2.css <<- EOM
+  mkdir -p ~/projects/purescript-halogen-nextjs/client/Nextjs/Pages/$1
+  cat > ~/projects/purescript-halogen-nextjs/client/Nextjs/Pages/$1/$2.css <<- EOM
 import '@rmwc/button/styles';
 EOM
 
-mkdir -p ~/projects/purescript-halogen-nextjs/app/Nextjs/Pages/$1
-cat > ~/projects/purescript-halogen-nextjs/app/Nextjs/Pages/$1/$2.deps.js <<- EOM
+mkdir -p ~/projects/purescript-halogen-nextjs/client/Nextjs/Pages/$1
+cat > ~/projects/purescript-halogen-nextjs/client/Nextjs/Pages/$1/$2.deps.js <<- EOM
 import './$1.css'
 EOM
 
-  mkdir -p ~/projects/purescript-halogen-nextjs/app/Nextjs/PageImplementations/$1
-  cat > ~/projects/purescript-halogen-nextjs/app/Nextjs/PageImplementations/$1/$2.purs <<- EOM
+  mkdir -p ~/projects/purescript-halogen-nextjs/client/Nextjs/PageImplementations/$1
+  cat > ~/projects/purescript-halogen-nextjs/client/Nextjs/PageImplementations/$1/$2.purs <<- EOM
 module Nextjs.PageImplementations.$1.$2 (component) where
 
 import Prelude

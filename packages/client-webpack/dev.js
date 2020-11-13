@@ -21,8 +21,8 @@ const spagoOptions = {
 }
 
 const cleanupCssModulesGenerator = require(spagoOptions.output + '/NextjsWebpack.Utils.OnFilesChangedRunCommand/index.js').onFilesChangedRunCommand({
-  files: ['app/**/*.scss'],
-  command: [ 'generate-halogen-css-modules', '-d', './app' ],
+  files: ['packages/client/**/*.scss'],
+  command: [ 'generate-halogen-css-modules', '-d', './client' ],
 })()
 
 const { spawnServer, killServerIfRunning } = require(spagoOptions.output + '/NextjsWebpack.Utils.OneServerATimeSpawner/index.js').oneServerATimeSpawner()
@@ -43,7 +43,7 @@ const livereloadPort = 35729
   ///////////////////////////////////
 
   require('webpack-spago-loader/watcher-job')({
-    // additionalWatchGlobs: ['app/**/*.scss', 'src/**/*.scss'],
+    // additionalWatchGlobs: ['packages/client/**/*.scss', 'src/**/*.scss'],
     additionalWatchGlobs: [],
     options: spagoOptions,
     onStart: () => {},

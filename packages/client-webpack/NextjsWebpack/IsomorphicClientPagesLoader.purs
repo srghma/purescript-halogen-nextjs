@@ -45,7 +45,7 @@ type QueryCodec a
 
 type Options
   = { absoluteCompiledPagePursPath :: Path Abs File -- e.g. ".../output/Foo/index.js"
-    , absoluteJsDepsPath :: Maybe (Path Abs File) -- e.g. ".../app/Pages/Foo.deps.js" or null
+    , absoluteJsDepsPath :: Maybe (Path Abs File) -- e.g. ".../client/Pages/Foo.deps.js" or null
     , route :: Route
     }
 

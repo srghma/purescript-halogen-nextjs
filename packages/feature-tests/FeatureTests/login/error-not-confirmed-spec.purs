@@ -1,4 +1,4 @@
-module FeatureTests.Login.ErrorNotConfirmedSpec where
+module FeatureTests.login.error-not-confirmed-spec where
 
 import Prelude
 import Control.Monad.Error.Class

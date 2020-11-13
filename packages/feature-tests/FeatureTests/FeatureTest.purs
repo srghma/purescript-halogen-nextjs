@@ -1,4 +1,4 @@
-module Lib.FeatureTest where
+module FeatureTests.FeatureTest where
 
 import Prelude
 import Control.Monad.Error.Class

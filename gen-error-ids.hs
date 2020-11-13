@@ -128,4 +128,4 @@ main = Turtle.sh $ do
           ]
 
   -- liftIO $ putStrLn fileContent
-  liftIO $ Turtle.writeTextFile (projectRoot </> "app/" </> "NextjsApp/" </> "ServerExceptions" <.> "purs") fileContent
+  liftIO $ Turtle.writeTextFile (projectRoot </> "packages/client/" </> "NextjsApp/" </> "ServerExceptions" <.> "purs") fileContent

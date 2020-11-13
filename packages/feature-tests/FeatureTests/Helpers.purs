@@ -1,4 +1,4 @@
-module Lib.Helpers where
+module FeatureTests.Helpers where
 
 import Prelude
 import Foreign.Class (class Decode, class Encode)

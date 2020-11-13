@@ -4,8 +4,8 @@
 , sources =
   [ "src/**/*.purs"
   , "api-server/**/*.purs"
-  , "app/NextjsApp/AppM.purs"
-  , "app/NextjsApp/Route.purs"
-  , "app/NextjsApp/Link/Types.purs"
+  , "packages/client/NextjsApp/AppM.purs"
+  , "packages/client/NextjsApp/Route.purs"
+  , "packages/client/NextjsApp/Link/Types.purs"
   ]
 }

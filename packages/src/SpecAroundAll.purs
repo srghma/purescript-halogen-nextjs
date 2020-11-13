@@ -1,4 +1,4 @@
-module Lib.AroundAll where
+module SpecAroundAll where
 
 import Prelude (Unit, bind, discard, pure, void, ($), (<<<))
 import Effect.Aff (Aff, Error, Fiber, forkAff, killFiber)

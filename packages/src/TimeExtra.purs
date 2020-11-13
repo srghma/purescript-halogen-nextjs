@@ -1,4 +1,4 @@
-module Lib.Time where
+module TimeExtra where
 
 import Prelude
 import Data.Time.Duration (Milliseconds(..))

@@ -93,7 +93,7 @@ mkScripts {
   '';
 
   dev__purescript-graphql-client-generator = ''
-    purescript-graphql-client-generator --input-json ./schemas/schema.json --output app/Api --api Api
+    purescript-graphql-client-generator --input-json ./schemas/schema.json --output packages/client/Api --api Api
   '';
 
   dev__db__drop = ''
