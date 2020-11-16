@@ -1,4 +1,4 @@
-module FeatureTests.login.success-spec where
+module FeatureTests.Tests.Login.SuccessSpec where
 
 import Prelude
 import Control.Monad.Error.Class
@@ -11,17 +11,11 @@ import Effect.Aff
 import Effect.Class
 import Effect.Console
 import Effect.Exception
-import Selenium.Browser
-import Selenium.Builder
-import Selenium.Monad
-import Selenium.Types
 import Test.Spec
 import Unsafe.Coerce
-import Lib.BuildSeleniumChromeDriver
-import Lib.FeatureTest
-import Lib.Helpers
+import FeatureTests.FeatureTestSpec
+import Lunapark as Lunapark
 
 spec :: FeatureTestSpec Unit
 spec = do
-  getClientSite "/"
-  stop
+  Lunapark.go "http://my-site.com"

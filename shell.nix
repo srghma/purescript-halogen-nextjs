@@ -35,6 +35,7 @@ pkgs.mkShell rec {
     pg_prove
     dump-schema
     postgresql
+    chromedriver
 
     (import ./dev-commands/all-commands.nix { inherit pkgs; })
   ];

@@ -1,4 +1,4 @@
-module ApiServer.CliConfig where
+module ApiServer.Config.FromCli where
 
 import Pathy (Path, Abs, File, AnyFile)
 import Protolude

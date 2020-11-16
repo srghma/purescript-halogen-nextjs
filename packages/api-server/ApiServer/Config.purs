@@ -16,8 +16,8 @@ import Env as Env
 import Node.Express.App as Express
 import Node.Express.Response as Express
 import Options.Applicative as Options.Applicative
-import ApiServer.CliConfig as ApiServer.CliConfig
-import ApiServer.EnvConfig as ApiServer.EnvConfig
+import ApiServer.Config.FromCli as ApiServer.Config.FromCli
+import ApiServer.Config.FromEnv as ApiServer.Config.FromEnv
 
 type DevelopmentConfig =
   { exportGqlSchemaPath  :: AnyFile
@@ -57,8 +57,8 @@ type Config =
 
 config :: Effect Config
 config = do
-  cliConfig <- Options.Applicative.execParser ApiServer.CliConfig.opts
-  envConfig <- ApiServer.EnvConfig.envConfig
+  cliConfig <- Options.Applicative.execParser ApiServer.Config.FromCli.opts
+  envConfig <- ApiServer.Config.FromEnv.envConfig
 
   target <-
     if cliConfig.isProdunction

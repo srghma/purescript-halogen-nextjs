@@ -58,4 +58,5 @@
 , "envparse"
 , "postgresql-client"
 , "heterogeneous"
+, "lunapark"
 ]

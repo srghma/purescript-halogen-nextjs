@@ -1,5 +1,6 @@
 ```
 ./regenerate-purs-files.sh
+generate-halogen-css-modules -d ./packages/client
 ./gen-migrations.hs
 
 drmaci && dev__db__drop && dev__up_detach && dev__db__migrate && dev__db__dump_schema && dev__server
@@ -10,11 +11,8 @@ dev__db__tests
 
 ./gen-error-ids.hs
 
-generate-halogen-css-modules -d ./packages/client
-
 yarn dev
 ```
-
 
 # purescript-halogen-nextjs
 

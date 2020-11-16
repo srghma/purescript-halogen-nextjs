@@ -1,16 +1,17 @@
 module FeatureTests.AllTests where
 
-import Prelude
-import Test.Spec (describe)
-import Lib.FeatureTest (FeatureTestSpecInternal, it, itOnly)
-import FeatureTests.Login.SuccessSpec as FeatureTests.Login.SuccessSpec
-import FeatureTests.Login.ErrorNotConfirmedSpec as FeatureTests.Login.ErrorNotConfirmedSpec
-import FeatureTests.Register.SuccessSpec as FeatureTests.Register.SuccessSpec
+import Protolude
+import Test.Spec (SpecT, describe)
+import Data.Identity
+import FeatureTests.FeatureTestSpec
+import FeatureTests.Tests.Login.SuccessSpec as FeatureTests.Tests.Login.SuccessSpec
+-- | import FeatureTests.Tests.Login.ErrorNotConfirmedSpec as FeatureTests.Tests.Login.ErrorNotConfirmedSpec
+-- | import FeatureTests.Tests.Register.SuccessSpec as FeatureTests.Tests.Register.SuccessSpec
 
-allTests :: FeatureTestSpecInternal Unit
+allTests :: SpecT Aff FeatureTestConfig Identity Unit
 allTests = do
   describe "login" do
-    itOnly "success" FeatureTests.Login.SuccessSpec.spec
-    it "error not confirmed" FeatureTests.Login.ErrorNotConfirmedSpec.spec
-  describe "register" do
-    it "success" FeatureTests.Register.SuccessSpec.spec
+    itOnly "success" FeatureTests.Tests.Login.SuccessSpec.spec
+    -- | it "error not confirmed" FeatureTests.Tests.Login.ErrorNotConfirmedSpec.spec
+  -- | describe "register" do
+    -- | it "success" FeatureTests.Tests.Register.SuccessSpec.spec

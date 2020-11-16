@@ -1,4 +1,4 @@
-module FeatureTests.login.error-not-confirmed-spec where
+module FeatureTests.Tests.Login.ErrorNotConfirmedSpec where
 
 import Prelude
 import Control.Monad.Error.Class
@@ -17,8 +17,8 @@ import Selenium.Monad
 import Selenium.Types
 import Test.Spec
 import Unsafe.Coerce
-import Lib.BuildSeleniumChromeDriver
-import Lib.FeatureTest
+import BuildSeleniumChromeDriver
+import FeatureTest
 
 spec :: FeatureTestSpec Unit
 spec = pure unit
