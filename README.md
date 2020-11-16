@@ -1,5 +1,7 @@
 ```
-drmaci && import__db__drop && import__up_detach && import__db__migrate && import__db_tests
+drmaci && dev__db__drop && dev__up_detach && dev__db__migrate && dev__db__dump_schema && dev__server
+
+dev__db__tests
 
 yarn server:start
 ```
