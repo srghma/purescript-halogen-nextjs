@@ -1,6 +1,6 @@
 module NextjsApp.PageImplementations.Login (component) where
 
-import Api.Scalars
+import NextjsGraphqlApi.Scalars
 import Material.Classes.LayoutGrid
 import NextjsApp.PageImplementations.Login.Form
 import NextjsApp.PageImplementations.Login.Render
@@ -8,10 +8,10 @@ import NextjsApp.PageImplementations.Login.Types
 import Protolude
 
 import Affjax as Affjax
-import Api.InputObject as Api.InputObject
-import Api.Mutation as Api.Mutation
-import Api.Object.User as Api.Object.User
-import Api.Query as Api.Query
+import NextjsGraphqlApi.InputObject as NextjsGraphqlApi.InputObject
+import NextjsGraphqlApi.Mutation as NextjsGraphqlApi.Mutation
+import NextjsGraphqlApi.Object.User as NextjsGraphqlApi.Object.User
+import NextjsGraphqlApi.Query as NextjsGraphqlApi.Query
 import Browser.Cookie as Browser.Cookie
 import Data.Argonaut.Decode as Data.Argonaut.Decode
 import Data.Array as Array
@@ -50,8 +50,8 @@ import NextjsApp.ServerExceptions as NextjsApp.ServerExceptions
 login :: { usernameOrEmail :: NonTakenUsernameOrEmail, password :: Password } -> Aff (Maybe LoginError)
 login loginDataValidated = do
   let (query :: SelectionSet Scope__RootMutation Boolean) =
-        Api.Mutation.webLogin
-          { input: Api.InputObject.WebLoginInput
+        NextjsGraphqlApi.Mutation.webLogin
+          { input: NextjsGraphqlApi.InputObject.WebLoginInput
             { username: NextjsApp.Queries.IsUsernameOrEmailTaken.toString loginDataValidated.usernameOrEmail
             , password: NextjsApp.Data.Password.toString loginDataValidated.password
             }

@@ -24,8 +24,9 @@ data AroundAllState config = AroundAllState config (Fiber Unit)
 -- but it would require g to implement `MonadUnliftAff` class (there should be function `g Unit -> Aff Unit`)
 
 aroundAll :: forall config m g. MonadEffect m => MonadAff g => MonadError Error g => ((config -> g Unit) -> Aff Unit) -> SpecT g config m Unit -> SpecT g Unit m Unit
-aroundAll withFunc specWith = beforeAll start $ afterAll stop $ beforeWith (pure <<< fst) specWith
+aroundAll withFunc specWith = beforeAll start $ afterAll stop $ beforeWith (pure <<< getConfig) specWith
   where
+
   start :: g (AroundAllState config)
   start = do
     (avar :: Effect.Aff.AVar.AVar config) <- liftAff $ Effect.Aff.AVar.empty -- 1
@@ -39,3 +40,6 @@ aroundAll withFunc specWith = beforeAll start $ afterAll stop $ beforeWith (pure
 
   stop :: AroundAllState config -> g Unit
   stop (AroundAllState _config fiber) = liftAff $ killFiber (Effect.Exception.error "Kill fiber") fiber
+
+  getConfig :: AroundAllState config -> config
+  getConfig (AroundAllState config _fiber) = config

@@ -7,8 +7,8 @@ import NextjsApp.Queries.IsUsernameOrEmailTaken
 import NextjsApp.Queries.IsUsernameOrEmailTaken as NextjsApp.Queries.IsUsernameOrEmailTaken
 import Protolude
 
-import Api.Object.User as Api.Object.User
-import Api.Query as Api.Query
+import NextjsGraphqlApi.Object.User as NextjsGraphqlApi.Object.User
+import NextjsGraphqlApi.Query as NextjsGraphqlApi.Query
 import Data.Array as Array
 import Data.Either (Either(..))
 import Data.Int as Int

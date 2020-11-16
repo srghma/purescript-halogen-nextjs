@@ -3,8 +3,8 @@ module NextjsApp.Queries.IsUsernameOrEmailTaken where
 import GraphQLClient
 import Protolude
 
-import Api.Object.User as Api.Object.User
-import Api.Query as Api.Query
+import NextjsGraphqlApi.Object.User as NextjsGraphqlApi.Object.User
+import NextjsGraphqlApi.Query as NextjsGraphqlApi.Query
 import Data.Maybe as Maybe
 import Data.String.NonEmpty (NonEmptyString)
 import Data.String.NonEmpty as NonEmptyString
@@ -37,4 +37,4 @@ isUsernameOrEmailTaken usernameOrEmail =
     (throwError <<< error <<< GraphQLClient.printGraphQLError) \/ pure
   where
     query :: SelectionSet Scope__RootQuery Boolean
-    query = Api.Query.userByUsernameOrEmail { usernameOrEmail: NonEmptyString.toString usernameOrEmail } (pure unit) <#> Maybe.isJust
+    query = NextjsGraphqlApi.Query.userByUsernameOrEmail { usernameOrEmail: NonEmptyString.toString usernameOrEmail } (pure unit) <#> Maybe.isJust
