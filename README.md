@@ -1,9 +1,18 @@
 ```
+./regenerate-purs-files.sh
+./gen-migrations.hs
+
 drmaci && dev__db__drop && dev__up_detach && dev__db__migrate && dev__db__dump_schema && dev__server
 
 dev__db__tests
 
-yarn server:start
+./regenerate-graphql-api-purs-codegen.sh
+
+./gen-error-ids.hs
+
+generate-halogen-css-modules -d ./packages/client
+
+yarn dev
 ```
 
 

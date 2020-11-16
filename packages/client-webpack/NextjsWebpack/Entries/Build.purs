@@ -23,6 +23,7 @@ main :: Effect Unit
 main =
   launchAff_ do
     root <- liftEffect cwd
+
     let
       production = true
 
@@ -31,7 +32,7 @@ main =
       pagesModuleNamePrefix :: NonEmptyArray NonEmptyString
       pagesModuleNamePrefix = unsafeCoerce [ "NextjsApp", "Pages" ]
 
-      appDir = root </> dir (SProxy :: SProxy "app")
+      appDir = root </> dir (SProxy :: SProxy "packages") </> dir (SProxy :: SProxy "client")
     (faviconFileBuffer :: Buffer) <- Node.FS.Aff.readFile (printPathPosixSandboxAny (root </> file (SProxy :: SProxy "purescript-favicon-black.svg")))
     (favIconResponse :: Favicons.FavIconResponse) <- Favicons.favicons faviconFileBuffer (NextjsWebpack.FaviconsConfig.faviconsConfig production)
     entrypointsObject <- NextjsWebpack.GetClientPagesEntrypoints.getClientPagesEntrypoints { pagesModuleNamePrefix, appDir, spagoAbsoluteOutputDir: spagoOutput }
@@ -42,6 +43,7 @@ main =
           , watch: false
           , production
           , root
+          , appDir
           , bundleAnalyze: false
           , spagoOutput
           }
@@ -52,6 +54,7 @@ main =
           , watch: false
           , production
           , root
+          , appDir
           , bundleAnalyze: false
           , spagoOutput
           }

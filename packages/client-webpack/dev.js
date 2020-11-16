@@ -2,7 +2,8 @@ const path = require('path')
 const express = require('express')
 const reload = require('reload')
 
-const spagoDhall = './spago.dhall'
+// TODO: abs?
+const spagoDhall = './spago-client.dhall'
 
 const spagoOptions = {
   output:    require('webpack-spago-loader/lib/getAbsoluteOutputDirFromSpago')(spagoDhall),
@@ -22,7 +23,7 @@ const spagoOptions = {
 
 const cleanupCssModulesGenerator = require(spagoOptions.output + '/NextjsWebpack.Utils.OnFilesChangedRunCommand/index.js').onFilesChangedRunCommand({
   files: ['packages/client/**/*.scss'],
-  command: [ 'generate-halogen-css-modules', '-d', './client' ],
+  command: [ 'generate-halogen-css-modules', '-d', './packages/client' ],
 })()
 
 const { spawnServer, killServerIfRunning } = require(spagoOptions.output + '/NextjsWebpack.Utils.OneServerATimeSpawner/index.js').oneServerATimeSpawner()
@@ -66,12 +67,13 @@ const livereloadPort = 35729
 
           spawnServer({
             serverFilePath,
-            port: 3001,
+            port:                   3001,
             compiliedClientDirPath: clientConfig.output.path,
             livereloadPort
           })()
 
           console.log('[livereload] sending refresh')
+
           reloadReturned.reload()
         }
       })()

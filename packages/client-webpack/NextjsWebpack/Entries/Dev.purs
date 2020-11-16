@@ -34,7 +34,7 @@ runWebpack { onSuccess } =
       pagesModuleNamePrefix :: NonEmptyArray NonEmptyString
       pagesModuleNamePrefix = unsafeCoerce [ "NextjsApp", "Pages" ]
 
-      appDir = root </> dir (SProxy :: SProxy "app")
+      appDir = root </> dir (SProxy :: SProxy "packages") </> dir (SProxy :: SProxy "client")
     entrypointsObject <- NextjsWebpack.GetClientPagesEntrypoints.getClientPagesEntrypoints { pagesModuleNamePrefix, appDir, spagoAbsoluteOutputDir: spagoOutput }
     let
       clientConfig =
@@ -43,6 +43,7 @@ runWebpack { onSuccess } =
           , watch: false
           , production
           , root
+          , appDir
           , bundleAnalyze: false
           , spagoOutput
           }
@@ -53,6 +54,7 @@ runWebpack { onSuccess } =
           , watch: false
           , production
           , root
+          , appDir
           , bundleAnalyze: false
           , spagoOutput
           }

@@ -5,6 +5,15 @@ module NextjsApp.ServerExceptions where
 verifyUserEmail_tokenInvalidOrExpired :: String
 verifyUserEmail_tokenInvalidOrExpired = "APP_EXCEPTION__VERIFY_USER_EMAIL__TOKEN_INVALID_OR_EXPIRED"
 
+login_accountLockedTooManyAttempts :: String
+login_accountLockedTooManyAttempts = "APP_EXCEPTION__LOGIN__ACCOUNT_LOCKED_TOO_MANY_ATTEMPTS"
+
+linkOrRegisterUser_differentAccountAlreadyLinked :: String
+linkOrRegisterUser_differentAccountAlreadyLinked = "APP_EXCEPTION__LINK_OR_REGISTER_USER__DIFFERENT_ACCOUNT_ALREADY_LINKED"
+
+resetPassword_shouldNotOccur :: String
+resetPassword_shouldNotOccur = "APP_EXCEPTION__RESET_PASSWORD__SHOULD_NOT_OCCUR"
+
 resetPassword_accountLockedTooManyAttempts :: String
 resetPassword_accountLockedTooManyAttempts = "APP_EXCEPTION__RESET_PASSWORD__ACCOUNT_LOCKED_TOO_MANY_ATTEMPTS"
 
@@ -13,13 +22,4 @@ resetPassword_invalidToken = "APP_EXCEPTION__RESET_PASSWORD__INVALID_TOKEN"
 
 resetPassword_invalidUserId :: String
 resetPassword_invalidUserId = "APP_EXCEPTION__RESET_PASSWORD__INVALID_USER_ID"
-
-linkOrRegisterUser_differentAccountAlreadyLinked :: String
-linkOrRegisterUser_differentAccountAlreadyLinked = "APP_EXCEPTION__LINK_OR_REGISTER_USER__DIFFERENT_ACCOUNT_ALREADY_LINKED"
-
-resetPassword_shouldNotOccur :: String
-resetPassword_shouldNotOccur = "APP_EXCEPTION__RESET_PASSWORD__SHOULD_NOT_OCCUR"
-
-login_accountLockedTooManyAttempts :: String
-login_accountLockedTooManyAttempts = "APP_EXCEPTION__LOGIN__ACCOUNT_LOCKED_TOO_MANY_ATTEMPTS"
 

@@ -29,23 +29,19 @@ import PathyExtra (printPathPosixSandboxAny)
 import Record as Record
 import Webpack.Plugins (webpack)
 import Webpack.Types (Configuration)
-
-changeKey :: forall a . (String -> String) -> Object a -> Object a
-changeKey f o =
-  (Object.toUnfoldable o :: Array (Tuple String a))
-  # map (\(Tuple k v) -> Tuple (f k) v)
-  # Object.fromFoldable
+import ForeignObjectExtra (updateKeys)
 
 config ::
   { target :: Target
   , watch :: Boolean
   , production :: Boolean
   , root :: Path Abs Dir
+  , appDir :: Path Abs Dir
   , bundleAnalyze :: Boolean
   , spagoOutput :: Path Abs Dir
   } ->
   Configuration
-config { target, watch, production, root, bundleAnalyze, spagoOutput } =
+config { target, watch, production, root, appDir, bundleAnalyze, spagoOutput } =
   { watch
   , target:
     case target of
@@ -98,7 +94,7 @@ config { target, watch, production, root, bundleAnalyze, spagoOutput } =
     case target of
       Target__Server ->
         Object.fromHomogeneous
-          { main: Array.singleton $ printPathPosixSandboxAny $ root </> dir (SProxy :: SProxy "app") </> file (SProxy :: SProxy "server.entry.js")
+          { main: Array.singleton $ printPathPosixSandboxAny $ appDir </> file (SProxy :: SProxy "server.entry.js")
           }
       Target__Browser { entrypointsObject } ->
         let
@@ -118,7 +114,7 @@ config { target, watch, production, root, bundleAnalyze, spagoOutput } =
                 Array.singleton $ loaderPath <> "?" <> Node.URL.toQueryString (Codec.Argonaut.encode NextjsWebpack.IsomorphicClientPagesLoader.optionsCodec options) <> "!"
 
           mainPage =
-            { main: Array.singleton $ printPathPosixSandboxAny $ root </> dir (SProxy :: SProxy "app") </> file (SProxy :: SProxy "client.entry.js")
+            { main: Array.singleton $ printPathPosixSandboxAny $ appDir </> file (SProxy :: SProxy "client.entry.js")
             }
         in
           Object.fromHomogeneous $ Record.union pages mainPage
@@ -126,7 +122,7 @@ config { target, watch, production, root, bundleAnalyze, spagoOutput } =
         let
           (absoluteJsDepsPaths :: Array (Path Abs File)) = Array.catMaybes $ map _.absoluteJsDepsPath $ Object.values $ Object.fromHomogeneous entrypointsObject
 
-          mainPath = root </> dir (SProxy :: SProxy "app") </> file (SProxy :: SProxy "mobile.entry.js")
+          mainPath = appDir </> file (SProxy :: SProxy "mobile.entry.js")
         in
           Object.fromHomogeneous { main: map printPathPosixSandboxAny $ absoluteJsDepsPaths <> [ mainPath ] }
   , node:
@@ -178,7 +174,7 @@ config { target, watch, production, root, bundleAnalyze, spagoOutput } =
                 commonEnv
                 # hmap HeterogeneousExtraShow.Show
                 # Object.fromHomogeneous
-                # changeKey (\x -> "process.env." <> x)
+                # updateKeys (\x -> "process.env." <> x)
                 # map Foreign.unsafeToForeign
             in
               case target of

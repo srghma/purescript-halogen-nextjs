@@ -74,7 +74,7 @@ mkScripts {
     databaseOwnerPassword="${(import "${pkgs.rootProjectDir}/config/ignored/passwords.nix").DATABASE_OWNER_PASSWORD}" \
     databaseAuthenticatorPassword="${(import "${pkgs.rootProjectDir}/config/ignored/passwords.nix").DATABASE_AUTHENTICATOR_PASSWORD}" \
     oauthGithubClientSecret="${(import "${pkgs.rootProjectDir}/config/ignored/github-oauth.nix").CLIENT_SECRET}" \
-      spago --config api-server-spago.dhall run --main ApiServer.Main --node-args '\
+      spago --config spago-api-server.dhall run --main ApiServer.Main --node-args '\
         --export-gql-schema-path "${pkgs.rootProjectDir}/schemas/schema.graphql" \
         --export-json-schema-path "${pkgs.rootProjectDir}/schemas/schema.json" \
         --port 3000 \
