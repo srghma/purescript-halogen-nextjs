@@ -6,7 +6,7 @@ function cancelNoop(_cancelError, cancelerError, cancelerSuccess) {
 }
 
 // TODO: use nonCanceller function?
-exports._buildMyDriver = function(chromedriverPath, chromeBinaryPath, remoteDownloadDir) {
+exports._buildSeleniumChromeDriver = function(chromedriverPath, chromeBinaryPath, remoteDownloadDir) {
   return function(onError, onSuccess) {
     // var chromeCapabilities = webdriver.Capabilities.chrome()
 

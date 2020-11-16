@@ -18,7 +18,7 @@ import Unsafe.Coerce
 import Effect.Aff
 import Effect.Aff.Compat
 
-buildMyDriver :: Aff Driver
-buildMyDriver = fromEffectFnAff _buildMyDriver
+buildSeleniumChromeDriver :: Aff Driver
+buildSeleniumChromeDriver = fromEffectFnAff _buildSeleniumChromeDriver
 
-foreign import _buildMyDriver ∷ EffectFnAff Driver
+foreign import _buildSeleniumChromeDriver ∷ EffectFnAff Driver

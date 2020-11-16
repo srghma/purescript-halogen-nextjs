@@ -17,7 +17,7 @@ import Selenium.Monad
 import Selenium.Types
 import Test.Spec
 import Unsafe.Coerce
-import Lib.BuildMyDriver
+import Lib.BuildSeleniumChromeDriver
 import Lib.FeatureTest
 import Lib.Helpers
 

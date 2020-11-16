@@ -19,7 +19,7 @@ import Test.Spec (SpecT(..))
 import Test.Spec as Test.Spec
 import Unsafe.Coerce
 import Database.PostgreSQL.PG (defaultPoolConfiguration, PGError, command, execute, newPool, Pool, Connection, query, Query(Query))
-import Lib.BuildMyDriver
+import Lib.BuildSeleniumChromeDriver
 
 defaultTimeout :: Milliseconds
 defaultTimeout = Milliseconds 50.0

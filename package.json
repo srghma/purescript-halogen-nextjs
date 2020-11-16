@@ -3,16 +3,14 @@
   "version": "1.0.0",
   "description": "nextjs",
   "scripts": {
-    "dev": "node --trace-deprecation ./webpack/dev.js",
+    "dev": "node --trace-deprecation ./packages/client-webpack/dev.js",
     "dev:spago": "spago build --watch",
     "build": "spago run --main NextjsWebpack.Entries.Build --node-args '--unhandled-rejections=strict --trace-deprecation'",
-    "serve:prod": "node --trace-deprecation ./.dist/server/main.js --port 3001 --root-path /home/srghma/projects/purescript-halogen-nextjs/.dist/client/",
-    "serve:dev": "node --trace-deprecation ./.dist-dev/server/main.js --port 3001 --root-path /home/srghma/projects/purescript-halogen-nextjs/.dist-dev/client/",
     "cordova:clean": "rm -frdv www && mkdir www",
-    "cordova:build": "cordova build -- --webpack.config webpack/cordova-webpack.config.js --webpack.env.mode=production",
-    "cordova:dev": "cordova run android -- --webpack.config webpack/cordova-webpack.config.js --webpack.env.mode=development",
-    "cordova:dev:livereload": "cordova run android -- --webpack.config webpack/cordova-webpack.config.js --webpack.env.mode=development --livereload",
-    "cordova:test-config": "webpack --config ./webpack/cordova-webpack.config.js --env.mode=development"
+    "cordova:build": "cordova build -- --webpack.config ./packages/client-webpack/cordova-webpack.config.js --webpack.env.mode=production",
+    "cordova:dev": "cordova run android -- --webpack.config ./packages/client-webpack/cordova-webpack.config.js --webpack.env.mode=development",
+    "cordova:dev:livereload": "cordova run android -- --webpack.config ./packages/client-webpack/cordova-webpack.config.js --webpack.env.mode=development --livereload",
+    "cordova:test-config": "webpack --config ./packages/client-webpack/cordova-webpack.config.js --env.mode=development"
   },
   "repository": {
     "type": "git",

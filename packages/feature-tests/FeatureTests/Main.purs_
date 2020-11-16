@@ -18,7 +18,7 @@ import Effect.Aff
 import Effect.Class
 import Effect.Console
 import Effect.Exception as Effect.Exception
-import Lib.BuildMyDriver
+import Lib.BuildSeleniumChromeDriver
 import Prelude
 import Selenium.Browser
 import Selenium.Builder
@@ -85,7 +85,7 @@ main :: Effect Unit
 main =
   launchAff_ do
     poolConfiguration <- liftEffect readPoolConfigurationFromEnv
-    driver <- buildMyDriver
+    driver <- buildSeleniumChromeDriver
     connectionResult <- connectToDb poolConfiguration
     let
       config = { driver, connection: connectionResult.connection, defaultTimeout }

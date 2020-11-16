@@ -69,7 +69,6 @@ mkScripts {
 
     mkdir -p ./schemas
 
-
     GRAPHILE_LICENSE="${pkgs.lib.fileContents "${pkgs.rootProjectDir}/config/ignored/graphile-license"}" \
     sessionSecret="${(import "${pkgs.rootProjectDir}/config/ignored/passwords.nix").SESSION_SECRET}" \
     databaseOwnerPassword="${(import "${pkgs.rootProjectDir}/config/ignored/passwords.nix").DATABASE_OWNER_PASSWORD}" \
@@ -90,10 +89,6 @@ mkScripts {
         --database-visitor-user "${(import "${pkgs.rootProjectDir}/config/public/database.nix").DATABASE_VISITOR}" \
         --oauth-github-client-id "${(import "${pkgs.rootProjectDir}/config/ignored/github-oauth.nix").CLIENT_ID}" \
       '
-  '';
-
-  dev__purescript-graphql-client-generator = ''
-    purescript-graphql-client-generator --input-json ./schemas/schema.json --output packages/client/Api --api Api
   '';
 
   dev__db__drop = ''
