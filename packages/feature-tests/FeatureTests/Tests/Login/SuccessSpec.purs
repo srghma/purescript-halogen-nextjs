@@ -14,8 +14,9 @@ import Effect.Exception
 import Test.Spec
 import Unsafe.Coerce
 import FeatureTests.FeatureTestSpec
+import Run (Run)
 import Lunapark as Lunapark
 
-spec :: FeatureTestSpec Unit
+spec :: Run FeatureTestRunEffects Unit
 spec = do
   Lunapark.go "http://my-site.com"

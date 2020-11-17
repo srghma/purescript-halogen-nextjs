@@ -15,6 +15,9 @@ type Config =
   , databaseOwnerUser     :: String
   , databaseOwnerPassword :: String
   , clientRootUrl         :: String
+  , chromedriverUrl       :: String
+  , chromeBinaryPath      :: String
+  , remoteDownloadDirPath :: String
   }
 
 config :: Effect Config
@@ -25,6 +28,9 @@ config = Env.parse Env.defaultInfo $ ado
   databaseOwnerUser     <- Env.var (Env.nonEmptyString <#> NonEmptyString.toString) "databaseOwnerUser" Env.defaultVar
   databaseOwnerPassword <- Env.var (Env.nonEmptyString <#> NonEmptyString.toString) "databaseOwnerPassword" (Env.defaultVar { sensitive = true })
   clientRootUrl         <- Env.var (Env.nonEmptyString <#> NonEmptyString.toString) "clientRootUrl" Env.defaultVar
+  chromedriverUrl       <- Env.var (Env.nonEmptyString <#> NonEmptyString.toString) "chromedriverUrl" Env.defaultVar
+  chromeBinaryPath      <- Env.var (Env.nonEmptyString <#> NonEmptyString.toString) "chromeBinaryPath" Env.defaultVar
+  remoteDownloadDirPath <- Env.var (Env.nonEmptyString <#> NonEmptyString.toString) "remoteDownloadDirPath" Env.defaultVar
 
   in
     { databaseName
@@ -33,4 +39,7 @@ config = Env.parse Env.defaultInfo $ ado
     , databaseOwnerUser
     , databaseOwnerPassword
     , clientRootUrl
+    , chromedriverUrl
+    , chromeBinaryPath
+    , remoteDownloadDirPath
     }

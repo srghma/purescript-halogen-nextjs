@@ -36,6 +36,7 @@ pkgs.mkShell rec {
     dump-schema
     postgresql
     chromedriver
+    chromium
 
     (import ./dev-commands/all-commands.nix { inherit pkgs; })
   ];

@@ -94,4 +94,23 @@ mkScripts {
   dev__db__drop = ''
     docker-volume-rm-if-exists nextjsdemo_import_postgres_data
   '';
+
+  dev__feature_tests__run_chromedriver = ''
+    chromedriver --verbose --port=9515
+  '';
+
+  dev__feature_tests__run = mkCommand serverEnv ''
+    mkdir -p "${pkgs.rootProjectDir}/.feature-tests-download-dir"
+
+    databaseName="${(import "${pkgs.rootProjectDir}/config/public/database.nix").DATABASE_NAME}" \
+    databaseHost="$POSTGRES_HOST" \
+    databasePort="$POSTGRES_PORT" \
+    databaseOwnerUser="${(import "${pkgs.rootProjectDir}/config/public/database.nix").DATABASE_OWNER}" \
+    databaseOwnerPassword="${(import "${pkgs.rootProjectDir}/config/ignored/passwords.nix").DATABASE_OWNER_PASSWORD}" \
+    clientRootUrl="http://localhost" \
+    chromedriverUrl="http://localhost:9515" \
+    chromeBinaryPath="${pkgs.chromium}/bin/chromium" \
+    remoteDownloadDirPath="${pkgs.rootProjectDir}/.feature-tests-download-dir" \
+      spago --config spago-feature-tests.dhall run --main FeatureTests.Main
+  '';
 }

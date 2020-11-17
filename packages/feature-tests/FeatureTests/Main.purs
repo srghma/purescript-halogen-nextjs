@@ -50,6 +50,8 @@ import SpecAroundAll
 import FeatureTests.FeatureTestSpec
 import FeatureTests.AllTests
 import FeatureTests.Config as Config
+import Lunapark as Lunapark
+import Lunapark.Types as Lunapark
 
 connectToDb :: PoolConfiguration -> Aff ConnectResult
 connectToDb poolConfiguration = do
@@ -61,6 +63,54 @@ main :: Effect Unit
 main =
   launchAff_ do
     config <- liftEffect Config.config
+
+    (interpreter :: Lunapark.Interpreter ()) <- Lunapark.init config.chromedriverUrl
+      { alwaysMatch:
+        -- based on https://www.w3.org/TR/webdriver1/ "Example 5"
+        -- chrome:browserOptions
+        [ Lunapark.CustomCapability "goog:chromeOptions" $ unsafeCoerce
+          { "binary": config.chromeBinaryPath
+          -- | , "debuggerAddress": "127.0.0.1:9222"
+          , "args":
+            -- disable chrome's wakiness
+            [ "--disable-infobars"
+            , "--disable-extensions"
+
+            -- allow http
+            , "--disable-web-security"
+
+            -- other
+            , "--lang=en"
+            , "--no-default-browser-check"
+            , "--no-sandbox"
+
+            -- not working
+            , "--start-maximized"
+            ]
+          , "prefs":
+            -- disable chrome's annoying password manager
+            { "profile.password_manager_enabled": false
+            , "credentials_enable_service":         false
+            , "password_manager_enabled":           false
+            , "download":
+              { "default_directory":   config.remoteDownloadDirPath
+              , "prompt_for_download": false
+              , "directory_upgrade":   true
+              , "extensions_to_open":  ""
+              }
+            , "plugins": { "plugins_disabled": ["Chrome PDF Viewer"] } -- disable viewing pdf files after download
+            }
+          }
+        ]
+      , firstMatch:
+        [ [ Lunapark.BrowserName Lunapark.Chrome
+          ]
+        ]
+      }
+      >>=
+        either
+        (\e -> throwError $ error $ "An error during selenium session initialization occured: " <> Lunapark.printError e)
+        pure
 
     connectionResult <- connectToDb
       { database:          config.databaseName
@@ -75,6 +125,7 @@ main =
     let
       testsConfig =
         { clientRootUrl: config.clientRootUrl
+        , interpreter
         -- | , connection: connectionResult.connection
         -- | , driver
         -- | , defaultTimeout
