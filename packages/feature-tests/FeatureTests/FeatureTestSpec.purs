@@ -41,9 +41,8 @@ type FeatureTestRunEffects =
   )
 
 runFeatureTest :: ∀ a . Run FeatureTestRunEffects a → FeatureTestConfig → Aff a
-runFeatureTest = \spec config ->
-  throwErrors
-  $ Run.runBaseAff'
+runFeatureTest spec config =
+  ( Run.runBaseAff'
   $ Run.runExcept
   $ ( Lunapark.runInterpreter config.interpreter spec
       :: Run
@@ -53,12 +52,10 @@ runFeatureTest = \spec config ->
          )
          a
     )
-  where
-    throwErrors :: Aff (Either Lunapark.Error a) -> Aff a
-    throwErrors x = x >>=
-      either
-      (\e -> throwError $ error $ "Error when running test: " <> Lunapark.printError e)
-      pure
+  ) >>=
+    either
+    (\e -> throwError $ error $ "Error when running test: " <> Lunapark.printError e)
+    pure
 
 -- SpecT monadOfExample exampleConfig monadOfSpec a
 it :: String -> Run FeatureTestRunEffects Unit -> SpecT Aff FeatureTestConfig Identity Unit

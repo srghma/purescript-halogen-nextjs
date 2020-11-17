@@ -59,4 +59,5 @@
 , "postgresql-client"
 , "heterogeneous"
 , "lunapark"
+, "node-readline"
 ]

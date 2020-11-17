@@ -111,6 +111,6 @@ mkScripts {
     chromedriverUrl="http://localhost:9515" \
     chromeBinaryPath="${pkgs.chromium}/bin/chromium" \
     remoteDownloadDirPath="${pkgs.rootProjectDir}/.feature-tests-download-dir" \
-      spago --config spago-feature-tests.dhall run --main FeatureTests.Main
+      exec spago --config spago-feature-tests.dhall run --main FeatureTests.Main
   '';
 }

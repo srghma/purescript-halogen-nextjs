@@ -52,6 +52,11 @@ import FeatureTests.AllTests
 import FeatureTests.Config as Config
 import Lunapark as Lunapark
 import Lunapark.Types as Lunapark
+import Run (Run)
+import Run as Run
+import Run.Reader as Run
+import Run.Except as Run
+import Node.ReadLine as Node.ReadLine
 
 connectToDb :: PoolConfiguration -> Aff ConnectResult
 connectToDb poolConfiguration = do
@@ -59,9 +64,29 @@ connectToDb poolConfiguration = do
   connectionResult :: ConnectResult <- Database.PostgreSQL.connect pool >>= either (show >>> error >>> throwError) pure
   pure connectionResult
 
+readQuestionStdin :: String -> Aff String
+readQuestionStdin question = makeAff \callback -> do
+  interface <- Node.ReadLine.createConsoleInterface Node.ReadLine.noCompletion
+  Node.ReadLine.question
+    question
+    (\s -> do
+      traceM $ "input " <> s
+      Node.ReadLine.close interface
+      callback $ Right s
+    )
+    interface
+  pure $ effectCanceler $ Node.ReadLine.close interface
+
+pressCtrlDToContinue :: Aff Unit
+pressCtrlDToContinue = void $ readQuestionStdin "Press \"CTRL-D\" to continue: "
+
 main :: Effect Unit
-main =
+main = do
+  interface <- Node.ReadLine.createConsoleInterface Node.ReadLine.noCompletion
+
   launchAff_ do
+    pressCtrlDToContinue
+
     config <- liftEffect Config.config
 
     (interpreter :: Lunapark.Interpreter ()) <- Lunapark.init config.chromedriverUrl
@@ -126,12 +151,18 @@ main =
       testsConfig =
         { clientRootUrl: config.clientRootUrl
         , interpreter
-        -- | , connection: connectionResult.connection
-        -- | , driver
-        -- | , defaultTimeout
         }
     runSpec' (defaultConfig { timeout = Nothing }) [ consoleReporter ]
       ( before (pure testsConfig)
-        $ afterAll_ (liftEffect $ connectionResult.done)
+        $ afterAll_ do
+           liftEffect $ connectionResult.done
+
+           ( Run.runBaseAff'
+           $ Run.runExcept
+           $ Lunapark.runInterpreter interpreter Lunapark.quit
+           ) >>=
+             either
+             (\e -> throwError $ error $ "Error when quitting: " <> Lunapark.printError e)
+             pure
         $ allTests
       )
