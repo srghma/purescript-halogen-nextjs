@@ -1,4 +1,4 @@
-module FeatureTests.Tests.Login.SuccessSpec where
+module FeatureTests.DebuggingAndTddUtils where
 
 import Protolude
 import Control.Monad.Error.Class
@@ -24,9 +24,12 @@ import Node.Stream as Node.Stream
 import Effect.Ref as Ref
 import Control.Monad.Rec.Class
 import Node.ReadLine as Node.ReadLine
-import FeatureTests.DebuggingAndTddUtils
 
-spec :: Run FeatureTestRunEffects Unit
-spec = do
-  Lunapark.go "http://my-site.com"
-  pressEnterToContinue
+readlineQuestion questionString interface = makeAff \callback -> do
+  Node.ReadLine.question questionString (callback <<< Right) interface
+  pure nonCanceler
+
+pressEnterToContinue =
+  Run.ask >>=
+  \{ readLineInterface } -> Run.liftAff $ void $ readlineQuestion "Press \"Enter\" (but not \"CTRL-D\") to continue: " readLineInterface
+

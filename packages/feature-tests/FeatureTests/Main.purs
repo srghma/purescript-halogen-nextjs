@@ -57,6 +57,9 @@ import Run as Run
 import Run.Reader as Run
 import Run.Except as Run
 import Node.ReadLine as Node.ReadLine
+import Node.Process as Node.Process
+import Data.Posix.Signal
+import Node.Stream as Node.Stream
 
 connectToDb :: PoolConfiguration -> Aff ConnectResult
 connectToDb poolConfiguration = do
@@ -64,32 +67,14 @@ connectToDb poolConfiguration = do
   connectionResult :: ConnectResult <- Database.PostgreSQL.connect pool >>= either (show >>> error >>> throwError) pure
   pure connectionResult
 
-readQuestionStdin :: String -> Aff String
-readQuestionStdin question = makeAff \callback -> do
-  interface <- Node.ReadLine.createConsoleInterface Node.ReadLine.noCompletion
-  Node.ReadLine.question
-    question
-    (\s -> do
-      traceM $ "input " <> s
-      Node.ReadLine.close interface
-      callback $ Right s
-    )
-    interface
-  pure $ effectCanceler $ Node.ReadLine.close interface
-
-pressCtrlDToContinue :: Aff Unit
-pressCtrlDToContinue = void $ readQuestionStdin "Press \"CTRL-D\" to continue: "
-
 main :: Effect Unit
 main = do
-  interface <- Node.ReadLine.createConsoleInterface Node.ReadLine.noCompletion
+  readLineInterface <- Node.ReadLine.createConsoleInterface Node.ReadLine.noCompletion
+  config <- Config.config
 
   launchAff_ do
-    pressCtrlDToContinue
-
-    config <- liftEffect Config.config
-
-    (interpreter :: Lunapark.Interpreter ()) <- Lunapark.init config.chromedriverUrl
+    interpreter <-
+      Lunapark.init config.chromedriverUrl
       { alwaysMatch:
         -- based on https://www.w3.org/TR/webdriver1/ "Example 5"
         -- chrome:browserOptions
@@ -151,18 +136,39 @@ main = do
       testsConfig =
         { clientRootUrl: config.clientRootUrl
         , interpreter
+        , readLineInterface
         }
+
+      onExit = do
+        -- throws error when releasing on already released
+        liftEffect $ void $ try $ connectionResult.done
+
+        runFeatureTestImplementation Lunapark.quit testsConfig >>=
+          either
+          (\e -> throwError $ error $ "Error when quitting: " <> Lunapark.printError e)
+          pure
+
+    -- | liftEffect $ Node.Process.onBeforeExit $ traceM "onBeforeExit"
+    liftEffect $ do
+       -- from https://nodejs.org/api/process.html#process_signal_events
+       -- Begin reading from stdin so the process does not exit.
+       Node.Stream.resume Node.Process.stdin
+
+       -- when?
+       Node.Process.onBeforeExit $ launchAff_ onExit
+
+       -- do something when app is closing
+       Node.Process.onExit $ const $ launchAff_ onExit
+
+       -- catches ctrl+c event
+       Node.Process.onSignal SIGINT $ launchAff_ onExit -- not handling CTRL-D?
+       Node.Process.onSignal SIGTERM $ launchAff_ onExit
+
+      -- catches uncaught exceptions
+      -- | process.on('uncaughtException', generalUtil.exitHandler.bind(null, {exit:false,event: "uncaughtException"}));
+
     runSpec' (defaultConfig { timeout = Nothing }) [ consoleReporter ]
       ( before (pure testsConfig)
-        $ afterAll_ do
-           liftEffect $ connectionResult.done
-
-           ( Run.runBaseAff'
-           $ Run.runExcept
-           $ Lunapark.runInterpreter interpreter Lunapark.quit
-           ) >>=
-             either
-             (\e -> throwError $ error $ "Error when quitting: " <> Lunapark.printError e)
-             pure
+        $ afterAll_ onExit
         $ allTests
       )
