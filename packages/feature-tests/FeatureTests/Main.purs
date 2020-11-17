@@ -154,7 +154,7 @@ main = do
        -- Begin reading from stdin so the process does not exit.
        Node.Stream.resume Node.Process.stdin
 
-       -- when?
+       -- when called?
        Node.Process.onBeforeExit $ launchAff_ onExit
 
        -- do something when app is closing
