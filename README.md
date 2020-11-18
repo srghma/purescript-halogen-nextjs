@@ -5,7 +5,7 @@ generate-halogen-css-modules -d ./packages/client
 
 drmaci && dev__db__drop && dev__up_detach && dev__db__migrate && dev__db__dump_schema && dev__server
 
-dev__db__tests
+# dev__db__tests
 
 ./regenerate-graphql-api-purs-codegen.sh
 

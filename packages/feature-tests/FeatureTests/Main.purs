@@ -60,6 +60,8 @@ import Node.ReadLine as Node.ReadLine
 import Node.Process as Node.Process
 import Data.Posix.Signal
 import Node.Stream as Node.Stream
+import Data.Exists (Exists)
+import Data.Exists as Exists
 
 connectToDb :: PoolConfiguration -> Aff ConnectResult
 connectToDb poolConfiguration = do
@@ -73,6 +75,10 @@ main = do
   config <- Config.config
 
   launchAff_ do
+     -- | TODO:
+     -- | (interpreter :: Exists Lunapark.Interpreter)
+     -- | so it's not instantiated and I dont have to handle Run.Reader on cleanup
+
     interpreter <-
       Lunapark.init config.chromedriverUrl
       { alwaysMatch:
@@ -140,7 +146,7 @@ main = do
         }
 
       onExit = do
-        -- throws error when releasing on already released
+        -- throws error when releasing an already released
         liftEffect $ void $ try $ connectionResult.done
 
         runFeatureTestImplementation Lunapark.quit testsConfig >>=
@@ -148,13 +154,12 @@ main = do
           (\e -> throwError $ error $ "Error when quitting: " <> Lunapark.printError e)
           pure
 
-    -- | liftEffect $ Node.Process.onBeforeExit $ traceM "onBeforeExit"
     liftEffect $ do
        -- from https://nodejs.org/api/process.html#process_signal_events
        -- Begin reading from stdin so the process does not exit.
        Node.Stream.resume Node.Process.stdin
 
-       -- when called?
+       -- when it is called?
        Node.Process.onBeforeExit $ launchAff_ onExit
 
        -- do something when app is closing

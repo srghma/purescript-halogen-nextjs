@@ -1,4 +1,4 @@
-module FeatureTests.Tests.Login.SuccessSpec where
+module FeatureTests.FeatureTestSpecUtils.GoClientRoute where
 
 import Protolude
 import Control.Monad.Error.Class
@@ -24,11 +24,9 @@ import Node.Stream as Node.Stream
 import Effect.Ref as Ref
 import Control.Monad.Rec.Class
 import Node.ReadLine as Node.ReadLine
-import FeatureTests.FeatureTestSpecUtils.DebuggingAndTdd
-import FeatureTests.FeatureTestSpecUtils.GoClientRoute
-import NextjsApp.Route
+import NextjsApp.RouteDuplexCodec as NextjsApp.RouteDuplexCodec
+import Routing.Duplex as Routing.Duplex
 
-spec :: Run FeatureTestRunEffects Unit
-spec = do
-  goClientRoute Index
-  pressEnterToContinue
+goClientRoute route =
+  Run.ask >>=
+  \{ clientRootUrl } -> Lunapark.go $ clientRootUrl <> Routing.Duplex.print NextjsApp.RouteDuplexCodec.routeCodec route

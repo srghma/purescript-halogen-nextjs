@@ -19,19 +19,18 @@ import Lunapark as Lunapark
 import Node.ReadLine as Node.ReadLine
 
 type FeatureTestConfig
-  = { clientRootUrl :: String -- e.g. "http://localhost:3000"
-    , interpreter :: Lunapark.Interpreter
-      ( reader          ∷ Run.READER ReaderEnv
+  = { interpreter :: Lunapark.Interpreter
+      ( reader ∷ Run.READER ReaderEnv
       )
-    , readLineInterface :: Node.ReadLine.Interface
-    -- connection :: Connection
-    -- | , driver ∷ Driver
-    -- | , timeout ∷ Milliseconds
+    | ReaderEnvRow
     }
 
-type ReaderEnv =
-  { readLineInterface :: Node.ReadLine.Interface
-  }
+type ReaderEnvRow =
+  ( readLineInterface :: Node.ReadLine.Interface
+  , clientRootUrl :: String -- e.g. "http://localhost:3000"
+  )
+
+type ReaderEnv = Record ReaderEnvRow
 
 type FeatureTestRunEffects =
   ( lunapark        ∷ Lunapark.LUNAPARK
@@ -48,6 +47,7 @@ runFeatureTestImplementation spec config =
   $ Run.runExcept
   $ Run.runReader
     { readLineInterface: config.readLineInterface
+    , clientRootUrl: config.clientRootUrl
     }
   $ Lunapark.runInterpreter config.interpreter spec
 

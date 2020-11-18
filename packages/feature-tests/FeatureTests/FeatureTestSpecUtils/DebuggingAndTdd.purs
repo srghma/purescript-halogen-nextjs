@@ -1,4 +1,4 @@
-module FeatureTests.DebuggingAndTddUtils where
+module FeatureTests.FeatureTestSpecUtils.DebuggingAndTdd where
 
 import Protolude
 import Control.Monad.Error.Class
@@ -32,4 +32,3 @@ readlineQuestion questionString interface = makeAff \callback -> do
 pressEnterToContinue =
   Run.ask >>=
   \{ readLineInterface } -> Run.liftAff $ void $ readlineQuestion "Press \"Enter\" (but not \"CTRL-D\") to continue: " readLineInterface
-
