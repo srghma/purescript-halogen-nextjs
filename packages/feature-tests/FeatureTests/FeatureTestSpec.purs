@@ -17,11 +17,10 @@ import Run.Reader as Run
 import Run.Except as Run
 import Lunapark as Lunapark
 import Node.ReadLine as Node.ReadLine
+import FeatureTests.FeatureTestSpecUtils.GoClientRoute as GoClientRoute
 
 type FeatureTestConfig
-  = { interpreter :: Lunapark.Interpreter
-      ( reader ∷ Run.READER ReaderEnv
-      )
+  = { interpreter :: Lunapark.Interpreter ()
     | ReaderEnvRow
     }
 
@@ -32,24 +31,27 @@ type ReaderEnvRow =
 
 type ReaderEnv = Record ReaderEnvRow
 
+-- | reader ∷ Run.READER ReaderEnv
 type FeatureTestRunEffects =
-  ( lunapark        ∷ Lunapark.LUNAPARK
-  , lunaparkActions ∷ Lunapark.LUNAPARK_ACTIONS
-  , except          ∷ Run.EXCEPT Lunapark.Error
-  , aff             ∷ Run.AFF
-  , effect          ∷ Run.EFFECT
-  , reader          ∷ Run.READER ReaderEnv
+  (
+  | GoClientRoute.GoClientRouteEffect
+  + Lunapark.LunaparkEffect
+  + Lunapark.LunaparkActionsEffect
+  + Lunapark.LunaparkBaseEffects
+  + ()
   )
 
 runFeatureTestImplementation :: ∀ a . Run FeatureTestRunEffects a → FeatureTestConfig → Aff (Either Lunapark.Error a)
 runFeatureTestImplementation spec config =
   Run.runBaseAff'
   $ Run.runExcept
-  $ Run.runReader
-    { readLineInterface: config.readLineInterface
-    , clientRootUrl: config.clientRootUrl
-    }
-  $ Lunapark.runInterpreter config.interpreter spec
+  -- | $ Run.runReader
+  -- |   { readLineInterface: config.readLineInterface
+  -- |   , clientRootUrl: config.clientRootUrl
+  -- |   }
+  $ Lunapark.runInterpreter config.interpreter
+  $ GoClientRoute.runGoClientRoute config.clientRootUrl
+  $ spec
 
 runFeatureTest :: ∀ a . Run FeatureTestRunEffects a → FeatureTestConfig → Aff a
 runFeatureTest spec config = runFeatureTestImplementation spec config >>=
