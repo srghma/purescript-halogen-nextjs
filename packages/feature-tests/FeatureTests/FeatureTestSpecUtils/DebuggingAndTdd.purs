@@ -25,10 +25,12 @@ import Effect.Ref as Ref
 import Control.Monad.Rec.Class
 import Node.ReadLine as Node.ReadLine
 
-readlineQuestion questionString interface = makeAff \callback -> do
-  Node.ReadLine.question questionString (callback <<< Right) interface
-  pure nonCanceler
+-- | readlineQuestion :: String -> Node.ReadLine.Interface -> Aff String
+-- | readlineQuestion questionString interface = makeAff \callback -> do
+-- |   Node.ReadLine.question questionString (callback <<< Right) interface
+-- |   pure nonCanceler
 
-pressEnterToContinue =
-  Run.ask >>=
-  \{ readLineInterface } -> Run.liftAff $ void $ readlineQuestion "Press \"Enter\" (but not \"CTRL-D\") to continue: " readLineInterface
+-- | pressEnterToContinue :: Run FeatureTestRunEffects Unit
+-- | pressEnterToContinue =
+-- |   Run.ask >>=
+-- |   \config -> Run.liftAff $ void $ readlineQuestion "Press \"Enter\" (but not \"CTRL-D\") to continue: " config.readLineInterface

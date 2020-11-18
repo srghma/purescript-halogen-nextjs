@@ -4,7 +4,7 @@
   "description": "nextjs",
   "scripts": {
     "dev": "node --trace-deprecation ./packages/client-webpack/dev.js",
-    "dev:spago": "spago --config spago-client.dhall build --watch",
+    "dev:spago": "spago --config spago-client.dhall build",
     "build": "spago --config spago-client.dhall run --main NextjsWebpack.Entries.Build --node-args '--unhandled-rejections=strict --trace-deprecation'",
     "cordova:clean": "rm -frdv www && mkdir www",
     "cordova:build": "cordova build -- --webpack.config ./packages/client-webpack/cordova-webpack.config.js --webpack.env.mode=production",

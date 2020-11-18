@@ -18,6 +18,7 @@ import Run (Run)
 import Run as Run
 import Run.Reader as Run
 import Lunapark as Lunapark
+import Lunapark.Types as Lunapark
 import Node.Process as Node.Process
 import Node.Encoding as Node.Encoding
 import Node.Stream as Node.Stream
@@ -27,8 +28,29 @@ import Node.ReadLine as Node.ReadLine
 import FeatureTests.FeatureTestSpecUtils.DebuggingAndTdd
 import FeatureTests.FeatureTestSpecUtils.GoClientRoute
 import NextjsApp.Route
+import Database.PostgreSQL
+
+inputField locator s = do
+  element ← Lunapark.findElement locator
+  Lunapark.clearElement element
+  -- | Lunapark.moveTo { origin: Lunapark.FromElement element, x: 0, y: 0, duration: Milliseconds 1000.0 }
+  -- | Lunapark.click
+  Lunapark.sendKeysElement element s
 
 spec :: Run FeatureTestRunEffects Unit
 spec = do
-  goClientRoute Index
-  pressEnterToContinue
+  -- | withTransaction conn do
+  -- |   execute conn (Query """
+  -- |     INSERT INTO foods (name, delicious, price)
+  -- |     VALUES ($1, $2, $3)
+  -- |   """) (Row3 "pork" true (D.fromString "8.30"))
+  -- |   testCount 1
+  -- | testCount 1
+  -- | execute conn (Query """
+  -- |   DELETE FROM foods
+  -- | """) Row0
+
+  goClientRoute Login
+  -- | inputField (Lunapark.ByXPath """//form//input[@aria-labelledby="usernameOrEmail"]""") "asdf"
+  -- | inputField (Lunapark.ByXPath """//form//input[@aria-labelledby="password"]""") "qwe"
+  -- | pressEnterToContinue

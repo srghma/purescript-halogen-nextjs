@@ -9,8 +9,13 @@ import Database.PostgreSQL
 import Data.Either
 import Data.Array
 
-type UserID
-  = Int
+newtype UserID
+  = UserID Int
+
+derive newtype instance showUserID :: Show UserID
+derive instance genericUserID :: Generic UserID _
+derive newtype instance decodeUserID :: Decode UserID
+derive newtype instance encodeUserID :: Encode UserID
 
 newtype User
   = User
@@ -30,10 +35,8 @@ instance encodeUser :: Encode User where
   encode = genericEncode $ defaultOptions { unwrapSingleConstructors = true }
 
 instance userFromSQLRow :: FromSQLRow User where
-  fromSQLRow [ id, name ] = User <$> ({ id: _, name: _ } <$> fromSQLValue id <*> fromSQLValue name)
-  fromSQLRow xs = Left $ "Row has " <> show n <> " fields, expecting 2."
-    where
-    n = length xs
+  fromSQLRow [ id, name ] = User <$> ({ id: _, name: _ } <$> (map UserID $ fromSQLValue id) <*> fromSQLValue name)
+  fromSQLRow xs = Left $ "Row has " <> show (length xs) <> " fields, expecting 2."
 
 instance userToSQLRow :: ToSQLRow User where
-  toSQLRow (User { id, name }) = [ toSQLValue id, toSQLValue name ]
+  toSQLRow (User { id: UserID id, name }) = [ toSQLValue id, toSQLValue name ]

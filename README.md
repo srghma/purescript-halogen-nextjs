@@ -11,7 +11,7 @@ drmaci && dev__db__drop && dev__up_detach && dev__db__migrate && dev__db__dump_s
 
 ./gen-error-ids.hs
 
-yarn dev
+yarn dev:spago && yarn dev
 
 dev__feature_tests__run_chromedriver
 dev__feature_tests__run
