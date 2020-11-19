@@ -143,6 +143,7 @@ main = do
         { clientRootUrl: config.clientRootUrl
         , interpreter
         , readLineInterface
+        , dbConnection: connectionResult.connection
         }
 
       onExit = do

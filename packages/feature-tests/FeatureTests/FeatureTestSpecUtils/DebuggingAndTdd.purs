@@ -11,7 +11,6 @@ import Effect.Aff
 import Effect.Class
 import Effect.Console
 import Effect.Exception
-import FeatureTests.FeatureTestSpec
 import Protolude
 import Test.Spec
 import Unsafe.Coerce
