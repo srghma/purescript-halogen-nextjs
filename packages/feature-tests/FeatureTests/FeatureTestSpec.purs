@@ -66,15 +66,15 @@ runFeatureTest spec config = runFeatureTestImplementation spec config >>=
 it :: String -> Run FeatureTestRunEffects Unit -> SpecT Aff FeatureTestConfig Identity Unit
 it name spec = Test.Spec.it name $ runFeatureTest spec
 
-runWithTransaction spec = \config -> do
+runFeatureTestWithTransaction spec = \config -> do
   (PostgreSQL.withTransaction config.dbConnection $ runFeatureTest spec config) >>=
     either (\e -> throwError $ error $ show e) pure
 
 itWithTransaction :: String -> Run FeatureTestRunEffects Unit -> SpecT Aff FeatureTestConfig Identity Unit
-itWithTransaction name spec = Test.Spec.it name (runWithTransaction spec)
+itWithTransaction name spec = Test.Spec.it name (runFeatureTestWithTransaction spec)
 
 itOnly :: String -> Run FeatureTestRunEffects Unit -> SpecT Aff FeatureTestConfig Identity Unit
 itOnly name spec = Test.Spec.itOnly name $ runFeatureTest spec
 
 itOnlyWithTransaction :: String -> Run FeatureTestRunEffects Unit -> SpecT Aff FeatureTestConfig Identity Unit
-itOnlyWithTransaction name spec = Test.Spec.itOnly name (runWithTransaction spec)
+itOnlyWithTransaction name spec = Test.Spec.itOnly name (runFeatureTestWithTransaction spec)
