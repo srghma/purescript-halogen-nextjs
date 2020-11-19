@@ -16,6 +16,8 @@ executeOrThrow querySql values = execute querySql values >>= maybe (pure unit) (
 
 query querySql values = Run.ask >>= \config -> Run.liftAff $ PostgreSQL.query config.dbConnection querySql values
 
+queryOrThrow querySql values = query querySql values >>= either (show >>> error >>> throwError >>> Run.liftEffect) pure
+
 scalar querySql values = Run.ask >>= \config -> Run.liftAff $ PostgreSQL.scalar config.dbConnection querySql values
 
 command querySql values = Run.ask >>= \config -> Run.liftAff $ PostgreSQL.command config.dbConnection querySql values

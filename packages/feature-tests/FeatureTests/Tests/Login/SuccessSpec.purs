@@ -53,16 +53,16 @@ spec = do
 
     email = "useremail1@mail.com"
 
-  executeOrThrow (PostgreSQL.Query """
+  (result :: Array PostgreSQL.Row0) <- queryOrThrow (PostgreSQL.Query """
     INSERT INTO app_public.users (username)
-    VALUES ($1) RETURNING new_user;
+    VALUES ('username1') RETURNING id as new_user_id;
 
     INSERT INTO app_private.user_secrets (user_id, password_hash)
-    VALUES (new_user.id, crypt($2, gen_salt('bf')));
+    VALUES (new_user_id, crypt('userpassword1', gen_salt('bf')));
 
     INSERT INTO app_public.users_emails (user_id, email, is_verified)
-    VALUES (new_user.id, $3, true);
-  """) (PostgreSQL.Row3 username password email)
+    VALUES (new_user_id, 'useremail1@mail.com', true)
+  """) (PostgreSQL.Row0)
 
   goClientRoute Login
   inputField (Lunapark.ByXPath """//form//input[@aria-labelledby="usernameOrEmail"]""") email
