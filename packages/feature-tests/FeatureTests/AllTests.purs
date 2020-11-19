@@ -11,7 +11,7 @@ import FeatureTests.Tests.Login.SuccessSpec as FeatureTests.Tests.Login.SuccessS
 allTests :: SpecT Aff FeatureTestConfig Identity Unit
 allTests = do
   describe "login" do
-    itOnly "success" FeatureTests.Tests.Login.SuccessSpec.spec
+    itOnlyWithTransaction "success" FeatureTests.Tests.Login.SuccessSpec.spec
     -- | it "error not confirmed" FeatureTests.Tests.Login.ErrorNotConfirmedSpec.spec
   -- | describe "register" do
     -- | it "success" FeatureTests.Tests.Register.SuccessSpec.spec
