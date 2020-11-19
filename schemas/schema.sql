@@ -870,7 +870,7 @@ $$;
 
 CREATE TABLE app_public.user_emails (
     id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
-    user_id uuid DEFAULT app_public.current_user_id_or_null() NOT NULL,
+    user_id uuid NOT NULL,
     email public.citext NOT NULL,
     is_verified boolean DEFAULT false NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL,

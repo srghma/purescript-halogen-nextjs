@@ -27,8 +27,12 @@ import Control.Monad.Rec.Class
 import Node.ReadLine as Node.ReadLine
 import FeatureTests.FeatureTestSpecUtils.DebuggingAndTdd
 import FeatureTests.FeatureTestSpecUtils.GoClientRoute
+import FeatureTests.FeatureTestSpecUtils.Db
 import NextjsApp.Route
-import Database.PostgreSQL
+import Database.PostgreSQL as PostgreSQL
+import Faker as Faker
+import Faker.Name as Faker.Name
+import Faker.Lorem as Faker.Lorem
 
 inputField locator s = do
   element ← Lunapark.findElement locator
@@ -39,12 +43,28 @@ inputField locator s = do
 
 spec :: Run FeatureTestRunEffects Unit
 spec = do
-  execute (Query """
+  -- | (Faker.Name.Name username) <- Run.liftEffect Faker.fake
+  -- | (Faker.Lorem.Words password) <- Run.liftEffect Faker.fake
+
+  let
+    username = "username1"
+
+    password = "userpassword1"
+
+    email = "useremail1@mail.com"
+
+  executeOrThrow (PostgreSQL.Query """
     INSERT INTO app_public.users (username)
-    VALUES ($1)
-  """) (Row1 "pork" true (D.fromString "8.30"))
+    VALUES ($1) RETURNING new_user;
+
+    INSERT INTO app_private.user_secrets (user_id, password_hash)
+    VALUES (new_user.id, crypt($2, gen_salt('bf')));
+
+    INSERT INTO app_public.users_emails (user_id, email, is_verified)
+    VALUES (new_user.id, $3, true);
+  """) (PostgreSQL.Row3 username password email)
 
   goClientRoute Login
-  -- | inputField (Lunapark.ByXPath """//form//input[@aria-labelledby="usernameOrEmail"]""") "asdf"
-  -- | inputField (Lunapark.ByXPath """//form//input[@aria-labelledby="password"]""") "qwe"
-  -- | pressEnterToContinue
+  inputField (Lunapark.ByXPath """//form//input[@aria-labelledby="usernameOrEmail"]""") email
+  inputField (Lunapark.ByXPath """//form//input[@aria-labelledby="password"]""") password
+  pressEnterToContinue

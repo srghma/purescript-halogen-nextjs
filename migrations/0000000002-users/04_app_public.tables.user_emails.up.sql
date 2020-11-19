@@ -1,6 +1,6 @@
 create table app_public.user_emails (
   id uuid not null primary key default uuid_generate_v4(),
-  user_id uuid not null default app_public.current_user_id_or_null() references app_public.users on delete cascade,
+  user_id uuid not null references app_public.users on delete cascade,
   email citext not null check (email ~ '[^@]+@[^@]+\.[^@]+'),
   is_verified boolean not null default false,
   created_at timestamptz not null default now(),
