@@ -54,7 +54,7 @@ handleGoClientRoute
   ~> Run
      (
      | Lunapark.LunaparkEffect
-     + Lunapark.LunaparkBaseEffects
+     + Lunapark.BaseEffects
      + r
      )
 handleGoClientRoute clientRootUrl = case _ of
@@ -68,14 +68,14 @@ runGoClientRoute
   -> Run
      (
      | Lunapark.LunaparkEffect
-     + Lunapark.LunaparkBaseEffects
+     + Lunapark.BaseEffects
      + GoClientRouteEffect
      + r
      )
   ~> Run
      (
      | Lunapark.LunaparkEffect
-     + Lunapark.LunaparkBaseEffects
+     + Lunapark.BaseEffects
      + r
      )
 runGoClientRoute clientRootUrl = Run.interpret (Run.on _goClientRoute (handleGoClientRoute clientRootUrl) Run.send)

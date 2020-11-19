@@ -39,16 +39,10 @@ inputField locator s = do
 
 spec :: Run FeatureTestRunEffects Unit
 spec = do
-  -- | withTransaction conn do
-  -- |   execute conn (Query """
-  -- |     INSERT INTO foods (name, delicious, price)
-  -- |     VALUES ($1, $2, $3)
-  -- |   """) (Row3 "pork" true (D.fromString "8.30"))
-  -- |   testCount 1
-  -- | testCount 1
-  -- | execute conn (Query """
-  -- |   DELETE FROM foods
-  -- | """) Row0
+  execute (Query """
+    INSERT INTO app_public.users (username)
+    VALUES ($1)
+  """) (Row1 "pork" true (D.fromString "8.30"))
 
   goClientRoute Login
   -- | inputField (Lunapark.ByXPath """//form//input[@aria-labelledby="usernameOrEmail"]""") "asdf"

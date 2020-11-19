@@ -1,24 +1,25 @@
 module FeatureTests.FeatureTestSpec where
 
-import Protolude
 import Data.Identity
 import Data.Time.Duration
 import Effect
 import Effect.Aff
 import Effect.Class
 import Effect.Exception
-import Test.Spec (SpecT(..))
-import Test.Spec as Test.Spec
+import Protolude
 import Unsafe.Coerce
-import Run (Run)
-import Run as Run
-import Run.Reader as Run
-import Run.Except as Run
+
+import Database.PostgreSQL as PostgreSQL
+import FeatureTests.FeatureTestSpecUtils.DebuggingAndTdd as DebuggingAndTdd
+import FeatureTests.FeatureTestSpecUtils.GoClientRoute as GoClientRoute
 import Lunapark as Lunapark
 import Node.ReadLine as Node.ReadLine
-import FeatureTests.FeatureTestSpecUtils.GoClientRoute as GoClientRoute
-import FeatureTests.FeatureTestSpecUtils.DebuggingAndTdd as DebuggingAndTdd
-import Database.PostgreSQL as PostgreSQL
+import Run (Run)
+import Run as Run
+import Run.Except as Run
+import Run.Reader as Run
+import Test.Spec (SpecT(..))
+import Test.Spec as Test.Spec
 
 type FeatureTestConfig
   = { interpreter :: Lunapark.Interpreter ()
@@ -37,8 +38,8 @@ type FeatureTestRunEffects =
   ( GoClientRoute.GoClientRouteEffect
   + DebuggingAndTdd.PressEnterToContinueEffect
   + Lunapark.LunaparkEffect
-  + Lunapark.LunaparkActionsEffect
-  + Lunapark.LunaparkBaseEffects
+  + Lunapark.ActionsEffect
+  + Lunapark.BaseEffects
   + ( reader ∷ Run.READER ReaderEnv
     )
   )
@@ -66,6 +67,7 @@ runFeatureTest spec config = runFeatureTestImplementation spec config >>=
 it :: String -> Run FeatureTestRunEffects Unit -> SpecT Aff FeatureTestConfig Identity Unit
 it name spec = Test.Spec.it name $ runFeatureTest spec
 
+runFeatureTestWithTransaction :: ∀ a. Run FeatureTestRunEffects a → FeatureTestConfig → Aff a
 runFeatureTestWithTransaction spec = \config -> do
   (PostgreSQL.withTransaction config.dbConnection $ runFeatureTest spec config) >>=
     either (\e -> throwError $ error $ show e) pure

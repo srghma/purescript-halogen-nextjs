@@ -60,4 +60,5 @@
 , "heterogeneous"
 , "lunapark"
 , "node-readline"
+, "faker"
 ]
