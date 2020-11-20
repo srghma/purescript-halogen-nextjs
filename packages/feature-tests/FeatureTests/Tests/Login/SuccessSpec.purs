@@ -35,6 +35,7 @@ import Run (Run)
 import Run as Run
 import Run.Reader as Run
 import FeatureTests.FeatureTestSpecUtils.SpecAssertions
+import CSS as CSS
 
 spec :: Run FeatureTestRunEffects Unit
 spec = do
@@ -68,15 +69,11 @@ spec = do
 
   inputField (Lunapark.ByXPath """//form//input[@aria-labelledby="usernameOrEmail"]""") "unknown@mail.com"
 
-  pressEnterToContinue
-
-  Lunapark.findElement (Lunapark.ByXPath """//form/text()[1]""")
+  Lunapark.findElement (Lunapark.ByCss $ CSS.Selector (CSS.Refinement [CSS.Id "usernameOrEmail-helper"]) CSS.Star)
     >>= Lunapark.getText
-    >>= \text -> (traceId (unsafeCoerce text)) `shouldEqual` "Username or email is not found"
-
-  pressEnterToContinue
+    >>= \text -> text `shouldEqual` "Username or email is not found"
 
   inputField (Lunapark.ByXPath """//form//input[@aria-labelledby="usernameOrEmail"]""") user.email
   inputField (Lunapark.ByXPath """//form//input[@aria-labelledby="password"]""") user.password
 
-  -- | pressEnterToContinue
+  pressEnterToContinue

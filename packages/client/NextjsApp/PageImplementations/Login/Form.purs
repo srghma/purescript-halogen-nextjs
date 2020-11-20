@@ -55,7 +55,11 @@ formComponent = F.component (const formInput) formSpec
       }
 
     formSpec :: forall input st . F.Spec LoginForm st (Const Void) UserAction FormChildSlots input LoginDataValidated m
-    formSpec = F.defaultSpec { render = render >>> lmap (Halogen.Component.hoistSlot liftAff), handleEvent = F.raiseResult, handleAction = handleAction }
+    formSpec = F.defaultSpec
+      { render = render >>> lmap (Halogen.Component.hoistSlot liftAff)
+      , handleEvent = F.raiseResult
+      , handleAction = handleAction
+      }
       where
 
       handleAction ::
