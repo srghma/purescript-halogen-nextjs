@@ -53,16 +53,21 @@ spec = do
 
     email = "useremail1@mail.com"
 
-  (result :: Array PostgreSQL.Row0) <- queryOrThrow (PostgreSQL.Query """
-    INSERT INTO app_public.users (username)
-    VALUES ('username1') RETURNING id as new_user_id;
+  (newUserId :: String) <- scalarOrThrowRequired (PostgreSQL.Query """
+      INSERT INTO app_public.users (username)
+      VALUES ($1) RETURNING id as new_user_id;
+  """) (PostgreSQL.Row1 username)
 
-    INSERT INTO app_private.user_secrets (user_id, password_hash)
-    VALUES (new_user_id, crypt('userpassword1', gen_salt('bf')));
+  executeOrThrow (PostgreSQL.Query """
+      update app_private.user_secrets
+      set password_hash = crypt($2, gen_salt('bf'))
+      where user_id = $1;
+  """) (PostgreSQL.Row2 newUserId password)
 
-    INSERT INTO app_public.users_emails (user_id, email, is_verified)
-    VALUES (new_user_id, 'useremail1@mail.com', true)
-  """) (PostgreSQL.Row0)
+  executeOrThrow (PostgreSQL.Query """
+      INSERT INTO app_public.user_emails (user_id, email, is_verified)
+      VALUES ($1, $2, true)
+  """) (PostgreSQL.Row2 newUserId email)
 
   goClientRoute Login
   inputField (Lunapark.ByXPath """//form//input[@aria-labelledby="usernameOrEmail"]""") email
