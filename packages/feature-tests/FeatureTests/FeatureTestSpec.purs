@@ -20,6 +20,7 @@ import Run.Except as Run
 import Run.Reader as Run
 import Test.Spec (SpecT(..))
 import Test.Spec as Test.Spec
+import PostgreSQLTruncateSchemas as PostgreSQLTruncateSchemas
 
 type FeatureTestConfig
   = { interpreter :: Lunapark.Interpreter ()
@@ -59,24 +60,28 @@ runFeatureTestImplementation spec config =
 runFeatureTest :: ∀ a . Run FeatureTestRunEffects a → FeatureTestConfig → Aff a
 runFeatureTest spec config = runFeatureTestImplementation spec config >>=
   either
-  (\e -> throwError $ error $ "Error when running test: " <> Lunapark.printError e)
+  (\e -> throwError $ error $ "[runFeatureTest] Lunapark error: " <> Lunapark.printError e)
   pure
+
+withTransactionOrThrow :: ∀ a. PostgreSQL.Connection -> Aff a → Aff a
+withTransactionOrThrow dbConnection action = do
+  (PostgreSQL.withTransaction dbConnection action) >>=
+    either (\e -> throwError $ error $ "[withTransactionOrThrow] PgError: " <> show e) pure
+
+withThuncateSchemas :: ∀ a. PostgreSQL.Connection -> Aff a → Aff a
+withThuncateSchemas dbConnection action = do
+  PostgreSQLTruncateSchemas.truncateSchemas dbConnection ["app_public", "app_private", "app_hidden"]
+  action
 
 -- SpecT monadOfExample exampleConfig monadOfSpec a
 
+-- | runFeatureTestWithEverythingElse :: Run FeatureTestRunEffects Unit -> SpecT Aff FeatureTestConfig Identity Unit
+runFeatureTestWithEverythingElse spec = \config ->
+  withThuncateSchemas config.dbConnection $
+  runFeatureTest spec config
+
 it :: String -> Run FeatureTestRunEffects Unit -> SpecT Aff FeatureTestConfig Identity Unit
-it name spec = Test.Spec.it name $ runFeatureTest spec
-
-runFeatureTestWithTransaction :: ∀ a. Run FeatureTestRunEffects a → FeatureTestConfig → Aff a
-runFeatureTestWithTransaction spec = \config -> do
-  (PostgreSQL.withTransaction config.dbConnection $ runFeatureTest spec config) >>=
-    either (\e -> throwError $ error $ show e) pure
-
-itWithTransaction :: String -> Run FeatureTestRunEffects Unit -> SpecT Aff FeatureTestConfig Identity Unit
-itWithTransaction name spec = Test.Spec.it name (runFeatureTestWithTransaction spec)
+it name spec = Test.Spec.it name $ runFeatureTestWithEverythingElse spec
 
 itOnly :: String -> Run FeatureTestRunEffects Unit -> SpecT Aff FeatureTestConfig Identity Unit
-itOnly name spec = Test.Spec.itOnly name $ runFeatureTest spec
-
-itOnlyWithTransaction :: String -> Run FeatureTestRunEffects Unit -> SpecT Aff FeatureTestConfig Identity Unit
-itOnlyWithTransaction name spec = Test.Spec.itOnly name (runFeatureTestWithTransaction spec)
+itOnly name spec = Test.Spec.itOnly name $ runFeatureTestWithEverythingElse spec

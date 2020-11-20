@@ -7,8 +7,8 @@ module NextjsApp.PageImplementations.Login.Form
 import Material.Classes.LayoutGrid
 import NextjsApp.Data.Password
 import NextjsApp.Data.Password as NextjsApp.Data.Password
-import NextjsApp.Queries.IsUsernameOrEmailInUse
-import NextjsApp.Queries.IsUsernameOrEmailInUse as NextjsApp.Queries.IsUsernameOrEmailInUse
+import NextjsApp.Data.InUseUsernameOrEmail
+import NextjsApp.Data.InUseUsernameOrEmail as NextjsApp.Data.InUseUsernameOrEmail
 import Protolude
 
 import NextjsGraphqlApi.Object.User as NextjsGraphqlApi.Object.User
@@ -50,7 +50,7 @@ formComponent = F.component (const formInput) formSpec
       { initialInputs: Nothing -- same as: Just (F.wrapInputFields { name: "", age: "" })
       , validators: LoginForm
           { password: F.hoistFnE_ $ NextjsApp.Data.Password.fromString
-          , usernameOrEmail: F.hoistFnME_ (\s -> liftAff $ NextjsApp.Queries.IsUsernameOrEmailInUse.fromString s)
+          , usernameOrEmail: F.hoistFnME_ (\s -> liftAff $ NextjsApp.Data.InUseUsernameOrEmail.fromString s)
           }
       }
 

@@ -3,8 +3,7 @@ module NextjsApp.PageImplementations.Login.Form.Types where
 import Material.Classes.LayoutGrid
 import NextjsApp.Data.Password
 import NextjsApp.Data.Password as NextjsApp.Data.Password
-import NextjsApp.Queries.IsUsernameOrEmailInUse
-import NextjsApp.Queries.IsUsernameOrEmailInUse as NextjsApp.Queries.IsUsernameOrEmailInUse
+import NextjsApp.Data.InUseUsernameOrEmail
 import Protolude
 
 import NextjsGraphqlApi.Object.User as NextjsGraphqlApi.Object.User
@@ -35,7 +34,7 @@ data UserAction
   = UserAction__RegisterButtonClick Button.Message
 
 type LoginFormRow f =
-  ( usernameOrEmail :: f NonUsedUsernameOrEmail__Error String NonUsedUsernameOrEmail
+  ( usernameOrEmail :: f InUseUsernameOrEmail__Error String InUseUsernameOrEmail
   , password :: f PasswordError String Password
   )
 

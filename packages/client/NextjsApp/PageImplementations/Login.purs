@@ -42,18 +42,18 @@ import NextjsApp.Data.Password (Password)
 import NextjsApp.Data.Password as NextjsApp.Data.Password
 import NextjsApp.Navigate as NextjsApp.Navigate
 import NextjsApp.NodeEnv as NextjsApp.NodeEnv
-import NextjsApp.Queries.IsUsernameOrEmailInUse (NonUsedUsernameOrEmail)
-import NextjsApp.Queries.IsUsernameOrEmailInUse as NextjsApp.Queries.IsUsernameOrEmailInUse
+import NextjsApp.Data.InUseUsernameOrEmail (InUseUsernameOrEmail)
+import NextjsApp.Data.InUseUsernameOrEmail as NextjsApp.Data.InUseUsernameOrEmail
 import NextjsApp.Route as NextjsApp.Route
 import NextjsApp.ServerExceptions as NextjsApp.ServerExceptions
 import NextjsApp.Queries.Utils
 
-login :: { usernameOrEmail :: NonUsedUsernameOrEmail, password :: Password } -> Aff (Maybe LoginError)
+login :: { usernameOrEmail :: InUseUsernameOrEmail, password :: Password } -> Aff (Maybe LoginError)
 login loginDataValidated = do
   let (query :: SelectionSet Scope__RootMutation Boolean) =
         NextjsGraphqlApi.Mutation.webLogin
           { input: NextjsGraphqlApi.InputObject.WebLoginInput
-            { username: NextjsApp.Queries.IsUsernameOrEmailInUse.toString loginDataValidated.usernameOrEmail
+            { username: NextjsApp.Data.InUseUsernameOrEmail.toString loginDataValidated.usernameOrEmail
             , password: NextjsApp.Data.Password.toString loginDataValidated.password
             }
           }
