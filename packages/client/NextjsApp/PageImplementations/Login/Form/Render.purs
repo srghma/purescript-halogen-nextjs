@@ -4,8 +4,8 @@ import NextjsApp.PageImplementations.Login.Form.Types
 import Material.Classes.LayoutGrid
 import NextjsApp.Data.Password
 import NextjsApp.Data.Password as NextjsApp.Data.Password
-import NextjsApp.Queries.IsUsernameOrEmailTaken
-import NextjsApp.Queries.IsUsernameOrEmailTaken as NextjsApp.Queries.IsUsernameOrEmailTaken
+import NextjsApp.Queries.IsUsernameOrEmailInUse
+import NextjsApp.Queries.IsUsernameOrEmailInUse as NextjsApp.Queries.IsUsernameOrEmailInUse
 import Protolude
 
 import NextjsGraphqlApi.Object.User as NextjsGraphqlApi.Object.User
@@ -56,8 +56,8 @@ render state =
         maybe
         ""
         (case _ of
-              NonTakenUsernameOrEmail__Error__Empty -> "Username or email is empty"
-              NonTakenUsernameOrEmail__Error__InUse -> "Username or email is in use"
+              NonUsedUsernameOrEmail__Error__Empty -> "Username or email is empty"
+              NonUsedUsernameOrEmail__Error__InUse -> "Username or email is in use"
         ) $
         F.getError _usernameOrEmail state.form
     , HH.slot

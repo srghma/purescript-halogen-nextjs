@@ -12,22 +12,22 @@ import GraphQLClient as GraphQLClient
 import NextjsApp.NodeEnv as NextjsApp.NodeEnv
 import NextjsApp.Queries.Utils
 
-data NonTakenUsernameOrEmail__Error
-  = NonTakenUsernameOrEmail__Error__Empty
-  | NonTakenUsernameOrEmail__Error__InUse
+data NonUsedUsernameOrEmail__Error
+  = NonUsedUsernameOrEmail__Error__Empty
+  | NonUsedUsernameOrEmail__Error__InUse
 
-newtype NonTakenUsernameOrEmail = NonTakenUsernameOrEmail NonEmptyString
+newtype NonUsedUsernameOrEmail = NonUsedUsernameOrEmail NonEmptyString
 
-toString (NonTakenUsernameOrEmail s) = NonEmptyString.toString s
+toString (NonUsedUsernameOrEmail s) = NonEmptyString.toString s
 
-fromString :: String -> Aff (Either NonTakenUsernameOrEmail__Error NonTakenUsernameOrEmail)
+fromString :: String -> Aff (Either NonUsedUsernameOrEmail__Error NonUsedUsernameOrEmail)
 fromString = NonEmptyString.fromString >>>
   case _ of
-    Nothing -> pure $ Left NonTakenUsernameOrEmail__Error__Empty
+    Nothing -> pure $ Left NonUsedUsernameOrEmail__Error__Empty
     Just usernameOrEmail -> isUsernameOrEmailInUse usernameOrEmail <#>
       if _
-        then Left NonTakenUsernameOrEmail__Error__InUse
-        else Right (NonTakenUsernameOrEmail usernameOrEmail)
+        then Left NonUsedUsernameOrEmail__Error__InUse
+        else Right (NonUsedUsernameOrEmail usernameOrEmail)
 
 isUsernameOrEmailInUse :: NonEmptyString -> Aff Boolean
 isUsernameOrEmailInUse usernameOrEmail = graphqlApiQueryRequestOrThrow $
