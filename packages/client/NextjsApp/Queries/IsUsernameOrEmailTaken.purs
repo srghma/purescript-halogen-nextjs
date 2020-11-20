@@ -1,4 +1,4 @@
-module NextjsApp.Queries.IsUsernameOrEmailTaken where
+module NextjsApp.Queries.IsUsernameOrEmailInUse where
 
 import GraphQLClient
 import Protolude
@@ -10,6 +10,7 @@ import Data.String.NonEmpty (NonEmptyString)
 import Data.String.NonEmpty as NonEmptyString
 import GraphQLClient as GraphQLClient
 import NextjsApp.NodeEnv as NextjsApp.NodeEnv
+import NextjsApp.Queries.Utils
 
 data NonTakenUsernameOrEmail__Error
   = NonTakenUsernameOrEmail__Error__Empty
@@ -23,18 +24,15 @@ fromString :: String -> Aff (Either NonTakenUsernameOrEmail__Error NonTakenUsern
 fromString = NonEmptyString.fromString >>>
   case _ of
     Nothing -> pure $ Left NonTakenUsernameOrEmail__Error__Empty
-    Just usernameOrEmail -> isUsernameOrEmailTaken usernameOrEmail <#>
+    Just usernameOrEmail -> isUsernameOrEmailInUse usernameOrEmail <#>
       if _
-        then Right (NonTakenUsernameOrEmail usernameOrEmail)
-        else Left NonTakenUsernameOrEmail__Error__InUse
+        then Left NonTakenUsernameOrEmail__Error__InUse
+        else Right (NonTakenUsernameOrEmail usernameOrEmail)
 
-isUsernameOrEmailTaken :: NonEmptyString -> Aff Boolean
-isUsernameOrEmailTaken usernameOrEmail =
-  GraphQLClient.graphqlQueryRequest
-  NextjsApp.NodeEnv.env.apiUrl
-  GraphQLClient.defaultRequestOptions
-  query >>=
-    (throwError <<< error <<< GraphQLClient.printGraphQLError) \/ pure
-  where
-    query :: SelectionSet Scope__RootQuery Boolean
-    query = NextjsGraphqlApi.Query.userByUsernameOrEmail { usernameOrEmail: NonEmptyString.toString usernameOrEmail } (pure unit) <#> Maybe.isJust
+isUsernameOrEmailInUse :: NonEmptyString -> Aff Boolean
+isUsernameOrEmailInUse usernameOrEmail = graphqlApiQueryRequestOrThrow $
+  NextjsGraphqlApi.Query.userByUsernameOrEmail
+    { usernameOrEmail: NonEmptyString.toString usernameOrEmail
+    }
+    (NextjsGraphqlApi.Object.User.id)
+    <#> Maybe.isJust

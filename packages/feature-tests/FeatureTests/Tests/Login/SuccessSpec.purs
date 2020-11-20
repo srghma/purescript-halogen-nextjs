@@ -47,29 +47,29 @@ spec = do
   -- | (Faker.Lorem.Words password) <- Run.liftEffect Faker.fake
 
   let
-    username = "username1"
-
-    password = "userpassword1"
-
-    email = "useremail1@mail.com"
+    user =
+      { username: "username1"
+      , password: "userpassword1"
+      , email: "useremail1@mail.com"
+      }
 
   (newUserId :: String) <- scalarOrThrowRequired (PostgreSQL.Query """
       INSERT INTO app_public.users (username)
       VALUES ($1) RETURNING id as new_user_id;
-  """) (PostgreSQL.Row1 username)
+  """) (PostgreSQL.Row1 user.username)
 
   executeOrThrow (PostgreSQL.Query """
       update app_private.user_secrets
       set password_hash = crypt($2, gen_salt('bf'))
       where user_id = $1;
-  """) (PostgreSQL.Row2 newUserId password)
+  """) (PostgreSQL.Row2 newUserId user.password)
 
   executeOrThrow (PostgreSQL.Query """
       INSERT INTO app_public.user_emails (user_id, email, is_verified)
       VALUES ($1, $2, true)
-  """) (PostgreSQL.Row2 newUserId email)
+  """) (PostgreSQL.Row2 newUserId user.email)
 
   goClientRoute Login
-  inputField (Lunapark.ByXPath """//form//input[@aria-labelledby="usernameOrEmail"]""") email
-  inputField (Lunapark.ByXPath """//form//input[@aria-labelledby="password"]""") password
+  inputField (Lunapark.ByXPath """//form//input[@aria-labelledby="usernameOrEmail"]""") user.email
+  inputField (Lunapark.ByXPath """//form//input[@aria-labelledby="password"]""") user.password
   pressEnterToContinue

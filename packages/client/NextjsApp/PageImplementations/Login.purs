@@ -46,6 +46,7 @@ import NextjsApp.Queries.IsUsernameOrEmailTaken (NonTakenUsernameOrEmail)
 import NextjsApp.Queries.IsUsernameOrEmailTaken as NextjsApp.Queries.IsUsernameOrEmailTaken
 import NextjsApp.Route as NextjsApp.Route
 import NextjsApp.ServerExceptions as NextjsApp.ServerExceptions
+import NextjsApp.Queries.Utils
 
 login :: { usernameOrEmail :: NonTakenUsernameOrEmail, password :: Password } -> Aff (Maybe LoginError)
 login loginDataValidated = do
@@ -59,11 +60,7 @@ login loginDataValidated = do
           (pure unit)
         <#> Maybe.isJust
 
-  (response :: Either (GraphQLError Boolean) Boolean) <-
-      GraphQLClient.graphqlMutationRequest
-      NextjsApp.NodeEnv.env.apiUrl
-      GraphQLClient.defaultRequestOptions
-      query
+  (response :: Either (GraphQLError Boolean) Boolean) <- graphqlApiMutationRequest query
 
   let (response' :: Maybe LoginError) =
         case response of
