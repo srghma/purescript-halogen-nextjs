@@ -38,7 +38,7 @@ _usernameOrEmail = SProxy :: SProxy "usernameOrEmail"
 
 render :: forall st . F.PublicState LoginForm st -> F.ComponentHTML LoginForm UserAction FormChildSlots Aff
 render state =
-  HH.form_ -- TODO: lift?
+  HH.div_ -- TODO: lift to MonadAff?
     [ HH.slot
         (SProxy :: SProxy "usernameOrEmail")
         unit

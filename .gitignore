@@ -1,3 +1,4 @@
+/.gcroots/
 /bower_components/
 /node_modules/
 /.pulp-cache/
@@ -21,3 +22,4 @@
 !/config/ignored/*.example
 !/config/ignored/*.setup.sh
 .tmp-arion-*.yaml
+/.feature-tests

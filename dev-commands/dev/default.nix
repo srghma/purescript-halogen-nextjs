@@ -100,7 +100,11 @@ mkScripts {
   '';
 
   dev__feature_tests__run = mkCommand serverEnv ''
-    mkdir -p "${pkgs.rootProjectDir}/.feature-tests-download-dir"
+    remoteDownloadDirPath="${pkgs.rootProjectDir}/.feature-tests/remoteDownloadDir"
+    chromeUserDataDirPath="${pkgs.rootProjectDir}/.feature-tests/chromeUserDataDir"
+
+    mkdir -p "$remoteDownloadDirPath"
+    mkdir -p "$chromeUserDataDirPath"
 
     databaseName="${(import "${pkgs.rootProjectDir}/config/public/database.nix").DATABASE_NAME}" \
     databaseHost="$POSTGRES_HOST" \
@@ -110,7 +114,8 @@ mkScripts {
     clientRootUrl="http://localhost" \
     chromedriverUrl="http://localhost:9515" \
     chromeBinaryPath="${pkgs.chromium}/bin/chromium" \
-    remoteDownloadDirPath="${pkgs.rootProjectDir}/.feature-tests-download-dir" \
+    remoteDownloadDirPath="$remoteDownloadDirPath" \
+    chromeUserDataDirPath="$chromeUserDataDirPath" \
       exec spago --config spago-feature-tests.dhall run --main FeatureTests.Main
   '';
 }

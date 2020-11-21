@@ -18,6 +18,7 @@ type Config =
   , chromedriverUrl       :: String
   , chromeBinaryPath      :: String
   , remoteDownloadDirPath :: String
+  , chromeUserDataDirPath :: String
   }
 
 config :: Effect Config
@@ -31,6 +32,7 @@ config = Env.parse Env.defaultInfo $ ado
   chromedriverUrl       <- Env.var (Env.nonEmptyString <#> NonEmptyString.toString) "chromedriverUrl" Env.defaultVar
   chromeBinaryPath      <- Env.var (Env.nonEmptyString <#> NonEmptyString.toString) "chromeBinaryPath" Env.defaultVar
   remoteDownloadDirPath <- Env.var (Env.nonEmptyString <#> NonEmptyString.toString) "remoteDownloadDirPath" Env.defaultVar
+  chromeUserDataDirPath <- Env.var (Env.nonEmptyString <#> NonEmptyString.toString) "chromeUserDataDirPath" Env.defaultVar
 
   in
     { databaseName
@@ -42,4 +44,5 @@ config = Env.parse Env.defaultInfo $ ado
     , chromedriverUrl
     , chromeBinaryPath
     , remoteDownloadDirPath
+    , chromeUserDataDirPath
     }

@@ -77,3 +77,5 @@ spec = do
   inputField (Lunapark.ByXPath """//form//input[@aria-labelledby="password"]""") user.password
 
   pressEnterToContinue
+
+  Lunapark.findElement (Lunapark.ByXPath """//form//button[text()="Submit"]""") >>= Lunapark.clickElement

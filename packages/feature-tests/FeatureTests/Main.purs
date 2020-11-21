@@ -99,6 +99,11 @@ main = do
             , "--lang=en"
             , "--no-default-browser-check"
             , "--no-sandbox"
+            , "--user-data-dir=" <> config.chromeUserDataDirPath
+            , "--profile-directory=tester"
+
+            -- CTRL-SHIFT-D to change dock placement
+            , "--auto-open-devtools-for-tabs"
 
             -- not working
             , "--start-maximized"

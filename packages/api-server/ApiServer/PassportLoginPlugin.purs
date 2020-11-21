@@ -5,6 +5,7 @@ import Effect.Uncurried
 import Postgraphile
 import Protolude
 
+import Control.Promise as Promise
 import Data.Nullable (Nullable)
 import Data.Nullable as Nullable
 import Database.PostgreSQL (Pool)
@@ -61,6 +62,14 @@ data SqlFragment
 data QueryBuilder
 data SelectGraphQLResultFromTable__Result
 
+type FnArgHelpers =
+  { selectGraphQLResultFromTable ::
+    EffectFn2
+    SqlFragment
+    (EffectFn2 String QueryBuilder Unit)
+    (Promise SelectGraphQLResultFromTable__Result)
+  }
+
 type MutationsImplementation =
   { webRegister ::
       EffectFn5
@@ -69,12 +78,7 @@ type MutationsImplementation =
       }
       Context
       FnArgResolveInfo
-      { selectGraphQLResultFromTable ::
-        EffectFn2
-        SqlFragment
-        (EffectFn2 String QueryBuilder Unit)
-        (Promise SelectGraphQLResultFromTable__Result)
-      }
+      FnArgHelpers
       (Promise { "data" :: SelectGraphQLResultFromTable__Result })
   , webLogin ::
       EffectFn5
@@ -83,12 +87,7 @@ type MutationsImplementation =
       }
       Context
       FnArgResolveInfo
-      { selectGraphQLResultFromTable ::
-        EffectFn2
-        SqlFragment
-        (EffectFn2 String QueryBuilder Unit)
-        (Promise SelectGraphQLResultFromTable__Result)
-      }
+      FnArgHelpers
       (Promise { "data" :: SelectGraphQLResultFromTable__Result })
   }
 
@@ -101,7 +100,9 @@ foreign import mkPassportLoginPlugin :: MkResolvers -> PostgraphileAppendPlugin
 passportLoginPlugin :: PostgraphileAppendPlugin
 passportLoginPlugin = mkPassportLoginPlugin \build ->
   { "Mutation":
-    { webRegister: mkEffectFn5 \mutation args context resolveInfo { selectGraphQLResultFromTable } -> undefined
-    , webLogin: mkEffectFn5 \mutation args context resolveInfo { selectGraphQLResultFromTable } -> undefined
+    { webRegister: mkEffectFn5 \mutation args context resolveInfo helpers -> undefined
+    , webLogin: mkEffectFn5 \mutation args context resolveInfo helpers -> Promise.fromAff do
+       traceM { mutation, args, context, resolveInfo, helpers }
+       pure undefined
     }
   }

@@ -47,39 +47,9 @@ import NextjsApp.Data.InUseUsernameOrEmail as NextjsApp.Data.InUseUsernameOrEmai
 import NextjsApp.Route as NextjsApp.Route
 import NextjsApp.ServerExceptions as NextjsApp.ServerExceptions
 import NextjsApp.Queries.Utils
-
-login :: { usernameOrEmail :: InUseUsernameOrEmail, password :: Password } -> Aff (Maybe LoginError)
-login loginDataValidated = do
-  let (query :: SelectionSet Scope__RootMutation Boolean) =
-        NextjsGraphqlApi.Mutation.webLogin
-          { input: NextjsGraphqlApi.InputObject.WebLoginInput
-            { username: NextjsApp.Data.InUseUsernameOrEmail.toString loginDataValidated.usernameOrEmail
-            , password: NextjsApp.Data.Password.toString loginDataValidated.password
-            }
-          }
-          (pure unit)
-        <#> Maybe.isJust
-
-  (response :: Either (GraphQLError Boolean) Boolean) <- graphqlApiMutationRequest query
-
-  let (response' :: Maybe LoginError) =
-        case response of
-            Left error -> Just $
-              case error of
-                   GraphQLClient.GraphQLError__Affjax affjaxError -> LoginError__UnknownError $ Affjax.printError affjaxError
-                   GraphQLClient.GraphQLError__UnexpectedPayload decodeError _jsonBody -> LoginError__UnknownError $ Data.Argonaut.Decode.printJsonDecodeError decodeError
-                   GraphQLClient.GraphQLError__User details _possiblyParsedData ->
-                     let message = NonEmptyArray.head details # unwrap # _.message
-                      in LoginError__UnknownError message
-
-                      -- | in case unit of
-                      -- |         _ | message == NextjsApp.ServerExceptions.login_emailNotRegistered -> LoginError__EmailNotRegistered
-                      -- |           | message == NextjsApp.ServerExceptions.login_notConfirmed ->       LoginError__NotConfirmed
-                      -- |           | message == NextjsApp.ServerExceptions.login_wrongPassword ->      LoginError__WrongPassword
-                      -- |           | otherwise ->                                                      LoginError__UnknownError message
-            Right u -> Nothing
-
-  pure response'
+import NextjsGraphqlApi.Object.User as NextjsGraphqlApi.Object.User
+import NextjsGraphqlApi.Object.WebLoginPayload as NextjsGraphqlApi.Object.WebLoginPayload
+import NextjsGraphqlApi.Scalars as NextjsGraphqlApi.Scalars
 
 component ::
   forall m r.
@@ -96,9 +66,40 @@ component =
             { handleAction =
               case _ of
                     Action__HandleLoginForm loginDataValidated -> do
-                      traceM loginDataValidated
+                      traceM { loginDataValidated }
 
-                      void $ liftAff (login loginDataValidated)
+                      liftAff do
+                         -- | let (query :: SelectionSet Scope__RootMutation (Maybe NextjsGraphqlApi.Scalars.Id)) =
+                         -- |         NextjsGraphqlApi.Mutation.webLogin
+                         -- |           { input: NextjsGraphqlApi.InputObject.WebLoginInput
+                         -- |             { username: NextjsApp.Data.InUseUsernameOrEmail.toString loginDataValidated.usernameOrEmail
+                         -- |             , password: NextjsApp.Data.Password.toString loginDataValidated.password
+                         -- |             }
+                         -- |           }
+                         -- |           (NextjsGraphqlApi.Object.WebLoginPayload.user NextjsGraphqlApi.Object.User.id)
+
+                         -- |     (query' :: SelectionSet Scope__RootMutation Boolean) = query <#> Maybe.isJust
+
+                         -- | (response :: Either (GraphQLError Boolean) Boolean) <- graphqlApiMutationRequest query'
+
+                         -- | let (response' :: Maybe LoginError) =
+                         -- |       case spy "response" response of
+                         -- |           Left error -> Just $
+                         -- |             case error of
+                         -- |                  GraphQLClient.GraphQLError__Affjax affjaxError -> LoginError__UnknownError $ Affjax.printError affjaxError
+                         -- |                  GraphQLClient.GraphQLError__UnexpectedPayload decodeError _jsonBody -> LoginError__UnknownError $ Data.Argonaut.Decode.printJsonDecodeError decodeError
+                         -- |                  GraphQLClient.GraphQLError__User details _possiblyParsedData ->
+                         -- |                    let message = NonEmptyArray.head details # unwrap # _.message
+                         -- |                     in LoginError__UnknownError message
+
+                         -- |                     -- | in case unit of
+                         -- |                     -- |         _ | message == NextjsApp.ServerExceptions.login_emailNotRegistered -> LoginError__EmailNotRegistered
+                         -- |                     -- |           | message == NextjsApp.ServerExceptions.login_notConfirmed ->       LoginError__NotConfirmed
+                         -- |                     -- |           | message == NextjsApp.ServerExceptions.login_wrongPassword ->      LoginError__WrongPassword
+                         -- |                     -- |           | otherwise ->                                                      LoginError__UnknownError message
+                         -- |           Right u -> Nothing
+
+                         pure unit
                         -- | case _ of
                         -- |     Left error -> H.modify_ _ { loginError = Just error }
                         -- |     Right jwt ->
