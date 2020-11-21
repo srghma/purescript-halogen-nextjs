@@ -1,7 +1,3 @@
-const path = require('path')
-const express = require('express')
-const reload = require('reload')
-
 // TODO: abs?
 const spagoDhall = './spago-client.dhall'
 
@@ -33,9 +29,9 @@ const livereloadPort = 35729
 ;(async function() {
   ///////////////////////////////////
 
-  const reloadApp = express()
+  const reloadApp = require('express')()
 
-  const reloadReturned = await reload(reloadApp)
+  const reloadReturned = await require('reload')(reloadApp)
 
   require('http').createServer(reloadApp).listen(livereloadPort, function () {
     console.log('[livereload] Listening on %s ...', livereloadPort)
@@ -55,15 +51,20 @@ const livereloadPort = 35729
       // clear cache
       console.log('clearing resolve.cache')
 
+      console.time('require.cache')
       for (const cachePath in require.cache) {
         if (cachePath.startsWith(spagoOptions.output)) {
           delete require.cache[cachePath]
         }
       }
+      console.timeEnd('require.cache')
 
+      console.time('webpack build')
       require(spagoOptions.output + '/NextjsWebpack.Entries.Dev/index.js').runWebpack({
         onSuccess: function({ serverConfig, clientConfig }) {
-          const serverFilePath = path.resolve(serverConfig.output.path, 'main.js') // hardcoded, dont know how to find (serverConfig.output.filename doesn't help)
+          console.timeEnd('webpack build')
+          // hardcoded, dont know how to find (serverConfig.output.filename doesn't help)
+          const serverFilePath = require('path').resolve(serverConfig.output.path, 'main.js')
 
           spawnServer({
             serverFilePath,

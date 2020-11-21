@@ -5,6 +5,7 @@ import NextjsApp.Data.Password
 import NextjsApp.PageImplementations.Login.Form
 import NextjsApp.PageImplementations.Login.Types
 import Protolude
+import NextjsApp.PageImplementations.Login.Css as NextjsApp.PageImplementations.Login.Css
 
 import Data.Array as Array
 import Data.Either (Either(..))
@@ -41,15 +42,16 @@ render ::
   MonadAsk { navigate :: NextjsApp.Route.Route -> Effect Unit | r } m =>
   MonadEffect m =>
   MonadAff m =>
-  State -> HH.ComponentHTML Action ChildSlots m
-render =
-  \state ->
-    HH.div
-      [ HP.class_ mdc_layout_grid ]
-      [ HH.div
-          [ HP.class_ mdc_layout_grid__inner ]
-          [ HH.text $ renderError state.loginError
-          , HH.img [ HP.classes [ mdc_layout_grid__cell, mdc_layout_grid__cell____align_middle, mdc_layout_grid__cell____span_3 ], HP.alt "logo", HP.src purescriptLogoSrc ]
-          , HH.slot F._formless unit formComponent unit Action__HandleLoginForm
-          ]
+  State ->
+  HH.ComponentHTML Action ChildSlots m
+render = \state ->
+  HH.div
+    [ HP.class_ NextjsApp.PageImplementations.Login.Css.styles.root ]
+    [ HH.text (renderError state.loginError)
+    , HH.img
+      [ HP.class_ NextjsApp.PageImplementations.Login.Css.styles.logo
+      , HP.alt "logo"
+      , HP.src purescriptLogoSrc
       ]
+    , HH.slot F._formless unit formComponent unit Action__HandleLoginForm
+    ]

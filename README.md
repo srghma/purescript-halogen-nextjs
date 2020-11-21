@@ -1,4 +1,7 @@
 ```
+link-purescript-project $HOME/projects/purescript-halogen-nextjs hyper $HOME/projects/hyper
+link-purescript-project $HOME/projects/purescript-halogen-nextjs lunapark
+
 ./regenerate-purs-files.sh
 generate-halogen-css-modules -d ./packages/client
 ./gen-migrations.hs

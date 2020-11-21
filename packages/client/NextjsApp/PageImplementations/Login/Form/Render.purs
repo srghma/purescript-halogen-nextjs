@@ -30,6 +30,7 @@ import NextjsApp.AppM (AppM)
 import NextjsApp.Blocks.PurescriptLogo (purescriptLogoSrc)
 import NextjsApp.Navigate as NextjsApp.Navigate
 import NextjsApp.Route as NextjsApp.Route
+import NextjsApp.PageImplementations.Login.Css as NextjsApp.PageImplementations.Login.Css
 
 _password = SProxy :: SProxy "password"
 
@@ -48,7 +49,7 @@ render state =
               , labelText: "Username / email"
               }
             , value = (F.getInput _usernameOrEmail state.form :: String)
-            , additionalClassesRoot = [ mdc_layout_grid__cell, mdc_layout_grid__cell____span_12 ]
+            , additionalClassesRoot = [ NextjsApp.PageImplementations.Login.Css.styles.input ]
             , helperText =
                 case F.getError _usernameOrEmail state.form of
                      Nothing -> Nothing
@@ -74,7 +75,7 @@ render state =
         ( TextField.Outlined.defaultConfig
             { label = TextField.Outlined.LabelConfig__With { id: "password", labelText: "Password" }
             , value = (F.getInput _password state.form :: String)
-            , additionalClassesRoot = [ mdc_layout_grid__cell, mdc_layout_grid__cell____span_12 ]
+            , additionalClassesRoot = [ NextjsApp.PageImplementations.Login.Css.styles.input ]
             , helperText =
                 case F.getError _password state.form of
                      Nothing -> Nothing
@@ -93,28 +94,25 @@ render state =
           case message of
                TextField.Outlined.Message__Input string -> F.setValidate _password string
         )
-    , HH.div [ HP.class_ mdc_layout_grid__cell ] $ Array.singleton
-        $ HH.div [ HP.class_ mdc_layout_grid__inner ]
-            [ HH.div
-                [ HP.classes [ mdc_layout_grid__cell, mdc_layout_grid____align_right ] ]
-                [ HH.slot
-                    (SProxy :: SProxy "submit-button")
-                    unit
-                    Button.button
-                    { variant: Button.Raised
-                    , config: Button.defaultConfig { additionalClasses = [ mdc_layout_grid__cell, mdc_layout_grid__cell____span_12_phone ] }
-                    , content: [ HH.text "Submit" ]
-                    }
-                    (\(message :: Button.Message) -> F.submit)
-                , HH.slot
-                    (SProxy :: SProxy "register-button")
-                    unit
-                    Button.button
-                    { variant: Button.Text
-                    , config: Button.defaultConfig { additionalClasses = [ mdc_layout_grid__cell, mdc_layout_grid__cell____span_12_phone ] }
-                    , content: [ HH.text "Go to sign up" ]
-                    }
-                    (inj (SProxy :: SProxy "userAction") <<< UserAction__RegisterButtonClick)
-                ]
-            ]
+    , HH.div
+      [ HP.class_ NextjsApp.PageImplementations.Login.Css.styles.buttons ]
+      [ HH.slot
+          (SProxy :: SProxy "submit-button")
+          unit
+          Button.button
+          { variant: Button.Raised
+          , config: Button.defaultConfig { additionalClasses = [ NextjsApp.PageImplementations.Login.Css.styles.buttons__button ] }
+          , content: [ HH.text "Submit" ]
+          }
+          (\(message :: Button.Message) -> F.submit)
+      , HH.slot
+          (SProxy :: SProxy "register-button")
+          unit
+          Button.button
+          { variant: Button.Text
+          , config: Button.defaultConfig { additionalClasses = [ NextjsApp.PageImplementations.Login.Css.styles.buttons__button ] }
+          , content: [ HH.text "Go to sign up" ]
+          }
+          (inj (SProxy :: SProxy "userAction") <<< UserAction__RegisterButtonClick)
+      ]
     ]
