@@ -33,8 +33,32 @@ import NextjsApp.PageImplementations.Login.Css as NextjsApp.PageImplementations.
 import NextjsApp.Route as NextjsApp.Route
 import NextjsGraphqlApi.Object.User as NextjsGraphqlApi.Object.User
 import NextjsGraphqlApi.Query as NextjsGraphqlApi.Query
+import Text.Smolder.SVG.Attributes (opacity)
 
 prx = F.mkSProxies (F.FormProxy :: _ LoginForm)
+
+isInvalid =
+  case _ of
+    F.Error _ -> true
+    _ -> false
+
+mkHelperText = \config ->
+   case config.result of
+       F.Validating -> Just
+         { id: config.id
+         , persistent
+         , text: "...Validating" -- TODO: slow down change using "on change: set opacity 0, change text, opacity 1"
+         , validation: false
+         }
+       F.Error error -> Just
+         { id: config.id
+         , persistent
+         , text: config.errorToErrorText error
+         , validation: true
+         }
+       _ -> Nothing
+  where
+    persistent = true
 
 render
   :: forall st
@@ -47,33 +71,26 @@ render state =
         prx.usernameOrEmail
         unit
         TextField.Outlined.outlined
-        ( TextField.Outlined.defaultConfig
+        (
+          let
+            field = F.getField prx.usernameOrEmail state.form
+          in TextField.Outlined.defaultConfig
             { label = TextField.Outlined.LabelConfig__With
               { id: "usernameOrEmail"
               , labelText: "Username / email"
               }
-            , value = (F.getInput prx.usernameOrEmail state.form :: String)
+            , value = field.input
             , additionalClassesRoot = [ NextjsApp.PageImplementations.Login.Css.styles.input ]
+            , invalid = isInvalid field.result
             , helperText =
-                let
-                  id = "usernameOrEmail-helper"
-                 in case F.getResult prx.usernameOrEmail state.form of
-                     F.Validating -> Just
-                       { id
-                       , text: "...Validating"
-                       , persistent: false
-                       , validation: false
-                       }
-                     F.Error error -> Just
-                       { id
-                       , text:
-                          case error of
-                            InUseUsernameOrEmail__Error__Empty -> "Username or email is empty"
-                            InUseUsernameOrEmail__Error__NotInUse -> "Username or email is not found"
-                       , persistent: false
-                       , validation: false
-                       }
-                     _ -> Nothing
+                mkHelperText
+                { result: field.result
+                , id: "usernameOrEmail-helper"
+                , errorToErrorText:
+                    case _ of
+                         InUseUsernameOrEmail__Error__Empty -> "Username or email is empty"
+                         InUseUsernameOrEmail__Error__NotInUse -> "Username or email is not found"
+                }
             }
         )
         (\(message :: TextField.Outlined.Message) ->
@@ -84,22 +101,23 @@ render state =
         prx.password
         unit
         TextField.Outlined.outlined
-        ( TextField.Outlined.defaultConfig
+        (
+          let
+            field = F.getField prx.password state.form
+          in TextField.Outlined.defaultConfig
             { label = TextField.Outlined.LabelConfig__With { id: "password", labelText: "Password" }
-            , value = (F.getInput prx.password state.form :: String)
+            , value = field.input
             , additionalClassesRoot = [ NextjsApp.PageImplementations.Login.Css.styles.input ]
+            , invalid = isInvalid field.result
             , helperText =
-                case F.getError prx.password state.form of
-                     Nothing -> Nothing
-                     Just error -> Just
-                      { id: "password-helper"
-                      , text:
-                        case error of
-                          PasswordError__TooShort -> "Password is too short"
-                          PasswordError__TooLong -> "Password is too long"
-                      , persistent: false
-                      , validation: true
-                      }
+                mkHelperText
+                { result: field.result
+                , id: "password-helper"
+                , errorToErrorText:
+                    case _ of
+                         PasswordError__TooShort -> "Password is too short"
+                         PasswordError__TooLong -> "Password is too long"
+                }
             }
         )
         (\(message :: TextField.Outlined.Message) ->
