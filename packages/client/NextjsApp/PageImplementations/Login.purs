@@ -59,7 +59,8 @@ component ::
   H.Component Query Input Message m
 component =
   H.mkComponent
-    { initialState: const initialState
+    { initialState: const { loginError: Nothing }
+    , render
     , eval:
       H.mkEval
         $ H.defaultEval
@@ -105,8 +106,4 @@ component =
                         -- |     Right jwt ->
                         -- |       NextjsApp.Navigate.navigate NextjsApp.Route.Secret
             }
-    , render
     }
-  where
-    initialState :: State
-    initialState = { loginError: Nothing }
