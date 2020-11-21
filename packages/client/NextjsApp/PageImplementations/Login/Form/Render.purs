@@ -31,14 +31,15 @@ import NextjsApp.Blocks.PurescriptLogo (purescriptLogoSrc)
 import NextjsApp.Navigate as NextjsApp.Navigate
 import NextjsApp.Route as NextjsApp.Route
 import NextjsApp.PageImplementations.Login.Css as NextjsApp.PageImplementations.Login.Css
+import Halogen.HTML.Properties.ARIA as Halogen.HTML.Properties.ARIA
 
-_password = SProxy :: SProxy "password"
-
-_usernameOrEmail = SProxy :: SProxy "usernameOrEmail"
-
-render :: forall st . F.PublicState LoginForm st -> F.ComponentHTML LoginForm UserAction FormChildSlots Aff
+render
+  :: forall st
+   . F.PublicState LoginForm st
+  -> F.ComponentHTML LoginForm UserAction FormChildSlots Aff
 render state =
-  HH.div_ -- TODO: lift to MonadAff?
+  HH.div
+    [ Halogen.HTML.Properties.ARIA.role "form" ]
     [ HH.slot
         (SProxy :: SProxy "usernameOrEmail")
         unit
@@ -48,10 +49,10 @@ render state =
               { id: "usernameOrEmail"
               , labelText: "Username / email"
               }
-            , value = (F.getInput _usernameOrEmail state.form :: String)
+            , value = (F.getInput (SProxy :: SProxy "usernameOrEmail") state.form :: String)
             , additionalClassesRoot = [ NextjsApp.PageImplementations.Login.Css.styles.input ]
             , helperText =
-                case F.getError _usernameOrEmail state.form of
+                case F.getError (SProxy :: SProxy "usernameOrEmail") state.form of
                      Nothing -> Nothing
                      Just error -> Just
                       { id: "usernameOrEmail-helper"
@@ -66,7 +67,7 @@ render state =
         )
         (\(message :: TextField.Outlined.Message) ->
           case message of
-               TextField.Outlined.Message__Input string -> F.setValidate _usernameOrEmail string
+               TextField.Outlined.Message__Input string -> F.setValidate (SProxy :: SProxy "usernameOrEmail") string
         )
     , HH.slot
         (SProxy :: SProxy "password")
@@ -74,10 +75,10 @@ render state =
         TextField.Outlined.outlined
         ( TextField.Outlined.defaultConfig
             { label = TextField.Outlined.LabelConfig__With { id: "password", labelText: "Password" }
-            , value = (F.getInput _password state.form :: String)
+            , value = (F.getInput (SProxy :: SProxy "password") state.form :: String)
             , additionalClassesRoot = [ NextjsApp.PageImplementations.Login.Css.styles.input ]
             , helperText =
-                case F.getError _password state.form of
+                case F.getError (SProxy :: SProxy "password") state.form of
                      Nothing -> Nothing
                      Just error -> Just
                       { id: "password-helper"
@@ -92,7 +93,7 @@ render state =
         )
         (\(message :: TextField.Outlined.Message) ->
           case message of
-               TextField.Outlined.Message__Input string -> F.setValidate _password string
+               TextField.Outlined.Message__Input string -> F.setValidate (SProxy :: SProxy "password") string
         )
     , HH.div
       [ HP.class_ NextjsApp.PageImplementations.Login.Css.styles.buttons ]
