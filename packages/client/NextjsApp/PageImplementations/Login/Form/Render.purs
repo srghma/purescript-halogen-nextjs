@@ -1,8 +1,5 @@
 module NextjsApp.PageImplementations.Login.Form.Render where
 
-import NextjsApp.Data.InUseUsernameOrEmail (InUseUsernameOrEmail__Error(..))
-import NextjsApp.Data.Password (PasswordError(..))
-import NextjsApp.PageImplementations.Login.Form.Types (FormChildSlots, LoginForm, UserAction(..))
 import Protolude
 
 import Data.Time.Duration (Milliseconds(..))
@@ -13,15 +10,18 @@ import Halogen.HTML.Properties as HP
 import Halogen.HTML.Properties.ARIA as Halogen.HTML.Properties.ARIA
 import HalogenMWC.Button as Button
 import HalogenMWC.TextField.Outlined as TextField.Outlined
+import NextjsApp.Data.InUseUsernameOrEmail (InUseUsernameOrEmail__Error(..))
+import NextjsApp.Data.Password (PasswordError(..))
 import NextjsApp.PageImplementations.Login.Css as NextjsApp.PageImplementations.Login.Css
+import NextjsApp.PageImplementations.Login.Form.Types (FormChildSlots, LoginForm, UserAction(..))
 
-prx :: { password :: SProxy "password"
-, usernameOrEmail :: SProxy "usernameOrEmail"
-}
-prx = F.mkSProxies (F.FormProxy :: FormProxy
- LoginForm)
+prx ::
+  { password :: SProxy "password"
+  , usernameOrEmail :: SProxy "usernameOrEmail"
+  }
+prx = F.mkSProxies (F.FormProxy :: F.FormProxy LoginForm)
 
-isInvalid :: forall t42 t43. FormFieldResult t43 t42 -> Boolean
+isInvalid :: forall t42 t43. F.FormFieldResult t43 t42 -> Boolean
 isInvalid =
   case _ of
     F.Error _ -> true
@@ -30,8 +30,7 @@ isInvalid =
 mkHelperText :: forall t23 t24 t26 t36.
   { errorToErrorText :: t24 -> String
   , id :: t26
-  , result :: FormFieldResult t24 t23
-  | t36
+  , result :: F.FormFieldResult t24 t23
   }
   -> Maybe
        { id :: t26

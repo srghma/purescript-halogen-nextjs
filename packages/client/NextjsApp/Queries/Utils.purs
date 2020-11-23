@@ -2,6 +2,7 @@ module NextjsApp.Queries.Utils where
 
 import Protolude
 
+import GraphQLClient (GraphQLError, Scope__RootMutation, Scope__RootQuery, SelectionSet(..))
 import GraphQLClient as GraphQLClient
 import NextjsApp.NodeEnv as NextjsApp.NodeEnv
 
