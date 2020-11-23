@@ -24,7 +24,7 @@ import Data.Identity
 import Data.Foldable
 import Control.Monad.Except.Trans (ExceptT, runExceptT)
 import Database.PostgreSQL as Database.PostgreSQL
-import Database.PostgreSQL (ConnectResult, PoolConfiguration, Pool)
+import Database.PostgreSQL (ConnectResult, Configuration, Pool)
 import Database.PostgreSQL.Row (Row0(..), Row3(..))
 import Data.Decimal as Decimal
 import Data.Maybe (Maybe(..))
@@ -63,9 +63,9 @@ import Node.Stream as Node.Stream
 import Data.Exists (Exists)
 import Data.Exists as Exists
 
-connectToDb :: PoolConfiguration -> Aff ConnectResult
+connectToDb :: Configuration -> Aff ConnectResult
 connectToDb poolConfiguration = do
-  pool :: Pool <- liftEffect $ Database.PostgreSQL.newPool poolConfiguration
+  pool :: Pool <- liftEffect $ Database.PostgreSQL.new poolConfiguration
   connectionResult :: ConnectResult <- Database.PostgreSQL.connect pool >>= either (show >>> error >>> throwError) pure
   pure connectionResult
 
