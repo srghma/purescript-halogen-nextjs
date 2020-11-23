@@ -1,11 +1,11 @@
 module PathyOptparse where
 
 import Protolude
-import Pathy (Abs, AnyDir, AnyFile, Dir, File, Path, Rel, parseAbsDir, parseAbsFile, parseRelDir, parseRelFile, posixParser)
+import Pathy (Abs, AnyDir, AnyFile, Dir, File, Path, Rel, parseAbsDir, parseAbsFile, parseRelDir, parseRelFile, posixParser, Parser)
 import Options.Applicative (ReadM, eitherReader)
 import PathyExtra (parseAnyDir, parseAnyFile)
 
-createPosixParser :: forall t5. (Parser -> String -> Maybe t5) -> String -> ReadM t5
+createPosixParser :: forall a. (Parser -> String -> Maybe a) -> String -> ReadM a
 createPosixParser parse name =
   eitherReader
     $ \s -> case parse posixParser s of

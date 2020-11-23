@@ -17,10 +17,10 @@ type EnvConfig =
 
 envConfig :: Effect EnvConfig
 envConfig = Env.parse Env.defaultInfo $ ado
-  sessionSecret                 <- Env.var Env.nonEmptyString "sessionSecret" (Env.defaultVar { sensitive = true })
-  databaseOwnerPassword         <- Env.var Env.nonEmptyString "databaseOwnerPassword" (Env.defaultVar { sensitive = true })
-  databaseAuthenticatorPassword <- Env.var Env.nonEmptyString "databaseAuthenticatorPassword" (Env.defaultVar { sensitive = true })
-  oauthGithubClientSecret       <- Env.var Env.nonEmptyString "oauthGithubClientSecret" (Env.defaultVar { sensitive = true })
+  sessionSecret                 <- Env.var Env.nonEmptyString "sessionSecret" (Env.defaultVarOptions { sensitive = true })
+  databaseOwnerPassword         <- Env.var Env.nonEmptyString "databaseOwnerPassword" (Env.defaultVarOptions { sensitive = true })
+  databaseAuthenticatorPassword <- Env.var Env.nonEmptyString "databaseAuthenticatorPassword" (Env.defaultVarOptions { sensitive = true })
+  oauthGithubClientSecret       <- Env.var Env.nonEmptyString "oauthGithubClientSecret" (Env.defaultVarOptions { sensitive = true })
 
   in
     { sessionSecret
