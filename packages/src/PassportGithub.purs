@@ -1,18 +1,14 @@
 module PassportGithub where
 
-import Data.Function.Uncurried
-import Effect
-import Effect.Uncurried
+import Data.Function.Uncurried (Fn2, runFn2)
+import Effect.Uncurried (EffectFn3, EffectFn6, mkEffectFn6, runEffectFn3)
 import Protolude
 
 import Data.Argonaut (Json)
-import Data.Maybe (Maybe(..))
-import Data.Newtype (class Newtype)
 import Data.Nullable (Nullable)
 import Data.Nullable as Nullable
-import Effect.Aff (Aff, runAff_)
-import Effect.Exception (Error)
-import Node.Express.Passport
+import Effect.Aff (runAff_)
+import Node.Express.Passport (PassportStrategy, StrategyId(..))
 import Node.Express.Types (Request)
 
 -- for "passport.authenticate"

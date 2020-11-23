@@ -2,7 +2,7 @@ module PathyExtra where
 
 import Protolude
 import Node.Process as Node.Process
-import Pathy
+import Pathy (class IsDirOrFile, class IsRelOrAbs, Abs, AnyDir, AnyFile, Dir, Parser, Path, parseAbsDir, parsePath, posixParser, posixPrinter, printPath, sandboxAny)
 import Data.String as String
 
 mkDirAbsoluteIfNotAlready :: String -> String

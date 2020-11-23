@@ -1,16 +1,14 @@
 module NextjsWebpack.WebpackConfig.Config where
 
-import NextjsWebpack.WebpackConfig.Types
+import NextjsWebpack.WebpackConfig.Types (Target(..))
 import Protolude
 
 import ContribWebpackPlugins (_BundleAnalyzerPlugin, _CleanWebpackPlugin, _HtmlWebpackPlugin, _MiniCssExtractPlugin, htmlWebpackPlugin__tags__toString)
 import Data.Array as Array
 import Data.Codec.Argonaut.Common as Codec.Argonaut
 import Data.Lens as Lens
-import Favicons (FavIconResponse)
 import Foreign as Foreign
 import Foreign.NullOrUndefined as Foreign.NullOrUndefined
-import Foreign.Object (Object)
 import Foreign.Object as Object
 import Heterogeneous.Mapping (hmap)
 import HeterogeneousExtraShow as HeterogeneousExtraShow
@@ -19,7 +17,6 @@ import NextjsApp.Route (Route, RouteIdMapping)
 import NextjsApp.Route as NextjsApp.Route
 import NextjsApp.Template as NextjsApp.Template
 import NextjsWebpack.BuildManifestPlugin as NextjsWebpack.BuildManifestPlugin
-import NextjsWebpack.GetClientPagesEntrypoints (ClientPagesLoaderOptions)
 import NextjsWebpack.IsomorphicClientPagesLoader as NextjsWebpack.IsomorphicClientPagesLoader
 import NextjsWebpack.WebpackConfig.Rules as NextjsWebpack.WebpackConfig.Rules
 import NextjsWebpack.WebpackConfig.SplitChunksConfig as NextjsWebpack.WebpackConfig.SplitChunksConfig

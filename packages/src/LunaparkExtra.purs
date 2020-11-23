@@ -3,6 +3,14 @@ module LunaparkExtra where
 import Protolude
 import Lunapark as Lunapark
 
+inputField :: forall t6.
+  Locator
+  -> String
+     -> Run
+          ( lunapark :: FProxy LunaparkF
+          | t6
+          )
+          Unit
 inputField locator s = do
   element ← Lunapark.findElement locator
   Lunapark.clearElement element

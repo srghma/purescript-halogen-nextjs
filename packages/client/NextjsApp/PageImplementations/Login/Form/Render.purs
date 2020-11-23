@@ -1,47 +1,44 @@
 module NextjsApp.PageImplementations.Login.Form.Render where
 
-import Material.Classes.LayoutGrid
-import NextjsApp.Data.InUseUsernameOrEmail
-import NextjsApp.Data.Password
-import NextjsApp.PageImplementations.Login.Form.Types
+import NextjsApp.Data.InUseUsernameOrEmail (InUseUsernameOrEmail__Error(..))
+import NextjsApp.Data.Password (PasswordError(..))
+import NextjsApp.PageImplementations.Login.Form.Types (FormChildSlots, LoginForm, UserAction(..))
 import Protolude
 
-import Data.Array as Array
-import Data.Either (Either(..))
-import Data.Int as Int
-import Data.Lens.Record as Lens
-import Data.Maybe (Maybe(..))
-import Data.String.NonEmpty (NonEmptyString)
-import Data.String.NonEmpty as NonEmptyString
 import Data.Time.Duration (Milliseconds(..))
-import Data.Variant (Variant, inj)
+import Data.Variant (inj)
 import Formless as F
-import GraphQLClient as GraphQLClient
-import Halogen as H
-import Halogen.Component as Halogen.Component
 import Halogen.HTML as HH
 import Halogen.HTML.Properties as HP
 import Halogen.HTML.Properties.ARIA as Halogen.HTML.Properties.ARIA
 import HalogenMWC.Button as Button
 import HalogenMWC.TextField.Outlined as TextField.Outlined
-import HalogenMWC.Utils (setEfficiently)
-import NextjsApp.AppM (AppM)
-import NextjsApp.Blocks.PurescriptLogo (purescriptLogoSrc)
-import NextjsApp.Data.Password as NextjsApp.Data.Password
-import NextjsApp.Navigate as NextjsApp.Navigate
 import NextjsApp.PageImplementations.Login.Css as NextjsApp.PageImplementations.Login.Css
-import NextjsApp.Route as NextjsApp.Route
-import NextjsGraphqlApi.Object.User as NextjsGraphqlApi.Object.User
-import NextjsGraphqlApi.Query as NextjsGraphqlApi.Query
-import Text.Smolder.SVG.Attributes (opacity)
 
-prx = F.mkSProxies (F.FormProxy :: _ LoginForm)
+prx :: { password :: SProxy "password"
+, usernameOrEmail :: SProxy "usernameOrEmail"
+}
+prx = F.mkSProxies (F.FormProxy :: FormProxy
+ LoginForm)
 
+isInvalid :: forall t42 t43. FormFieldResult t43 t42 -> Boolean
 isInvalid =
   case _ of
     F.Error _ -> true
     _ -> false
 
+mkHelperText :: forall t23 t24 t26 t36.
+  { errorToErrorText :: t24 -> String
+  , id :: t26
+  , result :: FormFieldResult t24 t23
+  | t36
+  }
+  -> Maybe
+       { id :: t26
+       , persistent :: Boolean
+       , text :: String
+       , validation :: Boolean
+       }
 mkHelperText = \config ->
    case config.result of
        F.Validating -> Just

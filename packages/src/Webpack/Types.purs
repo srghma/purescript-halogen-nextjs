@@ -4,7 +4,6 @@ import Data.String.Regex (Regex)
 import Node.Path (FilePath)
 import Foreign (Foreign)
 import Foreign.Object (Object)
-import Data.Nullable (Nullable)
 
 type UseElement
   = { loader :: String, options :: Foreign }

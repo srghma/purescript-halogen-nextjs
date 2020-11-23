@@ -3,12 +3,10 @@ module ExpressSession where
 import Protolude
 
 import Data.Function as Data.Function
-import Data.Function.Uncurried (Fn3)
 import Data.Nullable (Nullable)
 import Data.Nullable as Nullable
-import Data.Time.Duration (Milliseconds(..))
+import Data.Time.Duration (Milliseconds)
 import Node.Express.Types (Request, Middleware)
-import Node.HTTP.Client (Response)
 import Unsafe.Coerce (unsafeCoerce)
 
 data ExpressSession

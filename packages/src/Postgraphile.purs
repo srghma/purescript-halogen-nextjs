@@ -1,8 +1,8 @@
 module Postgraphile where
 
-import Data.Function.Uncurried
-import Effect.Uncurried
-import Node.Express.Types
+import Data.Function.Uncurried (Fn3)
+import Effect.Uncurried (EffectFn1, EffectFn2)
+import Node.Express.Types (Middleware, Request)
 import Protolude
 
 import Control.Promise (Promise)

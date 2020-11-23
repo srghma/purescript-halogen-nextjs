@@ -2,8 +2,8 @@ module NextjsApp.Manifest.ServerBuildManifest where
 
 import Protolude
 import Data.Argonaut.Decode (JsonDecodeError)
-import Data.Argonaut.Decode as ArgonautCodecs
-import Data.Argonaut.Decode.Parser as ArgonautCodecs
+import Data.Argonaut.Decode (decodeJson, printJsonDecodeError) as ArgonautCodecs
+import Data.Argonaut.Decode.Parser (parseJson) as ArgonautCodecs
 import Effect.Console (log)
 import NextjsApp.Manifest.PageManifest as NextjsApp.Manifest.PageManifest
 import NextjsApp.Route as NextjsApp.Route

@@ -1,6 +1,5 @@
 module NextjsApp.NodeEnv where
 
-import Protolude
 
 type Env =
   { apiUrl :: String

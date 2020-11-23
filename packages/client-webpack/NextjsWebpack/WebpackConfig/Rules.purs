@@ -1,11 +1,10 @@
 module NextjsWebpack.WebpackConfig.Rules where
 
-import NextjsWebpack.WebpackConfig.Types
+import NextjsWebpack.WebpackConfig.Types (Target(..))
 import Protolude
 
-import Data.Nullable as Nullable
-import Data.String.Regex.Flags as Regex
-import Data.String.Regex.Unsafe as Regex
+import Data.String.Regex.Flags (noFlags) as Regex
+import Data.String.Regex.Unsafe (unsafeRegex) as Regex
 import Webpack.Types (Rule)
 import WebpackSpagoLoader as WebpackSpagoLoader
 import Foreign.NullOrUndefined as Foreign.NullOrUndefined

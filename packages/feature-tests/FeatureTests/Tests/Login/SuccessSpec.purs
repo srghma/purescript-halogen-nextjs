@@ -55,9 +55,9 @@ spec = do
   """) (PostgreSQL.Row1 user.username)
 
   executeOrThrow (PostgreSQL.Query """
-      update app_private.user_secrets
-      set password_hash = crypt($2, gen_salt('bf'))
-      where user_id = $1;
+      UPDATE app_private.user_secrets
+      SET password_hash = crypt($2, gen_salt('bf'))
+      WHERE user_id = $1;
   """) (PostgreSQL.Row2 newUserId user.password)
 
   executeOrThrow (PostgreSQL.Query """

@@ -1,7 +1,7 @@
 module NextjsGraphqlApi.Scalars where
 
 import Data.Newtype (class Newtype)
-import Prelude (class Eq, class Ord, class Show)
+import Prelude
 import GraphQLClient
   (class GraphQLDefaultResponseScalarDecoder, class ToGraphQLArgumentValue)
 

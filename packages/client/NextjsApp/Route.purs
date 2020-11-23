@@ -9,8 +9,8 @@ import Data.Argonaut.Encode (class EncodeJson)
 import Data.Argonaut.Encode.Generic.Rep (genericEncodeJson)
 import Data.Array.NonEmpty (NonEmptyArray)
 import Data.Generic.Rep.Show (genericShow)
-import Data.Lens as Lens
-import Data.Lens.Iso as Lens
+import Data.Lens (view) as Lens
+import Data.Lens.Iso (Iso', iso) as Lens
 import Data.String as String
 import Data.String.NonEmpty (NonEmptyString)
 import Data.String.NonEmpty as NonEmptyString

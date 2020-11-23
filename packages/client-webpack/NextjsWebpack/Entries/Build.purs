@@ -3,8 +3,8 @@ module NextjsWebpack.Entries.Build where
 import Pathy (dir, file, (</>))
 import PathyExtra (cwd, printPathPosixSandboxAny)
 import Protolude
-import Ansi.Codes as Ansi
-import Ansi.Output as Ansi
+import Ansi.Codes (Color(..)) as Ansi
+import Ansi.Output (foreground, withGraphics) as Ansi
 import Data.Array.NonEmpty (NonEmptyArray)
 import Data.String.NonEmpty (NonEmptyString)
 import Effect.Class.Console as Console
@@ -12,7 +12,7 @@ import Favicons as Favicons
 import NextjsWebpack.FaviconsConfig as NextjsWebpack.FaviconsConfig
 import NextjsWebpack.GetClientPagesEntrypoints as NextjsWebpack.GetClientPagesEntrypoints
 import NextjsWebpack.WebpackConfig.Config as NextjsWebpack.WebpackConfig.Config
-import NextjsWebpack.WebpackConfig.Types
+import NextjsWebpack.WebpackConfig.Types (Target(..))
 import Node.Buffer (Buffer)
 import Node.FS.Aff as Node.FS.Aff
 import Unsafe.Coerce (unsafeCoerce)

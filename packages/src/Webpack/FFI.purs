@@ -1,9 +1,8 @@
 module Webpack.FFI where
 
-import Data.Function.Uncurried (Fn2, runFn2)
-import Effect.Uncurried (EffectFn1, EffectFn2, EffectFn3, mkEffectFn2)
+import Effect.Uncurried (EffectFn1, EffectFn3)
 import Protolude
-import Webpack.Types
+import Webpack.Types (Assets, Compilation, RawSource, WebpackEntrypont)
 import Foreign (Foreign)
 import Foreign.JsMap (JsMap)
 import Node.Buffer (Buffer)

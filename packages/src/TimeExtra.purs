@@ -1,13 +1,11 @@
 module TimeExtra where
 
 import Prelude
-import Data.Time.Duration (Milliseconds(..))
+import Data.Time.Duration (class Duration, Milliseconds)
 import Effect.Now (nowDateTime)
-import Data.DateTime (Time, diff)
+import Data.DateTime (diff)
 import Data.Time.Duration (class Duration)
 import Debug.Trace (traceM)
-import Control.Parallel
-import Effect.Aff (Aff(..))
 import Data.Tuple (Tuple(..))
 import Effect.Class (liftEffect, class MonadEffect)
 

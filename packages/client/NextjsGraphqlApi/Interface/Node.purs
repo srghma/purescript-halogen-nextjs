@@ -17,7 +17,7 @@ import NextjsGraphqlApi.Scopes
   )
 import NextjsGraphqlApi.Scalars (Id)
 import Data.Maybe (Maybe(..))
-import Prelude (pure)
+import Prelude
 
 id :: SelectionSet Scope__Node Id
 id = selectionForField "id" [] graphqlDefaultResponseScalarDecoder

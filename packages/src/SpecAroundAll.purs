@@ -1,13 +1,12 @@
 module SpecAroundAll where
 
-import Prelude (Unit, bind, discard, pure, void, ($), (<<<))
+import Prelude
 import Effect.Aff (Aff, Error, Fiber, forkAff, killFiber)
 import Effect.Aff.Class (class MonadAff, liftAff)
 import Effect.Class (class MonadEffect)
 import Effect.Exception as Effect.Exception
 import Effect.Aff.AVar as Effect.Aff.AVar
 import Control.Monad.Error.Class (class MonadError)
-import Data.Tuple (Tuple(..), fst)
 import Test.Spec (SpecT, afterAll, beforeAll, beforeWith)
 
 data AroundAllState config = AroundAllState config (Fiber Unit)

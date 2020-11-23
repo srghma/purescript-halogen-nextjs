@@ -1,7 +1,7 @@
 module HeterogeneousExtraShow where
 
 import Protolude
-import Heterogeneous.Mapping
+import Heterogeneous.Mapping (class Mapping)
 
 data Show = Show
 

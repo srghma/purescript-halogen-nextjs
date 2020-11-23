@@ -2,16 +2,14 @@ module NextjsWebpack.BuildManifestPlugin where
 
 import Protolude
 import Protolude
-
 import Data.Argonaut.Core (Json)
 import Data.Argonaut.Core as Argonaut
 import Data.Argonaut.Encode as ArgonautCodecs
 import Data.Array as Array
-import Data.Function.Uncurried
 import Data.Nullable (Nullable)
 import Data.Nullable as Nullable
 import Data.String.Utils as String
-import Effect.Uncurried
+import Effect.Uncurried (EffectFn2, mkEffectFn2, runEffectFn1, runEffectFn3)
 import Favicons (FavIconResponse)
 import Foreign.JsMap (JsMap)
 import Foreign.JsMap as JsMap
@@ -23,7 +21,7 @@ import Record.ExtraSrghma as Record.ExtraSrghma
 import Type.Prelude (RProxy(..))
 import Unsafe.Coerce (unsafeCoerce)
 import Webpack.FFI (compilationGetEntrypoints, setAsset, rawSourceFromBuffer, rawSourceFromString, webpackEntrypontGetFiles)
-import Webpack.Types
+import Webpack.Types (Assets, Compilation, WebpackEntrypont, WebpackPluginInstance)
 
 type EntrypointsRow a
   = RouteIdMappingRow' a ( main :: a )

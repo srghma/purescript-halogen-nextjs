@@ -1,35 +1,16 @@
 module NextjsApp.PageImplementations.Login.Render where
 
-import Material.Classes.LayoutGrid
-import NextjsApp.Data.Password
-import NextjsApp.PageImplementations.Login.Form
-import NextjsApp.PageImplementations.Login.Types
+import NextjsApp.PageImplementations.Login.Form (formComponent)
+import NextjsApp.PageImplementations.Login.Types (Action(..), ChildSlots, LoginError(..), State)
 import Protolude
 import NextjsApp.PageImplementations.Login.Css as NextjsApp.PageImplementations.Login.Css
 
-import Data.Array as Array
-import Data.Either (Either(..))
-import Data.Int as Int
-import Data.Lens.Record as Lens
-import Data.Maybe (Maybe(..))
-import Data.String.NonEmpty (NonEmptyString)
-import Data.String.NonEmpty as NonEmptyString
-import Data.Variant (Variant, inj)
 import Formless as F
-import Halogen as H
-import Halogen.Component as Halogen.Component
 import Halogen.HTML as HH
 import Halogen.HTML.Properties as HP
-import Halogen.Query.ChildQuery (ChildQueryBox)
-import HalogenMWC.Button as Button
-import HalogenMWC.TextField.Outlined as TextField.Outlined
-import HalogenMWC.Utils (setEfficiently)
-import NextjsApp.AppM (AppM)
 import NextjsApp.Blocks.PurescriptLogo (purescriptLogoSrc)
-import NextjsApp.Navigate as NextjsApp.Navigate
 import NextjsApp.Route as NextjsApp.Route
-import NextjsApp.PageImplementations.Login.Types
-
+import NextjsApp.PageImplementations.Login.Types (Action(..), ChildSlots, LoginError(..), State)
 renderError :: Maybe LoginError -> String
 renderError = maybe ""
   case _ of

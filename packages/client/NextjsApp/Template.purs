@@ -1,8 +1,8 @@
 module NextjsApp.Template where
 
 import Protolude
-import Data.String.Yarn as String
-import Data.String.Common as String
+import Data.String.Yarn (unlines) as String
+import Data.String.Common (joinWith) as String
 import SimpleXMLWithIndentation as SimpleXMLWithIndentation
 import Data.Array as Array
 

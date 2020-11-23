@@ -7,7 +7,7 @@ import Webpack.Types (Configuration)
 import Effect.Uncurried (EffectFn1, runEffectFn1)
 import NextjsWebpack.GetClientPagesEntrypoints as NextjsWebpack.GetClientPagesEntrypoints
 import NextjsWebpack.WebpackConfig.Config as NextjsWebpack.WebpackConfig.Config
-import NextjsWebpack.WebpackConfig.Types
+import NextjsWebpack.WebpackConfig.Types (Target(..))
 import Unsafe.Coerce (unsafeCoerce)
 import Webpack.Compiler as Webpack.Compiler
 import Webpack.GetError as Webpack.GetError

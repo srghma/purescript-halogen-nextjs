@@ -2,8 +2,8 @@ module NextjsApp.RouteDuplexCodec where
 
 import NextjsApp.Route (Route, RouteExamples)
 import Protolude
-import Routing.Duplex as Routing.Duplex
-import Routing.Duplex.Generic as Routing.Duplex
+import Routing.Duplex (RouteDuplex', root) as Routing.Duplex
+import Routing.Duplex.Generic (noArgs, sum) as Routing.Duplex
 import Routing.Duplex.Generic.Syntax ((/))
 
 routeCodec :: Routing.Duplex.RouteDuplex' Route

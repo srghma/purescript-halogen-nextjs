@@ -5,8 +5,8 @@ import Chokidar as Chokidar
 import Data.Array.NonEmpty as NonEmptyArray
 import Data.Time.Duration (Milliseconds(..))
 import FRP.Event (Event)
-import FRP.Event as Event
-import FRP.Event.Time as Event
+import FRP.Event (subscribe) as Event
+import FRP.Event.Time (debounce) as Event
 import FRPEventExtra as FRPEventExtra
 import Node.ChildProcess as Node.ChildProcess
 import NodeChildProcessExtra (noInputOnlyOutput, withOneProcessATime)
