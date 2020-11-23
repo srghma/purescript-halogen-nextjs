@@ -25,7 +25,7 @@ createPools
      , authPgPool :: Pool
      }
 createPools config = do
-  rootPgPool <- newPool
+  rootPgPool <- new
     { database:          config.databaseName
     , host:              Just config.databaseHost
     , idleTimeoutMillis: Nothing
@@ -34,7 +34,7 @@ createPools config = do
     , port:              config.databasePort
     , user:              Just config.databaseOwnerUser
     }
-  authPgPool <- newPool
+  authPgPool <- new
     { database:          config.databaseName
     , host:              Just config.databaseHost
     , idleTimeoutMillis: Nothing
