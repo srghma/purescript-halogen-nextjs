@@ -61,4 +61,5 @@
 , "lunapark"
 , "node-readline"
 , "faker"
+, "aff-retry"
 ]
