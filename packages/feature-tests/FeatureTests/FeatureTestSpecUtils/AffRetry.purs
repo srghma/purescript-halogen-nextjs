@@ -39,8 +39,24 @@ expand' _ = unsafeCoerce
 runExcept' ∷ ∀ e a r. Run (except ∷ EXCEPT e | r) a → Run (except ∷ EXCEPT e | r) (Either e a)
 runExcept' = expand' (SProxy :: SProxy "except") <<< Run.runExcept
 
+
+retrying
+  :: ∀ b r
+   . RetryPolicyM Aff
+  -> (RetryStatus -> b -> Run ( aff :: AFF | r ) Boolean) -- An action to check whether the result should be retried.
+                                     -- If True, we delay and retry the operation.
+  -> (RetryStatus -> Run ( aff :: AFF | r ) b)            -- Action to run
+  -> Run ( aff :: AFF | r ) b
+retrying policy check action = go defaultRetryStatus
+  where
+  go status = do
+    res <- action status
+    ifM (check status res)
+      (Run.liftAff (applyAndDelay policy status) >>= maybe (pure res) go)
+      (pure res)
+
 recovering
-  :: ∀ r a e
+  :: ∀ r a
    . RetryPolicyM Aff
   -> Array Check
   -> (RetryStatus -> Run ( aff :: AFF, except ∷ EXCEPT Error | r ) a)
