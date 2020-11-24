@@ -12,21 +12,6 @@ import Run.Except (EXCEPT)
 import Run.Except as Run
 import Unsafe.Coerce (unsafeCoerce)
 
--- from https://github.com/Unisay/purescript-aff-retry/blob/936fad803e3610f149df724ead288657a905cb84/src/Effect/Aff/Retry.purs#L201
--- without changes
--- TODO: expose
-applyAndDelay :: ∀ m . MonadAff m
-  => RetryPolicyM m
-  -> RetryStatus
-  -> m (Maybe RetryStatus)
-applyAndDelay policy retryStatus = do
-    res <- applyPolicy policy retryStatus
-    case res of
-      Just nextRetryStatus@(RetryStatus { previousDelay: pd }) ->
-        maybe (pure unit) (delay >>> liftAff) pd
-          $> Just nextRetryStatus
-      Nothing -> pure Nothing
-
 type Check = RetryStatus -> Error -> Aff Boolean
 
 -- from https://github.com/purescript-webrow/webrow/blob/68144f421b6652b93bb9ceeb9ed69762286ae905/src/WebRow/PostgreSQL/PG.purs#L135
