@@ -1,4 +1,4 @@
-module FeatureTests.FeatureTestSpecUtils.AffRetry where
+module RunAffRetry where
 
 import Effect.Aff.Retry
 import Protolude
@@ -11,19 +11,7 @@ import Run as Run
 import Run.Except (EXCEPT)
 import Run.Except as Run
 import Unsafe.Coerce (unsafeCoerce)
-
-type Check = RetryStatus -> Error -> Aff Boolean
-
--- from https://github.com/purescript-webrow/webrow/blob/68144f421b6652b93bb9ceeb9ed69762286ae905/src/WebRow/PostgreSQL/PG.purs#L135
---
--- | Run.expand definition is based on `Union` constraint
--- | We want to use Row.Cons here instead
-expand' ∷ ∀ l b t t_. Row.Cons l b t_ t ⇒ SProxy l → Run t_ ~> Run t
-expand' _ = unsafeCoerce
-
-runExcept' ∷ ∀ e a r. Run (except ∷ EXCEPT e | r) a → Run (except ∷ EXCEPT e | r) (Either e a)
-runExcept' = expand' (SProxy :: SProxy "except") <<< Run.runExcept
-
+import RunExtra
 
 retrying
   :: ∀ b r
@@ -41,29 +29,29 @@ retrying policy check action = go defaultRetryStatus
       (pure res)
 
 recovering
-  :: ∀ r a
+  :: ∀ r a e
    . RetryPolicyM Aff
-  -> Array Check
-  -> (RetryStatus -> Run ( aff :: AFF, except ∷ EXCEPT Error | r ) a)
-  -> Run ( aff :: AFF, except ∷ EXCEPT Error | r ) a
+  -> Array (RetryStatus -> e -> Aff Boolean)
+  -> (RetryStatus -> Run ( aff :: AFF, except ∷ EXCEPT e | r ) a)
+  -> Run ( aff :: AFF, except ∷ EXCEPT e | r ) a
 recovering policy checks f = go defaultRetryStatus
   where
-    go :: RetryStatus -> Run ( aff :: AFF, except ∷ EXCEPT Error | r ) a
+    go :: RetryStatus -> Run ( aff :: AFF, except ∷ EXCEPT e | r ) a
     go status = runExcept' (f status) >>= either (recover checks) pure
       where
         recover
-          :: Array Check
-          -> Error
-          -> Run ( aff :: AFF, except ∷ EXCEPT Error | r ) a
+          :: Array (RetryStatus -> e -> Aff Boolean)
+          -> e
+          -> Run ( aff :: AFF, except ∷ EXCEPT e | r ) a
         recover chks e =
           case uncons chks of
               Nothing -> Run.throw e
               Just headTail -> handle e headTail
 
         handle
-          :: Error
-          -> { head :: Check, tail :: Array Check }
-          -> Run ( aff :: AFF, except ∷ EXCEPT Error | r ) a
+          :: e
+          -> { head :: RetryStatus -> e -> Aff Boolean, tail :: Array (RetryStatus -> e -> Aff Boolean) }
+          -> Run ( aff :: AFF, except ∷ EXCEPT e | r ) a
         handle e hs =
           Run.liftAff (hs.head status e) >>=
             if _

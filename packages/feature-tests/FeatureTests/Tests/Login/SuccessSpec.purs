@@ -36,6 +36,8 @@ import Run as Run
 import Run.Reader as Run
 import FeatureTests.FeatureTestSpecUtils.SpecAssertions
 import CSS as CSS
+import RunAffRetry as RunAffRetry
+import Effect.Aff.Retry as AffRetry
 
 spec :: Run FeatureTestRunEffects Unit
 spec = do
@@ -69,7 +71,12 @@ spec = do
 
   inputField (Lunapark.ByXPath """//div[@role="form"]//input[@aria-labelledby="usernameOrEmail"]""") "unknown@mail.com"
 
-  Lunapark.findElement (Lunapark.ByCss $ CSS.Selector (CSS.Refinement [CSS.Id "usernameOrEmail-helper"]) CSS.Star)
+  RunAffRetry.recovering
+    (AffRetry.constantDelay (Milliseconds 200.0) <> AffRetry.limitRetries 10)
+    [\_ _ -> pure true]
+    (\_ -> Lunapark.findElement
+      (Lunapark.ByCss $ CSS.Selector (CSS.Refinement [CSS.Id "usernameOrEmail-helper"]) CSS.Star)
+    )
     >>= Lunapark.getText
     >>= \text -> text `shouldEqual` "Username or email is not found"
 
