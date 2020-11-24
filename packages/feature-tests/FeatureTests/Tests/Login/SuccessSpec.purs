@@ -34,6 +34,7 @@ import Node.Stream as Node.Stream
 import Run (Run)
 import Run as Run
 import Run.Reader as Run
+import Run.Except as Run
 import FeatureTests.FeatureTestSpecUtils.SpecAssertions
 import CSS as CSS
 import RunAffRetry as RunAffRetry
@@ -41,9 +42,6 @@ import Effect.Aff.Retry as AffRetry
 
 spec :: Run FeatureTestRunEffects Unit
 spec = do
-  -- | (Faker.Name.Name username) <- Run.liftEffect Faker.fake
-  -- | (Faker.Lorem.Words password) <- Run.liftEffect Faker.fake
-
   let
     user =
       { username: "username1"

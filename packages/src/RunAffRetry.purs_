@@ -28,6 +28,50 @@ retrying policy check action = go defaultRetryStatus
       (Run.liftAff (applyAndDelay policy status) >>= maybe (pure res) go)
       (pure res)
 
+data Catch e a = Catch (Maybe e → a)
+derive instance functorCatch ∷ Functor (Catch e)
+_catch = SProxy ∷ SProxy "catch"
+type CATCH e = Run.FProxy (Catch e)
+type WithCatch r e  = Run.Run (catch ∷ CATCH e|r)
+
+catch ∷ ∀ e a r. (e → WithCatch r e a) → WithCatch r e a → WithCatch r e a
+catch handler attempt = do
+  mbErr ← Run.lift _catch $ Catch identity
+  case mbErr of
+    Just e → handler e
+    Nothing → attempt
+
+reverseCatch ∷ ∀ a e r. e → WithCatch (except ∷ Run.EXCEPT e|r) e a → WithCatch (except ∷ Run.EXCEPT e|r) e Unit
+reverseCatch defErr attempt = do
+  mbErr ← Run.lift _catch $ Catch identity
+  case mbErr of
+    Just e → pure unit
+    Nothing → Run.throw defErr
+
+runCatch
+  ∷ ∀ r e a
+  . Run (except ∷ Run.EXCEPT e, catch ∷ CATCH e|r) a
+  → Run r (Either e a)
+runCatch = loop (pure <<< Left)
+  where
+  split =
+    Run.on _catch Right
+    $ Run.on Run._except
+        (Left <<< Right)
+        (Left <<< Left)
+  loop hndl r = case Run.peel r of
+    Right a →
+      pure $ Right a
+    Left f → case split f of
+      Right (Catch cont) →
+        loop (\e → loop hndl $ cont $ Just e) $ cont Nothing
+      Left (Right (Run.Except err)) →
+        hndl err
+      Left (Left others) →
+        loop hndl =<< Run.send others
+
+runCatch' = expand' (SProxy :: SProxy "except") <<< runCatch
+
 recovering
   :: ∀ r a e
    . RetryPolicyM Aff
@@ -37,12 +81,12 @@ recovering
 recovering policy checks f = go defaultRetryStatus
   where
     go :: RetryStatus -> Run ( aff :: AFF, except ∷ EXCEPT e | r ) a
-    go status = runExcept' (f status) >>= either (recover checks) pure
+    go status = runCatch' (catch (recover checks) (f status))
       where
         recover
           :: Array (RetryStatus -> e -> Aff Boolean)
           -> e
-          -> Run ( aff :: AFF, except ∷ EXCEPT e | r ) a
+          -> Run ( aff :: AFF, except ∷ EXCEPT e, catch ∷ CATCH e | r ) a
         recover chks e =
           case uncons chks of
               Nothing -> Run.throw e
@@ -51,7 +95,7 @@ recovering policy checks f = go defaultRetryStatus
         handle
           :: e
           -> { head :: RetryStatus -> e -> Aff Boolean, tail :: Array (RetryStatus -> e -> Aff Boolean) }
-          -> Run ( aff :: AFF, except ∷ EXCEPT e | r ) a
+          -> Run ( aff :: AFF, except ∷ EXCEPT e, catch ∷ CATCH e | r ) a
         handle e hs =
           Run.liftAff (hs.head status e) >>=
             if _
