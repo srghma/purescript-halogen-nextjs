@@ -62,6 +62,9 @@ import Data.Posix.Signal
 import Node.Stream as Node.Stream
 import Data.Exists (Exists)
 import Data.Exists as Exists
+import CSS as CSS
+import Type.Row (type (+))
+import Data.Argonaut.Decode.Error as Data.Argonaut.Decode.Error
 
 connectToDb :: Configuration -> Aff ConnectResult
 connectToDb poolConfiguration = do
@@ -71,7 +74,7 @@ connectToDb poolConfiguration = do
 
 main :: Effect Unit
 main = do
-  readLineInterface <- Node.ReadLine.createConsoleInterface Node.ReadLine.noCompletion
+  -- | readLineInterface <- Node.ReadLine.createConsoleInterface Node.ReadLine.noCompletion
   config <- Config.config
 
   launchAff_ do
@@ -133,53 +136,22 @@ main = do
         (\e -> throwError $ error $ "An error during selenium session initialization occured: " <> Lunapark.printError e)
         pure
 
-    connectionResult <- connectToDb
-      { database:          config.databaseName
-      , host:              Just config.databaseHost
-      , idleTimeoutMillis: Nothing
-      , max:               Nothing
-      , password:          Just config.databaseOwnerPassword
-      , port:              config.databasePort
-      , user:              Just config.databaseOwnerUser
-      }
-
     let
-      testsConfig =
-        { clientRootUrl: config.clientRootUrl
-        , interpreter
-        , readLineInterface
-        , dbConnection: connectionResult.connection
-        }
+      body :: forall r . Run (lunapark :: Lunapark.LUNAPARK | r) Unit
+      body = do
+        -- | insideBodyRes <- Run.runExcept $ Lunapark.findElement (Lunapark.ByCss $ CSS.Selector (CSS.Refinement [CSS.Id "usernameOrEmail-helper"]) CSS.Star)
+        insideBodyRes <- Run.runExcept $ Run.throw $ Left $ Lunapark.JsonDecodeError Data.Argonaut.Decode.Error.MissingValue
+        traceM { insideBodyRes }
 
-      onExit = do
-        -- throws error when releasing an already released
-        liftEffect $ void $ try $ connectionResult.done
+      interpretX :: Run (Lunapark.BaseEffects + Lunapark.LunaparkEffect + Lunapark.ActionsEffect + ()) Unit -> Aff (Either Lunapark.Error Unit)
+      interpretX x =
+        Run.runBaseAff'
+        $ Run.runExcept
+        $ Lunapark.runInterpreter interpreter
+        x
 
-        runFeatureTestImplementation Lunapark.quit testsConfig >>=
-          either
-          (\e -> throwError $ error $ "Error when quitting: " <> Lunapark.printError e)
-          pure
+    bodyRes <- interpretX body
 
-    liftEffect $ do
-       -- from https://nodejs.org/api/process.html#process_signal_events
-       -- Begin reading from stdin so the process does not exit.
-       Node.Stream.resume Node.Process.stdin
+    traceM { bodyRes }
 
-       -- when it is called?
-       Node.Process.onBeforeExit $ launchAff_ onExit
-
-       -- do something when app is closing
-       Node.Process.onExit $ const $ launchAff_ onExit
-
-       -- catches ctrl+c event
-       Node.Process.onSignal SIGINT $ launchAff_ onExit -- not handling CTRL-D?
-       Node.Process.onSignal SIGTERM $ launchAff_ onExit
-
-      -- catches uncaught exceptions
-      -- | process.on('uncaughtException', generalUtil.exitHandler.bind(null, {exit:false,event: "uncaughtException"}));
-
-    runSpec' (defaultConfig { timeout = Nothing }) [ consoleReporter ]
-      ( before (pure testsConfig)
-        $ afterAll_ onExit
-        $ allTests
-      )
+    pure unit
