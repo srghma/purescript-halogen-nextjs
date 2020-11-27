@@ -1,157 +1,68 @@
 module FeatureTests.Main where
 
-import Prelude
-import Data.Time.Duration (Milliseconds(..))
-import Effect (Effect)
-import Effect.Aff (launchAff_, delay)
-import Test.Spec (pending, describe, it)
-import Test.Spec.Assertions (shouldEqual)
-import Test.Spec.Reporter.Console (consoleReporter)
-import Test.Spec.Runner
-import Control.Monad.Error.Class
-import Control.Monad.Reader.Trans
-import Data.Maybe
-import Data.Time.Duration
-import Effect
-import Effect.Aff
-import Effect.Class
-import Effect.Console
-import Effect.Exception as Effect.Exception
-import Prelude
-import Test.Spec
-import Unsafe.Coerce
-import Data.Identity
-import Data.Foldable
-import Control.Monad.Except.Trans (ExceptT, runExceptT)
-import Database.PostgreSQL as Database.PostgreSQL
-import Database.PostgreSQL (ConnectResult, Configuration, Pool)
-import Database.PostgreSQL.Row (Row0(..), Row3(..))
-import Data.Decimal as Decimal
-import Data.Maybe (Maybe(..))
-import Data.Tuple (Tuple(..))
-import Data.Tuple.Nested ((/\))
-import Effect.Aff
-import Effect.Aff as Effect.Aff
-import Effect.Class (liftEffect)
-import Effect.Aff.AVar as Effect.Aff.AVar
-import Effect.AVar (AVar)
-import Node.Process
-import Foreign.Object
-import Data.Either
-import Data.Int as Data.Int
-import Control.Monad.Error.Class (throwError)
-import Effect.Exception (error)
-import Effect.Now (nowDateTime)
-import Data.DateTime (Time, diff)
-import Data.Time.Duration (class Duration)
-import Debug.Trace (traceM)
-import Control.Parallel
-import SpecAroundAll
-import FeatureTests.FeatureTestSpec
-import FeatureTests.AllTests
-import FeatureTests.Config as Config
-import Lunapark as Lunapark
-import Lunapark.Types as Lunapark
+import Protolude
 import Run (Run)
 import Run as Run
 import Run.Reader as Run
 import Run.Except as Run
-import Node.ReadLine as Node.ReadLine
-import Node.Process as Node.Process
-import Data.Posix.Signal
-import Node.Stream as Node.Stream
-import Data.Exists (Exists)
-import Data.Exists as Exists
-import CSS as CSS
-import Type.Row (type (+))
-import Data.Argonaut.Decode.Error as Data.Argonaut.Decode.Error
+import Data.Symbol (SProxy(..))
 
-connectToDb :: Configuration -> Aff ConnectResult
-connectToDb poolConfiguration = do
-  pool :: Pool <- liftEffect $ Database.PostgreSQL.new poolConfiguration
-  connectionResult :: ConnectResult <- Database.PostgreSQL.connect pool >>= either (show >>> error >>> throwError) pure
-  pure connectionResult
+data MyActionF a
+  = MyAction__Do a
+
+derive instance functorMyActionF ∷ Functor MyActionF
+
+_my_action = SProxy ∷ SProxy "my_action"
+
+type MY_ACTION = Run.FProxy MyActionF
+
+type MyActionEffect r = ( my_action ∷ MY_ACTION | r )
+
+liftMyAction ∷ ∀ r. MyActionF Unit → Run (MyActionEffect r) Unit
+liftMyAction = Run.lift _my_action
+
+myAction__Do ∷ ∀ r. Run (MyActionEffect r) Unit
+myAction__Do = liftMyAction $ MyAction__Do unit
+
+data MyError
+  = MyError
+  -- | | MyOtherError
+
+handleMyAction :: forall r. MyActionF ~> Run (except ∷ Run.EXCEPT MyError | r)
+handleMyAction = case _ of
+  MyAction__Do next -> do
+    -- | liftEffect $ Console.log str
+    _ <- Run.throw MyError
+    pure next
+
+runMyAction
+  :: forall r
+   . Run (except ∷ Run.EXCEPT MyError, my_action :: MY_ACTION | r)
+  ~> Run (except ∷ Run.EXCEPT MyError | r)
+runMyAction = Run.interpret (Run.on _my_action handleMyAction Run.send)
 
 main :: Effect Unit
 main = do
-  -- | readLineInterface <- Node.ReadLine.createConsoleInterface Node.ReadLine.noCompletion
-  config <- Config.config
+  let
+    body :: forall r . Run (except ∷ Run.EXCEPT MyError, my_action :: MY_ACTION | r) Unit
+    body = do
+      insideBodyRes <-
+        Run.catch
+        (\catchedError -> traceM { catchedError }
+        )
+        (Run.throw MyError)
+      traceM { insideBodyRes }
 
-  launchAff_ do
-     -- | TODO:
-     -- | (interpreter :: Exists Lunapark.Interpreter)
-     -- | so it's not instantiated and I dont have to handle Run.Reader on cleanup
+    interpretX :: Run (except ∷ Run.EXCEPT MyError, my_action :: MY_ACTION) Unit -> Either MyError Unit
+    interpretX x =
+      -- | Run.runBaseAff'
+      Run.extract
+      $ Run.runExcept
+      $ runMyAction
+      x
 
-    interpreter <-
-      Lunapark.init config.chromedriverUrl
-      { alwaysMatch:
-        -- based on https://www.w3.org/TR/webdriver1/ "Example 5"
-        -- chrome:browserOptions
-        [ Lunapark.CustomCapability "goog:chromeOptions" $ unsafeCoerce
-          { "binary": config.chromeBinaryPath
-          -- | , "debuggerAddress": "127.0.0.1:9222"
-          , "args":
-            -- disable chrome's wakiness
-            [ "--disable-infobars"
-            , "--disable-extensions"
+  let bodyRes = interpretX body
 
-            -- allow http
-            , "--disable-web-security"
+  traceM { bodyRes }
 
-            -- other
-            , "--lang=en"
-            , "--no-default-browser-check"
-            , "--no-sandbox"
-            , "--user-data-dir=" <> config.chromeUserDataDirPath
-            , "--profile-directory=tester"
-
-            -- CTRL-SHIFT-D to change dock placement
-            , "--auto-open-devtools-for-tabs"
-
-            -- not working
-            , "--start-maximized"
-            ]
-          , "prefs":
-            -- disable chrome's annoying password manager
-            { "profile.password_manager_enabled": false
-            , "credentials_enable_service":         false
-            , "password_manager_enabled":           false
-            , "download":
-              { "default_directory":   config.remoteDownloadDirPath
-              , "prompt_for_download": false
-              , "directory_upgrade":   true
-              , "extensions_to_open":  ""
-              }
-            , "plugins": { "plugins_disabled": ["Chrome PDF Viewer"] } -- disable viewing pdf files after download
-            }
-          }
-        ]
-      , firstMatch:
-        [ [ Lunapark.BrowserName Lunapark.Chrome
-          ]
-        ]
-      }
-      >>=
-        either
-        (\e -> throwError $ error $ "An error during selenium session initialization occured: " <> Lunapark.printError e)
-        pure
-
-    let
-      body :: forall r . Run (lunapark :: Lunapark.LUNAPARK | r) Unit
-      body = do
-        -- | insideBodyRes <- Run.runExcept $ Lunapark.findElement (Lunapark.ByCss $ CSS.Selector (CSS.Refinement [CSS.Id "usernameOrEmail-helper"]) CSS.Star)
-        insideBodyRes <- Run.runExcept $ Run.throw $ Left $ Lunapark.JsonDecodeError Data.Argonaut.Decode.Error.MissingValue
-        traceM { insideBodyRes }
-
-      interpretX :: Run (Lunapark.BaseEffects + Lunapark.LunaparkEffect + Lunapark.ActionsEffect + ()) Unit -> Aff (Either Lunapark.Error Unit)
-      interpretX x =
-        Run.runBaseAff'
-        $ Run.runExcept
-        $ Lunapark.runInterpreter interpreter
-        x
-
-    bodyRes <- interpretX body
-
-    traceM { bodyRes }
-
-    pure unit
+  pure unit
