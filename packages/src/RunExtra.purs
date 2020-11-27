@@ -18,7 +18,3 @@ import Unsafe.Coerce (unsafeCoerce)
 expand' ∷ ∀ l b t t_. Row.Cons l b t_ t ⇒ SProxy l → Run t_ ~> Run t
 expand' _ = unsafeCoerce
 
-runExcept' ∷ ∀ e a r. Run (except ∷ EXCEPT e | r) a → Run (except ∷ EXCEPT e | r) (Either e a)
-runExcept' = expand' (SProxy :: SProxy "except") <<< Run.runExcept
-
-

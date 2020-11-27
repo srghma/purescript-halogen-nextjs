@@ -8,22 +8,24 @@ import Effect.Class
 import Effect.Exception
 import Protolude
 import Unsafe.Coerce
+import RunCatchEffect as RunCatchEffect
 
 import Database.PostgreSQL as PostgreSQL
 import FeatureTests.FeatureTestSpecUtils.DebuggingAndTdd as DebuggingAndTdd
 import FeatureTests.FeatureTestSpecUtils.GoClientRoute as GoClientRoute
 import Lunapark as Lunapark
 import Node.ReadLine as Node.ReadLine
+import PostgreSQLTruncateSchemas as PostgreSQLTruncateSchemas
 import Run (Run)
 import Run as Run
+import Run.Except (EXCEPT)
 import Run.Except as Run
 import Run.Reader as Run
 import Test.Spec (SpecT(..))
 import Test.Spec as Test.Spec
-import PostgreSQLTruncateSchemas as PostgreSQLTruncateSchemas
 
 type FeatureTestConfig
-  = { interpreter :: Lunapark.Interpreter ()
+  = { interpreter :: Lunapark.Interpreter ( catch  ∷ RunCatchEffect.CATCH Lunapark.Error )
     , clientRootUrl :: String -- e.g. "http://localhost:3000"
     , readLineInterface :: Node.ReadLine.Interface
     | ReaderEnvRow
@@ -40,15 +42,18 @@ type FeatureTestRunEffects =
   + DebuggingAndTdd.PressEnterToContinueEffect
   + Lunapark.LunaparkEffect
   + Lunapark.ActionsEffect
-  + Lunapark.BaseEffects
   + ( reader ∷ Run.READER ReaderEnv
+    , catch  ∷ RunCatchEffect.CATCH Lunapark.Error
+    , except ∷ Run.EXCEPT Lunapark.Error
+    , aff    ∷ Run.AFF
+    , effect ∷ Run.EFFECT
     )
   )
 
 runFeatureTestImplementation :: ∀ a . Run FeatureTestRunEffects a → FeatureTestConfig → Aff (Either Lunapark.Error a)
 runFeatureTestImplementation spec config =
   Run.runBaseAff'
-  $ Run.runExcept
+  $ RunCatchEffect.runCatch
   $ Lunapark.runInterpreter config.interpreter
   $ GoClientRoute.runGoClientRoute config.clientRootUrl
   $ DebuggingAndTdd.runPressEnterToContinue config.readLineInterface
