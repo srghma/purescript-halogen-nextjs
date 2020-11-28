@@ -20,8 +20,8 @@ type CliConfig =
   , databaseHost              :: String
   , databasePort              :: Maybe Int
   , databaseOwnerUser         :: String
-  , databaseAuthenticatorUser :: String
-  , databaseVisitorUser         :: String
+  , databaseAnonymousUser :: String
+  , databaseUserUser         :: String
 
   , isProdunction        :: Boolean
   , oauthGithubClientID :: String
@@ -41,8 +41,8 @@ configParser = ado
   databaseHost              <- option str $ long "database-hostname" <> metavar "NAME"
   databasePort              <- Maybe.optional $ option int $ long "database-port" <> metavar "NAME"
   databaseOwnerUser         <- option str $ long "database-owner-user" <> metavar "NAME"
-  databaseAuthenticatorUser <- option str $ long "database-authenticator-user" <> metavar "NAME"
-  databaseVisitorUser       <- option str $ long "database-visitor-user" <> metavar "NAME"
+  databaseAnonymousUser <- option str $ long "database-anonymous-user" <> metavar "NAME"
+  databaseUserUser       <- option str $ long "database-user-user" <> metavar "NAME"
 
   oauthGithubClientID <- option str $ long "oauth-github-client-id" <> metavar "CLIENTID"
 
@@ -59,8 +59,8 @@ configParser = ado
     , databaseHost
     , databasePort
     , databaseOwnerUser
-    , databaseAuthenticatorUser
-    , databaseVisitorUser
+    , databaseAnonymousUser
+    , databaseUserUser
     , isProdunction
     , oauthGithubClientID
     }

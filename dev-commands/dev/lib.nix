@@ -16,7 +16,6 @@ rec {
   migratorEnv =
     {
       inherit (import "${pkgs.rootProjectDir}/config/public/database.nix")
-        DATABASE_OWNER
         DATABASE_NAME;
 
       inherit (import "${pkgs.rootProjectDir}/config/ignored/passwords.nix")
@@ -30,7 +29,6 @@ rec {
   serverEnv =
     {
       inherit (import "${pkgs.rootProjectDir}/config/public/database.nix")
-        DATABASE_OWNER
         DATABASE_NAME;
 
       inherit (import "${pkgs.rootProjectDir}/config/ignored/passwords.nix")

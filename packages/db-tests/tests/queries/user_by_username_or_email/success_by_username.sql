@@ -1,4 +1,4 @@
-\set role     $$'app_authenticator'$$
+\set role     $$'app_anonymous'$$
 \set user_id  $$'00000000-0000-0000-0000-000000000001'$$
 \set email    $$'user@mail.com'$$
 \set username $$'username2'$$

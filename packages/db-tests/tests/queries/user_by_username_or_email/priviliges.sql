@@ -18,7 +18,7 @@ SELECT function_privs_are(
   :schema,
   :func,
   :args,
-  'app_visitor',
+  'app_user',
   '{"EXECUTE"}'
 );
 

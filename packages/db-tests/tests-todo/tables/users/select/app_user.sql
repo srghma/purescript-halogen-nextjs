@@ -1,5 +1,5 @@
 
-\set role $$'app_visitor'$$
+\set role $$'app_user'$$
 \set user_id $$'00000000-0000-0000-0000-000000000001'$$
 
 begin;

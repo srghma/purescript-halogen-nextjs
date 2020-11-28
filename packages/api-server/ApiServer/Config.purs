@@ -45,9 +45,9 @@ type Config =
   , databasePort :: Maybe Int
   , databaseOwnerUser             :: String
   , databaseOwnerPassword         :: NonEmptyString
-  , databaseAuthenticatorUser     :: String
-  , databaseAuthenticatorPassword :: NonEmptyString
-  , databaseVisitorUser     :: String
+  , databaseAnonymousUser     :: String
+  , databaseAnonymousPassword :: NonEmptyString
+  , databaseUserUser     :: String
 
   , oauthGithubClientID     :: String
   , oauthGithubClientSecret :: NonEmptyString
@@ -84,14 +84,14 @@ config = do
 
     , rootUrl: cliConfig.rootUrl
 
-    , databaseName:                  cliConfig.databaseName
-    , databaseHost:                  cliConfig.databaseHost
-    , databasePort:                  cliConfig.databasePort
-    , databaseOwnerUser:             cliConfig.databaseOwnerUser
-    , databaseOwnerPassword:         envConfig.databaseOwnerPassword
-    , databaseAuthenticatorUser:     cliConfig.databaseAuthenticatorUser
-    , databaseAuthenticatorPassword: envConfig.databaseAuthenticatorPassword
-    , databaseVisitorUser:           cliConfig.databaseVisitorUser
+    , databaseName:              cliConfig.databaseName
+    , databaseHost:              cliConfig.databaseHost
+    , databasePort:              cliConfig.databasePort
+    , databaseOwnerUser:         cliConfig.databaseOwnerUser
+    , databaseOwnerPassword:     envConfig.databaseOwnerPassword
+    , databaseAnonymousUser:     cliConfig.databaseAnonymousUser
+    , databaseAnonymousPassword: envConfig.databaseAnonymousPassword
+    , databaseUserUser:          cliConfig.databaseUserUser
 
     , oauthGithubClientID:     cliConfig.oauthGithubClientID
     , oauthGithubClientSecret: envConfig.oauthGithubClientSecret

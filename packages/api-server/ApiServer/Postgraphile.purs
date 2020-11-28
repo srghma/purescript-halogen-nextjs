@@ -110,7 +110,7 @@ postgraphileOptions config =
   , pgSettings: mkEffectFn1 \req -> Promise.fromAff $ liftEffect do
      (user :: Maybe String) <- ApiServer.PassportMethodsFixed.passportMethods.getUser req
      pure $ Object.fromFoldable $ Array.catMaybes
-      [ Just $ "role" /\ config.databaseVisitorUser
+      [ Just $ "role" /\ config.databaseUserUser
       , user <#> \user -> "jwt.claims.user_id" /\ user
       ]
 
@@ -133,7 +133,7 @@ mkMiddleware
   , databasePort
   , databaseOwnerUser
   , databaseOwnerPassword
-  , databaseVisitorUser
+  , databaseUserUser
 
   } =
     runFn3
@@ -146,7 +146,7 @@ mkMiddleware
       , databasePort
       , databaseOwnerUser
       , databaseOwnerPassword
-      , databaseVisitorUser
+      , databaseUserUser
       , target
       , websocketMiddlewares
       , rootPgPool

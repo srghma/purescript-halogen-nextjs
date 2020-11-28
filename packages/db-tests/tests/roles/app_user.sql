@@ -1,4 +1,4 @@
-\set role $$'app_visitor'$$
+\set role $$'app_user'$$
 
 begin;
 

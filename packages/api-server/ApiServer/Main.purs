@@ -41,8 +41,8 @@ main = do
     , databasePort:                  config.databasePort
     , databaseOwnerUser:             config.databaseOwnerUser
     , databaseOwnerPassword:         config.databaseOwnerPassword
-    , databaseAuthenticatorUser:     config.databaseAuthenticatorUser
-    , databaseAuthenticatorPassword: config.databaseAuthenticatorPassword
+    , databaseAnonymousUser:     config.databaseAnonymousUser
+    , databaseAnonymousPassword: config.databaseAnonymousPassword
     }
 
   sessionMiddleware <- ApiServer.SessionMiddleware.sessionMiddleware
@@ -69,7 +69,7 @@ main = do
         , databasePort:          config.databasePort
         , databaseOwnerUser:     config.databaseOwnerUser
         , databaseOwnerPassword: config.databaseOwnerPassword
-        , databaseVisitorUser:   config.databaseVisitorUser
+        , databaseUserUser:   config.databaseUserUser
         }
 
   expressApp <- Express.mkApplication

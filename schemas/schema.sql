@@ -1449,63 +1449,65 @@ ALTER TABLE app_public.users ENABLE ROW LEVEL SECURITY;
 -- Name: SCHEMA app_hidden; Type: ACL; Schema: -; Owner: -
 --
 
-GRANT USAGE ON SCHEMA app_hidden TO app_visitor;
+GRANT USAGE ON SCHEMA app_hidden TO app_user;
 
 
 --
 -- Name: SCHEMA app_public; Type: ACL; Schema: -; Owner: -
 --
 
-GRANT USAGE ON SCHEMA app_public TO app_visitor;
+GRANT USAGE ON SCHEMA app_public TO app_anonymous;
+GRANT USAGE ON SCHEMA app_public TO app_user;
 
 
 --
 -- Name: TABLE users; Type: ACL; Schema: app_public; Owner: -
 --
 
-GRANT SELECT,DELETE ON TABLE app_public.users TO app_visitor;
+GRANT SELECT ON TABLE app_public.users TO app_anonymous;
+GRANT SELECT,DELETE ON TABLE app_public.users TO app_user;
 
 
 --
 -- Name: COLUMN users.name; Type: ACL; Schema: app_public; Owner: -
 --
 
-GRANT UPDATE(name) ON TABLE app_public.users TO app_visitor;
+GRANT UPDATE(name) ON TABLE app_public.users TO app_user;
 
 
 --
 -- Name: COLUMN users.avatar_url; Type: ACL; Schema: app_public; Owner: -
 --
 
-GRANT UPDATE(avatar_url) ON TABLE app_public.users TO app_visitor;
+GRANT UPDATE(avatar_url) ON TABLE app_public.users TO app_user;
 
 
 --
 -- Name: TABLE user_emails; Type: ACL; Schema: app_public; Owner: -
 --
 
-GRANT SELECT,DELETE ON TABLE app_public.user_emails TO app_visitor;
+GRANT SELECT,DELETE ON TABLE app_public.user_emails TO app_user;
 
 
 --
 -- Name: COLUMN user_emails.email; Type: ACL; Schema: app_public; Owner: -
 --
 
-GRANT INSERT(email) ON TABLE app_public.user_emails TO app_visitor;
+GRANT INSERT(email) ON TABLE app_public.user_emails TO app_user;
 
 
 --
 -- Name: TABLE posts; Type: ACL; Schema: app_public; Owner: -
 --
 
-GRANT SELECT ON TABLE app_public.posts TO app_visitor;
+GRANT SELECT ON TABLE app_public.posts TO app_user;
 
 
 --
 -- Name: TABLE user_authentications; Type: ACL; Schema: app_public; Owner: -
 --
 
-GRANT SELECT,DELETE ON TABLE app_public.user_authentications TO app_visitor;
+GRANT SELECT,DELETE ON TABLE app_public.user_authentications TO app_user;
 
 
 --
@@ -1513,7 +1515,7 @@ GRANT SELECT,DELETE ON TABLE app_public.user_authentications TO app_visitor;
 --
 
 ALTER DEFAULT PRIVILEGES FOR ROLE app_owner IN SCHEMA app_hidden REVOKE ALL ON SEQUENCES  FROM app_owner;
-ALTER DEFAULT PRIVILEGES FOR ROLE app_owner IN SCHEMA app_hidden GRANT SELECT,USAGE ON SEQUENCES  TO app_visitor;
+ALTER DEFAULT PRIVILEGES FOR ROLE app_owner IN SCHEMA app_hidden GRANT SELECT,USAGE ON SEQUENCES  TO app_user;
 
 
 --
@@ -1521,7 +1523,8 @@ ALTER DEFAULT PRIVILEGES FOR ROLE app_owner IN SCHEMA app_hidden GRANT SELECT,US
 --
 
 ALTER DEFAULT PRIVILEGES FOR ROLE app_owner IN SCHEMA app_public REVOKE ALL ON SEQUENCES  FROM app_owner;
-ALTER DEFAULT PRIVILEGES FOR ROLE app_owner IN SCHEMA app_public GRANT SELECT,USAGE ON SEQUENCES  TO app_visitor;
+ALTER DEFAULT PRIVILEGES FOR ROLE app_owner IN SCHEMA app_public GRANT SELECT,USAGE ON SEQUENCES  TO app_anonymous;
+ALTER DEFAULT PRIVILEGES FOR ROLE app_owner IN SCHEMA app_public GRANT SELECT,USAGE ON SEQUENCES  TO app_user;
 
 
 --

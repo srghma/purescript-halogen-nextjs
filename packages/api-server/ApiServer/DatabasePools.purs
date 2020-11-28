@@ -17,8 +17,8 @@ createPools
      , databaseOwnerPassword :: NonEmptyString
 
      -- This pool runs as the unprivileged user, it's what PostGraphile uses.
-     , databaseAuthenticatorUser :: String
-     , databaseAuthenticatorPassword :: NonEmptyString
+     , databaseAnonymousUser :: String
+     , databaseAnonymousPassword :: NonEmptyString
      }
   -> Effect
      { rootPgPool :: Pool
@@ -39,9 +39,9 @@ createPools config = do
     , host:              Just config.databaseHost
     , idleTimeoutMillis: Nothing
     , max:               Nothing
-    , password:          Just $ NonEmptyString.toString config.databaseAuthenticatorPassword
+    , password:          Just $ NonEmptyString.toString config.databaseAnonymousPassword
     , port:              config.databasePort
-    , user:              Just config.databaseAuthenticatorUser
+    , user:              Just config.databaseAnonymousUser
     }
   pure { rootPgPool, authPgPool }
 

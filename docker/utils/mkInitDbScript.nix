@@ -1,13 +1,13 @@
 # from https://github.com/graphile/bootstrap-react-apollo/blob/70d33aa436a20dc791130c03cd96297036570919/scripts/setup#L139
 { pkgs }:
 { isProduction
-, DATABASE_OWNER
+, app_owner
 , DATABASE_OWNER_PASSWORD
 
-, DATABASE_AUTHENTICATOR
-, DATABASE_AUTHENTICATOR_PASSWORD
+, app_anonymous
+, DATABASE_ANONYMOUS_PASSWORD
 
-, DATABASE_VISITOR
+, app_user
 
 , DATABASE_NAME
 }:
@@ -26,23 +26,23 @@ in pkgs.writeTextFile {
 
         -- This is the root role for the database
         -- IMPORTANT: don't grant SUPERUSER in production, we only need this so we can load the watch fixtures!
-        CREATE ROLE ${DATABASE_OWNER} WITH LOGIN PASSWORD '${DATABASE_OWNER_PASSWORD}' ${maybeSuperuser};
+        CREATE ROLE app_owner WITH LOGIN PASSWORD '${DATABASE_OWNER_PASSWORD}' ${maybeSuperuser};
 
         -- This is the no-access role that PostGraphile will run as by default
-        CREATE ROLE ${DATABASE_AUTHENTICATOR} WITH LOGIN PASSWORD '${DATABASE_AUTHENTICATOR_PASSWORD}' NOINHERIT;
+        CREATE ROLE app_anonymous WITH LOGIN PASSWORD '${DATABASE_ANONYMOUS_PASSWORD}' NOINHERIT;
 
-        -- This is the role that PostGraphile will switch to (from ${DATABASE_AUTHENTICATOR}) during a GraphQL request
-        CREATE ROLE ${DATABASE_VISITOR};
+        -- This is the role that PostGraphile will switch to (from app_anonymous) during a GraphQL request
+        CREATE ROLE app_user;
 
-        -- This enables PostGraphile to switch from ${DATABASE_AUTHENTICATOR} to ${DATABASE_VISITOR}
-        GRANT ${DATABASE_VISITOR} TO ${DATABASE_AUTHENTICATOR};
+        -- This enables PostGraphile to switch from app_anonymous to app_user
+        GRANT app_user TO app_anonymous;
 
         -- Here's our main database
-        CREATE DATABASE ${DATABASE_NAME} OWNER ${DATABASE_OWNER};
-        REVOKE ALL ON DATABASE ${DATABASE_NAME} FROM PUBLIC;
-        GRANT CONNECT ON DATABASE ${DATABASE_NAME} TO ${DATABASE_OWNER};
-        GRANT CONNECT ON DATABASE ${DATABASE_NAME} TO ${DATABASE_AUTHENTICATOR};
-        GRANT ALL ON DATABASE ${DATABASE_NAME} TO ${DATABASE_OWNER};
+        CREATE DATABASE ${DATABASE_NAME} OWNER app_owner;
+        -- REVOKE ALL ON DATABASE ${DATABASE_NAME} FROM public;
+        GRANT CONNECT ON DATABASE ${DATABASE_NAME} TO app_owner;
+        GRANT CONNECT ON DATABASE ${DATABASE_NAME} TO app_anonymous;
+        GRANT ALL ON DATABASE ${DATABASE_NAME} TO app_owner;
 
         -- Some extensions require superuser privileges, so we create them before migration time.
         \\connect ${DATABASE_NAME}

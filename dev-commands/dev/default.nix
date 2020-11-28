@@ -33,7 +33,6 @@ config.mkScripts {
   dev__db_tests = config.mkCommand
     {
       inherit (import "${pkgs.rootProjectDir}/config/public/database.nix")
-        DATABASE_OWNER
         POSTGRES_USER
         DATABASE_NAME;
 
@@ -49,7 +48,7 @@ config.mkScripts {
       waitforit -host=$POSTGRES_HOST -port=$POSTGRES_PORT -timeout=30
 
       PGPASSWORD=$DATABASE_OWNER_PASSWORD \
-        DB_TESTS_PREPARE_ARGS="--quiet -h $POSTGRES_HOST -p $POSTGRES_PORT -d $DATABASE_NAME -U $DATABASE_OWNER" \
+        DB_TESTS_PREPARE_ARGS="--quiet -h $POSTGRES_HOST -p $POSTGRES_PORT -d $DATABASE_NAME -U app_owner" \
         db-tests-prepare ./packages/db-tests/extensions
 
       PGPASSWORD=$POSTGRES_PASSWORD \
@@ -57,14 +56,14 @@ config.mkScripts {
     '';
 
   dev__db__dump_schema = config.mkCommand lib.migratorEnv ''
-    DATABASE_URL=postgres://$DATABASE_OWNER:$DATABASE_OWNER_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$DATABASE_NAME \
+    DATABASE_URL=postgres://app_owner:$DATABASE_OWNER_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$DATABASE_NAME \
       dump-schema
   '';
 
   dev__db__migrate = config.mkCommand lib.migratorEnv ''
     waitforit -host=$POSTGRES_HOST -port=$POSTGRES_PORT -timeout=30
 
-    wait-for-postgres --dbname=postgres://$DATABASE_OWNER:$DATABASE_OWNER_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$DATABASE_NAME
+    wait-for-postgres --dbname=postgres://app_owner:$DATABASE_OWNER_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$DATABASE_NAME
 
     # for relative imports using \include command (shimg is using psql internally)
     cd ./migrations
@@ -72,7 +71,7 @@ config.mkScripts {
     shmig -t postgresql \
       -m ./ \
       -C always \
-      -l $DATABASE_OWNER \
+      -l app_owner \
       -p $DATABASE_OWNER_PASSWORD \
       -H $POSTGRES_HOST \
       -P $POSTGRES_PORT \
@@ -83,14 +82,14 @@ config.mkScripts {
   dev__server = config.mkCommand lib.serverEnv ''
     waitforit -host=$POSTGRES_HOST -port=$POSTGRES_PORT -timeout=30
 
-    wait-for-postgres --dbname=postgres://$DATABASE_OWNER:$DATABASE_OWNER_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$DATABASE_NAME
+    wait-for-postgres --dbname=postgres://app_owner:$DATABASE_OWNER_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$DATABASE_NAME
 
     mkdir -p ./schemas
 
     GRAPHILE_LICENSE="${pkgs.lib.fileContents "${pkgs.rootProjectDir}/config/ignored/graphile-license"}" \
     sessionSecret="${(import "${pkgs.rootProjectDir}/config/ignored/passwords.nix").SESSION_SECRET}" \
     databaseOwnerPassword="${(import "${pkgs.rootProjectDir}/config/ignored/passwords.nix").DATABASE_OWNER_PASSWORD}" \
-    databaseAuthenticatorPassword="${(import "${pkgs.rootProjectDir}/config/ignored/passwords.nix").DATABASE_AUTHENTICATOR_PASSWORD}" \
+    databaseAnonymousPassword="${(import "${pkgs.rootProjectDir}/config/ignored/passwords.nix").DATABASE_ANONYMOUS_PASSWORD}" \
     oauthGithubClientSecret="${(import "${pkgs.rootProjectDir}/config/ignored/github-oauth.nix").CLIENT_SECRET}" \
       spago --config spago-api-server.dhall run --main ApiServer.Main --node-args '\
         --export-gql-schema-path "${pkgs.rootProjectDir}/schemas/schema.graphql" \
@@ -102,9 +101,6 @@ config.mkScripts {
         --database-name "${(import "${pkgs.rootProjectDir}/config/public/database.nix").DATABASE_NAME}" \
         --database-hostname "$POSTGRES_HOST" \
         --database-port "$POSTGRES_PORT" \
-        --database-owner-user "${(import "${pkgs.rootProjectDir}/config/public/database.nix").DATABASE_OWNER}" \
-        --database-authenticator-user "${(import "${pkgs.rootProjectDir}/config/public/database.nix").DATABASE_AUTHENTICATOR}" \
-        --database-visitor-user "${(import "${pkgs.rootProjectDir}/config/public/database.nix").DATABASE_VISITOR}" \
         --oauth-github-client-id "${(import "${pkgs.rootProjectDir}/config/ignored/github-oauth.nix").CLIENT_ID}" \
       '
   '';
@@ -127,7 +123,6 @@ config.mkScripts {
     databaseName="${(import "${pkgs.rootProjectDir}/config/public/database.nix").DATABASE_NAME}" \
     databaseHost="$POSTGRES_HOST" \
     databasePort="$POSTGRES_PORT" \
-    databaseOwnerUser="${(import "${pkgs.rootProjectDir}/config/public/database.nix").DATABASE_OWNER}" \
     databaseOwnerPassword="${(import "${pkgs.rootProjectDir}/config/ignored/passwords.nix").DATABASE_OWNER_PASSWORD}" \
     clientRootUrl="http://localhost" \
     chromedriverUrl="http://localhost:9515" \

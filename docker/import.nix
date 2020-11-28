@@ -36,9 +36,9 @@ in
               {
                 isProduction = false;
 
-                inherit (import "${rootProjectDir}/config/public/database.nix") DATABASE_OWNER DATABASE_AUTHENTICATOR DATABASE_VISITOR DATABASE_NAME;
+                inherit (import "${rootProjectDir}/config/public/database.nix") app_owner app_anonymous app_user DATABASE_NAME;
 
-                inherit (import "${rootProjectDir}/config/ignored/passwords.nix") DATABASE_OWNER_PASSWORD DATABASE_AUTHENTICATOR_PASSWORD;
+                inherit (import "${rootProjectDir}/config/ignored/passwords.nix") DATABASE_OWNER_PASSWORD DATABASE_ANONYMOUS_PASSWORD;
               }
               }:/docker-entrypoint-initdb.d/init.sh"
             ];
