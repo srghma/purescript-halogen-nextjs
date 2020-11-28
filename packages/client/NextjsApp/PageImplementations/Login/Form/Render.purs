@@ -52,7 +52,8 @@ mkHelperText = \config ->
          , text: config.errorToErrorText error
          , validation: true
          }
-       _ -> Nothing
+       F.NotValidated -> Nothing
+       F.Success -> Nothing
   where
     persistent = true
 

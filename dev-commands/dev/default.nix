@@ -32,10 +32,10 @@ mkScripts {
 
     PGPASSWORD=$DATABASE_OWNER_PASSWORD \
       DB_TESTS_PREPARE_ARGS="--quiet -h $POSTGRES_HOST -p $POSTGRES_PORT -d $DATABASE_NAME -U $DATABASE_OWNER" \
-      db-tests-prepare ./db_tests/extensions
+      db-tests-prepare ./packages/db-tests/extensions
 
     PGPASSWORD=$DATABASE_OWNER_PASSWORD \
-      pg_prove -h $POSTGRES_HOST -p $POSTGRES_PORT -d $DATABASE_NAME -U $DATABASE_OWNER --recurse --ext .sql ./db_tests/tests/
+      pg_prove -h $POSTGRES_HOST -p $POSTGRES_PORT -d $DATABASE_NAME -U $DATABASE_OWNER --recurse --ext .sql ./packages/db-tests/tests/
   '';
 
   dev__db__dump_schema = mkCommand migratorEnv ''

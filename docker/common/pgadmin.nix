@@ -7,11 +7,16 @@
 # -- password - $POSTGRES_PASSWORD
 
 {
-  image = "fenglc/pgadmin4";
+  image = "dpage/pgadmin4:latest";
   ports = [
-    "5050:5050"
+    "5050:80"
   ];
   depends_on = [
     "postgres"
   ];
+
+  environment = {
+    PGADMIN_DEFAULT_EMAIL = "foo";
+    PGADMIN_DEFAULT_PASSWORD = "foo";
+  };
 }
