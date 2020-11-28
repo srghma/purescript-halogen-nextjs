@@ -1,6 +1,6 @@
 \set schema $$'app_public'$$
-\set func $$'current_user'$$
-\set args $$'{}'$$::text[]
+\set func $$'user_by_username_or_email'$$
+\set args $$'{text}'$$::text[]
 
 begin;
 
@@ -27,14 +27,6 @@ SELECT function_privs_are(
   :func,
   :args,
   'app_owner',
-  '{"EXECUTE"}'
-);
-
-SELECT function_privs_are(
-  :schema,
-  :func,
-  :args,
-  'app_authenticator',
   '{"EXECUTE"}'
 );
 

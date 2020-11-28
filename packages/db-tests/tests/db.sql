@@ -23,12 +23,12 @@ select roles_are(array[
   'app_admin',
   'app_visitor',
   'app_owner',
+  'app_authenticator',
   'pg_stat_scan_tables',
   'pg_read_all_settings',
   'pg_signal_backend',
   'pg_read_all_stats',
   'pg_monitor',
-  'app_authenticator',
   'pg_execute_server_program',
   'pg_read_server_files',
   'pg_write_server_files'

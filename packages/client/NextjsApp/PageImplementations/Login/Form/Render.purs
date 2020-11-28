@@ -53,7 +53,7 @@ mkHelperText = \config ->
          , validation: true
          }
        F.NotValidated -> Nothing
-       F.Success -> Nothing
+       F.Success _ -> Nothing
   where
     persistent = true
 
