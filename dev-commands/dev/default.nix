@@ -1,9 +1,12 @@
 { pkgs, config }:
 
-with config;
-with (import ./lib.nix { inherit pkgs; });
+# with config;
 
-mkScripts {
+let
+  lib = import ./lib.nix { inherit pkgs; };
+in
+
+config.mkScripts {
   dev__cat = ''
     arion \
       --file docker/import.nix \
@@ -27,23 +30,37 @@ mkScripts {
       up --detach
   '';
 
-  dev__db_tests = mkCommand migratorEnv ''
-    waitforit -host=$POSTGRES_HOST -port=$POSTGRES_PORT -timeout=30
+  dev__db_tests = config.mkCommand
+    {
+      inherit (import "${pkgs.rootProjectDir}/config/public/database.nix")
+        POSTGRES_USER
+        DATABASE_NAME;
 
-    PGPASSWORD=$DATABASE_OWNER_PASSWORD \
-      DB_TESTS_PREPARE_ARGS="--quiet -h $POSTGRES_HOST -p $POSTGRES_PORT -d $DATABASE_NAME -U $DATABASE_OWNER" \
-      db-tests-prepare ./packages/db-tests/extensions
+      inherit (import "${pkgs.rootProjectDir}/config/ignored/passwords.nix")
+        DATABASE_OWNER_PASSWORD
+        POSTGRES_PASSWORD;
 
-    PGPASSWORD=$DATABASE_OWNER_PASSWORD \
-      pg_prove -h $POSTGRES_HOST -p $POSTGRES_PORT -d $DATABASE_NAME -U $DATABASE_OWNER --recurse --ext .sql ./packages/db-tests/tests/
-  '';
+      inherit (lib.config)
+        POSTGRES_HOST
+        POSTGRES_PORT;
+    }
+    ''
+      waitforit -host=$POSTGRES_HOST -port=$POSTGRES_PORT -timeout=30
 
-  dev__db__dump_schema = mkCommand migratorEnv ''
+      PGPASSWORD=$DATABASE_OWNER_PASSWORD \
+        DB_TESTS_PREPARE_ARGS="--quiet -h $POSTGRES_HOST -p $POSTGRES_PORT -d $DATABASE_NAME -U $DATABASE_OWNER" \
+        db-tests-prepare ./packages/db-tests/extensions
+
+      PGPASSWORD=$DATABASE_OWNER_PASSWORD \
+        pg_prove -h $POSTGRES_HOST -p $POSTGRES_PORT -d $DATABASE_NAME -U $DATABASE_OWNER --recurse --ext .sql ./packages/db-tests/tests/
+    '';
+
+  dev__db__dump_schema = config.mkCommand lib.migratorEnv ''
     DATABASE_URL=postgres://$DATABASE_OWNER:$DATABASE_OWNER_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$DATABASE_NAME \
       dump-schema
   '';
 
-  dev__db__migrate = mkCommand migratorEnv ''
+  dev__db__migrate = config.mkCommand lib.migratorEnv ''
     waitforit -host=$POSTGRES_HOST -port=$POSTGRES_PORT -timeout=30
 
     wait-for-postgres --dbname=postgres://$DATABASE_OWNER:$DATABASE_OWNER_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$DATABASE_NAME
@@ -62,7 +79,7 @@ mkScripts {
       migrate
   '';
 
-  dev__server = mkCommand serverEnv ''
+  dev__server = config.mkCommand lib.serverEnv ''
     waitforit -host=$POSTGRES_HOST -port=$POSTGRES_PORT -timeout=30
 
     wait-for-postgres --dbname=postgres://$DATABASE_OWNER:$DATABASE_OWNER_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$DATABASE_NAME
@@ -99,7 +116,7 @@ mkScripts {
     chromedriver --verbose --port=9515
   '';
 
-  dev__feature_tests__run = mkCommand serverEnv ''
+  dev__feature_tests__run = config.mkCommand lib.serverEnv ''
     remoteDownloadDirPath="${pkgs.rootProjectDir}/.feature-tests/remoteDownloadDir"
     chromeUserDataDirPath="${pkgs.rootProjectDir}/.feature-tests/chromeUserDataDir"
 

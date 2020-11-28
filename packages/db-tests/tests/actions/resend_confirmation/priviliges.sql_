@@ -1,7 +1,7 @@
 
 \set schema $$'app_public'$$
-\set func $$'current_user'$$
-\set args $$'{}'$$::text[]
+\set func $$'resend_confirmation'$$
+\set args $$'{"text"}'$$::text[]
 
 begin;
 

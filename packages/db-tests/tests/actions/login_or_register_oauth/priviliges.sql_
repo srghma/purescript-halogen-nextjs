@@ -1,7 +1,7 @@
 
-\set schema $$'app_public'$$
-\set func $$'current_user'$$
-\set args $$'{}'$$::text[]
+\set schema $$'app_private'$$
+\set func $$'login_or_register_oauth'$$
+\set args $$'{ "text", "text", "text", "text", "text", "text" }'$$::text[]
 
 begin;
 

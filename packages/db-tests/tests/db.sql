@@ -22,7 +22,7 @@ select schemas_are(array[
 select roles_are(array[
   'app_admin',
   'app_visitor',
-  'app_user',
+  'app_owner',
   'pg_stat_scan_tables',
   'pg_read_all_settings',
   'pg_signal_backend',
@@ -36,7 +36,7 @@ select users_are(array[
 
 select groups_are(array[
   'app_visitor',
-  'app_user',
+  'app_owner',
   'pg_stat_scan_tables',
   'pg_read_all_settings',
   'pg_signal_backend',
