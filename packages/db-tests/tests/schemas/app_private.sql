@@ -7,7 +7,12 @@ select no_plan();
 
 select tables_are(
   :schema,
-  array[]::text[]
+  array[
+    'user_authentication_secrets',
+    'user_email_secrets',
+    'user_secrets',
+    'user_sessions'
+  ]::text[]
 );
 
 select types_are(:schema, array[]::text[]);
@@ -20,11 +25,14 @@ select functions_are(
   :schema,
   array[
     'tg__set_updated_at',
-    'rabbitmq__send_confirmation_mail',
-    'rabbitmq__send_welcome_mail',
-    'rabbitmq__send_reset_password_mail',
-    'rabbitmq__send_password_was_changed_mail',
-    'login_or_register_oauth'
+    'link_or_register_user',
+    'login',
+    'really_create_user',
+    'register_user',
+    'tg_send_verification_email_for_user_email',
+    'tg_user_email_secrets__insert_with_user_email',
+    'tg_user_secrets__insert_with_user',
+    'tg_users__make_first_user_admin'
   ]::text[]
 );
 

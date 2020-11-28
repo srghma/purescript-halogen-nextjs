@@ -21,8 +21,7 @@ select functions_are(
   array[
     'biconditional_statement',
     'implication',
-    'is_from_0_to_100',
-    'validate_subscription'
+    'is_from_0_to_100'
   ]::text[]
 );
 

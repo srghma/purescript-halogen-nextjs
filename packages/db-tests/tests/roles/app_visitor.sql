@@ -1,4 +1,3 @@
-
 \set role $$'app_visitor'$$
 
 begin;
@@ -8,7 +7,7 @@ select no_plan();
 select database_privs_are(
   current_database(),
   :role,
-  array['CONNECT', 'TEMPORARY']
+  array[]::text[]
 );
 
 -- TODO: should create?
