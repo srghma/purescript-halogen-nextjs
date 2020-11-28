@@ -582,7 +582,9 @@ CREATE FUNCTION app_public."current_user"() RETURNS app_public.users
     LANGUAGE sql STABLE
     SET search_path TO '$user', 'public'
     AS $$
-  select users.* from app_public.users where id = app_public.current_user_id_or_null();
+  select users.*
+    from app_public.users
+    where id = app_public.current_user_id_or_null();
 $$;
 
 

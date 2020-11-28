@@ -33,10 +33,12 @@ config.mkScripts {
   dev__db_tests = config.mkCommand
     {
       inherit (import "${pkgs.rootProjectDir}/config/public/database.nix")
+        DATABASE_OWNER
         POSTGRES_USER
         DATABASE_NAME;
 
       inherit (import "${pkgs.rootProjectDir}/config/ignored/passwords.nix")
+        DATABASE_OWNER_PASSWORD
         POSTGRES_PASSWORD;
 
       inherit (lib.config)
@@ -46,8 +48,8 @@ config.mkScripts {
     ''
       waitforit -host=$POSTGRES_HOST -port=$POSTGRES_PORT -timeout=30
 
-      PGPASSWORD=$POSTGRES_PASSWORD \
-        DB_TESTS_PREPARE_ARGS="--quiet -h $POSTGRES_HOST -p $POSTGRES_PORT -d $DATABASE_NAME -U $POSTGRES_USER" \
+      PGPASSWORD=$DATABASE_OWNER_PASSWORD \
+        DB_TESTS_PREPARE_ARGS="--quiet -h $POSTGRES_HOST -p $POSTGRES_PORT -d $DATABASE_NAME -U $DATABASE_OWNER" \
         db-tests-prepare ./packages/db-tests/extensions
 
       PGPASSWORD=$POSTGRES_PASSWORD \
