@@ -1,4 +1,4 @@
-\set role     $$'app_visitor'$$
+\set role     $$'app_authenticator'$$
 \set user_id  $$'00000000-0000-0000-0000-000000000001'$$
 \set email    $$'user@mail.com'$$
 \set username $$'username2'$$
@@ -20,7 +20,7 @@ prepare actual as
   from app_public.user_by_username_or_email(:username);
 
 prepare expected as values
-  ((:user_id, :username));
+  (:user_id::uuid, :username);
 
 select set_eq(
   'actual',
