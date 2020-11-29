@@ -1,7 +1,7 @@
 create function app_public.reset_password(user_id uuid, token text, new_password text) returns app_public.users as $$
 declare
   v_user app_public.users;
-  v_user_email app_public.user_emails;
+  v_user_email app_hidden.user_emails;
   v_user_secret app_private.user_secrets;
   v_reset_max_duration interval = interval '3 days';
 begin
@@ -42,7 +42,7 @@ begin
 
       -- Notify that password has been reset
       select * into v_user_email
-      from app_public.user_emails
+      from app_hidden.user_emails
       where user_emails.user_id = reset_password.user_id
       and is_verified = true
       order by created_at

@@ -10,7 +10,7 @@ SELECT function_privs_are(
   :schema,
   :func,
   :args,
-  'app_admin',
+  'app_owner',
   '{"EXECUTE"}'
 );
 
@@ -19,14 +19,6 @@ SELECT function_privs_are(
   :func,
   :args,
   'app_user',
-  '{"EXECUTE"}'
-);
-
-SELECT function_privs_are(
-  :schema,
-  :func,
-  :args,
-  'app_owner',
   '{"EXECUTE"}'
 );
 

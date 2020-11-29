@@ -7,7 +7,7 @@ select no_plan();
 
 select tables_are(
   :schema,
-  array[]::text[]
+  array['user_emails']::text[]
 );
 
 select types_are(:schema, array[]::text[]);

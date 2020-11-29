@@ -1,9 +1,9 @@
-create function app_public.verify_user_email(token text) returns app_public.user_emails as $$
+create function app_public.verify_user_email(token text) returns app_hidden.user_emails as $$
 declare
-  v_user_email app_public.user_emails;
+  v_user_email app_hidden.user_emails;
   v_max_duration interval = interval '7 days';
 begin
-  UPDATE app_public.user_emails
+  UPDATE app_hidden.user_emails
   SET is_verified = true
   WHERE id = (
     SELECT user_email_id

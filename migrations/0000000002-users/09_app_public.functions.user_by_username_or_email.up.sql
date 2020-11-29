@@ -8,7 +8,7 @@ create function app_public.user_by_username_or_email(username_or_email text) ret
     or
       exists(
         select 1
-        from app_public.user_emails
+        from app_hidden.user_emails
         where user_id = users.id
         and is_verified is true
         and email = user_by_username_or_email.username_or_email::citext

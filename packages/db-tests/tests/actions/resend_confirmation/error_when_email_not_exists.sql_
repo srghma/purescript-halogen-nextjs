@@ -41,7 +41,7 @@ select throws_ok(
 
 -- Check function hasn't been called
 
-set local role 'app_admin';
+set local role 'app_owner';
 
 select
   is(count(*), 0::bigint)

@@ -1,4 +1,3 @@
-
 \set role $$'app_admin'$$
 
 begin;
@@ -11,6 +10,7 @@ select database_privs_are(
   array['CONNECT', 'TEMPORARY', 'CREATE']
 );
 
+-- TODO: should create?
 select schema_privs_are(
   'public',
   :role,

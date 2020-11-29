@@ -10,12 +10,15 @@ select no_plan();
 INSERT INTO app_public.users (id, username)
   VALUES (:user_id, :username);
 
+INSERT INTO app_hidden.user_emails (user_id, email)
+  VALUES (:user_id, :email);
+
 set local role :role;
 select is(current_user, :role);
 
 prepare actual as
   select id, username
-  from app_public.user_by_username_or_email(:username);
+  from app_public.user_by_username_or_email(:email);
 
 prepare expected as values
   (:user_id::uuid, :username);

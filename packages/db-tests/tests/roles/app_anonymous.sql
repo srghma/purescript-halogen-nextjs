@@ -1,4 +1,4 @@
-\set role $$'app_user'$$
+\set role $$'app_anonymous'$$
 
 begin;
 
@@ -10,17 +10,16 @@ select database_privs_are(
   array['CONNECT', 'TEMPORARY']::text[]
 );
 
--- TODO: should create?
 select schema_privs_are(
   'public',
   :role,
-  array['USAGE', 'CREATE']
+  array['USAGE', 'CREATE']::text[]
 );
 
 select schema_privs_are(
   'app_public',
   :role,
-  array['USAGE']
+  array['USAGE']::text[]
 );
 
 select schema_privs_are(

@@ -1,5 +1,5 @@
 create table app_private.user_email_secrets (
-  user_email_id uuid not null primary key references app_public.user_emails on delete cascade default uuid_generate_v4(),
+  user_email_id uuid not null primary key references app_hidden.user_emails on delete cascade default uuid_generate_v4(),
   verification_token text,
   verification_email_sent_at timestamptz,
   password_reset_email_sent_at timestamptz
@@ -31,7 +31,7 @@ end;
 $$ language plpgsql volatile set search_path from current;
 
 create trigger _500_insert_secrets
-  after insert on app_public.user_emails
+  after insert on app_hidden.user_emails
   for each row
   execute function app_private.tg_user_email_secrets__insert_with_user_email();
 
@@ -52,7 +52,7 @@ end;
 $$ language plpgsql volatile set search_path from current;
 
 create trigger _900_send_verification_email
-  after insert on app_public.user_emails
+  after insert on app_hidden.user_emails
   for each row
   when (NEW.is_verified is false)
   execute function app_private.tg_send_verification_email_for_user_email();

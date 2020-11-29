@@ -192,7 +192,7 @@ declare
   v_name text;
   v_avatar_url text;
   v_user app_public.users;
-  v_user_email app_public.user_emails;
+  v_user_email app_hidden.user_emails;
 begin
   -- See if a user account already matches these details
   select id, user_id
@@ -220,7 +220,7 @@ begin
         (v_matched_authentication_id, f_auth_details);
     elsif v_email is not null then
       -- See if the email is registered
-      select * into v_user_email from app_public.user_emails where email = v_email and is_verified is true;
+      select * into v_user_email from app_hidden.user_emails where email = v_email and is_verified is true;
       if not (v_user_email is null) then
         -- User exists!
         insert into app_public.user_authentications (user_id, service, identifier, details) values
@@ -392,7 +392,7 @@ begin
 
   -- Add the user's email
   if email is not null then
-    insert into app_public.user_emails (user_id, email, is_verified)
+    insert into app_hidden.user_emails (user_id, email, is_verified)
     values (v_user.id, email, email_is_verified);
   end if;
 
@@ -642,14 +642,14 @@ CREATE FUNCTION app_public.forgot_password(email text) RETURNS boolean
     SET search_path TO '$user', 'public'
     AS $$
 declare
-  v_user_email app_public.user_emails;
+  v_user_email app_hidden.user_emails;
   v_reset_token text;
   v_reset_min_duration_between_emails interval = interval '30 minutes';
   v_reset_max_duration interval = interval '3 days';
 begin
   -- Find the matching user_email
   select user_emails.* into v_user_email
-  from app_public.user_emails
+  from app_hidden.user_emails
   where user_emails.email = forgot_password.email::citext
   order by is_verified desc, id desc;
 
@@ -741,7 +741,7 @@ CREATE FUNCTION app_public.reset_password(user_id uuid, token text, new_password
     AS $$
 declare
   v_user app_public.users;
-  v_user_email app_public.user_emails;
+  v_user_email app_hidden.user_emails;
   v_user_secret app_private.user_secrets;
   v_reset_max_duration interval = interval '3 days';
 begin
@@ -782,7 +782,7 @@ begin
 
       -- Notify that password has been reset
       select * into v_user_email
-      from app_public.user_emails
+      from app_hidden.user_emails
       where user_emails.user_id = reset_password.user_id
       and is_verified = true
       order by created_at
@@ -857,7 +857,7 @@ CREATE FUNCTION app_public.user_by_username_or_email(username_or_email text) RET
     or
       exists(
         select 1
-        from app_public.user_emails
+        from app_hidden.user_emails
         where user_id = users.id
         and is_verified is true
         and email = user_by_username_or_email.username_or_email::citext
@@ -867,10 +867,10 @@ $$;
 
 
 --
--- Name: user_emails; Type: TABLE; Schema: app_public; Owner: -
+-- Name: user_emails; Type: TABLE; Schema: app_hidden; Owner: -
 --
 
-CREATE TABLE app_public.user_emails (
+CREATE TABLE app_hidden.user_emails (
     id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
     user_id uuid NOT NULL,
     email public.citext NOT NULL,
@@ -882,40 +882,40 @@ CREATE TABLE app_public.user_emails (
 
 
 --
--- Name: TABLE user_emails; Type: COMMENT; Schema: app_public; Owner: -
+-- Name: TABLE user_emails; Type: COMMENT; Schema: app_hidden; Owner: -
 --
 
-COMMENT ON TABLE app_public.user_emails IS '@omit all
+COMMENT ON TABLE app_hidden.user_emails IS '@omit all
 Information about a user''s email address.';
 
 
 --
--- Name: COLUMN user_emails.email; Type: COMMENT; Schema: app_public; Owner: -
+-- Name: COLUMN user_emails.email; Type: COMMENT; Schema: app_hidden; Owner: -
 --
 
-COMMENT ON COLUMN app_public.user_emails.email IS 'The users email address, in `a@b.c` format.';
+COMMENT ON COLUMN app_hidden.user_emails.email IS 'The users email address, in `a@b.c` format.';
 
 
 --
--- Name: COLUMN user_emails.is_verified; Type: COMMENT; Schema: app_public; Owner: -
+-- Name: COLUMN user_emails.is_verified; Type: COMMENT; Schema: app_hidden; Owner: -
 --
 
-COMMENT ON COLUMN app_public.user_emails.is_verified IS 'True if the user has is_verified their email address (by clicking the link in the email we sent them, or logging in with a social login provider), false otherwise.';
+COMMENT ON COLUMN app_hidden.user_emails.is_verified IS 'True if the user has is_verified their email address (by clicking the link in the email we sent them, or logging in with a social login provider), false otherwise.';
 
 
 --
 -- Name: verify_user_email(text); Type: FUNCTION; Schema: app_public; Owner: -
 --
 
-CREATE FUNCTION app_public.verify_user_email(token text) RETURNS app_public.user_emails
+CREATE FUNCTION app_public.verify_user_email(token text) RETURNS app_hidden.user_emails
     LANGUAGE plpgsql STRICT SECURITY DEFINER
     SET search_path TO '$user', 'public'
     AS $$
 declare
-  v_user_email app_public.user_emails;
+  v_user_email app_hidden.user_emails;
   v_max_duration interval = interval '7 days';
 begin
-  UPDATE app_public.user_emails
+  UPDATE app_hidden.user_emails
   SET is_verified = true
   WHERE id = (
     SELECT user_email_id
@@ -1099,6 +1099,22 @@ CREATE TABLE public.shmig_version (
 
 
 --
+-- Name: user_emails user_emails_pkey; Type: CONSTRAINT; Schema: app_hidden; Owner: -
+--
+
+ALTER TABLE ONLY app_hidden.user_emails
+    ADD CONSTRAINT user_emails_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: user_emails user_emails_user_id_email_key; Type: CONSTRAINT; Schema: app_hidden; Owner: -
+--
+
+ALTER TABLE ONLY app_hidden.user_emails
+    ADD CONSTRAINT user_emails_user_id_email_key UNIQUE (user_id, email);
+
+
+--
 -- Name: user_sessions app_private_user_sessions_pkey; Type: CONSTRAINT; Schema: app_private; Owner: -
 --
 
@@ -1155,22 +1171,6 @@ ALTER TABLE ONLY app_public.user_authentications
 
 
 --
--- Name: user_emails user_emails_pkey; Type: CONSTRAINT; Schema: app_public; Owner: -
---
-
-ALTER TABLE ONLY app_public.user_emails
-    ADD CONSTRAINT user_emails_pkey PRIMARY KEY (id);
-
-
---
--- Name: user_emails user_emails_user_id_email_key; Type: CONSTRAINT; Schema: app_public; Owner: -
---
-
-ALTER TABLE ONLY app_public.user_emails
-    ADD CONSTRAINT user_emails_user_id_email_key UNIQUE (user_id, email);
-
-
---
 -- Name: users users_pkey; Type: CONSTRAINT; Schema: app_public; Owner: -
 --
 
@@ -1195,6 +1195,13 @@ ALTER TABLE ONLY public.shmig_version
 
 
 --
+-- Name: uniq_user_emails_verified_email; Type: INDEX; Schema: app_hidden; Owner: -
+--
+
+CREATE UNIQUE INDEX uniq_user_emails_verified_email ON app_hidden.user_emails USING btree (email) WHERE (is_verified IS TRUE);
+
+
+--
 -- Name: IDX_session_expire; Type: INDEX; Schema: app_private; Owner: -
 --
 
@@ -1209,17 +1216,31 @@ CREATE INDEX app_public_posts_user_id ON app_public.posts USING btree (user_id);
 
 
 --
--- Name: uniq_user_emails_verified_email; Type: INDEX; Schema: app_public; Owner: -
---
-
-CREATE UNIQUE INDEX uniq_user_emails_verified_email ON app_public.user_emails USING btree (email) WHERE (is_verified IS TRUE);
-
-
---
 -- Name: user_authentications_user_id_idx; Type: INDEX; Schema: app_public; Owner: -
 --
 
 CREATE INDEX user_authentications_user_id_idx ON app_public.user_authentications USING btree (user_id);
+
+
+--
+-- Name: user_emails _100_timestamps; Type: TRIGGER; Schema: app_hidden; Owner: -
+--
+
+CREATE TRIGGER _100_timestamps BEFORE UPDATE ON app_hidden.user_emails FOR EACH ROW EXECUTE FUNCTION app_private.tg__set_updated_at();
+
+
+--
+-- Name: user_emails _500_insert_secrets; Type: TRIGGER; Schema: app_hidden; Owner: -
+--
+
+CREATE TRIGGER _500_insert_secrets AFTER INSERT ON app_hidden.user_emails FOR EACH ROW EXECUTE FUNCTION app_private.tg_user_email_secrets__insert_with_user_email();
+
+
+--
+-- Name: user_emails _900_send_verification_email; Type: TRIGGER; Schema: app_hidden; Owner: -
+--
+
+CREATE TRIGGER _900_send_verification_email AFTER INSERT ON app_hidden.user_emails FOR EACH ROW WHEN ((new.is_verified IS FALSE)) EXECUTE FUNCTION app_private.tg_send_verification_email_for_user_email();
 
 
 --
@@ -1237,13 +1258,6 @@ CREATE TRIGGER _100_timestamps BEFORE UPDATE ON app_public.user_authentications 
 
 
 --
--- Name: user_emails _100_timestamps; Type: TRIGGER; Schema: app_public; Owner: -
---
-
-CREATE TRIGGER _100_timestamps BEFORE UPDATE ON app_public.user_emails FOR EACH ROW EXECUTE FUNCTION app_private.tg__set_updated_at();
-
-
---
 -- Name: users _100_timestamps; Type: TRIGGER; Schema: app_public; Owner: -
 --
 
@@ -1258,13 +1272,6 @@ CREATE TRIGGER _200_make_first_user_admin BEFORE INSERT ON app_public.users FOR 
 
 
 --
--- Name: user_emails _500_insert_secrets; Type: TRIGGER; Schema: app_public; Owner: -
---
-
-CREATE TRIGGER _500_insert_secrets AFTER INSERT ON app_public.user_emails FOR EACH ROW EXECUTE FUNCTION app_private.tg_user_email_secrets__insert_with_user_email();
-
-
---
 -- Name: users _500_insert_secrets; Type: TRIGGER; Schema: app_public; Owner: -
 --
 
@@ -1272,10 +1279,11 @@ CREATE TRIGGER _500_insert_secrets AFTER INSERT ON app_public.users FOR EACH ROW
 
 
 --
--- Name: user_emails _900_send_verification_email; Type: TRIGGER; Schema: app_public; Owner: -
+-- Name: user_emails user_emails_user_id_fkey; Type: FK CONSTRAINT; Schema: app_hidden; Owner: -
 --
 
-CREATE TRIGGER _900_send_verification_email AFTER INSERT ON app_public.user_emails FOR EACH ROW WHEN ((new.is_verified IS FALSE)) EXECUTE FUNCTION app_private.tg_send_verification_email_for_user_email();
+ALTER TABLE ONLY app_hidden.user_emails
+    ADD CONSTRAINT user_emails_user_id_fkey FOREIGN KEY (user_id) REFERENCES app_public.users(id) ON DELETE CASCADE;
 
 
 --
@@ -1291,7 +1299,7 @@ ALTER TABLE ONLY app_private.user_authentication_secrets
 --
 
 ALTER TABLE ONLY app_private.user_email_secrets
-    ADD CONSTRAINT user_email_secrets_user_email_id_fkey FOREIGN KEY (user_email_id) REFERENCES app_public.user_emails(id) ON DELETE CASCADE;
+    ADD CONSTRAINT user_email_secrets_user_email_id_fkey FOREIGN KEY (user_email_id) REFERENCES app_hidden.user_emails(id) ON DELETE CASCADE;
 
 
 --
@@ -1319,12 +1327,31 @@ ALTER TABLE ONLY app_public.user_authentications
 
 
 --
--- Name: user_emails user_emails_user_id_fkey; Type: FK CONSTRAINT; Schema: app_public; Owner: -
+-- Name: user_emails delete_own; Type: POLICY; Schema: app_hidden; Owner: -
 --
 
-ALTER TABLE ONLY app_public.user_emails
-    ADD CONSTRAINT user_emails_user_id_fkey FOREIGN KEY (user_id) REFERENCES app_public.users(id) ON DELETE CASCADE;
+CREATE POLICY delete_own ON app_hidden.user_emails FOR DELETE USING ((user_id = app_public.current_user_id_or_null()));
 
+
+--
+-- Name: user_emails insert_own; Type: POLICY; Schema: app_hidden; Owner: -
+--
+
+CREATE POLICY insert_own ON app_hidden.user_emails FOR INSERT WITH CHECK ((user_id = app_public.current_user_id_or_null()));
+
+
+--
+-- Name: user_emails select_own; Type: POLICY; Schema: app_hidden; Owner: -
+--
+
+CREATE POLICY select_own ON app_hidden.user_emails FOR SELECT USING ((user_id = app_public.current_user_id_or_null()));
+
+
+--
+-- Name: user_emails; Type: ROW SECURITY; Schema: app_hidden; Owner: -
+--
+
+ALTER TABLE app_hidden.user_emails ENABLE ROW LEVEL SECURITY;
 
 --
 -- Name: user_authentication_secrets; Type: ROW SECURITY; Schema: app_private; Owner: -
@@ -1352,13 +1379,6 @@ CREATE POLICY delete_own ON app_public.user_authentications FOR DELETE USING ((u
 
 
 --
--- Name: user_emails delete_own; Type: POLICY; Schema: app_public; Owner: -
---
-
-CREATE POLICY delete_own ON app_public.user_emails FOR DELETE USING ((user_id = app_public.current_user_id_or_null()));
-
-
---
 -- Name: posts delete_posts; Type: POLICY; Schema: app_public; Owner: -
 --
 
@@ -1370,13 +1390,6 @@ CREATE POLICY delete_posts ON app_public.posts FOR DELETE USING ((user_id = app_
 --
 
 CREATE POLICY delete_self ON app_public.users FOR DELETE USING ((id = app_public.current_user_id_or_null()));
-
-
---
--- Name: user_emails insert_own; Type: POLICY; Schema: app_public; Owner: -
---
-
-CREATE POLICY insert_own ON app_public.user_emails FOR INSERT WITH CHECK ((user_id = app_public.current_user_id_or_null()));
 
 
 --
@@ -1397,13 +1410,6 @@ CREATE POLICY select_all ON app_public.users FOR SELECT USING (true);
 --
 
 CREATE POLICY select_own ON app_public.user_authentications FOR SELECT USING ((user_id = app_public.current_user_id_or_null()));
-
-
---
--- Name: user_emails select_own; Type: POLICY; Schema: app_public; Owner: -
---
-
-CREATE POLICY select_own ON app_public.user_emails FOR SELECT USING ((user_id = app_public.current_user_id_or_null()));
 
 
 --
@@ -1434,12 +1440,6 @@ CREATE POLICY update_self ON app_public.users FOR UPDATE USING ((id = app_public
 ALTER TABLE app_public.user_authentications ENABLE ROW LEVEL SECURITY;
 
 --
--- Name: user_emails; Type: ROW SECURITY; Schema: app_public; Owner: -
---
-
-ALTER TABLE app_public.user_emails ENABLE ROW LEVEL SECURITY;
-
---
 -- Name: users; Type: ROW SECURITY; Schema: app_public; Owner: -
 --
 
@@ -1449,6 +1449,7 @@ ALTER TABLE app_public.users ENABLE ROW LEVEL SECURITY;
 -- Name: SCHEMA app_hidden; Type: ACL; Schema: -; Owner: -
 --
 
+GRANT USAGE ON SCHEMA app_hidden TO app_anonymous;
 GRANT USAGE ON SCHEMA app_hidden TO app_user;
 
 
@@ -1483,17 +1484,18 @@ GRANT UPDATE(avatar_url) ON TABLE app_public.users TO app_user;
 
 
 --
--- Name: TABLE user_emails; Type: ACL; Schema: app_public; Owner: -
+-- Name: TABLE user_emails; Type: ACL; Schema: app_hidden; Owner: -
 --
 
-GRANT SELECT,DELETE ON TABLE app_public.user_emails TO app_user;
+GRANT SELECT ON TABLE app_hidden.user_emails TO app_anonymous;
+GRANT SELECT,DELETE ON TABLE app_hidden.user_emails TO app_user;
 
 
 --
--- Name: COLUMN user_emails.email; Type: ACL; Schema: app_public; Owner: -
+-- Name: COLUMN user_emails.email; Type: ACL; Schema: app_hidden; Owner: -
 --
 
-GRANT INSERT(email) ON TABLE app_public.user_emails TO app_user;
+GRANT INSERT(email) ON TABLE app_hidden.user_emails TO app_user;
 
 
 --
@@ -1515,6 +1517,7 @@ GRANT SELECT,DELETE ON TABLE app_public.user_authentications TO app_user;
 --
 
 ALTER DEFAULT PRIVILEGES FOR ROLE app_owner IN SCHEMA app_hidden REVOKE ALL ON SEQUENCES  FROM app_owner;
+ALTER DEFAULT PRIVILEGES FOR ROLE app_owner IN SCHEMA app_hidden GRANT SELECT,USAGE ON SEQUENCES  TO app_anonymous;
 ALTER DEFAULT PRIVILEGES FOR ROLE app_owner IN SCHEMA app_hidden GRANT SELECT,USAGE ON SEQUENCES  TO app_user;
 
 

@@ -1,13 +1,13 @@
 create function app_public.forgot_password(email text) returns boolean as $$
 declare
-  v_user_email app_public.user_emails;
+  v_user_email app_hidden.user_emails;
   v_reset_token text;
   v_reset_min_duration_between_emails interval = interval '30 minutes';
   v_reset_max_duration interval = interval '3 days';
 begin
   -- Find the matching user_email
   select user_emails.* into v_user_email
-  from app_public.user_emails
+  from app_hidden.user_emails
   where user_emails.email = forgot_password.email::citext
   order by is_verified desc, id desc;
 

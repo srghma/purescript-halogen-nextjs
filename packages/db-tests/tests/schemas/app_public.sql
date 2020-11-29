@@ -10,7 +10,6 @@ select tables_are(
   array[
     'users',
     'user_authentications',
-    'user_emails',
     'posts'
   ]::text[]
 );

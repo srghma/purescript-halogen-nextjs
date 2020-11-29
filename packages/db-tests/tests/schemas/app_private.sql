@@ -19,7 +19,7 @@ select types_are(:schema, array[]::text[]);
 
 select domains_are(:schema, array[]::text[]);
 
-select enums_are( :schema, array[]::text[]);
+select enums_are(:schema, array[]::text[]);
 
 select functions_are(
   :schema,

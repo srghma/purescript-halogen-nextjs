@@ -12,7 +12,7 @@ declare
   v_name text;
   v_avatar_url text;
   v_user app_public.users;
-  v_user_email app_public.user_emails;
+  v_user_email app_hidden.user_emails;
 begin
   -- See if a user account already matches these details
   select id, user_id
@@ -40,7 +40,7 @@ begin
         (v_matched_authentication_id, f_auth_details);
     elsif v_email is not null then
       -- See if the email is registered
-      select * into v_user_email from app_public.user_emails where email = v_email and is_verified is true;
+      select * into v_user_email from app_hidden.user_emails where email = v_email and is_verified is true;
       if not (v_user_email is null) then
         -- User exists!
         insert into app_public.user_authentications (user_id, service, identifier, details) values

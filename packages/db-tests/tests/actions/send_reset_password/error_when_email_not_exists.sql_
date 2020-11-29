@@ -27,7 +27,7 @@ select throws_ok(
 
 -- Check app_private.rabbitmq__send_reset_password has not been called
 
-set local role 'app_admin';
+set local role 'app_owner';
 
 select pgtest.assert_called(pgtest.get_mock_id('app_private', 'rabbitmq__send_reset_password_mail', ARRAY['app_public.users']), 0);
 

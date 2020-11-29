@@ -67,7 +67,7 @@ spec = do
   """) (PostgreSQL.Row2 newUserId user.password)
 
   executeOrThrow (PostgreSQL.Query """
-      INSERT INTO app_public.user_emails (user_id, email, is_verified)
+      INSERT INTO app_hidden.user_emails (user_id, email, is_verified)
       VALUES ($1, $2, true)
   """) (PostgreSQL.Row2 newUserId user.email)
 

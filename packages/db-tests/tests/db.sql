@@ -35,9 +35,9 @@ select roles_are(array[
 ]);
 
 select users_are(array[
-  'app_admin',
+  'app_owner',
   'app_anonymous',
-  'app_owner'
+  'app_admin'
 ]);
 
 select groups_are(array[
