@@ -27,7 +27,7 @@ select functions_are(
   :schema,
   array[
     'forgot_password',
-    'user_by_username_or_email',
+    'user_by_username_or_verified_email',
     'verify_user_email',
     'current_user',
     'current_user',
