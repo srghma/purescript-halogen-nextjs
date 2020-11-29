@@ -13,35 +13,33 @@ createPools
      , databasePort :: Maybe Int
 
      -- This pool runs as the database owner, so it can do anything.
-     , databaseOwnerUser :: String
      , databaseOwnerPassword :: NonEmptyString
 
      -- This pool runs as the unprivileged user, it's what PostGraphile uses.
-     , databaseAnonymousUser :: String
      , databaseAnonymousPassword :: NonEmptyString
      }
   -> Effect
-     { rootPgPool :: Pool
-     , authPgPool :: Pool
+     { ownerPgPool :: Pool
+     , anonymousPgPool :: Pool
      }
 createPools config = do
-  rootPgPool <- new
+  ownerPgPool <- new
     { database:          config.databaseName
     , host:              Just config.databaseHost
     , idleTimeoutMillis: Nothing
     , max:               Nothing
     , password:          Just $ NonEmptyString.toString config.databaseOwnerPassword
     , port:              config.databasePort
-    , user:              Just config.databaseOwnerUser
+    , user:              Just "app_owner"
     }
-  authPgPool <- new
+  anonymousPgPool <- new
     { database:          config.databaseName
     , host:              Just config.databaseHost
     , idleTimeoutMillis: Nothing
     , max:               Nothing
     , password:          Just $ NonEmptyString.toString config.databaseAnonymousPassword
     , port:              config.databasePort
-    , user:              Just config.databaseAnonymousUser
+    , user:              Just "app_anonymous"
     }
-  pure { rootPgPool, authPgPool }
+  pure { ownerPgPool, anonymousPgPool }
 

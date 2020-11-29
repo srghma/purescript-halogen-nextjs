@@ -45,7 +45,7 @@ type User =
   }
 
 type ContextInjectedByUsRow r =
-  ( rootPgPool :: Pool
+  ( ownerPgPool :: Pool
   , login :: User -> Effect Unit
   | r )
 

@@ -60,7 +60,7 @@ type PostgraphileOptions =
       EffectFn1
       Request
       ( Promise
-        { rootPgPool :: Pool
+        { ownerPgPool :: Pool
         , login :: String -> Effect Unit
         }
       )

@@ -39,15 +39,13 @@ main = do
     { databaseName:                  config.databaseName
     , databaseHost:                  config.databaseHost
     , databasePort:                  config.databasePort
-    , databaseOwnerUser:             config.databaseOwnerUser
     , databaseOwnerPassword:         config.databaseOwnerPassword
-    , databaseAnonymousUser:     config.databaseAnonymousUser
     , databaseAnonymousPassword: config.databaseAnonymousPassword
     }
 
   sessionMiddleware <- ApiServer.SessionMiddleware.sessionMiddleware
     { target:        config.target
-    , rootPgPool:    pools.rootPgPool
+    , ownerPgPool:    pools.ownerPgPool
     , sessionSecret: config.sessionSecret
     }
 
@@ -60,16 +58,14 @@ main = do
   let middlewares = [sessionMiddleware] <> passportMiddlewareAndRoutes.middlewares
 
   let postgraphileMiddleware = ApiServer.Postgraphile.mkMiddleware
-        { authPgPool:            pools.authPgPool
-        , rootPgPool:            pools.rootPgPool
+        { anonymousPgPool:            pools.anonymousPgPool
+        , ownerPgPool:            pools.ownerPgPool
         , websocketMiddlewares:  middlewares
         , target:                config.target
         , databaseName:          config.databaseName
         , databaseHost:          config.databaseHost
         , databasePort:          config.databasePort
-        , databaseOwnerUser:     config.databaseOwnerUser
         , databaseOwnerPassword: config.databaseOwnerPassword
-        , databaseUserUser:   config.databaseUserUser
         }
 
   expressApp <- Express.mkApplication

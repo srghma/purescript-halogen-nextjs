@@ -43,11 +43,8 @@ type Config =
   , databaseName :: String
   , databaseHost :: String
   , databasePort :: Maybe Int
-  , databaseOwnerUser             :: String
   , databaseOwnerPassword         :: NonEmptyString
-  , databaseAnonymousUser     :: String
   , databaseAnonymousPassword :: NonEmptyString
-  , databaseUserUser     :: String
 
   , oauthGithubClientID     :: String
   , oauthGithubClientSecret :: NonEmptyString
@@ -87,11 +84,8 @@ config = do
     , databaseName:              cliConfig.databaseName
     , databaseHost:              cliConfig.databaseHost
     , databasePort:              cliConfig.databasePort
-    , databaseOwnerUser:         cliConfig.databaseOwnerUser
     , databaseOwnerPassword:     envConfig.databaseOwnerPassword
-    , databaseAnonymousUser:     cliConfig.databaseAnonymousUser
     , databaseAnonymousPassword: envConfig.databaseAnonymousPassword
-    , databaseUserUser:          cliConfig.databaseUserUser
 
     , oauthGithubClientID:     cliConfig.oauthGithubClientID
     , oauthGithubClientSecret: envConfig.oauthGithubClientSecret

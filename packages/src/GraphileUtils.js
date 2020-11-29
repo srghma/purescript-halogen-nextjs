@@ -44,12 +44,12 @@ exports.PassportLoginPlugin = makeExtendSchemaPlugin(build => ({
           name = null,
           avatarUrl = null,
         } = args.input;
-        const { rootPgPool, login, pgClient } = context;
+        const { ownerPgPool, login, pgClient } = context;
         try {
           // Call our register function from the database
           const {
             rows: [user],
-          } = await rootPgPool.query(
+          } = await ownerPgPool.query(
             `select users.* from app_private.really_create_user(
               username => $1,
               email => $2,
@@ -106,12 +106,12 @@ exports.PassportLoginPlugin = makeExtendSchemaPlugin(build => ({
         { selectGraphQLResultFromTable }
       ) {
         const { username, password } = args.input;
-        const { rootPgPool, login, pgClient } = context;
+        const { ownerPgPool, login, pgClient } = context;
         try {
           // Call our login function to find out if the username/password combination exists
           const {
             rows: [user],
-          } = await rootPgPool.query(
+          } = await ownerPgPool.query(
             `select users.* from app_private.login($1, $2) users where not (users is null)`,
             [username, password]
           );

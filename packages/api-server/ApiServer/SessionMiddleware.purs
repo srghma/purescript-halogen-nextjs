@@ -15,7 +15,7 @@ import Data.String.NonEmpty as NonEmptyString
 
 sessionMiddleware
   :: { target :: ConfigTarget
-     , rootPgPool :: Pool
+     , ownerPgPool :: Pool
      , sessionSecret :: NonEmptyString
      }
    -> Effect Middleware
@@ -25,7 +25,7 @@ sessionMiddleware config = do
   let (store :: ExpressSessionStore) =
         ConnectPgSimple.mkExpressSessionStore
         expressSession
-        { pool: config.rootPgPool
+        { pool: config.ownerPgPool
         , schemaName: "app_private"
         , tableName: "user_sessions"
         }

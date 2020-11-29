@@ -26,7 +26,7 @@ import Node.Express.Passport as Passport
 postgraphileOptions :: _ -> PostgraphileOptions
 postgraphileOptions config =
   { pluginHook: makePluginHook [pgPubsub, graphileSupporter]
-  , ownerConnectionString: "postgres://" <> config.databaseOwnerUser <> ":" <> NonEmptyString.toString config.databaseOwnerPassword <> "@" <> config.databaseHost <> "/" <> config.databaseName
+  , ownerConnectionString: "postgres://app_owner:" <> NonEmptyString.toString config.databaseOwnerPassword <> "@" <> config.databaseHost <> "/" <> config.databaseName
 
   , subscriptions: true
   , simpleSubscriptions: true
@@ -110,46 +110,42 @@ postgraphileOptions config =
   , pgSettings: mkEffectFn1 \req -> Promise.fromAff $ liftEffect do
      (user :: Maybe String) <- ApiServer.PassportMethodsFixed.passportMethods.getUser req
      pure $ Object.fromFoldable $ Array.catMaybes
-      [ Just $ "role" /\ config.databaseUserUser
+      [ Just $ "role" /\ "app_user"
       , user <#> \user -> "jwt.claims.user_id" /\ user
       ]
 
   , websocketMiddlewares: config.websocketMiddlewares
 
   , additionalGraphQLContextFromRequest: mkEffectFn1 \req -> Promise.fromAff $ liftEffect $ pure
-      { rootPgPool: config.rootPgPool
+      { ownerPgPool: config.ownerPgPool
       , login: \user -> ApiServer.PassportMethodsFixed.passportMethods.logIn user Passport.defaultLoginOptions Nothing req
       }
   }
 
 mkMiddleware
-  { authPgPool
-  , rootPgPool
+  { anonymousPgPool
+  , ownerPgPool
   , websocketMiddlewares
   , target
 
   , databaseName
   , databaseHost
   , databasePort
-  , databaseOwnerUser
   , databaseOwnerPassword
-  , databaseUserUser
 
   } =
     runFn3
     Postgraphile.postgraphile
-    authPgPool
+    anonymousPgPool
     "app_public"
     ( postgraphileOptions
       { databaseName
       , databaseHost
       , databasePort
-      , databaseOwnerUser
       , databaseOwnerPassword
-      , databaseUserUser
       , target
       , websocketMiddlewares
-      , rootPgPool
+      , ownerPgPool
       }
     )
 

@@ -28,11 +28,11 @@ select functions_are(
     'link_or_register_user',
     'login',
     'really_create_user',
-    'register_user',
-    'tg_send_verification_email_for_user_email',
-    'tg_user_email_secrets__insert_with_user_email',
-    'tg_user_secrets__insert_with_user',
-    'tg_users__make_first_user_admin'
+    'register_user'
+    /* 'tg_send_verification_email_for_user_email', */
+    /* 'tg_user_email_secrets__insert_with_user_email', */
+    /* 'tg_user_secrets__insert_with_user', */
+    /* 'tg_users__make_first_user_admin' */
   ]::text[]
 );
 
