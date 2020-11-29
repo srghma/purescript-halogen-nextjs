@@ -44,7 +44,10 @@ retryAction action =
   RunAffRetry.recovering
     (AffRetry.constantDelay (Milliseconds 200.0) <> AffRetry.limitRetries 10)
     [\_ _ -> pure true]
-    (\_ -> action)
+    (\_ -> spy "retrying" action)
+
+usernameOrEmailXpath = Lunapark.ByXPath """//div[@role="form"]//input[@aria-labelledby="usernameOrEmail"]"""
+passwordXpath = Lunapark.ByXPath """//div[@role="form"]//input[@aria-labelledby="password"]"""
 
 spec :: Run FeatureTestRunEffects Unit
 spec = do
@@ -73,14 +76,19 @@ spec = do
 
   goClientRoute Login
 
-  inputField (Lunapark.ByXPath """//div[@role="form"]//input[@aria-labelledby="usernameOrEmail"]""") "unknown@mail.com"
+  inputField usernameOrEmailXpath "unknown@mail.com"
 
   (retryAction $ Lunapark.findElement $ Lunapark.ByCss $ CSS.Selector (CSS.Refinement [CSS.Id "usernameOrEmail-helper"]) CSS.Star)
     >>= Lunapark.getText
     >>= \text -> text `shouldEqual` "Username or email is not found"
 
-  inputField (Lunapark.ByXPath """//div[@role="form"]//input[@aria-labelledby="usernameOrEmail"]""") user.email
-  inputField (Lunapark.ByXPath """//div[@role="form"]//input[@aria-labelledby="password"]""") user.password
+  inputField usernameOrEmailXpath user.email
+  inputField passwordXpath user.password
+
+  retryAction $
+    Lunapark.findElement passwordXpath
+      >>= Lunapark.getText
+      >>= \text -> text `shouldEqual` user.password
 
   Lunapark.findElement (Lunapark.ByXPath """//div[@role="form"]//button[text()="Submit"]""") >>= Lunapark.clickElement
 

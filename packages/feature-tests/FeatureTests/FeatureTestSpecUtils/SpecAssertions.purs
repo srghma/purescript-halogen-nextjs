@@ -5,5 +5,7 @@ import Test.Spec.Assertions as Spec
 import Run (Run)
 import Run as Run
 
-shouldEqual = \x y -> Run.liftEffect (Spec.shouldEqual x y)
+-- rethrow all Effect and Aff errors with
+shouldEqual = \x y -> do
+  Run.liftEffect (try $ Spec.shouldEqual x y)
 

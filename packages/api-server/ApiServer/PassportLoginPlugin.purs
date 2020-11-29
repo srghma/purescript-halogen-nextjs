@@ -113,7 +113,9 @@ decodeWebLoginInput value = ado
     , password
     }
 
-throwPgError = throwError <<< error <<< (\pgError -> "PgError: " <> show pgError)
+throwPgError e = do
+  traceM { e }
+  throwError <<< error <<< (\pgError -> "PgError: " <> show pgError) $ e
 
 passportLoginPlugin :: PostgraphileAppendPlugin
 passportLoginPlugin = mkPassportLoginPlugin \build ->
@@ -124,27 +126,34 @@ passportLoginPlugin = mkPassportLoginPlugin \build ->
        (input ::WebLoginInput) <- runExcept (decodeWebLoginInput args.input)
           # either (throwError <<< error <<< Foreign.renderForeignError <<< NonEmptyList.head) pure
 
+       traceM { input }
+
        PostgreSQL.withConnection context.ownerPgPool $ either throwPgError \connection -> do
+          let q =
+                """
+                select users.* from app_private.login($1, $2) users
+                """
+
+          traceM { q }
+
           (result :: Maybe (Maybe Foreign)) <-
               PostgreSQL.scalar connection
-              ( PostgreSQL.Query
-                """
-                select users.* from app_private.login($1, $2) users where not (users is null)
-                """
+              ( PostgreSQL.Query q
               )
               (PostgreSQL.Row2 input.username input.password)
               >>= either throwPgError pure
 
+          traceM { result }
+
           pure unit
 
-            -- | const {
-            -- |   rows: [user],
-            -- | } = await rootPgPool.query(
-            -- |   `select users.* from app_private.login($1, $2) users where not (users is null)`,
-            -- |   [username, password]
-            -- | );
+          -- | const {
+          -- |   rows: [user],
+          -- | } = await rootPgPool.query(
+          -- |   `select users.* from app_private.login($1, $2) users where not (users is null)`,
+          -- |   [username, password]
+          -- | );
 
-       traceM { input }
        pure undefined
     }
   }

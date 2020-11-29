@@ -4,7 +4,7 @@ declare
   v_user_secret app_private.user_secrets;
   v_login_attempt_window_duration interval = interval '6 hours';
 begin
-  select users.* into v_user from app_public.user_by_username_or_verified_email(username);
+  select * into v_user from app_public.user_by_username_or_verified_email(username);
 
   if not (v_user is null) then
     -- Load their secrets

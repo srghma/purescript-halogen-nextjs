@@ -36,7 +36,7 @@ in
               {
                 isProduction = false;
 
-                inherit (import "${rootProjectDir}/config/public/database.nix") app_owner app_anonymous app_user DATABASE_NAME;
+                inherit (import "${rootProjectDir}/config/public/database.nix") DATABASE_NAME;
 
                 inherit (import "${rootProjectDir}/config/ignored/passwords.nix") DATABASE_OWNER_PASSWORD DATABASE_ANONYMOUS_PASSWORD;
               }
