@@ -1,4 +1,4 @@
-create function app_private.login(username text, password text) returns app_public.users as $$
+create function app_private.web_login(username text, password text) returns app_public.users as $$
 declare
   v_user app_public.users;
   v_user_secret app_private.user_secrets;
@@ -9,7 +9,7 @@ begin
   if not (v_user is null) then
     -- Load their secrets
     select * into v_user_secret from app_private.user_secrets
-    where user_secrets.user_id = v_user.id;
+    where id = v_user.user_secret_id;
 
     -- Have there been too many login attempts?
     if (
@@ -28,7 +28,7 @@ begin
       -- Excellent - they're loggged in! Let's reset the attempt tracking
       update app_private.user_secrets
       set password_attempts = 0, first_failed_password_attempt = null
-      where user_id = v_user.id;
+      where id = v_user.user_secret_id;
       return v_user;
     else
       -- Wrong password, bump all the attempt tracking figures
@@ -49,7 +49,7 @@ begin
             then now()
           else first_failed_password_attempt end
         )
-      where user_id = v_user.id;
+      where id = v_user.user_secret_id;
       return null;
     end if;
   else
@@ -59,5 +59,5 @@ begin
 end;
 $$ language plpgsql strict security definer volatile set search_path from current;
 
-comment on function app_private.login(username text, password text) is
+comment on function app_private.web_login(username text, password text) is
   E'Returns a user that matches the username/password combo, or null on failure.';

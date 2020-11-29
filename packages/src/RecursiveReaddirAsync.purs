@@ -1,8 +1,10 @@
 module RecursiveReaddirAsync where
 
-import Control.Promise (Promise)
-import Effect.Uncurried (EffectFn2)
 import Protolude
+
+import Control.Promise (Promise)
+import Effect.Exception.Unsafe (unsafeThrowException)
+import Effect.Uncurried (EffectFn2)
 import Foreign (Foreign)
 import Foreign as Foreign
 import Pathy (Abs, Dir, File, Path)
@@ -44,9 +46,9 @@ data DirOrFile
     }
 
 recursiveTreeList :: Path Abs Dir -> { include :: Array String } -> Aff DirOrFile
-recursiveTreeList = undefined
-  where
-  foreignToDirOrFile :: Foreign -> Foreign.F DirOrFile
-  foreignToDirOrFile = undefined
+recursiveTreeList = unsafeThrowException $ error "recursiveTreeList"
+  -- | where
+  -- | foreignToDirOrFile :: Foreign -> Foreign.F DirOrFile
+  -- | foreignToDirOrFile = undefined
 
 foreign import _recursiveTreeList :: EffectFn2 String { include :: Array String } (Promise Foreign)

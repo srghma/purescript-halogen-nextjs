@@ -60,16 +60,15 @@ spec = do
       , email: "useremail1@mail.com"
       }
 
-  (newUserId :: String) <- scalarOrThrowRequired (PostgreSQL.Query """
-      INSERT INTO app_public.users (username)
-      VALUES ($1) RETURNING id as new_user_id;
-  """) (PostgreSQL.Row1 user.username)
+  (newUserSecretId :: String) <- scalarOrThrowRequired (PostgreSQL.Query """
+      INSERT INTO app_private.user_secrets (password_hash)
+      VALUES (crypt($1, gen_salt('bf'))) RETURNING id;
+  """) (PostgreSQL.Row1 user.password)
 
-  executeOrThrow (PostgreSQL.Query """
-      UPDATE app_private.user_secrets
-      SET password_hash = crypt($2, gen_salt('bf'))
-      WHERE user_id = $1;
-  """) (PostgreSQL.Row2 newUserId user.password)
+  (newUserId :: String) <- scalarOrThrowRequired (PostgreSQL.Query """
+      INSERT INTO app_public.users (username, user_secret_id)
+      VALUES ($1, $2) RETURNING id;
+  """) (PostgreSQL.Row2 user.username newUserSecretId)
 
   executeOrThrow (PostgreSQL.Query """
       INSERT INTO app_hidden.user_emails (user_id, email, is_verified)

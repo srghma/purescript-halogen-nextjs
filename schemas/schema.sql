@@ -122,6 +122,7 @@ SET default_table_access_method = heap;
 
 CREATE TABLE app_public.users (
     id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+    user_secret_id uuid NOT NULL,
     username public.citext NOT NULL,
     name text,
     avatar_url text,
@@ -271,82 +272,6 @@ COMMENT ON FUNCTION app_private.link_or_register_user(f_user_id integer, f_servi
 
 
 --
--- Name: login(text, text); Type: FUNCTION; Schema: app_private; Owner: -
---
-
-CREATE FUNCTION app_private.login(username text, password text) RETURNS app_public.users
-    LANGUAGE plpgsql STRICT SECURITY DEFINER
-    SET search_path TO '$user', 'public'
-    AS $$
-declare
-  v_user app_public.users;
-  v_user_secret app_private.user_secrets;
-  v_login_attempt_window_duration interval = interval '6 hours';
-begin
-  select * into v_user from app_public.user_by_username_or_verified_email(username);
-
-  if not (v_user is null) then
-    -- Load their secrets
-    select * into v_user_secret from app_private.user_secrets
-    where user_secrets.user_id = v_user.id;
-
-    -- Have there been too many login attempts?
-    if (
-      v_user_secret.first_failed_password_attempt is not null
-    and
-      v_user_secret.first_failed_password_attempt > NOW() - v_login_attempt_window_duration
-    and
-      v_user_secret.password_attempts >= 20
-    ) then
-      --  User account locked - too many login attempts
-      raise exception 'APP_EXCEPTION__LOGIN__ACCOUNT_LOCKED_TOO_MANY_ATTEMPTS' using errcode = 'LOCKD';
-    end if;
-
-    -- Not too many login attempts, let's check the password
-    if v_user_secret.password_hash = crypt(password, v_user_secret.password_hash) then
-      -- Excellent - they're loggged in! Let's reset the attempt tracking
-      update app_private.user_secrets
-      set password_attempts = 0, first_failed_password_attempt = null
-      where user_id = v_user.id;
-      return v_user;
-    else
-      -- Wrong password, bump all the attempt tracking figures
-      update app_private.user_secrets
-      set
-        password_attempts = (
-          case
-          when first_failed_password_attempt is null
-            or first_failed_password_attempt < now() - v_login_attempt_window_duration
-            then 1
-          else password_attempts + 1 end
-        ),
-
-        first_failed_password_attempt = (
-          case
-          when first_failed_password_attempt is null
-            or first_failed_password_attempt < now() - v_login_attempt_window_duration
-            then now()
-          else first_failed_password_attempt end
-        )
-      where user_id = v_user.id;
-      return null;
-    end if;
-  else
-    -- No user with that email/username was found
-    return null;
-  end if;
-end;
-$$;
-
-
---
--- Name: FUNCTION login(username text, password text); Type: COMMENT; Schema: app_private; Owner: -
---
-
-COMMENT ON FUNCTION app_private.login(username text, password text) IS 'Returns a user that matches the username/password combo, or null on failure.';
-
-
---
 -- Name: really_create_user(text, text, boolean, text, text, text); Type: FUNCTION; Schema: app_private; Owner: -
 --
 
@@ -476,6 +401,82 @@ begin
   return new;
 end;
 $$;
+
+
+--
+-- Name: web_login(text, text); Type: FUNCTION; Schema: app_private; Owner: -
+--
+
+CREATE FUNCTION app_private.web_login(username text, password text) RETURNS app_public.users
+    LANGUAGE plpgsql STRICT SECURITY DEFINER
+    SET search_path TO '$user', 'public'
+    AS $$
+declare
+  v_user app_public.users;
+  v_user_secret app_private.user_secrets;
+  v_login_attempt_window_duration interval = interval '6 hours';
+begin
+  select * into v_user from app_public.user_by_username_or_verified_email(username);
+
+  if not (v_user is null) then
+    -- Load their secrets
+    select * into v_user_secret from app_private.user_secrets
+    where id = v_user.user_secret_id;
+
+    -- Have there been too many login attempts?
+    if (
+      v_user_secret.first_failed_password_attempt is not null
+    and
+      v_user_secret.first_failed_password_attempt > NOW() - v_login_attempt_window_duration
+    and
+      v_user_secret.password_attempts >= 20
+    ) then
+      --  User account locked - too many login attempts
+      raise exception 'APP_EXCEPTION__LOGIN__ACCOUNT_LOCKED_TOO_MANY_ATTEMPTS' using errcode = 'LOCKD';
+    end if;
+
+    -- Not too many login attempts, let's check the password
+    if v_user_secret.password_hash = crypt(password, v_user_secret.password_hash) then
+      -- Excellent - they're loggged in! Let's reset the attempt tracking
+      update app_private.user_secrets
+      set password_attempts = 0, first_failed_password_attempt = null
+      where id = v_user.user_secret_id;
+      return v_user;
+    else
+      -- Wrong password, bump all the attempt tracking figures
+      update app_private.user_secrets
+      set
+        password_attempts = (
+          case
+          when first_failed_password_attempt is null
+            or first_failed_password_attempt < now() - v_login_attempt_window_duration
+            then 1
+          else password_attempts + 1 end
+        ),
+
+        first_failed_password_attempt = (
+          case
+          when first_failed_password_attempt is null
+            or first_failed_password_attempt < now() - v_login_attempt_window_duration
+            then now()
+          else first_failed_password_attempt end
+        )
+      where id = v_user.user_secret_id;
+      return null;
+    end if;
+  else
+    -- No user with that email/username was found
+    return null;
+  end if;
+end;
+$$;
+
+
+--
+-- Name: FUNCTION web_login(username text, password text); Type: COMMENT; Schema: app_private; Owner: -
+--
+
+COMMENT ON FUNCTION app_private.web_login(username text, password text) IS 'Returns a user that matches the username/password combo, or null on failure.';
 
 
 --
@@ -896,7 +897,7 @@ COMMENT ON COLUMN app_private.user_email_secrets.password_reset_email_sent_at IS
 --
 
 CREATE TABLE app_private.user_secrets (
-    user_id uuid NOT NULL,
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
     password_hash text,
     reset_password_token text,
     reset_password_token_generated_at timestamp with time zone,
@@ -1048,7 +1049,7 @@ ALTER TABLE ONLY app_private.user_email_secrets
 --
 
 ALTER TABLE ONLY app_private.user_secrets
-    ADD CONSTRAINT user_secrets_pkey PRIMARY KEY (user_id);
+    ADD CONSTRAINT user_secrets_pkey PRIMARY KEY (id);
 
 
 --
@@ -1121,6 +1122,13 @@ CREATE INDEX app_public_posts_user_id ON app_public.posts USING btree (user_id);
 
 
 --
+-- Name: uniq_user_user_secret_id; Type: INDEX; Schema: app_public; Owner: -
+--
+
+CREATE UNIQUE INDEX uniq_user_user_secret_id ON app_public.users USING btree (user_secret_id);
+
+
+--
 -- Name: user_authentications_user_id_idx; Type: INDEX; Schema: app_public; Owner: -
 --
 
@@ -1180,14 +1188,6 @@ ALTER TABLE ONLY app_private.user_email_secrets
 
 
 --
--- Name: user_secrets user_secrets_user_id_fkey; Type: FK CONSTRAINT; Schema: app_private; Owner: -
---
-
-ALTER TABLE ONLY app_private.user_secrets
-    ADD CONSTRAINT user_secrets_user_id_fkey FOREIGN KEY (user_id) REFERENCES app_public.users(id) ON DELETE CASCADE;
-
-
---
 -- Name: posts posts_user_id_fkey; Type: FK CONSTRAINT; Schema: app_public; Owner: -
 --
 
@@ -1201,6 +1201,14 @@ ALTER TABLE ONLY app_public.posts
 
 ALTER TABLE ONLY app_public.user_authentications
     ADD CONSTRAINT user_authentications_user_id_fkey FOREIGN KEY (user_id) REFERENCES app_public.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: users users_user_secret_id_fkey; Type: FK CONSTRAINT; Schema: app_public; Owner: -
+--
+
+ALTER TABLE ONLY app_public.users
+    ADD CONSTRAINT users_user_secret_id_fkey FOREIGN KEY (user_secret_id) REFERENCES app_private.user_secrets(id) ON DELETE CASCADE;
 
 
 --

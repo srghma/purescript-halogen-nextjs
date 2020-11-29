@@ -4,16 +4,16 @@
 
 begin;
 
-\include 0000000002-users/01_app_public.tables.users.up.sql
-\include 0000000002-users/02_app_public.functions.current_user.up.sql
-\include 0000000002-users/03_app_private.tables.user_secrets.up.sql
+\include 0000000002-users/01_app_private.tables.user_secrets.up.sql
+\include 0000000002-users/02_app_public.tables.users.up.sql
+\include 0000000002-users/03_app_public.functions.current_user.up.sql
 \include 0000000002-users/04_app_hidden.tables.user_emails.up.sql
 \include 0000000002-users/05_app_private.tables.user_email_secrets.up.sql
 \include 0000000002-users/06_app_public.tables.user_authentications.up.sql
 \include 0000000002-users/07_app_private.tables.user_authentication_secrets.up.sql
 \include 0000000002-users/08_app_public.functions.forgot_password.up.sql
 \include 0000000002-users/09_app_public.functions.user_by_username_or_email.up.sql
-\include 0000000002-users/10_app_private.functions.login.up.sql
+\include 0000000002-users/10_app_private.functions.web_login.up.sql
 \include 0000000002-users/11_app_public.functions.reset_password.up.sql
 \include 0000000002-users/12_app_private.functions.really_create_user.up.sql
 \include 0000000002-users/13_app_private.functions.register_user.up.sql

@@ -19,6 +19,8 @@ data UsersOrderBy
   | Natural
   | PrimaryKeyAsc
   | PrimaryKeyDesc
+  | UserSecretIdAsc
+  | UserSecretIdDesc
   | UsernameAsc
   | UsernameDesc
 
@@ -37,6 +39,8 @@ fromToMap = [ Tuple "ID_ASC" IdAsc
             , Tuple "NATURAL" Natural
             , Tuple "PRIMARY_KEY_ASC" PrimaryKeyAsc
             , Tuple "PRIMARY_KEY_DESC" PrimaryKeyDesc
+            , Tuple "USER_SECRET_ID_ASC" UserSecretIdAsc
+            , Tuple "USER_SECRET_ID_DESC" UserSecretIdDesc
             , Tuple "USERNAME_ASC" UsernameAsc
             , Tuple "USERNAME_DESC" UsernameDesc
             ]
@@ -54,5 +58,7 @@ instance usersOrderByToGraphQLArgumentValue :: ToGraphQLArgumentValue
       Natural -> ArgumentValueEnum "NATURAL"
       PrimaryKeyAsc -> ArgumentValueEnum "PRIMARY_KEY_ASC"
       PrimaryKeyDesc -> ArgumentValueEnum "PRIMARY_KEY_DESC"
+      UserSecretIdAsc -> ArgumentValueEnum "USER_SECRET_ID_ASC"
+      UserSecretIdDesc -> ArgumentValueEnum "USER_SECRET_ID_DESC"
       UsernameAsc -> ArgumentValueEnum "USERNAME_ASC"
       UsernameDesc -> ArgumentValueEnum "USERNAME_DESC"

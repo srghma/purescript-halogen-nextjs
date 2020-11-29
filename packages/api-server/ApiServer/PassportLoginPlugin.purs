@@ -10,11 +10,13 @@ import Control.Promise as Promise
 import Data.List.NonEmpty as NonEmptyList
 import Data.Nullable (Nullable)
 import Data.Nullable as Nullable
-import Database.PostgreSQL (Pool)
+import Database.PostgreSQL (Connection, Pool, Row4(..))
 import Database.PostgreSQL as PostgreSQL
+import Effect.Exception.Unsafe (unsafeThrowException)
 import Foreign (F, Foreign, MultipleErrors)
 import Foreign as Foreign
 import Foreign.Index as Foreign
+import Unsafe.Coerce (unsafeCoerce)
 
 -- TypeDefs
 
@@ -51,7 +53,7 @@ type ContextInjectedByUsRow r =
   | r )
 
 type ContextInjectedByPostgraphileRow r =
-  ( pgClient :: Pool
+  ( pgClient :: Connection
   | r )
 
 type Context = Record (ContextInjectedByUsRow + ContextInjectedByPostgraphileRow + ())
@@ -92,11 +94,23 @@ type MutationsImplementation =
       (Promise { "data" :: SelectGraphQLResultFromTable__Result })
   }
 
-data MakeExtendSchemaPlugin__BuildArg
+data FragmentMaker
 
-type MkResolvers = MakeExtendSchemaPlugin__BuildArg -> { "Mutation" :: MutationsImplementation }
+fragmentMakerAsFunc :: FragmentMaker -> String -> SqlFragment
+fragmentMakerAsFunc = unsafeCoerce
 
-foreign import mkPassportLoginPlugin :: MkResolvers -> PostgraphileAppendPlugin
+foreign import mkSelectGraphQLResultFromTable :: String -> EffectFn2 String QueryBuilder Unit
+
+foreign import mkPassportLoginPlugin ::
+  ( { pgSql ::
+      { fragment :: FragmentMaker
+      }
+    }
+  ->
+    { "Mutation" :: MutationsImplementation
+    }
+  )
+  -> PostgraphileAppendPlugin
 
 type WebLoginInput =
   { username :: String
@@ -120,40 +134,59 @@ throwPgError e = do
 passportLoginPlugin :: PostgraphileAppendPlugin
 passportLoginPlugin = mkPassportLoginPlugin \build ->
   { "Mutation":
-    { webRegister: mkEffectFn5 \mutation args context resolveInfo helpers -> undefined
+    { webRegister: mkEffectFn5 \mutation args context resolveInfo helpers -> unsafeThrowException $ error "webRegister"
     , webLogin: mkEffectFn5 \mutation args context resolveInfo helpers -> Promise.fromAff do
        -- | traceM { mutation, args, context, resolveInfo, helpers }
+
        (input ::WebLoginInput) <- runExcept (decodeWebLoginInput args.input)
           # either (throwError <<< error <<< Foreign.renderForeignError <<< NonEmptyList.head) pure
 
        traceM { input }
 
-       PostgreSQL.withConnection context.ownerPgPool $ either throwPgError \connection -> do
-          let q =
-                """
-                select users.* from app_private.login($1, $2) users
-                """
-
-          traceM { q }
-
-          (result :: Maybe (Maybe Foreign)) <-
-              PostgreSQL.scalar connection
-              ( PostgreSQL.Query q
-              )
-              (PostgreSQL.Row2 input.username input.password)
-              >>= either throwPgError pure
+       user <- PostgreSQL.withConnection context.ownerPgPool $ either throwPgError \connection -> do
+          (result :: Array (Row4 String String (Maybe String) (Maybe String))) <-
+            PostgreSQL.query connection
+            ( PostgreSQL.Query
+              """
+              select
+                users.id,
+                users.username,
+                users.name,
+                users.avatar_url
+              from app_private.web_login($1, $2) users
+              where not (users is null)
+              """
+            )
+            (PostgreSQL.Row2 input.username input.password)
+            >>= either throwPgError pure
 
           traceM { result }
 
-          pure unit
+          user <-
+            case result of
+                [] -> throwError $ error "Invalid password"
+                [Row4 id username name avatar_url] -> pure { id, username, name, avatar_url }
+                _ -> throwError $ error "Expected exactly 1 array elem"
 
-          -- | const {
-          -- |   rows: [user],
-          -- | } = await rootPgPool.query(
-          -- |   `select users.* from app_private.login($1, $2) users where not (users is null)`,
-          -- |   [username, password]
-          -- | );
+          traceM { user }
 
-       pure undefined
+          pure user
+
+       output <- Promise.toAffE $
+         runEffectFn2
+         helpers.selectGraphQLResultFromTable
+         (fragmentMakerAsFunc build.pgSql.fragment "app_public.users")
+         (mkSelectGraphQLResultFromTable user.id)
+
+       PostgreSQL.execute context.pgClient
+          ( PostgreSQL.Query
+            """
+            select set_config($1, $2, true);
+            """
+          )
+          (PostgreSQL.Row2 "jwt.claims.user_id" user.id)
+          >>= maybe (pure unit) throwPgError
+
+       pure { "data": output }
     }
   }

@@ -63,3 +63,9 @@ updatedAt = selectionForField "updatedAt" [] graphqlDefaultResponseScalarDecoder
 
 username :: SelectionSet Scope__User String
 username = selectionForField "username" [] graphqlDefaultResponseScalarDecoder
+
+userSecretId :: SelectionSet Scope__User Uuid
+userSecretId = selectionForField
+               "userSecretId"
+               []
+               graphqlDefaultResponseScalarDecoder

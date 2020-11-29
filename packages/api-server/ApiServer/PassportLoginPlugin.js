@@ -30,3 +30,10 @@ exports.mkPassportLoginPlugin = mkResolvers => makeExtendSchemaPlugin(build => (
   `,
   resolvers: mkResolvers(build)
 }));
+
+exports.mkSelectGraphQLResultFromTable = user_id =>
+  (tableAlias, sqlBuilder) => {
+    sqlBuilder.where(
+      sql.fragment`${tableAlias}.id = ${sql.value(user_id)}`
+    )
+  }

@@ -23,7 +23,7 @@ select set_eq('select count(*) from app_public.users', array[1]);
 select set_eq('select count(*) from app_public.user_oauths', array[0]);
 
 prepare actual as
-  select app_private.login_or_register_oauth(
+  select app_private.web_login_or_register_oauth(
     :service,
     :service_identifier,
     :email,

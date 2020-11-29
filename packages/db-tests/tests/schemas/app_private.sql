@@ -26,7 +26,7 @@ select functions_are(
   array[
     'tg__set_updated_at',
     'link_or_register_user',
-    'login',
+    'web_login',
     'really_create_user',
     'register_user'
     /* 'tg_send_verification_email_for_user_email', */

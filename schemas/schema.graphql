@@ -624,6 +624,7 @@ type User implements Node {
 
   """Public-facing username (or 'handle') of the user."""
   username: String!
+  userSecretId: UUID!
 }
 
 """
@@ -708,6 +709,8 @@ enum UsersOrderBy {
   NATURAL
   PRIMARY_KEY_ASC
   PRIMARY_KEY_DESC
+  USER_SECRET_ID_ASC
+  USER_SECRET_ID_DESC
   USERNAME_ASC
   USERNAME_DESC
 }

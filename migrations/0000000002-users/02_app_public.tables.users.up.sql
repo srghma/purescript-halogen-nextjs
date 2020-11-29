@@ -1,5 +1,6 @@
 create table app_public.users (
   id uuid not null primary key default uuid_generate_v4(),
+  user_secret_id uuid not null references app_private.user_secrets on delete cascade,
   username citext not null unique check(length(username) >= 2 and length(username) <= 24 and username ~ '^[a-zA-Z]([a-zA-Z0-9][_]?)+$'),
   name text check(name <> ''),
   avatar_url text check(avatar_url ~ '^https?://[^/]+'),
@@ -8,13 +9,28 @@ create table app_public.users (
   updated_at timestamptz not null default now()
 );
 
+create unique index uniq_user_user_secret_id on app_public.users(user_secret_id);
+
 alter table app_public.users enable row level security;
 
 create policy select_all on app_public.users for select using (true);
 create policy update_self on app_public.users for update using (id = app_public.current_user_id_or_null());
 create policy delete_self on app_public.users for delete using (id = app_public.current_user_id_or_null());
 
+-- TODO:
+-- block is_admin for app_anonymous
+-- but this breaks user_by_username_or_verified_email (returns WHOLE user)
+-- return table
+/* ( id */
+/* , username */
+/* , name */
+/* , avatar_url */
+/* , is_admin */
+/* , created_at */
+/* , updated_at */
+/* ) */
 grant select on app_public.users to app_anonymous, app_user;
+
 -- NOTE: `insert` is not granted, because we'll handle that separately
 grant update(name, avatar_url) on app_public.users to app_user;
 grant delete on app_public.users to app_user;
