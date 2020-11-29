@@ -4,6 +4,7 @@ declare
   v_user_email app_hidden.user_emails;
   v_user_secret app_private.user_secrets;
   v_reset_max_duration interval = interval '3 days';
+  v_max_reset_password_attempts int = 20;
 begin
   select users.* into v_user
   from app_public.users
@@ -20,7 +21,7 @@ begin
     and
       v_user_secret.first_failed_reset_password_attempt > NOW() - v_reset_max_duration
     and
-      v_user_secret.reset_password_attempts >= 20
+      v_user_secret.reset_password_attempts >= v_max_reset_password_attempts
     ) then
       -- Password reset locked - too many reset attempts
       raise exception 'APP_EXCEPTION__RESET_PASSWORD__ACCOUNT_LOCKED_TOO_MANY_ATTEMPTS' using errcode = 'LOCKD';

@@ -5,10 +5,16 @@ import Effect.Uncurried
 import Postgraphile
 import Protolude
 
+import Control.Monad.Except (Except)
 import Control.Promise as Promise
+import Data.List.NonEmpty as NonEmptyList
 import Data.Nullable (Nullable)
 import Data.Nullable as Nullable
 import Database.PostgreSQL (Pool)
+import Database.PostgreSQL as PostgreSQL
+import Foreign (F, Foreign, MultipleErrors)
+import Foreign as Foreign
+import Foreign.Index as Foreign
 
 -- TypeDefs
 
@@ -24,18 +30,13 @@ type WebRegisterPayload =
   { user :: User
   }
 
-type WebLoginInput =
-  { username :: String
-  , password :: String
-  }
-
 type WebLoginPayload =
   { user :: User
   }
 
 --------------------------
 
-type User =
+newtype User = User
   { username          :: String
   , email             :: String
   , email_is_verified :: String
@@ -74,7 +75,7 @@ type MutationsImplementation =
   { webRegister ::
       EffectFn5
       FnArgMutation
-      { input :: WebRegisterInput
+      { input :: Foreign
       }
       Context
       FnArgResolveInfo
@@ -83,7 +84,7 @@ type MutationsImplementation =
   , webLogin ::
       EffectFn5
       FnArgMutation
-      { input :: WebLoginInput
+      { input :: Foreign
       }
       Context
       FnArgResolveInfo
@@ -97,12 +98,53 @@ type MkResolvers = MakeExtendSchemaPlugin__BuildArg -> { "Mutation" :: Mutations
 
 foreign import mkPassportLoginPlugin :: MkResolvers -> PostgraphileAppendPlugin
 
+type WebLoginInput =
+  { username :: String
+  , password :: String
+  }
+
+decodeWebLoginInput :: Foreign -> Except MultipleErrors WebLoginInput
+decodeWebLoginInput value = ado
+  username <- value Foreign.! "username" >>= Foreign.readString
+  password <- value Foreign.! "password" >>= Foreign.readString
+
+  in
+    { username
+    , password
+    }
+
+throwPgError = throwError <<< error <<< (\pgError -> "PgError: " <> show pgError)
+
 passportLoginPlugin :: PostgraphileAppendPlugin
 passportLoginPlugin = mkPassportLoginPlugin \build ->
   { "Mutation":
     { webRegister: mkEffectFn5 \mutation args context resolveInfo helpers -> undefined
     , webLogin: mkEffectFn5 \mutation args context resolveInfo helpers -> Promise.fromAff do
-       traceM { mutation, args, context, resolveInfo, helpers }
+       -- | traceM { mutation, args, context, resolveInfo, helpers }
+       (input ::WebLoginInput) <- runExcept (decodeWebLoginInput args.input)
+          # either (throwError <<< error <<< Foreign.renderForeignError <<< NonEmptyList.head) pure
+
+       PostgreSQL.withConnection context.ownerPgPool $ either throwPgError \connection -> do
+          (result :: Maybe (Maybe Foreign)) <-
+              PostgreSQL.scalar connection
+              ( PostgreSQL.Query
+                """
+                select users.* from app_private.login($1, $2) users where not (users is null)
+                """
+              )
+              (PostgreSQL.Row2 input.username input.password)
+              >>= either throwPgError pure
+
+          pure unit
+
+            -- | const {
+            -- |   rows: [user],
+            -- | } = await rootPgPool.query(
+            -- |   `select users.* from app_private.login($1, $2) users where not (users is null)`,
+            -- |   [username, password]
+            -- | );
+
+       traceM { input }
        pure undefined
     }
   }

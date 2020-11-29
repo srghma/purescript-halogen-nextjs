@@ -12,7 +12,6 @@ type Config =
   { databaseName          :: String
   , databaseHost          :: String
   , databasePort          :: Maybe Int
-  , databaseOwnerUser     :: String
   , databaseOwnerPassword :: String
   , clientRootUrl         :: String
   , chromedriverUrl       :: String
@@ -26,7 +25,6 @@ config = Env.parse Env.defaultInfo $ ado
   databaseName          <- Env.var Env.nonempty "databaseName" Env.defaultVarOptions
   databaseHost          <- Env.var Env.nonempty "databaseHost" Env.defaultVarOptions
   databasePort          <- Env.optionalVar Env.int "databasePort" Env.defaultOptionalVarOptions
-  databaseOwnerUser     <- Env.var Env.nonempty "databaseOwnerUser" Env.defaultVarOptions
   databaseOwnerPassword <- Env.var Env.nonempty "databaseOwnerPassword" (Env.defaultVarOptions { sensitive = true })
   clientRootUrl         <- Env.var Env.nonempty "clientRootUrl" Env.defaultVarOptions
   chromedriverUrl       <- Env.var Env.nonempty "chromedriverUrl" Env.defaultVarOptions
@@ -38,7 +36,6 @@ config = Env.parse Env.defaultInfo $ ado
     { databaseName
     , databaseHost
     , databasePort
-    , databaseOwnerUser
     , databaseOwnerPassword
     , clientRootUrl
     , chromedriverUrl

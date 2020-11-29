@@ -140,7 +140,7 @@ main = do
       , max:               Nothing
       , password:          Just config.databaseOwnerPassword
       , port:              config.databasePort
-      , user:              Just config.databaseOwnerUser
+      , user:              Just "app_owner"
       }
 
     let

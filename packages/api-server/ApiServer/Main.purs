@@ -45,7 +45,7 @@ main = do
 
   sessionMiddleware <- ApiServer.SessionMiddleware.sessionMiddleware
     { target:        config.target
-    , ownerPgPool:    pools.ownerPgPool
+    , ownerPgPool:   pools.ownerPgPool
     , sessionSecret: config.sessionSecret
     }
 
@@ -58,8 +58,8 @@ main = do
   let middlewares = [sessionMiddleware] <> passportMiddlewareAndRoutes.middlewares
 
   let postgraphileMiddleware = ApiServer.Postgraphile.mkMiddleware
-        { anonymousPgPool:            pools.anonymousPgPool
-        , ownerPgPool:            pools.ownerPgPool
+        { anonymousPgPool:       pools.anonymousPgPool
+        , ownerPgPool:           pools.ownerPgPool
         , websocketMiddlewares:  middlewares
         , target:                config.target
         , databaseName:          config.databaseName

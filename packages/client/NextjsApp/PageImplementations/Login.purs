@@ -70,18 +70,20 @@ component =
                       traceM { loginDataValidated }
 
                       liftAff do
-                         -- | let (query :: SelectionSet Scope__RootMutation (Maybe NextjsGraphqlApi.Scalars.Id)) =
-                         -- |         NextjsGraphqlApi.Mutation.webLogin
-                         -- |           { input: NextjsGraphqlApi.InputObject.WebLoginInput
-                         -- |             { username: NextjsApp.Data.InUseUsernameOrEmail.toString loginDataValidated.usernameOrEmail
-                         -- |             , password: NextjsApp.Data.Password.toString loginDataValidated.password
-                         -- |             }
-                         -- |           }
-                         -- |           (NextjsGraphqlApi.Object.WebLoginPayload.user NextjsGraphqlApi.Object.User.id)
+                         let (query :: SelectionSet Scope__RootMutation (Maybe NextjsGraphqlApi.Scalars.Id)) =
+                                 NextjsGraphqlApi.Mutation.webLogin
+                                   { input: NextjsGraphqlApi.InputObject.WebLoginInput
+                                     { username: NextjsApp.Data.InUseUsernameOrEmail.toString loginDataValidated.usernameOrEmail
+                                     , password: NextjsApp.Data.Password.toString loginDataValidated.password
+                                     }
+                                   }
+                                   (NextjsGraphqlApi.Object.WebLoginPayload.user NextjsGraphqlApi.Object.User.id)
 
-                         -- |     (query' :: SelectionSet Scope__RootMutation Boolean) = query <#> Maybe.isJust
+                             (query' :: SelectionSet Scope__RootMutation Boolean) = query <#> Maybe.isJust
 
-                         -- | (response :: Either (GraphQLError Boolean) Boolean) <- graphqlApiMutationRequest query'
+                         (response :: Either (GraphQLError Boolean) Boolean) <- graphqlApiMutationRequest query'
+
+                         traceM response
 
                          -- | let (response' :: Maybe LoginError) =
                          -- |       case spy "response" response of

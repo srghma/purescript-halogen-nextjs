@@ -1,18 +1,15 @@
 # from https://github.com/graphile/bootstrap-react-apollo/blob/70d33aa436a20dc791130c03cd96297036570919/scripts/setup#L139
 { pkgs }:
 { isProduction
-, app_owner
 , DATABASE_OWNER_PASSWORD
-
-, app_anonymous
 , DATABASE_ANONYMOUS_PASSWORD
-
-, app_user
-
 , DATABASE_NAME
 }:
 let
   maybeSuperuser = if isProduction then "" else "SUPERUSER";
+
+  # for db tests
+  maybeRevokePublic = if isProduction then "REVOKE ALL ON DATABASE ${DATABASE_NAME} FROM public;" else "";
 in pkgs.writeTextFile {
   name = "init";
 
@@ -39,7 +36,7 @@ in pkgs.writeTextFile {
 
         -- Here's our main database
         CREATE DATABASE ${DATABASE_NAME} OWNER app_owner;
-        -- REVOKE ALL ON DATABASE ${DATABASE_NAME} FROM public;
+        ${maybeRevokePublic}
         GRANT CONNECT ON DATABASE ${DATABASE_NAME} TO app_owner;
         GRANT CONNECT ON DATABASE ${DATABASE_NAME} TO app_anonymous;
         GRANT ALL ON DATABASE ${DATABASE_NAME} TO app_owner;
