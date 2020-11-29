@@ -479,102 +479,6 @@ $$;
 
 
 --
--- Name: tg_send_verification_email_for_user_email(); Type: FUNCTION; Schema: app_private; Owner: -
---
-
-CREATE FUNCTION app_private.tg_send_verification_email_for_user_email() RETURNS trigger
-    LANGUAGE plpgsql
-    SET search_path TO '$user', 'public'
-    AS $$
-begin
-  -- Trigger email send
-  perform graphile_worker.add_job(
-    'sendVerificationEmailForUserEmail',
-    json_build_object(
-      'id', NEW.id
-    )
-  );
-  return NEW;
-end;
-$$;
-
-
---
--- Name: FUNCTION tg_send_verification_email_for_user_email(); Type: COMMENT; Schema: app_private; Owner: -
---
-
-COMMENT ON FUNCTION app_private.tg_send_verification_email_for_user_email() IS 'Enqueue a job to send a verification email for unverified user email addresses.';
-
-
---
--- Name: tg_user_email_secrets__insert_with_user_email(); Type: FUNCTION; Schema: app_private; Owner: -
---
-
-CREATE FUNCTION app_private.tg_user_email_secrets__insert_with_user_email() RETURNS trigger
-    LANGUAGE plpgsql
-    SET search_path TO '$user', 'public'
-    AS $$
-declare
-  v_verification_token text;
-begin
-  if NEW.is_verified is false then
-    v_verification_token = encode(gen_random_bytes(4), 'hex');
-  end if;
-
-  insert into app_private.user_email_secrets(user_email_id, verification_token) values(NEW.id, v_verification_token);
-
-  return NEW;
-end;
-$$;
-
-
---
--- Name: FUNCTION tg_user_email_secrets__insert_with_user_email(); Type: COMMENT; Schema: app_private; Owner: -
---
-
-COMMENT ON FUNCTION app_private.tg_user_email_secrets__insert_with_user_email() IS 'Ensures that every user_email record has an associated user_email_secret record.';
-
-
---
--- Name: tg_user_secrets__insert_with_user(); Type: FUNCTION; Schema: app_private; Owner: -
---
-
-CREATE FUNCTION app_private.tg_user_secrets__insert_with_user() RETURNS trigger
-    LANGUAGE plpgsql
-    SET search_path TO '$user', 'public'
-    AS $$
-begin
-  insert into app_private.user_secrets(user_id) values(NEW.id);
-  return NEW;
-end;
-$$;
-
-
---
--- Name: FUNCTION tg_user_secrets__insert_with_user(); Type: COMMENT; Schema: app_private; Owner: -
---
-
-COMMENT ON FUNCTION app_private.tg_user_secrets__insert_with_user() IS 'Ensures that every user record has an associated user_secret record.';
-
-
---
--- Name: tg_users__make_first_user_admin(); Type: FUNCTION; Schema: app_private; Owner: -
---
-
-CREATE FUNCTION app_private.tg_users__make_first_user_admin() RETURNS trigger
-    LANGUAGE plpgsql
-    SET search_path TO '$user', 'public'
-    AS $$
-begin
-  if not exists(select 1 from app_public.users limit 1) then
-    NEW.is_admin = true;
-  end if;
-  return NEW;
-end;
-$$;
-
-
---
 -- Name: current_user(); Type: FUNCTION; Schema: app_public; Owner: -
 --
 
@@ -1230,20 +1134,6 @@ CREATE TRIGGER _100_timestamps BEFORE UPDATE ON app_hidden.user_emails FOR EACH 
 
 
 --
--- Name: user_emails _500_insert_secrets; Type: TRIGGER; Schema: app_hidden; Owner: -
---
-
-CREATE TRIGGER _500_insert_secrets AFTER INSERT ON app_hidden.user_emails FOR EACH ROW EXECUTE FUNCTION app_private.tg_user_email_secrets__insert_with_user_email();
-
-
---
--- Name: user_emails _900_send_verification_email; Type: TRIGGER; Schema: app_hidden; Owner: -
---
-
-CREATE TRIGGER _900_send_verification_email AFTER INSERT ON app_hidden.user_emails FOR EACH ROW WHEN ((new.is_verified IS FALSE)) EXECUTE FUNCTION app_private.tg_send_verification_email_for_user_email();
-
-
---
 -- Name: posts _100_timestamps; Type: TRIGGER; Schema: app_public; Owner: -
 --
 
@@ -1262,20 +1152,6 @@ CREATE TRIGGER _100_timestamps BEFORE UPDATE ON app_public.user_authentications 
 --
 
 CREATE TRIGGER _100_timestamps BEFORE UPDATE ON app_public.users FOR EACH ROW EXECUTE FUNCTION app_private.tg__set_updated_at();
-
-
---
--- Name: users _200_make_first_user_admin; Type: TRIGGER; Schema: app_public; Owner: -
---
-
-CREATE TRIGGER _200_make_first_user_admin BEFORE INSERT ON app_public.users FOR EACH ROW EXECUTE FUNCTION app_private.tg_users__make_first_user_admin();
-
-
---
--- Name: users _500_insert_secrets; Type: TRIGGER; Schema: app_public; Owner: -
---
-
-CREATE TRIGGER _500_insert_secrets AFTER INSERT ON app_public.users FOR EACH ROW EXECUTE FUNCTION app_private.tg_user_secrets__insert_with_user();
 
 
 --
@@ -1344,7 +1220,7 @@ CREATE POLICY insert_own ON app_hidden.user_emails FOR INSERT WITH CHECK ((user_
 -- Name: user_emails select_own; Type: POLICY; Schema: app_hidden; Owner: -
 --
 
-CREATE POLICY select_own ON app_hidden.user_emails FOR SELECT USING ((user_id = app_public.current_user_id_or_null()));
+CREATE POLICY select_own ON app_hidden.user_emails FOR SELECT USING (true);
 
 
 --

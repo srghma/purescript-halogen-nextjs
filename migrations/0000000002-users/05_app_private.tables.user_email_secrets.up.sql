@@ -16,46 +16,50 @@ comment on column app_private.user_email_secrets.verification_email_sent_at is
 comment on column app_private.user_email_secrets.password_reset_email_sent_at is
   E'We store the time the last password reset was sent to this email to prevent the email getting flooded.';
 
-create function app_private.tg_user_email_secrets__insert_with_user_email() returns trigger as $$
-declare
-  v_verification_token text;
-begin
-  if NEW.is_verified is false then
-    v_verification_token = encode(gen_random_bytes(4), 'hex');
-  end if;
+---------------------------------------------------------------------
 
-  insert into app_private.user_email_secrets(user_email_id, verification_token) values(NEW.id, v_verification_token);
+/* create function app_private.tg_user_email_secrets__insert_with_user_email() returns trigger as $$ */
+/* declare */
+/*   v_verification_token text; */
+/* begin */
+/*   if NEW.is_verified is false then */
+/*     v_verification_token = encode(gen_random_bytes(4), 'hex'); */
+/*   end if; */
 
-  return NEW;
-end;
-$$ language plpgsql volatile set search_path from current;
+/*   insert into app_private.user_email_secrets(user_email_id, verification_token) values(NEW.id, v_verification_token); */
 
-create trigger _500_insert_secrets
-  after insert on app_hidden.user_emails
-  for each row
-  execute function app_private.tg_user_email_secrets__insert_with_user_email();
+/*   return NEW; */
+/* end; */
+/* $$ language plpgsql volatile set search_path from current; */
 
-comment on function app_private.tg_user_email_secrets__insert_with_user_email() is
-  E'Ensures that every user_email record has an associated user_email_secret record.';
+/* create trigger _500_insert_secrets */
+/*   after insert on app_hidden.user_emails */
+/*   for each row */
+/*   execute function app_private.tg_user_email_secrets__insert_with_user_email(); */
 
-create function app_private.tg_send_verification_email_for_user_email() returns trigger as $$
-begin
-  -- Trigger email send
-  perform graphile_worker.add_job(
-    'sendVerificationEmailForUserEmail',
-    json_build_object(
-      'id', NEW.id
-    )
-  );
-  return NEW;
-end;
-$$ language plpgsql volatile set search_path from current;
+/* comment on function app_private.tg_user_email_secrets__insert_with_user_email() is */
+/*   E'Ensures that every user_email record has an associated user_email_secret record.'; */
 
-create trigger _900_send_verification_email
-  after insert on app_hidden.user_emails
-  for each row
-  when (NEW.is_verified is false)
-  execute function app_private.tg_send_verification_email_for_user_email();
+---------------------------------------------------------------------
 
-comment on function app_private.tg_send_verification_email_for_user_email() is
-  E'Enqueue a job to send a verification email for unverified user email addresses.';
+/* create function app_private.tg_send_verification_email_for_user_email() returns trigger as $$ */
+/* begin */
+/*   -- Trigger email send */
+/*   perform graphile_worker.add_job( */
+/*     'sendVerificationEmailForUserEmail', */
+/*     json_build_object( */
+/*       'id', NEW.id */
+/*     ) */
+/*   ); */
+/*   return NEW; */
+/* end; */
+/* $$ language plpgsql volatile set search_path from current; */
+
+/* create trigger _900_send_verification_email */
+/*   after insert on app_hidden.user_emails */
+/*   for each row */
+/*   when (NEW.is_verified is false) */
+/*   execute function app_private.tg_send_verification_email_for_user_email(); */
+
+/* comment on function app_private.tg_send_verification_email_for_user_email() is */
+/*   E'Enqueue a job to send a verification email for unverified user email addresses.'; */

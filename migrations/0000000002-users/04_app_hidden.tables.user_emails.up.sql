@@ -30,7 +30,7 @@ comment on column app_hidden.user_emails.email is
 comment on column app_hidden.user_emails.is_verified is
   E'True if the user has is_verified their email address (by clicking the link in the email we sent them, or logging in with a social login provider), false otherwise.';
 
-create policy select_own on app_hidden.user_emails for select using (user_id = app_public.current_user_id_or_null());
+create policy select_own on app_hidden.user_emails for select using (true);
 create policy insert_own on app_hidden.user_emails for insert with check (user_id = app_public.current_user_id_or_null());
 create policy delete_own on app_hidden.user_emails for delete using (user_id = app_public.current_user_id_or_null()); -- TODO check this isn't the last one!
 
