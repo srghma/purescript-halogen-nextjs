@@ -8,7 +8,7 @@ import FeatureTests.Tests.Login.SuccessSpec as FeatureTests.Tests.Login.SuccessS
 -- | import FeatureTests.Tests.Login.ErrorNotConfirmedSpec as FeatureTests.Tests.Login.ErrorNotConfirmedSpec
 -- | import FeatureTests.Tests.Register.SuccessSpec as FeatureTests.Tests.Register.SuccessSpec
 
-allTests :: SpecT Aff FeatureTestConfig Identity Unit
+allTests :: SpecT Aff FeatureTestEnv Identity Unit
 allTests = do
   describe "login" do
     itOnly "success" FeatureTests.Tests.Login.SuccessSpec.spec

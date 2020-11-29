@@ -25,57 +25,14 @@ import Node.Process as Node.Process
 import Node.ReadLine as Node.ReadLine
 import Node.Stream as Node.Stream
 import Routing.Duplex as Routing.Duplex
-import Run (Run)
 import Run as Run
-import Run.Reader as Run
+import FeatureTests.FeatureTestSpecUtils.Lunapark (runLunapark)
 
-goClientRoute' clientRootUrl route = Lunapark.go $ clientRootUrl <> Routing.Duplex.print NextjsApp.RouteDuplexCodec.routeCodec route
-
-------------------------
-
-data GoClientRouteF a
-  = GoClientRoute Route a
-
-derive instance functorGoClientRouteF :: Functor GoClientRouteF
-
-type GO_CLIENT_ROUTE = FProxy GoClientRouteF
-
-_goClientRoute = SProxy :: SProxy "goClientRoute"
-
-goClientRoute :: forall r. Route -> Run (goClientRoute :: GO_CLIENT_ROUTE | r) Unit
-goClientRoute route = Run.lift _goClientRoute (GoClientRoute route unit)
-
-type GoClientRouteEffect r = ( goClientRoute :: GO_CLIENT_ROUTE | r )
-
-handleGoClientRoute
-  :: forall r
-   . String
-  -> GoClientRouteF
-  ~> Run
-     (
-     | Lunapark.LunaparkEffect
-     + Lunapark.BaseEffects
-     + r
-     )
-handleGoClientRoute clientRootUrl = case _ of
-  GoClientRoute route next -> do
-    goClientRoute' clientRootUrl route
-    pure next
-
-runGoClientRoute
-  :: forall r
-   . String
-  -> Run
-     (
-     | Lunapark.LunaparkEffect
-     + Lunapark.BaseEffects
-     + GoClientRouteEffect
-     + r
-     )
-  ~> Run
-     (
-     | Lunapark.LunaparkEffect
-     + Lunapark.BaseEffects
-     + r
-     )
-runGoClientRoute clientRootUrl = Run.interpret (Run.on _goClientRoute (handleGoClientRoute clientRootUrl) Run.send)
+goClientRoute
+  :: ∀ r m
+   . MonadAff m
+  => MonadAsk { clientRootUrl :: String, interpreter :: Lunapark.Interpreter () | r } m
+  => MonadThrow Error m
+  => Route
+  -> m Unit
+goClientRoute route = ask >>= \config -> runLunapark $ Lunapark.go $ config.clientRootUrl <> Routing.Duplex.print NextjsApp.RouteDuplexCodec.routeCodec route

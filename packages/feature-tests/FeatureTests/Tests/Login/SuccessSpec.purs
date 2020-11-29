@@ -20,11 +20,15 @@ import NextjsApp.Route
 import Protolude
 import Test.Spec
 import Unsafe.Coerce
+
+import CSS as CSS
 import Database.PostgreSQL as PostgreSQL
+import Effect.Aff.Retry as AffRetry
 import Effect.Ref as Ref
 import Faker as Faker
 import Faker.Lorem as Faker.Lorem
 import Faker.Name as Faker.Name
+import FeatureTests.FeatureTestSpecUtils.Lunapark (runLunapark)
 import Lunapark as Lunapark
 import Lunapark.Types as Lunapark
 import Node.Encoding as Node.Encoding
@@ -33,23 +37,21 @@ import Node.ReadLine as Node.ReadLine
 import Node.Stream as Node.Stream
 import Run (Run)
 import Run as Run
-import Run.Reader as Run
 import Run.Except as Run
-import FeatureTests.FeatureTestSpecUtils.SpecAssertions
-import CSS as CSS
-import RunAffRetry as RunAffRetry
-import Effect.Aff.Retry as AffRetry
+import Run.Reader as Run
+import Test.Spec.Assertions (shouldEqual)
 
 retryAction action =
-  RunAffRetry.recovering
+  AffRetry.recovering
     (AffRetry.constantDelay (Milliseconds 200.0) <> AffRetry.limitRetries 10)
     [\_ _ -> pure true]
     (\_ -> spy "retrying" action)
 
 usernameOrEmailXpath = Lunapark.ByXPath """//div[@role="form"]//input[@aria-labelledby="usernameOrEmail"]"""
+
 passwordXpath = Lunapark.ByXPath """//div[@role="form"]//input[@aria-labelledby="password"]"""
 
-spec :: Run FeatureTestRunEffects Unit
+spec :: ReaderT FeatureTestEnv Aff Unit
 spec = do
   let
     user =
@@ -76,20 +78,24 @@ spec = do
 
   goClientRoute Login
 
-  inputField usernameOrEmailXpath "unknown@mail.com"
+  runLunapark $ inputField usernameOrEmailXpath "unknown@mail.com"
 
-  (retryAction $ Lunapark.findElement $ Lunapark.ByCss $ CSS.Selector (CSS.Refinement [CSS.Id "usernameOrEmail-helper"]) CSS.Star)
+  ( retryAction $ runLunapark $
+    (Lunapark.findElement $ Lunapark.ByCss $ CSS.Selector (CSS.Refinement [CSS.Id "usernameOrEmail-helper"]) CSS.Star)
     >>= Lunapark.getText
-    >>= \text -> text `shouldEqual` "Username or email is not found"
+  ) >>= \text -> text `shouldEqual` "Username or email is not found"
 
-  inputField usernameOrEmailXpath user.email
-  inputField passwordXpath user.password
+  runLunapark $ inputField usernameOrEmailXpath user.email
+  runLunapark $ inputField passwordXpath user.password
 
   retryAction $
-    Lunapark.findElement passwordXpath
-      >>= Lunapark.getText
+    ( ( runLunapark $
+        Lunapark.findElement passwordXpath
+        >>= \e -> Lunapark.getAttribute e "value"
+      )
       >>= \text -> text `shouldEqual` user.password
+    )
 
-  Lunapark.findElement (Lunapark.ByXPath """//div[@role="form"]//button[text()="Submit"]""") >>= Lunapark.clickElement
+  runLunapark $ Lunapark.findElement (Lunapark.ByXPath """//div[@role="form"]//button[text()="Submit"]""") >>= Lunapark.clickElement
 
   pressEnterToContinue

@@ -62,6 +62,7 @@ import Data.Posix.Signal
 import Node.Stream as Node.Stream
 import Data.Exists (Exists)
 import Data.Exists as Exists
+import FeatureTests.FeatureTestSpecUtils.Lunapark as FeatureTests.FeatureTestSpecUtils.Lunapark
 
 connectToDb :: Configuration -> Aff ConnectResult
 connectToDb poolConfiguration = do
@@ -155,7 +156,7 @@ main = do
         -- throws error when releasing an already released
         liftEffect $ void $ try $ connectionResult.done
 
-        runFeatureTestImplementation Lunapark.quit testsConfig >>=
+        FeatureTests.FeatureTestSpecUtils.Lunapark.runLunaparkImplementation interpreter Lunapark.quit >>=
           either
           (\e -> throwError $ error $ "Error when quitting: " <> Lunapark.printError e)
           pure
