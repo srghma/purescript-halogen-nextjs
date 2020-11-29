@@ -19,44 +19,6 @@ instance toGraphQLArgumentValuePostCondition :: ToGraphQLArgumentValue
                                                 PostCondition where
   toGraphQLArgumentValue (PostCondition x) = toGraphQLArgumentValue x
 
--- | original name - UserEmailCondition
-newtype UserEmailCondition = UserEmailCondition { rowId :: Optional Uuid
-                                                , userId :: Optional Uuid
-                                                }
-
-derive instance genericUserEmailCondition :: Generic UserEmailCondition _
-
-derive instance newtypeUserEmailCondition :: Newtype UserEmailCondition _
-
-instance toGraphQLArgumentValueUserEmailCondition :: ToGraphQLArgumentValue
-                                                     UserEmailCondition where
-  toGraphQLArgumentValue (UserEmailCondition x) = toGraphQLArgumentValue x
-
--- | original name - CreateUserEmailInput
-newtype CreateUserEmailInput = CreateUserEmailInput { clientMutationId :: Optional
-                                                                          String
-                                                    , userEmail :: UserEmailInput
-                                                    }
-
-derive instance genericCreateUserEmailInput :: Generic CreateUserEmailInput _
-
-derive instance newtypeCreateUserEmailInput :: Newtype CreateUserEmailInput _
-
-instance toGraphQLArgumentValueCreateUserEmailInput :: ToGraphQLArgumentValue
-                                                       CreateUserEmailInput where
-  toGraphQLArgumentValue (CreateUserEmailInput x) = toGraphQLArgumentValue x
-
--- | original name - UserEmailInput
-newtype UserEmailInput = UserEmailInput { email :: String }
-
-derive instance genericUserEmailInput :: Generic UserEmailInput _
-
-derive instance newtypeUserEmailInput :: Newtype UserEmailInput _
-
-instance toGraphQLArgumentValueUserEmailInput :: ToGraphQLArgumentValue
-                                                 UserEmailInput where
-  toGraphQLArgumentValue (UserEmailInput x) = toGraphQLArgumentValue x
-
 -- | original name - DeleteUserInput
 newtype DeleteUserInput = DeleteUserInput { clientMutationId :: Optional String
                                           , rowId :: Uuid
@@ -145,50 +107,6 @@ instance toGraphQLArgumentValueDeleteUserByUsernameInput :: ToGraphQLArgumentVal
   toGraphQLArgumentValue (DeleteUserByUsernameInput x) = toGraphQLArgumentValue
                                                          x
 
--- | original name - DeleteUserEmailInput
-newtype DeleteUserEmailInput = DeleteUserEmailInput { clientMutationId :: Optional
-                                                                          String
-                                                    , rowId :: Uuid
-                                                    }
-
-derive instance genericDeleteUserEmailInput :: Generic DeleteUserEmailInput _
-
-derive instance newtypeDeleteUserEmailInput :: Newtype DeleteUserEmailInput _
-
-instance toGraphQLArgumentValueDeleteUserEmailInput :: ToGraphQLArgumentValue
-                                                       DeleteUserEmailInput where
-  toGraphQLArgumentValue (DeleteUserEmailInput x) = toGraphQLArgumentValue x
-
--- | original name - DeleteUserEmailByIdInput
-newtype DeleteUserEmailByIdInput = DeleteUserEmailByIdInput { clientMutationId :: Optional
-                                                                                  String
-                                                            , id :: Id
-                                                            }
-
-derive instance genericDeleteUserEmailByIdInput :: Generic DeleteUserEmailByIdInput _
-
-derive instance newtypeDeleteUserEmailByIdInput :: Newtype DeleteUserEmailByIdInput _
-
-instance toGraphQLArgumentValueDeleteUserEmailByIdInput :: ToGraphQLArgumentValue
-                                                           DeleteUserEmailByIdInput where
-  toGraphQLArgumentValue (DeleteUserEmailByIdInput x) = toGraphQLArgumentValue x
-
--- | original name - DeleteUserEmailByUserIdAndEmailInput
-newtype DeleteUserEmailByUserIdAndEmailInput = DeleteUserEmailByUserIdAndEmailInput { clientMutationId :: Optional
-                                                                                                          String
-                                                                                    , email :: String
-                                                                                    , userId :: Uuid
-                                                                                    }
-
-derive instance genericDeleteUserEmailByUserIdAndEmailInput :: Generic DeleteUserEmailByUserIdAndEmailInput _
-
-derive instance newtypeDeleteUserEmailByUserIdAndEmailInput :: Newtype DeleteUserEmailByUserIdAndEmailInput _
-
-instance toGraphQLArgumentValueDeleteUserEmailByUserIdAndEmailInput :: ToGraphQLArgumentValue
-                                                                       DeleteUserEmailByUserIdAndEmailInput where
-  toGraphQLArgumentValue (DeleteUserEmailByUserIdAndEmailInput x) = toGraphQLArgumentValue
-                                                                    x
-
 -- | original name - ForgotPasswordInput
 newtype ForgotPasswordInput = ForgotPasswordInput { clientMutationId :: Optional
                                                                         String
@@ -275,20 +193,6 @@ instance toGraphQLArgumentValueUpdateUserByUsernameInput :: ToGraphQLArgumentVal
                                                             UpdateUserByUsernameInput where
   toGraphQLArgumentValue (UpdateUserByUsernameInput x) = toGraphQLArgumentValue
                                                          x
-
--- | original name - UpsertUserEmailInput
-newtype UpsertUserEmailInput = UpsertUserEmailInput { clientMutationId :: Optional
-                                                                          String
-                                                    , userEmail :: UserEmailInput
-                                                    }
-
-derive instance genericUpsertUserEmailInput :: Generic UpsertUserEmailInput _
-
-derive instance newtypeUpsertUserEmailInput :: Newtype UpsertUserEmailInput _
-
-instance toGraphQLArgumentValueUpsertUserEmailInput :: ToGraphQLArgumentValue
-                                                       UpsertUserEmailInput where
-  toGraphQLArgumentValue (UpsertUserEmailInput x) = toGraphQLArgumentValue x
 
 -- | original name - VerifyUserEmailInput
 newtype VerifyUserEmailInput = VerifyUserEmailInput { clientMutationId :: Optional

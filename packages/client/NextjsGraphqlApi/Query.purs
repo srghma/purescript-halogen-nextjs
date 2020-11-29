@@ -16,7 +16,6 @@ import NextjsGraphqlApi.Scopes
   , Scope__Post
   , Scope__PostsConnection
   , Scope__UserAuthentication
-  , Scope__UserEmail
   )
 import Data.Maybe (Maybe)
 import NextjsGraphqlApi.Scalars (Id, Uuid, Cursor)
@@ -224,73 +223,22 @@ userByUsername input = selectionForCompositeField
                         input)
                        graphqlDefaultResponseFunctorOrScalarDecoderTransformer
 
-type UserByUsernameOrEmailInputRowRequired r = ( usernameOrEmail :: String | r )
+type UserByUsernameOrVerifiedEmailInputRowRequired r = ( usernameOrEmail :: String
+                                                       | r
+                                                       )
 
-type UserByUsernameOrEmailInput = {
-| UserByUsernameOrEmailInputRowRequired + ()
+type UserByUsernameOrVerifiedEmailInput = {
+| UserByUsernameOrVerifiedEmailInputRowRequired + ()
 }
 
-userByUsernameOrEmail :: forall r . UserByUsernameOrEmailInput -> SelectionSet
-                                                                  Scope__User
-                                                                  r -> SelectionSet
-                                                                       Scope__RootQuery
-                                                                       (Maybe
-                                                                        r)
-userByUsernameOrEmail input = selectionForCompositeField
-                              "userByUsernameOrEmail"
-                              (toGraphQLArguments
-                               input)
-                              graphqlDefaultResponseFunctorOrScalarDecoderTransformer
-
-type UserEmailInputRowRequired r = ( rowId :: Uuid | r )
-
-type UserEmailInput = { | UserEmailInputRowRequired + () }
-
-userEmail :: forall r . UserEmailInput -> SelectionSet
-                                          Scope__UserEmail
-                                          r -> SelectionSet
-                                               Scope__RootQuery
-                                               (Maybe
-                                                r)
-userEmail input = selectionForCompositeField
-                  "userEmail"
-                  (toGraphQLArguments
-                   input)
-                  graphqlDefaultResponseFunctorOrScalarDecoderTransformer
-
-type UserEmailByIdInputRowRequired r = ( id :: Id | r )
-
-type UserEmailByIdInput = { | UserEmailByIdInputRowRequired + () }
-
-userEmailById :: forall r . UserEmailByIdInput -> SelectionSet
-                                                  Scope__UserEmail
-                                                  r -> SelectionSet
-                                                       Scope__RootQuery
-                                                       (Maybe
-                                                        r)
-userEmailById input = selectionForCompositeField
-                      "userEmailById"
-                      (toGraphQLArguments
-                       input)
-                      graphqlDefaultResponseFunctorOrScalarDecoderTransformer
-
-type UserEmailByUserIdAndEmailInputRowRequired r = ( email :: String
-                                                   , userId :: Uuid
-                                                   | r
-                                                   )
-
-type UserEmailByUserIdAndEmailInput = {
-| UserEmailByUserIdAndEmailInputRowRequired + ()
-}
-
-userEmailByUserIdAndEmail :: forall r . UserEmailByUserIdAndEmailInput -> SelectionSet
-                                                                          Scope__UserEmail
-                                                                          r -> SelectionSet
-                                                                               Scope__RootQuery
-                                                                               (Maybe
-                                                                                r)
-userEmailByUserIdAndEmail input = selectionForCompositeField
-                                  "userEmailByUserIdAndEmail"
-                                  (toGraphQLArguments
-                                   input)
-                                  graphqlDefaultResponseFunctorOrScalarDecoderTransformer
+userByUsernameOrVerifiedEmail :: forall r . UserByUsernameOrVerifiedEmailInput -> SelectionSet
+                                                                                  Scope__User
+                                                                                  r -> SelectionSet
+                                                                                       Scope__RootQuery
+                                                                                       (Maybe
+                                                                                        r)
+userByUsernameOrVerifiedEmail input = selectionForCompositeField
+                                      "userByUsernameOrVerifiedEmail"
+                                      (toGraphQLArguments
+                                       input)
+                                      graphqlDefaultResponseFunctorOrScalarDecoderTransformer

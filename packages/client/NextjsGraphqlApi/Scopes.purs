@@ -1,10 +1,6 @@
 module NextjsGraphqlApi.Scopes where
 
-data Scope__CreateUserEmailPayload
-
 data Scope__DeleteUserAuthenticationPayload
-
-data Scope__DeleteUserEmailPayload
 
 data Scope__DeleteUserPayload
 
@@ -24,8 +20,6 @@ data Scope__ResetPasswordPayload
 
 data Scope__UpdateUserPayload
 
-data Scope__UpsertUserEmailPayload
-
 data Scope__User
 
 data Scope__UserAuthentication
@@ -33,10 +27,6 @@ data Scope__UserAuthentication
 data Scope__UserAuthenticationsEdge
 
 data Scope__UserEmail
-
-data Scope__UserEmailsConnection
-
-data Scope__UserEmailsEdge
 
 data Scope__UsersEdge
 

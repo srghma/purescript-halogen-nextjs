@@ -1,22 +1,17 @@
 module NextjsGraphqlApi.Mutation where
 
 import NextjsGraphqlApi.InputObject
-  ( CreateUserEmailInput
-  , DeleteUserInput
+  ( DeleteUserInput
   , DeleteUserAuthenticationInput
   , DeleteUserAuthenticationByIdInput
   , DeleteUserAuthenticationByServiceAndIdentifierInput
   , DeleteUserByIdInput
   , DeleteUserByUsernameInput
-  , DeleteUserEmailInput
-  , DeleteUserEmailByIdInput
-  , DeleteUserEmailByUserIdAndEmailInput
   , ForgotPasswordInput
   , ResetPasswordInput
   , UpdateUserInput
   , UpdateUserByIdInput
   , UpdateUserByUsernameInput
-  , UpsertUserEmailInput
   , VerifyUserEmailInput
   , WebLoginInput
   , WebRegisterInput
@@ -30,37 +25,16 @@ import GraphQLClient
   , graphqlDefaultResponseFunctorOrScalarDecoderTransformer
   )
 import NextjsGraphqlApi.Scopes
-  ( Scope__CreateUserEmailPayload
-  , Scope__DeleteUserPayload
+  ( Scope__DeleteUserPayload
   , Scope__DeleteUserAuthenticationPayload
-  , Scope__DeleteUserEmailPayload
   , Scope__ForgotPasswordPayload
   , Scope__ResetPasswordPayload
   , Scope__UpdateUserPayload
-  , Scope__UpsertUserEmailPayload
   , Scope__VerifyUserEmailPayload
   , Scope__WebLoginPayload
   , Scope__WebRegisterPayload
   )
 import Data.Maybe (Maybe)
-
-type CreateUserEmailInputRowRequired r = ( input :: NextjsGraphqlApi.InputObject.CreateUserEmailInput
-                                         | r
-                                         )
-
-type CreateUserEmailInput = { | CreateUserEmailInputRowRequired + () }
-
-createUserEmail :: forall r . CreateUserEmailInput -> SelectionSet
-                                                      Scope__CreateUserEmailPayload
-                                                      r -> SelectionSet
-                                                           Scope__RootMutation
-                                                           (Maybe
-                                                            r)
-createUserEmail input = selectionForCompositeField
-                        "createUserEmail"
-                        (toGraphQLArguments
-                         input)
-                        graphqlDefaultResponseFunctorOrScalarDecoderTransformer
 
 type DeleteUserInputRowRequired r = ( input :: NextjsGraphqlApi.InputObject.DeleteUserInput
                                     | r
@@ -176,62 +150,6 @@ deleteUserByUsername input = selectionForCompositeField
                               input)
                              graphqlDefaultResponseFunctorOrScalarDecoderTransformer
 
-type DeleteUserEmailInputRowRequired r = ( input :: NextjsGraphqlApi.InputObject.DeleteUserEmailInput
-                                         | r
-                                         )
-
-type DeleteUserEmailInput = { | DeleteUserEmailInputRowRequired + () }
-
-deleteUserEmail :: forall r . DeleteUserEmailInput -> SelectionSet
-                                                      Scope__DeleteUserEmailPayload
-                                                      r -> SelectionSet
-                                                           Scope__RootMutation
-                                                           (Maybe
-                                                            r)
-deleteUserEmail input = selectionForCompositeField
-                        "deleteUserEmail"
-                        (toGraphQLArguments
-                         input)
-                        graphqlDefaultResponseFunctorOrScalarDecoderTransformer
-
-type DeleteUserEmailByIdInputRowRequired r = ( input :: NextjsGraphqlApi.InputObject.DeleteUserEmailByIdInput
-                                             | r
-                                             )
-
-type DeleteUserEmailByIdInput = { | DeleteUserEmailByIdInputRowRequired + () }
-
-deleteUserEmailById :: forall r . DeleteUserEmailByIdInput -> SelectionSet
-                                                              Scope__DeleteUserEmailPayload
-                                                              r -> SelectionSet
-                                                                   Scope__RootMutation
-                                                                   (Maybe
-                                                                    r)
-deleteUserEmailById input = selectionForCompositeField
-                            "deleteUserEmailById"
-                            (toGraphQLArguments
-                             input)
-                            graphqlDefaultResponseFunctorOrScalarDecoderTransformer
-
-type DeleteUserEmailByUserIdAndEmailInputRowRequired r = ( input :: NextjsGraphqlApi.InputObject.DeleteUserEmailByUserIdAndEmailInput
-                                                         | r
-                                                         )
-
-type DeleteUserEmailByUserIdAndEmailInput = {
-| DeleteUserEmailByUserIdAndEmailInputRowRequired + ()
-}
-
-deleteUserEmailByUserIdAndEmail :: forall r . DeleteUserEmailByUserIdAndEmailInput -> SelectionSet
-                                                                                      Scope__DeleteUserEmailPayload
-                                                                                      r -> SelectionSet
-                                                                                           Scope__RootMutation
-                                                                                           (Maybe
-                                                                                            r)
-deleteUserEmailByUserIdAndEmail input = selectionForCompositeField
-                                        "deleteUserEmailByUserIdAndEmail"
-                                        (toGraphQLArguments
-                                         input)
-                                        graphqlDefaultResponseFunctorOrScalarDecoderTransformer
-
 type ForgotPasswordInputRowRequired r = ( input :: NextjsGraphqlApi.InputObject.ForgotPasswordInput
                                         | r
                                         )
@@ -321,24 +239,6 @@ updateUserByUsername input = selectionForCompositeField
                              (toGraphQLArguments
                               input)
                              graphqlDefaultResponseFunctorOrScalarDecoderTransformer
-
-type UpsertUserEmailInputRowRequired r = ( input :: NextjsGraphqlApi.InputObject.UpsertUserEmailInput
-                                         | r
-                                         )
-
-type UpsertUserEmailInput = { | UpsertUserEmailInputRowRequired + () }
-
-upsertUserEmail :: forall r . UpsertUserEmailInput -> SelectionSet
-                                                      Scope__UpsertUserEmailPayload
-                                                      r -> SelectionSet
-                                                           Scope__RootMutation
-                                                           (Maybe
-                                                            r)
-upsertUserEmail input = selectionForCompositeField
-                        "upsertUserEmail"
-                        (toGraphQLArguments
-                         input)
-                        graphqlDefaultResponseFunctorOrScalarDecoderTransformer
 
 type VerifyUserEmailInputRowRequired r = ( input :: NextjsGraphqlApi.InputObject.VerifyUserEmailInput
                                          | r

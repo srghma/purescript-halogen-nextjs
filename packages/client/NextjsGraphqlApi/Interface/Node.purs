@@ -9,15 +9,10 @@ import GraphQLClient
   , buildFragment
   )
 import NextjsGraphqlApi.Scopes
-  ( Scope__Node
-  , Scope__Post
-  , Scope__User
-  , Scope__UserAuthentication
-  , Scope__UserEmail
-  )
+  (Scope__Node, Scope__Post, Scope__User, Scope__UserAuthentication)
 import NextjsGraphqlApi.Scalars (Id)
 import Data.Maybe (Maybe(..))
-import Prelude
+import Prelude (pure)
 
 id :: SelectionSet Scope__Node Id
 id = selectionForField "id" [] graphqlDefaultResponseScalarDecoder
@@ -28,9 +23,6 @@ type Fragments decodesTo = { onPost :: SelectionSet Scope__Post decodesTo
                            , onUserAuthentication :: SelectionSet
                                                      Scope__UserAuthentication
                                                      decodesTo
-                           , onUserEmail :: SelectionSet
-                                            Scope__UserEmail
-                                            decodesTo
                            }
 
 fragments :: forall decodesTo . Fragments
@@ -44,7 +36,6 @@ fragments selections = exhaustiveFragmentSelection
                        , buildFragment
                          "UserAuthentication"
                          selections.onUserAuthentication
-                       , buildFragment "UserEmail" selections.onUserEmail
                        ]
 
 maybeFragments :: forall decodesTo . Fragments (Maybe decodesTo)
@@ -56,6 +47,4 @@ maybeFragments = { onPost: pure
                            Nothing
                  , onUserAuthentication: pure
                                          Nothing
-                 , onUserEmail: pure
-                                Nothing
                  }

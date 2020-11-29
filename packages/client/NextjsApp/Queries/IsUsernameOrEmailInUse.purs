@@ -11,7 +11,7 @@ import NextjsApp.Queries.Utils (graphqlApiQueryRequestOrThrow)
 
 isUsernameOrEmailInUse :: NonEmptyString -> Aff Boolean
 isUsernameOrEmailInUse usernameOrEmail = graphqlApiQueryRequestOrThrow $
-  NextjsGraphqlApi.Query.userByUsernameOrEmail
+  NextjsGraphqlApi.Query.userByUsernameOrVerifiedEmail
     { usernameOrEmail: NonEmptyString.toString usernameOrEmail
     }
     (NextjsGraphqlApi.Object.User.id)
