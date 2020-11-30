@@ -70,12 +70,13 @@ const livereloadPort = 35729
             serverFilePath,
             port:                   3001,
             compiliedClientDirPath: clientConfig.output.path,
-            livereloadPort
+            livereloadPort,
+            onSpawnFinish: function() {
+              console.log('[livereload] sending refresh')
+
+              reloadReturned.reload()
+            },
           })()
-
-          console.log('[livereload] sending refresh')
-
-          reloadReturned.reload()
         }
       })()
     }

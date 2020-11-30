@@ -15,6 +15,7 @@ oneServerATimeSpawner ::
       , port :: Int
       , livereloadPort :: Int
       , compiliedClientDirPath :: String
+      , onSpawnFinish :: Effect Unit
       } ->
       Effect Unit
     , killServerIfRunning :: Effect Unit
@@ -45,5 +46,7 @@ oneServerATimeSpawner = do
             , "                    client dir = " <> printPathPosixSandboxAny compiliedClientDirPath
             , "                    livereloadPort = " <> show config.livereloadPort
             ]
+
+        config.onSpawnFinish
     , killServerIfRunning: killIfRunning
     }
