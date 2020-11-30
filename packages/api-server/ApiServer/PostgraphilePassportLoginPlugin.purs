@@ -8,6 +8,7 @@ import Protolude
 import ApiServer.PassportMethodsFixed as ApiServer.PassportMethodsFixed
 import Control.Monad.Except (Except)
 import Control.Promise as Promise
+import Data.Function.Uncurried
 import Data.List.NonEmpty as NonEmptyList
 import Data.Nullable (Nullable)
 import Data.Nullable as Nullable
@@ -98,15 +99,19 @@ type MutationsImplementation =
   }
 
 data FragmentMaker
+data SqlValueFn
 
-fragmentMakerAsFunc :: FragmentMaker -> String -> SqlFragment
-fragmentMakerAsFunc = unsafeCoerce
-
-foreign import mkSelectGraphQLResultFromTable :: String -> EffectFn2 String QueryBuilder Unit
+foreign import appPublicUsersFragment :: FragmentMaker -> SqlFragment
+foreign import mkSelectGraphQLResultFromTable ::
+  Fn2
+  String
+  { fragment :: FragmentMaker, value :: SqlValueFn }
+  (EffectFn2 String QueryBuilder Unit)
 
 foreign import mkPassportLoginPlugin ::
   ( { pgSql ::
       { fragment :: FragmentMaker
+      , value :: SqlValueFn
       }
     }
   ->
@@ -176,12 +181,6 @@ postgraphilePassportLoginPlugin = mkPassportLoginPlugin \build ->
 
           pure user
 
-       output <- Promise.toAffE $
-         runEffectFn2
-         helpers.selectGraphQLResultFromTable
-         (fragmentMakerAsFunc build.pgSql.fragment "app_public.users")
-         (mkSelectGraphQLResultFromTable user.id)
-
        PostgreSQL.execute context.pgClient
           ( PostgreSQL.Query
             """
@@ -191,7 +190,18 @@ postgraphilePassportLoginPlugin = mkPassportLoginPlugin \build ->
           (PostgreSQL.Row2 "jwt.claims.user_id" user.id)
           >>= maybe (pure unit) throwPgError
 
-       liftEffect $ ApiServer.PassportMethodsFixed.passportMethods.logIn (ApiServer.PassportMethodsFixed.UserUUID user.id) Passport.defaultLoginOptions Nothing context.req
+       liftEffect $
+         ApiServer.PassportMethodsFixed.passportMethods.logIn
+         (ApiServer.PassportMethodsFixed.UserUUID user.id)
+         Passport.defaultLoginOptions
+         Nothing
+         context.req
+
+       output <- Promise.toAffE $
+         runEffectFn2
+         helpers.selectGraphQLResultFromTable
+         (appPublicUsersFragment build.pgSql.fragment )
+         (runFn2 mkSelectGraphQLResultFromTable user.id build.pgSql)
 
        pure { "data": output }
     }

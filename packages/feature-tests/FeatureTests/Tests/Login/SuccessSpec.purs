@@ -95,8 +95,6 @@ spec = do
       >>= \text -> text `shouldEqual` user.password
     )
 
-  pressEnterToContinue
-
   runLunapark $ Lunapark.findElement (Lunapark.ByXPath """//div[@role="form"]//button[text()="Submit"]""") >>= Lunapark.clickElement
 
   pressEnterToContinue
