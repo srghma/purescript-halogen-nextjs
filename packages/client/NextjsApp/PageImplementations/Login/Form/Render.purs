@@ -128,7 +128,13 @@ render state =
           unit
           Button.button
           { variant: Button.Raised
-          , config: Button.defaultConfig { additionalClasses = [ NextjsApp.PageImplementations.Login.Css.styles.buttons__button ] }
+          , config: Button.defaultConfig
+            { additionalClasses = [ NextjsApp.PageImplementations.Login.Css.styles.buttons__button ]
+            , disabled =
+              case state.validity of
+                   F.Valid -> false
+                   _       -> true
+            }
           , content: [ HH.text "Submit" ]
           }
           (\(_ :: Button.Message) -> spy "submit" (F.submit))

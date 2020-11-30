@@ -1,7 +1,7 @@
 module ApiServer.Postgraphile where
 
 import ApiServer.Config
-import ApiServer.PassportLoginPlugin
+import ApiServer.PostgraphilePassportLoginPlugin
 import Data.Function.Uncurried
 import Effect.Uncurried
 import Node.Express.Types
@@ -9,6 +9,8 @@ import PathyExtra
 import Postgraphile
 import Protolude
 
+import ApiServer.PassportMethodsFixed (UserUUID(..))
+import ApiServer.PassportMethodsFixed as ApiServer.PassportMethodsFixed
 import Control.Promise (Promise)
 import Control.Promise as Promise
 import Data.Array as Array
@@ -16,14 +18,22 @@ import Data.Nullable (Nullable)
 import Data.Nullable as Nullable
 import Data.String.NonEmpty (NonEmptyString)
 import Data.String.NonEmpty as NonEmptyString
+import Database.PostgreSQL (Pool)
 import Foreign.Object as Object
 import Node.Express.App as Express
+import Node.Express.Passport as Passport
 import Node.HTTP as Node.HTTP
 import Postgraphile as Postgraphile
-import ApiServer.PassportMethodsFixed as ApiServer.PassportMethodsFixed
-import Node.Express.Passport as Passport
 
-postgraphileOptions :: _ -> PostgraphileOptions
+postgraphileOptions
+  :: { databaseHost :: String
+     , databaseName :: String
+     , databaseOwnerPassword :: NonEmptyString
+     , ownerPgPool :: Pool
+     , target :: ConfigTarget
+     , websocketMiddlewares :: Array (EffectFn3 Request Response (Effect Unit) Unit)
+     }
+  -> PostgraphileOptions { | ContextInjectedByUsRow + () }
 postgraphileOptions config =
   { pluginHook: makePluginHook [pgPubsub, graphileSupporter]
   , ownerConnectionString: "postgres://app_owner:" <> NonEmptyString.toString config.databaseOwnerPassword <> "@" <> config.databaseHost <> "/" <> config.databaseName
@@ -100,7 +110,7 @@ postgraphileOptions config =
   , appendPlugins:
       [ pgSimplifyInflectorPlugin
       , pgMutationUpsertPlugin
-      , passportLoginPlugin
+      , postgraphilePassportLoginPlugin
       ]
 
   , graphileBuildOptions:
@@ -108,20 +118,30 @@ postgraphileOptions config =
       }
 
   , pgSettings: mkEffectFn1 \req -> Promise.fromAff $ liftEffect do
-     (user :: Maybe String) <- ApiServer.PassportMethodsFixed.passportMethods.getUser req
+     (userUUID :: Maybe UserUUID) <- ApiServer.PassportMethodsFixed.passportMethods.getUser req
      pure $ Object.fromFoldable $ Array.catMaybes
       [ Just $ "role" /\ "app_user"
-      , user <#> \user -> "jwt.claims.user_id" /\ user
+      , userUUID <#> \userUUID -> "jwt.claims.user_id" /\ ApiServer.PassportMethodsFixed.userUUIDToString userUUID
       ]
 
   , websocketMiddlewares: config.websocketMiddlewares
 
-  , additionalGraphQLContextFromRequest: mkEffectFn1 \req -> Promise.fromAff $ liftEffect $ pure
+  , additionalGraphQLContextFromRequest: Nullable.notNull $ mkEffectFn1 \req -> Promise.fromAff $ liftEffect $ pure
       { ownerPgPool: config.ownerPgPool
-      , login: \user -> ApiServer.PassportMethodsFixed.passportMethods.logIn user Passport.defaultLoginOptions Nothing req
+      , req
       }
   }
 
+mkMiddleware
+  :: { anonymousPgPool ∷ Pool
+     , databaseHost ∷ String
+     , databaseName ∷ String
+     , databaseOwnerPassword ∷ NonEmptyString
+     , ownerPgPool ∷ Pool
+     , target ∷ ConfigTarget
+     , websocketMiddlewares ∷ Array (EffectFn3 Request Response (Effect Unit) Unit)
+     }
+  -> EffectFn3 Request Response (Effect Unit) Unit
 mkMiddleware
   { anonymousPgPool
   , ownerPgPool
@@ -130,9 +150,7 @@ mkMiddleware
 
   , databaseName
   , databaseHost
-  , databasePort
   , databaseOwnerPassword
-
   } =
     runFn3
     Postgraphile.postgraphile
@@ -141,7 +159,6 @@ mkMiddleware
     ( postgraphileOptions
       { databaseName
       , databaseHost
-      , databasePort
       , databaseOwnerPassword
       , target
       , websocketMiddlewares

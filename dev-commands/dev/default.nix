@@ -79,7 +79,7 @@ config.mkScripts {
       migrate
   '';
 
-  dev__server = config.mkCommand lib.serverEnv ''
+  dev__api_server = config.mkCommand lib.serverEnv ''
     waitforit -host=$POSTGRES_HOST -port=$POSTGRES_PORT -timeout=30
 
     wait-for-postgres --dbname=postgres://app_owner:$DATABASE_OWNER_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$DATABASE_NAME

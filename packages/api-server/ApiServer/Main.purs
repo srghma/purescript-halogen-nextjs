@@ -64,7 +64,6 @@ main = do
         , target:                config.target
         , databaseName:          config.databaseName
         , databaseHost:          config.databaseHost
-        , databasePort:          config.databasePort
         , databaseOwnerPassword: config.databaseOwnerPassword
         }
 

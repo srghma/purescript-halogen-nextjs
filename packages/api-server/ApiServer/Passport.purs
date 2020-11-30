@@ -57,7 +57,7 @@ passportMiddlewareAndRoutes config = do
           Passport.logOut
           Express.redirect "/"
       , "/auth/github" /\ do
-          unsafeThrowException $ error "/auth/github"
+          throwError $ error "/auth/github"
           -- setReturnTo
       , githubCallbackPath /\ githubHandler
       ]

@@ -16,9 +16,13 @@ import Type.Prelude (Proxy(..))
 import Data.String.NonEmpty (NonEmptyString)
 import Data.String.NonEmpty as NonEmptyString
 
+newtype UserUUID = UserUUID String
+
+userUUIDToString (UserUUID s) = s
+
 passportMethods =
   let
-    proxyUser :: Proxy String
+    proxyUser :: Proxy UserUUID
     proxyUser = Proxy
 
     proxyInfo :: Proxy Void

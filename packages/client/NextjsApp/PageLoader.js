@@ -1,22 +1,4 @@
-module ApiServer.PassportLoginPlugin where
-
-import Control.Promise
-import Effect.Uncurried
-import Postgraphile
-import Protolude
-
-import Control.Monad.Except (Except)
-import Control.Promise as Promise
-import Data.List.NonEmpty as NonEmptyList
-import Data.Nullable (Nullable)
-import Data.Nullable as Nullable
-import Database.PostgreSQL (Connection, Pool, Row4(..))
-import Database.PostgreSQL as PostgreSQL
-import Effect.Exception.Unsafe (unsafeThrowException)
-import Foreign (F, Foreign, MultipleErrors)
-import Foreign as Foreign
-import Foreign.Index as Foreign
-import Unsafe.Coerce (unsafeCoerce)
+let pageCache = undefined
 
 exports.readPageCache = function() {
   return pageCache || []

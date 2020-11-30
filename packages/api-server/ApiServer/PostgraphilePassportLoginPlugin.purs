@@ -1,10 +1,11 @@
-module ApiServer.PassportLoginPlugin where
+module ApiServer.PostgraphilePassportLoginPlugin where
 
 import Control.Promise
 import Effect.Uncurried
 import Postgraphile
 import Protolude
 
+import ApiServer.PassportMethodsFixed as ApiServer.PassportMethodsFixed
 import Control.Monad.Except (Except)
 import Control.Promise as Promise
 import Data.List.NonEmpty as NonEmptyList
@@ -16,6 +17,8 @@ import Effect.Exception.Unsafe (unsafeThrowException)
 import Foreign (F, Foreign, MultipleErrors)
 import Foreign as Foreign
 import Foreign.Index as Foreign
+import Node.Express.Passport as Passport
+import Node.Express.Types (Request)
 import Unsafe.Coerce (unsafeCoerce)
 
 -- TypeDefs
@@ -49,7 +52,7 @@ newtype User = User
 
 type ContextInjectedByUsRow r =
   ( ownerPgPool :: Pool
-  , login :: User -> Effect Unit
+  , req :: Request
   | r )
 
 type ContextInjectedByPostgraphileRow r =
@@ -131,12 +134,13 @@ throwPgError e = do
   traceM { e }
   throwError <<< error <<< (\pgError -> "PgError: " <> show pgError) $ e
 
-passportLoginPlugin :: PostgraphileAppendPlugin
-passportLoginPlugin = mkPassportLoginPlugin \build ->
+postgraphilePassportLoginPlugin :: PostgraphileAppendPlugin
+postgraphilePassportLoginPlugin = mkPassportLoginPlugin \build ->
   { "Mutation":
     { webRegister: mkEffectFn5 \mutation args context resolveInfo helpers -> unsafeThrowException $ error "webRegister"
     , webLogin: mkEffectFn5 \mutation args context resolveInfo helpers -> Promise.fromAff do
        -- | traceM { mutation, args, context, resolveInfo, helpers }
+       traceM { context }
 
        (input ::WebLoginInput) <- runExcept (decodeWebLoginInput args.input)
           # either (throwError <<< error <<< Foreign.renderForeignError <<< NonEmptyList.head) pure
@@ -186,6 +190,8 @@ passportLoginPlugin = mkPassportLoginPlugin \build ->
           )
           (PostgreSQL.Row2 "jwt.claims.user_id" user.id)
           >>= maybe (pure unit) throwPgError
+
+       liftEffect $ ApiServer.PassportMethodsFixed.passportMethods.logIn (ApiServer.PassportMethodsFixed.UserUUID user.id) Passport.defaultLoginOptions Nothing context.req
 
        pure { "data": output }
     }

@@ -15,15 +15,25 @@ data PostgraphileServerPlugin
 data PostgraphileServerPluginHook
 data PostgraphileAppendPlugin
 
-foreign import postgraphile :: Fn3 Pool String PostgraphileOptions Middleware
-foreign import makePluginHook :: Array PostgraphileServerPlugin -> PostgraphileServerPluginHook
+foreign import postgraphile
+  :: forall additionalGraphQLContextFromRequest
+   . Fn3 Pool String (PostgraphileOptions additionalGraphQLContextFromRequest) Middleware
+
+foreign import makePluginHook
+  :: Array PostgraphileServerPlugin
+  -> PostgraphileServerPluginHook
+
 foreign import graphileSupporter :: PostgraphileServerPlugin
+
 foreign import enhanceHttpServerWithSubscriptions :: EffectFn2 Node.HTTP.Server Middleware Unit
+
 foreign import pgPubsub :: PostgraphileServerPlugin
+
 foreign import pgSimplifyInflectorPlugin :: PostgraphileAppendPlugin
+
 foreign import pgMutationUpsertPlugin :: PostgraphileAppendPlugin
 
-type PostgraphileOptions =
+type PostgraphileOptions additionalGraphQLContextFromRequest =
   { pluginHook                 :: PostgraphileServerPluginHook
   , classicIds                 :: Boolean
   , enableCors                 :: Boolean
@@ -56,12 +66,5 @@ type PostgraphileOptions =
       (Promise (Object String))
 
   , websocketMiddlewares :: Array Middleware
-  , additionalGraphQLContextFromRequest ::
-      EffectFn1
-      Request
-      ( Promise
-        { ownerPgPool :: Pool
-        , login :: String -> Effect Unit
-        }
-      )
+  , additionalGraphQLContextFromRequest :: Nullable (EffectFn1 Request (Promise additionalGraphQLContextFromRequest))
   }
