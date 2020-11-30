@@ -202,6 +202,8 @@ postgraphilePassportLoginPlugin = mkPassportLoginPlugin \build ->
          (appPublicUsersFragment build.pgSql.fragment )
          (runFn2 mkSelectGraphQLResultFromTable user.id build.pgSql)
 
+       traceM { output }
+
        pure { "data": output }
     }
   }

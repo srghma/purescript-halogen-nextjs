@@ -5,7 +5,10 @@ import Node.Express.Passport
 import Node.Express.Types
 import Protolude
 
+import ApiServer.PassportMethodsFixed (UserUUID(..))
 import ApiServer.PassportMethodsFixed as ApiServer.PassportMethodsFixed
+import Data.Argonaut as Argonaut
+import Data.Argonaut.Core as Json
 import Data.NonEmpty (NonEmpty(..))
 import Data.String.NonEmpty (NonEmptyString)
 import Data.String.NonEmpty as NonEmptyString
@@ -22,8 +25,12 @@ passportMiddlewareAndRoutes :: _ -> Effect { middlewares :: Array Middleware, ro
 passportMiddlewareAndRoutes config = do
   (passport :: Passport) <- Passport.getPassport
 
-  ApiServer.PassportMethodsFixed.passportMethods.addSerializeUser passport \req user -> unsafeThrowException $ error "addSerializeUser"
-  ApiServer.PassportMethodsFixed.passportMethods.addDeserializeUser passport \req json -> unsafeThrowException $ error "addDeserializeUser"
+  ApiServer.PassportMethodsFixed.passportMethods.addSerializeUser passport \req (UserUUID userUUID) ->
+    pure $ SerializedUser__Result $ Just $ Json.fromString userUUID
+  ApiServer.PassportMethodsFixed.passportMethods.addDeserializeUser passport \req json -> do
+    (userUUID :: String) <- Argonaut.decodeJson json
+      # either (throwError <<< error <<< Argonaut.printJsonDecodeError) pure
+    pure $ DeserializedUser__Result $ Just $ UserUUID userUUID
 
   let githubCallbackPath = "/auth/github/callback"
 
