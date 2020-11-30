@@ -190,12 +190,11 @@ postgraphilePassportLoginPlugin = mkPassportLoginPlugin \build ->
           (PostgreSQL.Row2 "jwt.claims.user_id" user.id)
           >>= maybe (pure unit) throwPgError
 
-       liftEffect $
-         ApiServer.PassportMethodsFixed.passportMethods.logIn
+       ApiServer.PassportMethodsFixed.passportMethods.login
          (ApiServer.PassportMethodsFixed.UserUUID user.id)
          Passport.defaultLoginOptions
-         Nothing
          context.req
+         >>= maybe (pure unit) throwError
 
        output <- Promise.toAffE $
          runEffectFn2

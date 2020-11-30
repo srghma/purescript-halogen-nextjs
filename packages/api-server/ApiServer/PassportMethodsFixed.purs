@@ -32,6 +32,6 @@ passportMethods =
     , addDeserializeUser: Passport.addDeserializeUser proxyUser
     , authenticate: Passport.authenticate proxyUser proxyInfo
     , getUser: Passport.getUser proxyUser
-    , logIn: Passport.logIn proxyUser
+    , login: Passport.login proxyUser
     , passportStrategyGithub: PassportGithub.passportStrategyGithub proxyUser proxyInfo
     }

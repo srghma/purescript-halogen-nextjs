@@ -54,7 +54,7 @@ passportMiddlewareAndRoutes config = do
       ]
     , routes:
       [ "/logout" /\ do
-          Passport.logOut
+          Passport.logout
           Express.redirect "/"
       , "/auth/github" /\ do
           throwError $ error "/auth/github"
