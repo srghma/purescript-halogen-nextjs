@@ -25,17 +25,17 @@ passportMiddlewareAndRoutes :: _ -> Effect { middlewares :: Array Middleware, ro
 passportMiddlewareAndRoutes config = do
   (passport :: Passport) <- Passport.getPassport
 
-  ApiServer.PassportMethodsFixed.passportMethods.serializeUser passport \req (UserUUID userUUID) ->
-    pure $ SerializedUser__Result $ Just $ Json.fromString userUUID
-  ApiServer.PassportMethodsFixed.passportMethods.deserializeUser passport \req json -> do
+  ApiServer.PassportMethodsFixed.serializeUser passport \req (UserUUID userUUID) ->
+    pure $ SerializedUser__Result $ Json.fromString userUUID
+  ApiServer.PassportMethodsFixed.deserializeUser passport \req json -> do
     (userUUID :: String) <- Argonaut.decodeJson json
       # either (throwError <<< error <<< Argonaut.printJsonDecodeError) pure
-    pure $ DeserializedUser__Result $ Just $ UserUUID userUUID
+    pure $ DeserializedUser__Result $ UserUUID userUUID
 
   let githubCallbackPath = "/auth/github/callback"
 
   Passport.useStrategy passport PassportGithub.githubStrategyId $
-    ApiServer.PassportMethodsFixed.passportMethods.passportStrategyGithub
+    ApiServer.PassportMethodsFixed.passportStrategyGithub
     { clientID: config.oauthGithubClientID
     , clientSecret: NonEmptyString.toString config.oauthGithubClientSecret
     , includeEmail: true
@@ -44,7 +44,7 @@ passportMiddlewareAndRoutes config = do
     \request accesstoken refreshtoken params profile -> unsafeThrowException $ error "githubStrategyId"
 
   let (githubHandler :: Handler) =
-        ApiServer.PassportMethodsFixed.passportMethods.authenticate
+        ApiServer.PassportMethodsFixed.authenticate
         passport
         PassportGithub.githubStrategyId
         ( Passport.defaultAuthenticateOptions

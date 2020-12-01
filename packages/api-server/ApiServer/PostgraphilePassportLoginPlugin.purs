@@ -192,7 +192,7 @@ postgraphilePassportLoginPlugin = mkPassportLoginPlugin \build ->
 
        traceM "set_config"
 
-       ApiServer.PassportMethodsFixed.passportMethods.login
+       ApiServer.PassportMethodsFixed.login
          (ApiServer.PassportMethodsFixed.UserUUID user.id)
          Passport.defaultLoginOptions
          context.req

@@ -118,7 +118,7 @@ postgraphileOptions config =
       }
 
   , pgSettings: mkEffectFn1 \req -> Promise.fromAff $ liftEffect do
-     (userUUID :: Maybe UserUUID) <- ApiServer.PassportMethodsFixed.passportMethods.getUser req
+     (userUUID :: Maybe UserUUID) <- ApiServer.PassportMethodsFixed.getUser req
      pure $ Object.fromFoldable $ Array.catMaybes
       [ Just $ "role" /\ "app_user"
       , userUUID <#> \userUUID -> "jwt.claims.user_id" /\ ApiServer.PassportMethodsFixed.userUUIDToString userUUID
