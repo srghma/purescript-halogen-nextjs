@@ -130,8 +130,8 @@ render state =
           { variant: Button.Raised
           , config: Button.defaultConfig
             { additionalClasses = [ NextjsApp.PageImplementations.Login.Css.styles.buttons__button ]
-            , disabled = spy "disabled"
-              case spy "state.validity" (state.validity) of
+            , disabled =
+              case state.validity of
                    F.Valid -> false
                    _       -> true
             }

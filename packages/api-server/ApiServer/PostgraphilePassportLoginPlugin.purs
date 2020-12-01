@@ -190,16 +190,22 @@ postgraphilePassportLoginPlugin = mkPassportLoginPlugin \build ->
           (PostgreSQL.Row2 "jwt.claims.user_id" user.id)
           >>= maybe (pure unit) throwPgError
 
+       traceM "set_config"
+
        ApiServer.PassportMethodsFixed.passportMethods.login
          (ApiServer.PassportMethodsFixed.UserUUID user.id)
          Passport.defaultLoginOptions
          context.req
-         >>= maybe (pure unit) throwError
+         >>= \e -> do
+            traceM { e }
+            maybe (pure unit) throwError e
+
+       traceM "passport login"
 
        output <- Promise.toAffE $
          runEffectFn2
          helpers.selectGraphQLResultFromTable
-         (appPublicUsersFragment build.pgSql.fragment )
+         (appPublicUsersFragment build.pgSql.fragment)
          (runFn2 mkSelectGraphQLResultFromTable user.id build.pgSql)
 
        traceM { output }

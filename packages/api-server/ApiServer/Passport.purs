@@ -25,9 +25,9 @@ passportMiddlewareAndRoutes :: _ -> Effect { middlewares :: Array Middleware, ro
 passportMiddlewareAndRoutes config = do
   (passport :: Passport) <- Passport.getPassport
 
-  ApiServer.PassportMethodsFixed.passportMethods.addSerializeUser passport \req (UserUUID userUUID) ->
+  ApiServer.PassportMethodsFixed.passportMethods.serializeUser passport \req (UserUUID userUUID) ->
     pure $ SerializedUser__Result $ Just $ Json.fromString userUUID
-  ApiServer.PassportMethodsFixed.passportMethods.addDeserializeUser passport \req json -> do
+  ApiServer.PassportMethodsFixed.passportMethods.deserializeUser passport \req json -> do
     (userUUID :: String) <- Argonaut.decodeJson json
       # either (throwError <<< error <<< Argonaut.printJsonDecodeError) pure
     pure $ DeserializedUser__Result $ Just $ UserUUID userUUID

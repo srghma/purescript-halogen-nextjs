@@ -28,8 +28,8 @@ passportMethods =
     proxyInfo :: Proxy Void
     proxyInfo = Proxy
   in
-    { addSerializeUser: Passport.addSerializeUser proxyUser
-    , addDeserializeUser: Passport.addDeserializeUser proxyUser
+    { serializeUser: Passport.serializeUser proxyUser
+    , deserializeUser: Passport.deserializeUser proxyUser
     , authenticate: Passport.authenticate proxyUser proxyInfo
     , getUser: Passport.getUser proxyUser
     , login: Passport.login proxyUser
