@@ -125,91 +125,91 @@ type WebLoginInput =
   , password :: String
   }
 
-decodeWebLoginInput :: Foreign -> Except MultipleErrors WebLoginInput
-decodeWebLoginInput value = ado
-  username <- value Foreign.! "username" >>= Foreign.readString
-  password <- value Foreign.! "password" >>= Foreign.readString
-
-  in
-    { username
-    , password
-    }
-
 throwPgError e = do
-  traceM { e }
+  -- | traceM { e }
   throwError <<< error <<< (\pgError -> "PgError: " <> show pgError) $ e
 
 postgraphilePassportLoginPlugin :: PostgraphileAppendPlugin
 postgraphilePassportLoginPlugin = mkPassportLoginPlugin \build ->
   { "Mutation":
     { webRegister: mkEffectFn5 \mutation args context resolveInfo helpers -> unsafeThrowException $ error "webRegister"
-    , webLogin: mkEffectFn5 \mutation args context resolveInfo helpers -> Promise.fromAff do
-       -- | traceM { mutation, args, context, resolveInfo, helpers }
-       traceM { context }
+    , webLogin:
+     let
+        decodeWebLoginInput :: Foreign -> Except MultipleErrors WebLoginInput
+        decodeWebLoginInput value = ado
+          username <- value Foreign.! "username" >>= Foreign.readString
+          password <- value Foreign.! "password" >>= Foreign.readString
+          in
+            { username
+            , password
+            }
+      in mkEffectFn5 \mutation args context resolveInfo helpers -> Promise.fromAff do
+        -- | traceM { mutation, args, context, resolveInfo, helpers }
+        -- | traceM { context }
 
-       (input ::WebLoginInput) <- runExcept (decodeWebLoginInput args.input)
-          # either (throwError <<< error <<< Foreign.renderForeignError <<< NonEmptyList.head) pure
+        (input ::WebLoginInput) <- runExcept (decodeWebLoginInput args.input)
+            # either (throwError <<< error <<< Foreign.renderForeignError <<< NonEmptyList.head) pure
 
-       traceM { input }
+        -- | traceM { input }
 
-       user <- PostgreSQL.withConnection context.ownerPgPool $ either throwPgError \connection -> do
-          (result :: Array (Row4 String String (Maybe String) (Maybe String))) <-
-            PostgreSQL.query connection
+        user <- PostgreSQL.withConnection context.ownerPgPool $ either throwPgError \connection -> do
+            (result :: Array (Row4 String String (Maybe String) (Maybe String))) <-
+              PostgreSQL.query connection
+              ( PostgreSQL.Query
+                """
+                select
+                  users.id,
+                  users.username,
+                  users.name,
+                  users.avatar_url
+                from app_private.web_login($1, $2) users
+                where not (users is null)
+                """
+              )
+              (PostgreSQL.Row2 input.username input.password)
+              >>= either throwPgError pure
+
+            -- | traceM { result }
+
+            user <-
+              case result of
+                  [] -> throwError $ error "Invalid password"
+                  [Row4 id username name avatar_url] -> pure { id, username, name, avatar_url }
+                  _ -> throwError $ error "Expected exactly 1 array elem"
+
+            -- | traceM { user }
+
+            pure user
+
+        PostgreSQL.execute context.pgClient
             ( PostgreSQL.Query
               """
-              select
-                users.id,
-                users.username,
-                users.name,
-                users.avatar_url
-              from app_private.web_login($1, $2) users
-              where not (users is null)
+              select set_config($1, $2, true);
               """
             )
-            (PostgreSQL.Row2 input.username input.password)
-            >>= either throwPgError pure
+            (PostgreSQL.Row2 "jwt.claims.user_id" user.id)
+            >>= maybe (pure unit) throwPgError
 
-          traceM { result }
+        -- | traceM "set_config"
 
-          user <-
-            case result of
-                [] -> throwError $ error "Invalid password"
-                [Row4 id username name avatar_url] -> pure { id, username, name, avatar_url }
-                _ -> throwError $ error "Expected exactly 1 array elem"
+        ApiServer.PassportMethodsFixed.login
+          (ApiServer.PassportMethodsFixed.UserUUID user.id)
+          Passport.defaultLoginOptions
+          context.req
+          >>= \e -> do
+              -- | traceM { e }
+              maybe (pure unit) throwError e
 
-          traceM { user }
+        -- | traceM "passport login"
 
-          pure user
+        output <- Promise.toAffE $
+          runEffectFn2
+          helpers.selectGraphQLResultFromTable
+          (appPublicUsersFragment build.pgSql.fragment)
+          (runFn2 mkSelectGraphQLResultFromTable user.id build.pgSql)
 
-       PostgreSQL.execute context.pgClient
-          ( PostgreSQL.Query
-            """
-            select set_config($1, $2, true);
-            """
-          )
-          (PostgreSQL.Row2 "jwt.claims.user_id" user.id)
-          >>= maybe (pure unit) throwPgError
+        traceM { "web login output": output }
 
-       traceM "set_config"
-
-       ApiServer.PassportMethodsFixed.login
-         (ApiServer.PassportMethodsFixed.UserUUID user.id)
-         Passport.defaultLoginOptions
-         context.req
-         >>= \e -> do
-            traceM { e }
-            maybe (pure unit) throwError e
-
-       traceM "passport login"
-
-       output <- Promise.toAffE $
-         runEffectFn2
-         helpers.selectGraphQLResultFromTable
-         (appPublicUsersFragment build.pgSql.fragment)
-         (runFn2 mkSelectGraphQLResultFromTable user.id build.pgSql)
-
-       traceM { output }
-
-       pure { "data": output }
+        pure { "data": output }
     }
   }
