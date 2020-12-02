@@ -6,6 +6,7 @@
   , "./packages/client-test/**/*.purs"
   , "./packages/client-webpack/**/*.purs"
   , "./packages/src/**/*.purs"
+  , "./packages/api-server-exceptions/**/*.purs"
   , "./packages/client-halogen-examples/ace/**/*.purs"
   , "./packages/client-halogen-examples/basic/**/*.purs"
   , "./packages/client-halogen-examples/components-inputs/**/*.purs"

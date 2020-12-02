@@ -45,7 +45,7 @@ import NextjsApp.NodeEnv as NextjsApp.NodeEnv
 import NextjsApp.Data.InUseUsernameOrEmail (InUseUsernameOrEmail)
 import NextjsApp.Data.InUseUsernameOrEmail as NextjsApp.Data.InUseUsernameOrEmail
 import NextjsApp.Route as NextjsApp.Route
-import NextjsApp.ServerExceptions as NextjsApp.ServerExceptions
+import ApiServerExceptions.PostgraphilePassportLoginPlugin as ApiServerExceptions.PostgraphilePassportLoginPlugin
 import NextjsApp.Queries.Utils
 import NextjsGraphqlApi.Object.User as NextjsGraphqlApi.Object.User
 import NextjsGraphqlApi.Object.WebLoginPayload as NextjsGraphqlApi.Object.WebLoginPayload
@@ -96,9 +96,9 @@ component =
                          -- |                     in LoginError__UnknownError message
 
                          -- |                     -- | in case unit of
-                         -- |                     -- |         _ | message == NextjsApp.ServerExceptions.login_emailNotRegistered -> LoginError__EmailNotRegistered
-                         -- |                     -- |           | message == NextjsApp.ServerExceptions.login_notConfirmed ->       LoginError__NotConfirmed
-                         -- |                     -- |           | message == NextjsApp.ServerExceptions.login_wrongPassword ->      LoginError__WrongPassword
+                         -- |                     -- |         _ | message == ApiServerExceptions.PostgraphilePassportLoginPlugin.login_emailNotRegistered -> LoginError__EmailNotRegistered
+                         -- |                     -- |           | message == ApiServerExceptions.PostgraphilePassportLoginPlugin.login_notConfirmed ->       LoginError__NotConfirmed
+                         -- |                     -- |           | message == ApiServerExceptions.PostgraphilePassportLoginPlugin.login_wrongPassword ->      LoginError__WrongPassword
                          -- |                     -- |           | otherwise ->                                                      LoginError__UnknownError message
                          -- |           Right u -> Nothing
 

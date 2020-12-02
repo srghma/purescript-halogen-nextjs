@@ -1,6 +1,8 @@
 module ApiServer.PostgraphilePassportLoginPlugin where
 
+import ApiServerExceptions.PostgraphilePassportLoginPlugin
 import Control.Promise
+import Data.Function.Uncurried
 import Effect.Uncurried
 import Postgraphile
 import Protolude
@@ -8,12 +10,13 @@ import Protolude
 import ApiServer.PassportMethodsFixed as ApiServer.PassportMethodsFixed
 import Control.Monad.Except (Except)
 import Control.Promise as Promise
-import Data.Function.Uncurried
 import Data.List.NonEmpty as NonEmptyList
+import Data.Newtype (over)
 import Data.Nullable (Nullable)
 import Data.Nullable as Nullable
-import Database.PostgreSQL (Connection, Pool, Row4(..))
+import Database.PostgreSQL (Connection, PGError, Pool, Row4(..))
 import Database.PostgreSQL as PostgreSQL
+import Effect.Aff (bracket)
 import Effect.Exception.Unsafe (unsafeThrowException)
 import Foreign (F, Foreign, MultipleErrors)
 import Foreign as Foreign
@@ -125,9 +128,52 @@ type WebLoginInput =
   , password :: String
   }
 
-throwPgError e = do
-  -- | traceM { e }
-  throwError <<< error <<< (\pgError -> "PgError: " <> show pgError) $ e
+-- | throwPgError e = do
+-- |   -- | traceM { e }
+-- |   throwError <<< error <<< (\pgError -> "PgError: " <> show pgError) $ e
+
+bracketEither ∷ ∀ a b eAcc eRes . Aff (Either eAcc a) → (a → Aff Unit) → (a → Aff (Either eRes b)) → Aff (Either eAcc (Either eRes b))
+bracketEither acquire completed run =
+  bracket
+  acquire
+  ( case _ of
+         Left eAcc -> pure unit
+         Right a -> completed a
+  )
+  ( case _ of
+         Left e -> pure $ Left e
+         Right a -> map Right (run a)
+  )
+
+withConnectionEither ::
+  forall a e.
+  Pool ->
+  (Connection -> Aff (Either e a)) ->
+  Aff (Either PGError (Either e a))
+withConnectionEither p k = bracketEither (PostgreSQL.connect p) cleanup run
+  where
+  cleanup { done } = liftEffect done
+  run { connection } = k connection
+
+withConnectionExceptT ::
+  forall a e.
+  Pool ->
+  (PGError -> e) ->
+  (Connection -> ExceptT e Aff a) ->
+  ExceptT e Aff a
+withConnectionExceptT pool toError action =
+  ExceptT $
+  (map $ either (toError >>> Left) identity) $
+  withConnectionEither pool (runExceptT <<< action)
+
+mapErrorExceptT :: forall m e e' a . Functor m => (e -> e') -> ExceptT e m a -> ExceptT e' m a
+mapErrorExceptT f = over ExceptT $ map (lmap f)
+
+maybeToExceptT :: forall e m . Functor m => m (Maybe e) -> ExceptT e m Unit
+maybeToExceptT = ExceptT <<< map (maybe (Right unit) Left)
+
+-- | mEitherToExceptT :: forall e e' a m . Functor m => (e -> e') -> m (Either e a) -> ExceptT e' m a
+-- | mEitherToExceptT toE = ExceptT <<< map (lmap toE)
 
 postgraphilePassportLoginPlugin :: PostgraphileAppendPlugin
 postgraphilePassportLoginPlugin = mkPassportLoginPlugin \build ->
@@ -143,18 +189,37 @@ postgraphilePassportLoginPlugin = mkPassportLoginPlugin \build ->
             { username
             , password
             }
-      in mkEffectFn5 \mutation args context resolveInfo helpers -> Promise.fromAff do
+
+        runExceptWebLoginExceptions :: forall a . ExceptT WebLoginExceptionsServer Aff a -> Effect (Promise a)
+        runExceptWebLoginExceptions = runExceptT >>> (_ >>= either logAndThrowError pure) >>> Promise.fromAff
+          where
+            logAndThrowError e = do
+              -- TODO: log properly
+              traceM e
+
+              throwError $ error $ webLoginExceptionsClientToString $ case e of
+                WebLoginExceptionsServer__Internal__CannotDecodeInput multipleErrors -> WebLoginExceptionsClient__Internal
+                WebLoginExceptionsServer__Internal__CannotCreateDbConnect pGError    -> WebLoginExceptionsClient__Internal
+                WebLoginExceptionsServer__Internal__LoginFailed pGError              -> WebLoginExceptionsClient__Internal
+                WebLoginExceptionsServer__Internal__Login__ExpectedArrayWith1Elem    -> WebLoginExceptionsClient__Internal
+                WebLoginExceptionsServer__LoginFailed                                -> WebLoginExceptionsClient__LoginFailed
+                WebLoginExceptionsServer__Internal__SetId pGError                    -> WebLoginExceptionsClient__Internal
+                WebLoginExceptionsServer__Internal__PassportLoginError error         -> WebLoginExceptionsClient__Internal
+
+      in mkEffectFn5 \mutation args context resolveInfo helpers -> runExceptWebLoginExceptions do
         -- | traceM { mutation, args, context, resolveInfo, helpers }
         -- | traceM { context }
 
         (input ::WebLoginInput) <- runExcept (decodeWebLoginInput args.input)
-            # either (throwError <<< error <<< Foreign.renderForeignError <<< NonEmptyList.head) pure
+            # either (throwError <<< WebLoginExceptionsServer__Internal__CannotDecodeInput) pure
 
         -- | traceM { input }
 
-        user <- PostgreSQL.withConnection context.ownerPgPool $ either throwPgError \connection -> do
-            (result :: Array (Row4 String String (Maybe String) (Maybe String))) <-
-              PostgreSQL.query connection
+        user <- withConnectionExceptT context.ownerPgPool WebLoginExceptionsServer__Internal__CannotCreateDbConnect \connection -> do
+          (result :: Array (Row4 String String (Maybe String) (Maybe String))) <-
+            mapErrorExceptT WebLoginExceptionsServer__Internal__LoginFailed
+            $ ExceptT
+            $ PostgreSQL.query connection
               ( PostgreSQL.Query
                 """
                 select
@@ -167,42 +232,41 @@ postgraphilePassportLoginPlugin = mkPassportLoginPlugin \build ->
                 """
               )
               (PostgreSQL.Row2 input.username input.password)
-              >>= either throwPgError pure
 
-            -- | traceM { result }
+          -- | traceM { result }
 
-            user <-
-              case result of
-                  [] -> throwError $ error "Invalid password"
-                  [Row4 id username name avatar_url] -> pure { id, username, name, avatar_url }
-                  _ -> throwError $ error "Expected exactly 1 array elem"
+          user <-
+            case result of
+                [] -> throwError WebLoginExceptionsServer__LoginFailed
+                [Row4 id username name avatar_url] -> pure { id, username, name, avatar_url }
+                _ -> throwError WebLoginExceptionsServer__Internal__Login__ExpectedArrayWith1Elem
 
-            -- | traceM { user }
+          -- | traceM { user }
 
-            pure user
+          pure user
 
-        PostgreSQL.execute context.pgClient
-            ( PostgreSQL.Query
-              """
-              select set_config($1, $2, true);
-              """
-            )
-            (PostgreSQL.Row2 "jwt.claims.user_id" user.id)
-            >>= maybe (pure unit) throwPgError
+        mapErrorExceptT WebLoginExceptionsServer__Internal__SetId
+          $ maybeToExceptT
+          $ PostgreSQL.execute context.pgClient
+          ( PostgreSQL.Query
+            """
+            select set_config($1, $2, true);
+            """
+          )
+          (PostgreSQL.Row2 "jwt.claims.user_id" user.id)
 
         -- | traceM "set_config"
 
-        ApiServer.PassportMethodsFixed.login
-          (ApiServer.PassportMethodsFixed.UserUUID user.id)
-          Passport.defaultLoginOptions
-          context.req
-          >>= \e -> do
-              -- | traceM { e }
-              maybe (pure unit) throwError e
+        mapErrorExceptT WebLoginExceptionsServer__Internal__PassportLoginError
+          $ maybeToExceptT
+          $ ApiServer.PassportMethodsFixed.login
+            (ApiServer.PassportMethodsFixed.UserUUID user.id)
+            Passport.defaultLoginOptions
+            context.req
 
-        -- | traceM "passport login"
+        traceM "passport login"
 
-        output <- Promise.toAffE $
+        output <- liftAff $ Promise.toAffE $
           runEffectFn2
           helpers.selectGraphQLResultFromTable
           (appPublicUsersFragment build.pgSql.fragment)
