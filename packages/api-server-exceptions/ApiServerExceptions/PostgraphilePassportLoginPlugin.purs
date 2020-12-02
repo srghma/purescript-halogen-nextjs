@@ -14,10 +14,23 @@ data WebLoginExceptionsServer
   | WebLoginExceptionsServer__LoginFailed
   | WebLoginExceptionsServer__Internal__SetId PGError
   | WebLoginExceptionsServer__Internal__PassportLoginError Error
+  | WebLoginExceptionsServer__Internal__Output__ExpectedArrayWith1Elem
 
 data WebLoginExceptionsClient
   = WebLoginExceptionsClient__Internal
   | WebLoginExceptionsClient__LoginFailed
+
+webLoginExceptionsServer__to__WebLoginExceptionsClient :: WebLoginExceptionsServer -> WebLoginExceptionsClient
+webLoginExceptionsServer__to__WebLoginExceptionsClient =
+  case _ of
+       WebLoginExceptionsServer__Internal__CannotDecodeInput multipleErrors -> WebLoginExceptionsClient__Internal
+       WebLoginExceptionsServer__Internal__CannotCreateDbConnect pGError    -> WebLoginExceptionsClient__Internal
+       WebLoginExceptionsServer__Internal__LoginFailed pGError              -> WebLoginExceptionsClient__Internal
+       WebLoginExceptionsServer__Internal__Login__ExpectedArrayWith1Elem    -> WebLoginExceptionsClient__Internal
+       WebLoginExceptionsServer__LoginFailed                                -> WebLoginExceptionsClient__LoginFailed
+       WebLoginExceptionsServer__Internal__SetId pGError                    -> WebLoginExceptionsClient__Internal
+       WebLoginExceptionsServer__Internal__PassportLoginError error         -> WebLoginExceptionsClient__Internal
+       WebLoginExceptionsServer__Internal__Output__ExpectedArrayWith1Elem   -> WebLoginExceptionsClient__Internal
 
 webLoginExceptionsClientToString :: WebLoginExceptionsClient -> String
 webLoginExceptionsClientToString =

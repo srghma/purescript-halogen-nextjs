@@ -11,11 +11,11 @@ import Halogen.HTML.Properties as HP
 import NextjsApp.Blocks.PurescriptLogo (purescriptLogoSrc)
 import NextjsApp.Route as NextjsApp.Route
 import NextjsApp.PageImplementations.Login.Types (Action(..), ChildSlots, LoginError(..), State)
+
 renderError :: Maybe LoginError -> String
 renderError = maybe ""
   case _ of
-       LoginError__UsernameOrEmailNotRegistered -> "Username or email not registered or not confirmed"
-       LoginError__WrongPassword      -> "Wrong password"
+       LoginError__LoginFailed -> "Wrong password or email is not registered"
        LoginError__UnknownError error -> "Unknown error: " <> error
 
 render ::

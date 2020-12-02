@@ -22,8 +22,8 @@ type ChildSlots
   = ( formless :: H.Slot (F.Query LoginForm (Const Void) FormChildSlots) LoginDataValidated Unit )
 
 data LoginError
-  = LoginError__UsernameOrEmailNotRegistered
-  | LoginError__WrongPassword
+  = LoginError__LoginFailed
   | LoginError__UnknownError String
+  -- | | LoginError__UsernameOrEmailNotRegistered
 
 type State = { loginError :: Maybe LoginError }

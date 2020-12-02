@@ -77,7 +77,7 @@ type FnArgHelpers =
     EffectFn2
     SqlFragment
     (EffectFn2 String QueryBuilder Unit)
-    (Promise SelectGraphQLResultFromTable__Result)
+    (Promise (Array SelectGraphQLResultFromTable__Result))
   }
 
 type MutationsImplementation =
@@ -172,9 +172,6 @@ mapErrorExceptT f = over ExceptT $ map (lmap f)
 maybeToExceptT :: forall e m . Functor m => m (Maybe e) -> ExceptT e m Unit
 maybeToExceptT = ExceptT <<< map (maybe (Right unit) Left)
 
--- | mEitherToExceptT :: forall e e' a m . Functor m => (e -> e') -> m (Either e a) -> ExceptT e' m a
--- | mEitherToExceptT toE = ExceptT <<< map (lmap toE)
-
 postgraphilePassportLoginPlugin :: PostgraphileAppendPlugin
 postgraphilePassportLoginPlugin = mkPassportLoginPlugin \build ->
   { "Mutation":
@@ -197,14 +194,7 @@ postgraphilePassportLoginPlugin = mkPassportLoginPlugin \build ->
               -- TODO: log properly
               traceM e
 
-              throwError $ error $ webLoginExceptionsClientToString $ case e of
-                WebLoginExceptionsServer__Internal__CannotDecodeInput multipleErrors -> WebLoginExceptionsClient__Internal
-                WebLoginExceptionsServer__Internal__CannotCreateDbConnect pGError    -> WebLoginExceptionsClient__Internal
-                WebLoginExceptionsServer__Internal__LoginFailed pGError              -> WebLoginExceptionsClient__Internal
-                WebLoginExceptionsServer__Internal__Login__ExpectedArrayWith1Elem    -> WebLoginExceptionsClient__Internal
-                WebLoginExceptionsServer__LoginFailed                                -> WebLoginExceptionsClient__LoginFailed
-                WebLoginExceptionsServer__Internal__SetId pGError                    -> WebLoginExceptionsClient__Internal
-                WebLoginExceptionsServer__Internal__PassportLoginError error         -> WebLoginExceptionsClient__Internal
+              throwError $ error $ webLoginExceptionsClientToString $ webLoginExceptionsServer__to__WebLoginExceptionsClient e
 
       in mkEffectFn5 \mutation args context resolveInfo helpers -> runExceptWebLoginExceptions do
         -- | traceM { mutation, args, context, resolveInfo, helpers }
@@ -272,8 +262,13 @@ postgraphilePassportLoginPlugin = mkPassportLoginPlugin \build ->
           (appPublicUsersFragment build.pgSql.fragment)
           (runFn2 mkSelectGraphQLResultFromTable user.id build.pgSql)
 
+        output' <-
+          case output of
+            [output'] -> pure output'
+            _ -> throwError WebLoginExceptionsServer__Internal__Output__ExpectedArrayWith1Elem
+
         traceM { "web login output": output }
 
-        pure { "data": output }
+        pure { "data": output' }
     }
   }
