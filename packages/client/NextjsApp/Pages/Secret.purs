@@ -11,7 +11,7 @@ import NextjsGraphqlApi.Object.User as NextjsGraphqlApi.Object.User
 
 pageSpec :: PageSpec SecretPageUserData
 pageSpec =
-  { pageData: DynamicPageData undefined
+  { pageData: PageData__Dynamic undefined
     -- | ( NextjsGraphqlApi.Query.currentUser
     -- |   ( ado
     -- |       id <- NextjsGraphqlApi.Object.User.id <#> unwrap

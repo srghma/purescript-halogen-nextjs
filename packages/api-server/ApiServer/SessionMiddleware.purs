@@ -45,7 +45,7 @@ sessionMiddleware config = do
       , sameSite: SameSite__Strict
       }
     , genid: Nothing
-    , name: "connect.sid" -- default value
+    , name: ApiServerConfig.expressSessionMiddleware_cookieName -- default value
     , proxy: Nothing
     , saveUninitialized: false
     , resave: false

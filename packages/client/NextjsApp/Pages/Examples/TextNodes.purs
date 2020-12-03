@@ -7,7 +7,7 @@ import Halogen as H
 
 pageSpec :: PageSpec Unit
 pageSpec =
-  { pageData: StaticPageData unit
+  { pageData: PageData__Static unit
   , component: H.hoist liftAff $ Example.TextNodes.Main.component
   , title: "Halogen Example - Text nodes"
   }

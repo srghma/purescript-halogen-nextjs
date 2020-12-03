@@ -18,51 +18,48 @@ import Web.XHR.XMLHttpRequest (withCredentials)
 -- | ○  (Static)  automatically rendered as static HTML (uses no initial props)
 -- | ●  (SSG, server site generated)     automatically generated as static HTML + JSON (uses getStaticProps)
 
-data DynamicPageData_RequestOptions
-  = DynamicPageData_RequestOptions__Server { sessionHeader :: Tuple String String } -- session header from cookie
-  | DynamicPageData_RequestOptions__Client -- should map to { withCredentials = true }
-  | DynamicPageData_RequestOptions__Mobile { sessionHeader :: Tuple String String } -- session header from secure storage
+data PageData_DynamicRequestOptions
+  = PageData_DynamicRequestOptions__Server { sessionHeader :: Tuple String String } -- session header from cookie
+  | PageData_DynamicRequestOptions__Client -- should map to { withCredentials = true }
+  | PageData_DynamicRequestOptions__Mobile { sessionHeader :: Tuple String String } -- session header from secure storage
 
-dynamicPageData__RequestOptions__To__RequestOptions :: DynamicPageData_RequestOptions -> GraphQLClient.RequestOptions
+dynamicPageData__RequestOptions__To__RequestOptions :: PageData_DynamicRequestOptions -> GraphQLClient.RequestOptions
 dynamicPageData__RequestOptions__To__RequestOptions =
   case _ of
-       DynamicPageData_RequestOptions__Server { sessionHeader: (Tuple sessionHeaderKey sessionHeaderValue) } -> GraphQLClient.defaultRequestOptions { headers = [Affjax.RequestHeader sessionHeaderKey sessionHeaderValue] }
-       DynamicPageData_RequestOptions__Client                                                                -> GraphQLClient.defaultRequestOptions { withCredentials = true }
-       DynamicPageData_RequestOptions__Mobile { sessionHeader: (Tuple sessionHeaderKey sessionHeaderValue) } -> GraphQLClient.defaultRequestOptions { headers = [Affjax.RequestHeader sessionHeaderKey sessionHeaderValue] }
+       PageData_DynamicRequestOptions__Server { sessionHeader: (Tuple sessionHeaderKey sessionHeaderValue) } -> GraphQLClient.defaultRequestOptions { headers = [Affjax.RequestHeader sessionHeaderKey sessionHeaderValue] }
+       PageData_DynamicRequestOptions__Client                                                                -> GraphQLClient.defaultRequestOptions { withCredentials = true }
+       PageData_DynamicRequestOptions__Mobile { sessionHeader: (Tuple sessionHeaderKey sessionHeaderValue) } -> GraphQLClient.defaultRequestOptions { headers = [Affjax.RequestHeader sessionHeaderKey sessionHeaderValue] }
 
-data DynamicPageData_Response input
-  = DynamicPageData_Response__Error String
-  | DynamicPageData_Response__Redirect
+data PageData_DynamicResponse input
+  = PageData_DynamicResponse__Error String -- TODO: request status?
+  | PageData_DynamicResponse__Redirect
     { redirectToLocation :: String
     , logout :: Boolean
     }
-  | DynamicPageData_Response__Success input
+  | PageData_DynamicResponse__Success input
 
 data PageData input
-  = DynamicPageData
-    { request ::
-        { requestOptions :: DynamicPageData_RequestOptions
-        } ->
-        Aff (DynamicPageData_Response input)
-    , codec :: DynamicPageData_Codec input
+  = PageData__Dynamic
+    { request :: PageData_DynamicRequestOptions -> Aff (PageData_DynamicResponse input)
+    , codec :: PageData_DynamicCodec input
     }
-  | StaticPageData input
+  | PageData__Static input
   -- | | ServerLoadedPageData (Aff input) -- TODO?
 
 -- on server - used decoder
 -- on client - used encoder (on first page load) OR nothing is used
 -- on mobile - nothing is used
-type DynamicPageData_Codec a
+type PageData_DynamicCodec a
   = { encoder :: a -> ArgonautCore.Json
     , decoder :: ArgonautCore.Json -> Either ArgonautCodecs.JsonDecodeError a
     }
 
-mkDynamicPageData_Codec ::
+mkPageData_DynamicCodec ::
   forall input.
   ArgonautCodecs.EncodeJson input =>
   ArgonautCodecs.DecodeJson input =>
-  DynamicPageData_Codec input
-mkDynamicPageData_Codec = { encoder: ArgonautCodecs.encodeJson, decoder: ArgonautCodecs.decodeJson }
+  PageData_DynamicCodec input
+mkPageData_DynamicCodec = { encoder: ArgonautCodecs.encodeJson, decoder: ArgonautCodecs.decodeJson }
 
 type PageSpecRows input
   = ( pageData :: PageData input
@@ -122,24 +119,24 @@ data PageToPageSpecWithInputBoxed_Response
     , logout :: Boolean
     }
 
-pageToPageSpecWithInputBoxed :: DynamicPageData_RequestOptions -> Page -> Aff PageToPageSpecWithInputBoxed_Response
+pageToPageSpecWithInputBoxed :: PageData_DynamicRequestOptions -> Page -> Aff PageToPageSpecWithInputBoxed_Response
 pageToPageSpecWithInputBoxed requestOptions =
   unPage
     ( \page ->
         case page.pageData of
-             DynamicPageData { request } ->
-               request { requestOptions }
+             PageData__Dynamic { request } ->
+               request requestOptions
                  <#> case _ of
-                         DynamicPageData_Response__Error error -> PageToPageSpecWithInputBoxed_Response__Error error
-                         DynamicPageData_Response__Redirect x -> PageToPageSpecWithInputBoxed_Response__Redirect x
-                         DynamicPageData_Response__Success input ->
+                         PageData_DynamicResponse__Error error -> PageToPageSpecWithInputBoxed_Response__Error error
+                         PageData_DynamicResponse__Redirect x -> PageToPageSpecWithInputBoxed_Response__Redirect x
+                         PageData_DynamicResponse__Success input ->
                            PageToPageSpecWithInputBoxed_Response__Success
                            $ mkPageSpecWithInputBoxed
                              { input
                              , component: page.component
                              , title: page.title
                              }
-             StaticPageData input ->
+             PageData__Static input ->
                pure
                $ PageToPageSpecWithInputBoxed_Response__Success
                $ mkPageSpecWithInputBoxed
@@ -154,7 +151,7 @@ pageToPageSpecWithInputBoxed_GivenInitialJson_Client loadJson =
   unPage
     ( \page ->
         case page.pageData of
-          DynamicPageData { codec } -> do
+          PageData__Dynamic { codec } -> do
             loadJson
             <#> \json -> codec.decoder json
             <#> \input ->
@@ -163,7 +160,7 @@ pageToPageSpecWithInputBoxed_GivenInitialJson_Client loadJson =
                 , component: page.component
                 , title: page.title
                 }
-          StaticPageData input ->
+          PageData__Static input ->
             pure $ Right $ mkPageSpecWithInputBoxed
                   { input
                   , component: page.component

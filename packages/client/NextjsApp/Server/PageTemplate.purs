@@ -19,8 +19,8 @@ jsAsync :: String -> String
 jsAsync path = "<script async=\"\" type=\"application/javascript\" src=\"" <> path <> "\"></script>"
 
 data StaticOrDynamicPageData
-  = StaticPageData -- no need to render __PAGE_DATA__
-  | DynamicPageData ArgonautCore.Json
+  = StaticOrDynamicPageData__Static -- no need to render __PAGE_DATA__
+  | StaticOrDynamicPageData__Dynamic ArgonautCore.Json
 
 type PageSpecServerRendered
   = { pageData :: StaticOrDynamicPageData
@@ -48,8 +48,8 @@ pageTemplate { faviconsHtml
         , prerenderedPagesManifest: ArgonautCore.stringify (ArgonautCodecs.encodeJson clientPagesManifest)
         , prerenderedPageData:
           case pageSpecResolved.pageData of
-            StaticPageData -> Nothing
-            DynamicPageData json -> Just $ ArgonautCore.stringify json
+            StaticOrDynamicPageData__Static -> Nothing
+            StaticOrDynamicPageData__Dynamic json -> Just $ ArgonautCore.stringify json
         , livereloadPort: pageSpecResolved.livereloadPort
         , faviconsHtml
         }

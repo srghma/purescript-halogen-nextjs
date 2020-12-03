@@ -7,7 +7,7 @@ import Example.Ace.Container as Example.Ace.Container
 
 pageSpec :: PageSpec Unit
 pageSpec =
-  { pageData: StaticPageData unit
+  { pageData: PageData__Static unit
   , component: H.hoist liftAff $ Example.Ace.Container.component
   , title: "Halogen Example - Ace button"
   }

@@ -41,7 +41,7 @@ It is using not yet published features/packages:
 
 1. js and css is split per page using webpack machinery
 1. when `Nextjs.Lib.Link.component` appears in the viewport - the page dependencies are prefetched
-1. on initial rendering the `Nextjs.Lib.Page.DynamicPageData` is fetched on server side and result in
+1. on initial rendering the `Nextjs.Lib.Page.PageData__Dynamic` is fetched on server side and result in
 inserted into the page into the `<script id="__PAGE_DATA__">JSON<script>`
 
 ### How it works

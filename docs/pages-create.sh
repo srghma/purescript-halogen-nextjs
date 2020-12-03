@@ -10,7 +10,7 @@ import Nextjs.PageImplementations.$1.$2 as Implementation
 
 pageSpec :: PageSpec Unit
 pageSpec =
-  { pageData: StaticPageData unit
+  { pageData: PageData__Static unit
   , component: H.hoist liftAff $ Implementation.component
   , title: "Halogen MWC - $1 $2"
   }

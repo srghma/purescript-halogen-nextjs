@@ -14,6 +14,7 @@ generate-halogen-css-modules \
 update-module-name-purs \
   -d ./packages/api-server \
   -d ./packages/api-server-exceptions \
+  -d ./packages/api-server-config \
   -d ./packages/client \
   -d ./packages/client-tests \
   -d ./packages/client-webpack \
