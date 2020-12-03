@@ -5,7 +5,6 @@ import Halogen as H
 import Nextjs.Page as Nextjs.Page
 import NextjsApp.Route as NextjsApp.Route
 import NextjsApp.AppM (AppM)
-import Nextjs.Api as Nextjs.Api
 import NextjsApp.Router.Shared (ChildSlots, MobileState, Query(..), renderPage)
 import NextjsApp.RouteToPageNonClient as NextjsApp.RouteToPageNonClient
 

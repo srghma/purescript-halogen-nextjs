@@ -33,7 +33,6 @@ data RouteExamples
   | RouteExamples__KeyboardInput
   | RouteExamples__Lifecycle
   | RouteExamples__DeeplyNested
-  | RouteExamples__DynamicInput
   | RouteExamples__TextNodes
   | RouteExamples__Lazy
 
@@ -113,7 +112,6 @@ type RouteIdMappingRow' a r
     , "Examples__KeyboardInput" :: a
     , "Examples__Lifecycle" :: a
     , "Examples__DeeplyNested" :: a
-    , "Examples__DynamicInput" :: a
     , "Examples__TextNodes" :: a
     , "Examples__Lazy" :: a
     | r
@@ -150,7 +148,6 @@ routeIdToRouteMapping =
   , "Examples__KeyboardInput": RouteExamples RouteExamples__KeyboardInput
   , "Examples__Lifecycle": RouteExamples RouteExamples__Lifecycle
   , "Examples__DeeplyNested": RouteExamples RouteExamples__DeeplyNested
-  , "Examples__DynamicInput": RouteExamples RouteExamples__DynamicInput
   , "Examples__TextNodes": RouteExamples RouteExamples__TextNodes
   , "Examples__Lazy": RouteExamples RouteExamples__Lazy
   }
@@ -175,7 +172,6 @@ lookupFromRouteIdMapping = case _ of
     RouteExamples__KeyboardInput -> _."Examples__KeyboardInput"
     RouteExamples__Lifecycle -> _."Examples__Lifecycle"
     RouteExamples__DeeplyNested -> _."Examples__DeeplyNested"
-    RouteExamples__DynamicInput -> _."Examples__DynamicInput"
     RouteExamples__TextNodes -> _."Examples__TextNodes"
     RouteExamples__Lazy -> _."Examples__Lazy"
 

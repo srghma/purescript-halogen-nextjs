@@ -17,7 +17,6 @@ import Hyper.Node.Server (HttpRequest, HttpResponse, Port(..), defaultOptionsWit
 import Hyper.Request (getRequestData) as Hyper
 import Hyper.Response (ResponseEnded, StatusLineOpen, closeHeaders, respond, writeStatus) as Hyper
 import Hyper.Status (statusBadRequest, statusOK) as Hyper
-import Nextjs.Api as Nextjs.Api
 import Nextjs.Page as Nextjs.Page
 import Nextjs.RenderComponent as Nextjs.RenderComponent
 import NextjsApp.Manifest.ClientPagesManifest as NextjsApp.Manifest.ClientPagesManifest
@@ -54,71 +53,75 @@ renderPage ::
     (Hyper.Conn Hyper.Node.HttpRequest (Hyper.Node.HttpResponse Hyper.StatusLineOpen) c)
     (Hyper.Conn Hyper.Node.HttpRequest (Hyper.Node.HttpResponse Hyper.ResponseEnded) c)
     Unit
-renderPage { config
-, buildManifest
-, route
-, clientPagesManifest
-, pageManifest
-} page = IndexedMonad.do
-  (response :: Either Nextjs.Api.ApiError (StaticOrDynamicPageData input)) <- case page.pageData of
-    (Nextjs.Page.DynamicPageData pageData) ->
-      Hyper.lift' do
-        (response :: Either Affjax.Error (Affjax.Response ArgonautCore.Json)) <- pageData.request
-        let
-          (decodedResponse :: Either Nextjs.Api.ApiError input) = Nextjs.Api.tryDecodeResponse pageData.codec.decoder response -- yes, we decode and then again encode
-        pure $ map (\input -> DynamicPageData { input, encoder: pageData.codec.encoder }) decodedResponse
-    (Nextjs.Page.StaticPageData pageData) -> pure $ Right $ StaticPageData pageData
-  case response of
-    Left (Nextjs.Api.ApiAffjaxError error) -> IndexedMonad.do
-      Hyper.writeStatus Hyper.statusBadRequest
-      Hyper.closeHeaders
-      Hyper.respond
-        $ Yarn.unlines
-            [ "Cannot reach api:"
-            , "  " <> Affjax.printError error
-            ]
-    Left (Nextjs.Api.ApiJsonDecodeError error json) -> IndexedMonad.do
-      Hyper.writeStatus Hyper.statusBadRequest
-      Hyper.closeHeaders
-      Hyper.respond
-        $ Yarn.unlines
-            [ "Cannot decode response:"
-            , "  error = " <> ArgonautCodecs.printJsonDecodeError error
-            , "  json = " <> ArgonautCore.stringify json
-            ]
-    Right pageData -> IndexedMonad.do
-      let
-        routerInput :: input -> NextjsApp.Router.ServerState
-        routerInput input =
-          { currentPageInfo: Just { route, pageSpecWithInputBoxed: Nextjs.Page.mkPageSpecWithInputBoxed { input, component: page.component, title: page.title } }
-          }
+renderPage
+  { config
+  , buildManifest
+  , route
+  , clientPagesManifest
+  , pageManifest
+  }
+  page = IndexedMonad.do
+    (response :: Either Nextjs.Api.ApiError (StaticOrDynamicPageData input)) <- case page.pageData of
+      (Nextjs.Page.DynamicPageData pageData) ->
+        Hyper.lift' do
+          (response :: Either Affjax.Error (Affjax.Response ArgonautCore.Json)) <- pageData.request
+          let
+            (decodedResponse :: input) = undefined pageData.codec.decoder response -- yes, we decode and then again encode
+          pure $ map (\input -> DynamicPageData { input, encoder: pageData.codec.encoder }) decodedResponse
+      (Nextjs.Page.StaticPageData pageData) -> pure $ Right $ StaticPageData pageData
 
-        component :: String
-        component = case pageData of
-          StaticPageData input -> Nextjs.RenderComponent.renderComponent NextjsApp.Router.serverComponent (routerInput input)
-          DynamicPageData { input } -> Nextjs.RenderComponent.renderComponent NextjsApp.Router.serverComponent (routerInput input)
+    undefined
+  -- | case response of
+    -- | Left (Nextjs.Api.ApiAffjaxError error) -> IndexedMonad.do
+    -- |   Hyper.writeStatus Hyper.statusBadRequest
+    -- |   Hyper.closeHeaders
+    -- |   Hyper.respond
+    -- |     $ Yarn.unlines
+    -- |         [ "Cannot reach api:"
+    -- |         , "  " <> Affjax.printError error
+    -- |         ]
+    -- | Left (Nextjs.Api.ApiJsonDecodeError error json) -> IndexedMonad.do
+    -- |   Hyper.writeStatus Hyper.statusBadRequest
+    -- |   Hyper.closeHeaders
+    -- |   Hyper.respond
+    -- |     $ Yarn.unlines
+    -- |         [ "Cannot decode response:"
+    -- |         , "  error = " <> ArgonautCodecs.printJsonDecodeError error
+    -- |         , "  json = " <> ArgonautCore.stringify json
+    -- |         ]
+    -- | Right pageData -> IndexedMonad.do
+    -- |   let
+    -- |     routerInput :: input -> NextjsApp.Router.ServerState
+    -- |     routerInput input =
+    -- |       { currentPageInfo: Just { route, pageSpecWithInputBoxed: Nextjs.Page.mkPageSpecWithInputBoxed { input, component: page.component, title: page.title } }
+    -- |       }
 
-        pageData' :: NextjsApp.Server.PageTemplate.StaticOrDynamicPageData
-        pageData' = case pageData of
-          StaticPageData _ -> NextjsApp.Server.PageTemplate.StaticPageData
-          DynamicPageData { input, encoder } -> NextjsApp.Server.PageTemplate.DynamicPageData (encoder input)
+    -- |     component :: String
+    -- |     component = case pageData of
+    -- |       StaticPageData input -> Nextjs.RenderComponent.renderComponent NextjsApp.Router.serverComponent (routerInput input)
+    -- |       DynamicPageData { input } -> Nextjs.RenderComponent.renderComponent NextjsApp.Router.serverComponent (routerInput input)
 
-        pageRendered :: String
-        pageRendered =
-          NextjsApp.Server.PageTemplate.pageTemplate
-            { faviconsHtml: buildManifest.faviconsHtml
-            , clientPagesManifest
-            , currentPageManifest: pageManifest
-            , pageSpecResolved:
-              { title: page.title
-              , component
-              , pageData: pageData'
-              , livereloadPort: config.livereloadPort
-              }
-            }
-      Hyper.writeStatus Hyper.statusOK
-      Hyper.closeHeaders
-      Hyper.respond pageRendered
+    -- |     pageData' :: NextjsApp.Server.PageTemplate.StaticOrDynamicPageData
+    -- |     pageData' = case pageData of
+    -- |       StaticPageData _ -> NextjsApp.Server.PageTemplate.StaticPageData
+    -- |       DynamicPageData { input, encoder } -> NextjsApp.Server.PageTemplate.DynamicPageData (encoder input)
+
+    -- |     pageRendered :: String
+    -- |     pageRendered =
+    -- |       NextjsApp.Server.PageTemplate.pageTemplate
+    -- |         { faviconsHtml: buildManifest.faviconsHtml
+    -- |         , clientPagesManifest
+    -- |         , currentPageManifest: pageManifest
+    -- |         , pageSpecResolved:
+    -- |           { title: page.title
+    -- |           , component
+    -- |           , pageData: pageData'
+    -- |           , livereloadPort: config.livereloadPort
+    -- |           }
+    -- |         }
+    -- |   Hyper.writeStatus Hyper.statusOK
+    -- |   Hyper.closeHeaders
+    -- |   Hyper.respond pageRendered
 
 app ::
   ∀ c.

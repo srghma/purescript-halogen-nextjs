@@ -1,39 +1,68 @@
 module Nextjs.Page where
 
-import NextjsApp.AppM (AppM)
 import Protolude
+
 import Affjax as Affjax
+import Affjax.RequestHeader as Affjax
 import Data.Argonaut.Core as ArgonautCore
 import Data.Argonaut.Decode (class DecodeJson, JsonDecodeError, decodeJson) as ArgonautCodecs
 import Data.Argonaut.Encode (class EncodeJson, encodeJson) as ArgonautCodecs
+import GraphQLClient as GraphQLClient
 import Halogen as Halogen
-import Nextjs.Api as Nextjs.Api
+import NextjsApp.AppM (AppM)
 import Unsafe.Coerce (unsafeCoerce)
+import Web.XHR.XMLHttpRequest (withCredentials)
 
 -- in next.js pages have be 3 types
 -- | λ  (Server)  server-side renders at runtime (uses getInitialProps or getServerSideProps)
 -- | ○  (Static)  automatically rendered as static HTML (uses no initial props)
 -- | ●  (SSG, server site generated)     automatically generated as static HTML + JSON (uses getStaticProps)
 
+data DynamicPageData_RequestOptions
+  = DynamicPageData_RequestOptions__Server { sessionHeader :: Tuple String String } -- session header from cookie
+  | DynamicPageData_RequestOptions__Client -- should map to { withCredentials = true }
+  | DynamicPageData_RequestOptions__Mobile { sessionHeader :: Tuple String String } -- session header from secure storage
+
+dynamicPageData__RequestOptions__To__RequestOptions :: DynamicPageData_RequestOptions -> GraphQLClient.RequestOptions
+dynamicPageData__RequestOptions__To__RequestOptions =
+  case _ of
+       DynamicPageData_RequestOptions__Server { sessionHeader: (Tuple sessionHeaderKey sessionHeaderValue) } -> GraphQLClient.defaultRequestOptions { headers = [Affjax.RequestHeader sessionHeaderKey sessionHeaderValue] }
+       DynamicPageData_RequestOptions__Client                                                                -> GraphQLClient.defaultRequestOptions { withCredentials = true }
+       DynamicPageData_RequestOptions__Mobile { sessionHeader: (Tuple sessionHeaderKey sessionHeaderValue) } -> GraphQLClient.defaultRequestOptions { headers = [Affjax.RequestHeader sessionHeaderKey sessionHeaderValue] }
+
+data DynamicPageData_Response input
+  = DynamicPageData_Response__Error String
+  | DynamicPageData_Response__Redirect
+    { redirectToLocation :: String
+    , logout :: Boolean
+    }
+  | DynamicPageData_Response__Success input
+
 data PageData input
   = DynamicPageData
-    { codec :: DynamicPageCodec input
-    , request :: Aff (Either Affjax.Error (Affjax.Response ArgonautCore.Json))
+    { request ::
+        { requestOptions :: DynamicPageData_RequestOptions
+        } ->
+        Aff (DynamicPageData_Response input)
+    , codec :: DynamicPageData_Codec input
     }
   | StaticPageData input
+  -- | | ServerLoadedPageData (Aff input) -- TODO?
 
--- | | ServerLoadedPageData (Aff input) -- TODO?
-type DynamicPageCodec a
+-- on server - used decoder
+-- on client - used encoder (on first page load) OR nothing is used
+-- on mobile - nothing is used
+type DynamicPageData_Codec a
   = { encoder :: a -> ArgonautCore.Json
     , decoder :: ArgonautCore.Json -> Either ArgonautCodecs.JsonDecodeError a
     }
 
-mkDynamicPageCodec ::
+mkDynamicPageData_Codec ::
   forall input.
   ArgonautCodecs.EncodeJson input =>
   ArgonautCodecs.DecodeJson input =>
-  DynamicPageCodec input
-mkDynamicPageCodec = { encoder: ArgonautCodecs.encodeJson, decoder: ArgonautCodecs.decodeJson }
+  DynamicPageData_Codec input
+mkDynamicPageData_Codec = { encoder: ArgonautCodecs.encodeJson, decoder: ArgonautCodecs.decodeJson }
 
 type PageSpecRows input
   = ( pageData :: PageData input
@@ -85,73 +114,59 @@ unPageSpecWithInputBoxed ::
   r
 unPageSpecWithInputBoxed f (PageSpecWithInputBoxed r) = f r
 
--- | data PageWithInput
--- |   = StaticPageWithInput PageSpecWithInputBoxed
--- |   | FromJsonPageWithInput (ArgonautCore.Json -> Either ArgonautCodecs.JsonDecodeError PageSpecWithInputBoxed)
--- |
--- | pageToPageWithInput :: Page -> PageWithInput
--- | pageToPageWithInput =
--- |   unPage (\page ->
--- |     case page.pageData of
--- |       (DynamicPageData _) -> FromJsonPageWithInput (\json ->
--- |         page.pageDataCodec.decoder json #
--- |         map (\input -> mkPageSpecWithInputBoxed
--- |             { input
--- |             , component: page.component
--- |             , title: page.title
--- |             }))
--- |       (StaticPageData input) ->
--- |         StaticPageWithInput $ mkPageSpecWithInputBoxed
--- |           { input
--- |           , component: page.component
--- |           , title: page.title
--- |           }
--- |     )
+data PageToPageSpecWithInputBoxed_Response
+  = PageToPageSpecWithInputBoxed_Response__Error String
+  | PageToPageSpecWithInputBoxed_Response__Success PageSpecWithInputBoxed
+  | PageToPageSpecWithInputBoxed_Response__Redirect
+    { redirectToLocation :: String
+    , logout :: Boolean
+    }
 
-pageToPageSpecWithInputBoxed :: Page -> Aff (Nextjs.Api.ApiError \/ PageSpecWithInputBoxed)
-pageToPageSpecWithInputBoxed =
+pageToPageSpecWithInputBoxed :: DynamicPageData_RequestOptions -> Page -> Aff PageToPageSpecWithInputBoxed_Response
+pageToPageSpecWithInputBoxed requestOptions =
   unPage
-    ( \page -> case page.pageData of
-        (DynamicPageData { request, codec }) -> do
-          (response :: Either Affjax.Error (Affjax.Response ArgonautCore.Json)) <- request
-          let
-            response' = Nextjs.Api.tryDecodeResponse codec.decoder response
-          pure $ response'
-            <#> ( \input ->
-                  mkPageSpecWithInputBoxed
-                    { input
-                    , component: page.component
-                    , title: page.title
-                    }
-              )
-        (StaticPageData input) ->
-          pure $ Right
-            $ mkPageSpecWithInputBoxed
-                { input
-                , component: page.component
-                , title: page.title
-                }
+    ( \page ->
+        case page.pageData of
+             DynamicPageData { request } ->
+               request { requestOptions }
+                 <#> case _ of
+                         DynamicPageData_Response__Error error -> PageToPageSpecWithInputBoxed_Response__Error error
+                         DynamicPageData_Response__Redirect x -> PageToPageSpecWithInputBoxed_Response__Redirect x
+                         DynamicPageData_Response__Success input ->
+                           PageToPageSpecWithInputBoxed_Response__Success
+                           $ mkPageSpecWithInputBoxed
+                             { input
+                             , component: page.component
+                             , title: page.title
+                             }
+             StaticPageData input ->
+               pure
+               $ PageToPageSpecWithInputBoxed_Response__Success
+               $ mkPageSpecWithInputBoxed
+                 { input
+                 , component: page.component
+                 , title: page.title
+                 }
     )
 
-pageToPageSpecWithInputBoxedWivenInitialJson :: Aff ArgonautCore.Json -> Page -> Aff (ArgonautCodecs.JsonDecodeError \/ PageSpecWithInputBoxed)
-pageToPageSpecWithInputBoxedWivenInitialJson loadJson =
+pageToPageSpecWithInputBoxed_GivenInitialJson_Client :: Aff ArgonautCore.Json -> Page -> Aff (Either ArgonautCodecs.JsonDecodeError PageSpecWithInputBoxed)
+pageToPageSpecWithInputBoxed_GivenInitialJson_Client loadJson =
   unPage
-    ( \page -> case page.pageData of
-        (DynamicPageData { codec }) -> do
-          (json :: ArgonautCore.Json) <- loadJson
-          pure $ codec.decoder json
-            <#> ( \input ->
-                  mkPageSpecWithInputBoxed
-                    { input
-                    , component: page.component
-                    , title: page.title
-                    }
-              )
-        (StaticPageData input) ->
-          pure $ Right
-            $ mkPageSpecWithInputBoxed
+    ( \page ->
+        case page.pageData of
+          DynamicPageData { codec } -> do
+            loadJson
+            <#> \json -> codec.decoder json
+            <#> \input ->
+              mkPageSpecWithInputBoxed
                 { input
                 , component: page.component
                 , title: page.title
                 }
+          StaticPageData input ->
+            pure $ Right $ mkPageSpecWithInputBoxed
+                  { input
+                  , component: page.component
+                  , title: page.title
+                  }
     )

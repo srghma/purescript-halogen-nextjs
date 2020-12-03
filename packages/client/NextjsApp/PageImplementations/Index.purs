@@ -15,24 +15,24 @@ allRoutes =
   , Signup
   , Secret
   ]
-    <> ( map RouteExamples
-          $ [ RouteExamples__Ace
-            , RouteExamples__Basic
-            , RouteExamples__Components
-            , RouteExamples__ComponentsInputs
-            , RouteExamples__ComponentsMultitype
-            , RouteExamples__EffectsAffAjax
-            , RouteExamples__EffectsEffectRandom
-            , RouteExamples__HigherOrderComponents
-            , RouteExamples__Interpret
-            , RouteExamples__KeyboardInput
-            , RouteExamples__Lifecycle
-            , RouteExamples__DeeplyNested
-            , RouteExamples__DynamicInput
-            , RouteExamples__TextNodes
-            , RouteExamples__Lazy
-            ]
-      )
+  <>
+  ( RouteExamples <$>
+    [ RouteExamples__Ace
+    , RouteExamples__Basic
+    , RouteExamples__Components
+    , RouteExamples__ComponentsInputs
+    , RouteExamples__ComponentsMultitype
+    , RouteExamples__EffectsAffAjax
+    , RouteExamples__EffectsEffectRandom
+    , RouteExamples__HigherOrderComponents
+    , RouteExamples__Interpret
+    , RouteExamples__KeyboardInput
+    , RouteExamples__Lifecycle
+    , RouteExamples__DeeplyNested
+    , RouteExamples__TextNodes
+    , RouteExamples__Lazy
+    ]
+  )
 
 component :: forall query input output. H.Component query input output AppM
 component =

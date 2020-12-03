@@ -7,7 +7,6 @@ import FRP.Event as FRP.Event
 import Halogen as H
 import Halogen.VDom.Driver as Halogen.VDom.Driver
 import NextjsApp.AppM (Env, runAppM)
-import Nextjs.Api as Nextjs.Api
 import Nextjs.Page as Nextjs.Page
 import Nextjs.Utils (getHtmlEntities, selectElementRequired)
 import NextjsApp.Link.Mobile as NextjsApp.Link.Mobile

@@ -18,7 +18,6 @@ import NextjsApp.Pages.Examples.Interpret as NextjsApp.Pages.Examples.Interpret
 import NextjsApp.Pages.Examples.KeyboardInput as NextjsApp.Pages.Examples.KeyboardInput
 import NextjsApp.Pages.Examples.Lifecycle as NextjsApp.Pages.Examples.Lifecycle
 import NextjsApp.Pages.Examples.DeeplyNested as NextjsApp.Pages.Examples.DeeplyNested
-import NextjsApp.Pages.Examples.DynamicInput as NextjsApp.Pages.Examples.DynamicInput
 import NextjsApp.Pages.Examples.TextNodes as NextjsApp.Pages.Examples.TextNodes
 import NextjsApp.Pages.Examples.Lazy as NextjsApp.Pages.Examples.Lazy
 
@@ -42,7 +41,6 @@ routeIdMapping =
   , "Examples__KeyboardInput": NextjsApp.Pages.Examples.KeyboardInput.page
   , "Examples__Lifecycle": NextjsApp.Pages.Examples.Lifecycle.page
   , "Examples__DeeplyNested": NextjsApp.Pages.Examples.DeeplyNested.page
-  , "Examples__DynamicInput": NextjsApp.Pages.Examples.DynamicInput.page
   , "Examples__TextNodes": NextjsApp.Pages.Examples.TextNodes.page
   , "Examples__Lazy": NextjsApp.Pages.Examples.Lazy.page
   }
