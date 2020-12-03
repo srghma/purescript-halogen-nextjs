@@ -7,7 +7,7 @@ import Data.Argonaut as ArgonautCore
 import Data.Argonaut.Encode as ArgonautCodecs
 import Example.DynamicInput.Container as Example.DynamicInput.Container
 import Halogen as H
-import Nextjs.Page (Page, PageData(..), PageSpec, mkCodec, mkPage)
+import Nextjs.Page (Page, PageData(..), PageSpec, mkDynamicPageCodec, mkPage)
 import Protolude
 
 requestGraphql :: String -> Aff (Either Affjax.Error (Affjax.Response ArgonautCore.Json))
@@ -33,7 +33,7 @@ pageSpec :: PageSpec ThisPageData
 pageSpec =
   { pageData:
     DynamicPageData
-      { codec: mkCodec
+      { codec: mkDynamicPageCodec
       , request: requestGraphql "query { MediaTagCollection { id name } }"
       }
   , component: H.hoist liftAff $ Example.DynamicInput.Container.component

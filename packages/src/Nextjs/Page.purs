@@ -14,25 +14,26 @@ import Unsafe.Coerce (unsafeCoerce)
 -- | λ  (Server)  server-side renders at runtime (uses getInitialProps or getServerSideProps)
 -- | ○  (Static)  automatically rendered as static HTML (uses no initial props)
 -- | ●  (SSG, server site generated)     automatically generated as static HTML + JSON (uses getStaticProps)
+
 data PageData input
   = DynamicPageData
-    { codec :: Codec input
+    { codec :: DynamicPageCodec input
     , request :: Aff (Either Affjax.Error (Affjax.Response ArgonautCore.Json))
     }
   | StaticPageData input
 
 -- | | ServerLoadedPageData (Aff input) -- TODO?
-type Codec a
+type DynamicPageCodec a
   = { encoder :: a -> ArgonautCore.Json
     , decoder :: ArgonautCore.Json -> Either ArgonautCodecs.JsonDecodeError a
     }
 
-mkCodec ::
+mkDynamicPageCodec ::
   forall input.
   ArgonautCodecs.EncodeJson input =>
   ArgonautCodecs.DecodeJson input =>
-  Codec input
-mkCodec = { encoder: ArgonautCodecs.encodeJson, decoder: ArgonautCodecs.decodeJson }
+  DynamicPageCodec input
+mkDynamicPageCodec = { encoder: ArgonautCodecs.encodeJson, decoder: ArgonautCodecs.decodeJson }
 
 type PageSpecRows input
   = ( pageData :: PageData input
@@ -84,10 +85,10 @@ unPageSpecWithInputBoxed ::
   r
 unPageSpecWithInputBoxed f (PageSpecWithInputBoxed r) = f r
 
-----
 -- | data PageWithInput
 -- |   = StaticPageWithInput PageSpecWithInputBoxed
 -- |   | FromJsonPageWithInput (ArgonautCore.Json -> Either ArgonautCodecs.JsonDecodeError PageSpecWithInputBoxed)
+-- |
 -- | pageToPageWithInput :: Page -> PageWithInput
 -- | pageToPageWithInput =
 -- |   unPage (\page ->
@@ -106,6 +107,7 @@ unPageSpecWithInputBoxed f (PageSpecWithInputBoxed r) = f r
 -- |           , title: page.title
 -- |           }
 -- |     )
+
 pageToPageSpecWithInputBoxed :: Page -> Aff (Nextjs.Api.ApiError \/ PageSpecWithInputBoxed)
 pageToPageSpecWithInputBoxed =
   unPage
