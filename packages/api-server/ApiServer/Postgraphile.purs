@@ -24,6 +24,7 @@ import Node.Express.App as Express
 import Node.Express.Passport as Passport
 import Node.HTTP as Node.HTTP
 import Postgraphile as Postgraphile
+import ApiServer.PostgraphilePassportAuthPlugin.Types
 
 postgraphileOptions
   :: { databaseHost :: String

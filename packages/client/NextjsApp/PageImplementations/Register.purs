@@ -45,7 +45,7 @@ import NextjsApp.NodeEnv                                      as NextjsApp.NodeE
 import NextjsApp.Data.NonUsedUsernameOrEmail                  (NonUsedUsernameOrEmail)
 import NextjsApp.Data.NonUsedUsernameOrEmail                  as NextjsApp.Data.NonUsedUsernameOrEmail
 import NextjsApp.Route                                        as NextjsApp.Route
-import ApiServerExceptions.PostgraphilePassportAuthPlugin as ApiServerExceptions.PostgraphilePassportAuthPlugin
+import ApiServerExceptions.PostgraphilePassportAuthPlugin.Register as ApiServerExceptions.PostgraphilePassportAuthPlugin.Register
 import NextjsApp.Queries.Utils
 import NextjsGraphqlApi.Object.User                           as NextjsGraphqlApi.Object.User
 import NextjsGraphqlApi.Object.WebRegisterPayload             as NextjsGraphqlApi.Object.WebRegisterPayload
@@ -93,10 +93,10 @@ component =
                                             maybe
                                             (RegisterError__UnknownError "unknown error")
                                             (case _ of
-                                                  ApiServerExceptions.PostgraphilePassportAuthPlugin.WebRegisterExceptionsClient__Internal -> RegisterError__UnknownError "internal error"
-                                                  ApiServerExceptions.PostgraphilePassportAuthPlugin.WebRegisterExceptionsClient__RegisterFailed -> RegisterError__RegisterFailed
+                                                  ApiServerExceptions.PostgraphilePassportAuthPlugin.Register.WebRegisterExceptionsClient__Internal -> RegisterError__UnknownError "internal error"
+                                                  ApiServerExceptions.PostgraphilePassportAuthPlugin.Register.WebRegisterExceptionsClient__RegisterFailed -> RegisterError__RegisterFailed
                                             )
-                                            $ ApiServerExceptions.PostgraphilePassportAuthPlugin.webRegisterExceptionsClientFromString
+                                            $ ApiServerExceptions.PostgraphilePassportAuthPlugin.Register.webRegisterExceptionsClientFromString
                                             $ _.message
                                             $ unwrap
                                             $ NonEmptyArray.head details
