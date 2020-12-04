@@ -26,11 +26,15 @@ data PageData_DynamicRequestOptions
 dynamicPageData__RequestOptions__To__RequestOptions :: PageData_DynamicRequestOptions -> GraphQLClient.RequestOptions
 dynamicPageData__RequestOptions__To__RequestOptions =
   case _ of
-       PageData_DynamicRequestOptions__Server { sessionHeader: Just (Tuple sessionHeaderKey sessionHeaderValue) } -> GraphQLClient.defaultRequestOptions { headers = [Affjax.RequestHeader sessionHeaderKey sessionHeaderValue] }
-       PageData_DynamicRequestOptions__Server { sessionHeader: Nothing } -> GraphQLClient.defaultRequestOptions
-       PageData_DynamicRequestOptions__Client                                                                -> GraphQLClient.defaultRequestOptions { withCredentials = true }
-       PageData_DynamicRequestOptions__Mobile { sessionHeader: Just (Tuple sessionHeaderKey sessionHeaderValue) } -> GraphQLClient.defaultRequestOptions { headers = [Affjax.RequestHeader sessionHeaderKey sessionHeaderValue] }
-       PageData_DynamicRequestOptions__Mobile { sessionHeader: Nothing } -> GraphQLClient.defaultRequestOptions
+       PageData_DynamicRequestOptions__Server { sessionHeader } -> sessionHeaderToHeaders sessionHeader
+       PageData_DynamicRequestOptions__Client -> GraphQLClient.defaultRequestOptions { withCredentials = true }
+       PageData_DynamicRequestOptions__Mobile { sessionHeader } -> sessionHeaderToHeaders sessionHeader
+
+  where
+    sessionHeaderToHeaders =
+      case _ of
+           Just (Tuple sessionHeaderKey sessionHeaderValue) -> GraphQLClient.defaultRequestOptions { headers = [Affjax.RequestHeader sessionHeaderKey sessionHeaderValue] }
+           Nothing -> GraphQLClient.defaultRequestOptions
 
 data PageData_DynamicResponse input
   = PageData_DynamicResponse__Error String -- TODO: request status?
@@ -118,11 +122,14 @@ data PageToPageSpecWithInputBoxed_Response
   | PageToPageSpecWithInputBoxed_Response__Success PageSpecWithInputBoxed
   | PageToPageSpecWithInputBoxed_Response__Redirect
     { redirectToLocation :: String
+    -- on client - ignored
+    -- on server - Set-Cookie sessionId "" is set
+    -- on mobile - jwt is removed from secure storage
     , logout :: Boolean
     }
 
-pageToPageSpecWithInputBoxed :: PageData_DynamicRequestOptions -> Page -> Aff PageToPageSpecWithInputBoxed_Response
-pageToPageSpecWithInputBoxed requestOptions =
+pageToPageSpecWithInputBoxed_request :: PageData_DynamicRequestOptions -> Page -> Aff PageToPageSpecWithInputBoxed_Response
+pageToPageSpecWithInputBoxed_request requestOptions =
   unPage
     ( \page ->
         case page.pageData of

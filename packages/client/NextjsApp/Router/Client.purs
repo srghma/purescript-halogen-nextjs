@@ -45,10 +45,11 @@ clientLoadAndPutNewPage currentState destRoute = do
           currentState.pageRegisteredEvent
           destRoute
   -- | traceM { message: "clientLoadAndPutNewPage pageloaded", currentState, destRoute }
-  (H.liftAff $ Nextjs.Page.pageToPageSpecWithInputBoxed page)
+  (H.liftAff $ Nextjs.Page.pageToPageSpecWithInputBoxed_request Nextjs.Page.PageData_DynamicRequestOptions__Client page)
     >>= case _ of
-        Left errorS -> H.liftAff $ throwError $ error errorS -- TODO: show an error as alert
-        Right pageSpecWithInputBoxed -> do
+        Nextjs.Page.PageToPageSpecWithInputBoxed_Response__Error str -> H.liftAff $ throwError $ error $ "PageToPageSpecWithInputBoxed_Response__Error (TODO: render error page): " <> str
+        Nextjs.Page.PageToPageSpecWithInputBoxed_Response__Redirect { redirectToLocation } -> H.liftAff $ throwError $ error $ "PageToPageSpecWithInputBoxed_Response__Redirect (TODO: render error page): " <> redirectToLocation
+        Nextjs.Page.PageToPageSpecWithInputBoxed_Response__Success pageSpecWithInputBoxed -> do
           -- | traceM { message: "clientLoadAndPutNewPage put", pageSpecWithInputBoxed }
           H.put
             $ currentState

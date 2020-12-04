@@ -45,28 +45,30 @@ main = do
       { navigate: NextjsApp.Navigate.Mobile.navigate newRouteEventIO
       , linkHandleActions: NextjsApp.Link.Mobile.mkLinkHandleActions
       }
-  onDocumentEvent Cordova.deviceready document
-    $ Effect.Aff.launchAff_ do
-        (pageSpecWithInputBoxed :: Nextjs.Page.PageSpecWithInputBoxed) <-
-          Nextjs.Page.pageToPageSpecWithInputBoxed page
-            >>= (Nextjs.Api.throwApiError)
-            \/ pure
-        let
-          initialState =
-            { htmlContextInfo:
-              { window
-              , document
-              , body
-              , head
+  onDocumentEvent Cordova.deviceready document $ Effect.Aff.launchAff_ do
+    sessionHeader <- liftEffect NextjsApp.Router.Mobile.getMobileSessionHeaderFromSecureStorage
+
+    Nextjs.Page.pageToPageSpecWithInputBoxed_request (Nextjs.Page.PageData_DynamicRequestOptions__Mobile { sessionHeader }) page
+      >>= case _ of
+        Nextjs.Page.PageToPageSpecWithInputBoxed_Response__Error str -> H.liftAff $ throwError $ error $ "PageToPageSpecWithInputBoxed_Response__Error (TODO: render error page): " <> str
+        Nextjs.Page.PageToPageSpecWithInputBoxed_Response__Redirect { redirectToLocation } -> H.liftAff $ throwError $ error $ "PageToPageSpecWithInputBoxed_Response__Redirect (TODO: render error page): " <> redirectToLocation
+        Nextjs.Page.PageToPageSpecWithInputBoxed_Response__Success pageSpecWithInputBoxed -> do
+          let
+            initialState =
+              { htmlContextInfo:
+                { window
+                , document
+                , body
+                , head
+                }
+              , currentPageInfo:
+                { pageSpecWithInputBoxed
+                , route
+                }
               }
-            , currentPageInfo:
-              { pageSpecWithInputBoxed
-              , route
-              }
-            }
-        let
-          component = H.hoist (runAppM env) NextjsApp.Router.Mobile.component
-        rootElement <- selectElementRequired (Web.DOM.ParentNode.QuerySelector "#root") -- selectElement instead of awaitElement because there is no need to wait for window to load
-        halogenIO <- Halogen.VDom.Driver.runUI component initialState rootElement
-        void $ liftEffect $ FRP.Event.subscribe newRouteEventIO.event \newRoute -> NextjsApp.Router.Shared.callNavigateQuery halogenIO newRoute
-        void $ liftEffect $ onDocumentEvent Cordova.backbutton document (NextjsApp.Router.Shared.callNavigateQuery halogenIO NextjsApp.Route.Index)
+
+            component = H.hoist (runAppM env) NextjsApp.Router.Mobile.component
+          rootElement <- selectElementRequired (Web.DOM.ParentNode.QuerySelector "#root") -- selectElement instead of awaitElement because there is no need to wait for window to load
+          halogenIO <- Halogen.VDom.Driver.runUI component initialState rootElement
+          void $ liftEffect $ FRP.Event.subscribe newRouteEventIO.event \newRoute -> NextjsApp.Router.Shared.callNavigateQuery halogenIO newRoute
+          void $ liftEffect $ onDocumentEvent Cordova.backbutton document (NextjsApp.Router.Shared.callNavigateQuery halogenIO NextjsApp.Route.Index)

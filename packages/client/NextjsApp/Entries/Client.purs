@@ -68,7 +68,7 @@ main = do
     route <- getInitialRouteFromLocation
     page <- NextjsApp.PageLoader.loadPage clientPagesManifest document body head pageRegisteredEvent route
     (pageSpecWithInputBoxed :: Nextjs.Page.PageSpecWithInputBoxed) <-
-      Nextjs.Page.pageToPageSpecWithInputBoxedWivenInitialJson getPrerenderedJson page
+      Nextjs.Page.pageToPageSpecWithInputBoxed_GivenInitialJson_Client getPrerenderedJson page
         >>= (throwError <<< error <<< ArgonautCodecs.printJsonDecodeError)
         \/ pure
     let
