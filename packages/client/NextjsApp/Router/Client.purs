@@ -34,7 +34,6 @@ handleQuery = case _ of
 
 clientLoadAndPutNewPage :: forall action. ClientState -> NextjsApp.Route.Route -> H.HalogenM ClientState action ChildSlots Void AppM Unit
 clientLoadAndPutNewPage currentState destRoute = do
-  -- | traceM { message: "clientLoadAndPutNewPage", currentState, destRoute }
   page <-
     H.liftAff
       $ NextjsApp.PageLoader.loadPage
@@ -44,11 +43,11 @@ clientLoadAndPutNewPage currentState destRoute = do
           currentState.htmlContextInfo.head
           currentState.pageRegisteredEvent
           destRoute
-  -- | traceM { message: "clientLoadAndPutNewPage pageloaded", currentState, destRoute }
   (H.liftAff $ Nextjs.Page.pageToPageSpecWithInputBoxed_request Nextjs.Page.PageData_DynamicRequestOptions__Client page)
     >>= case _ of
-        Nextjs.Page.PageToPageSpecWithInputBoxed_Response__Error str -> H.liftAff $ throwError $ error $ "PageToPageSpecWithInputBoxed_Response__Error (TODO: render error page): " <> str
-        Nextjs.Page.PageToPageSpecWithInputBoxed_Response__Redirect { redirectToLocation } -> H.liftAff $ throwError $ error $ "PageToPageSpecWithInputBoxed_Response__Redirect (TODO: render error page): " <> redirectToLocation
+        Nextjs.Page.PageToPageSpecWithInputBoxed_Response__Error str -> H.liftEffect $ throwError $ error $ "PageToPageSpecWithInputBoxed_Response__Error (TODO: render error page): " <> str
+        Nextjs.Page.PageToPageSpecWithInputBoxed_Response__Redirect { redirectToLocation } ->
+          clientLoadAndPutNewPage currentState redirectToLocation
         Nextjs.Page.PageToPageSpecWithInputBoxed_Response__Success pageSpecWithInputBoxed -> do
           -- | traceM { message: "clientLoadAndPutNewPage put", pageSpecWithInputBoxed }
           H.put

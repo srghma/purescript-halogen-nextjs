@@ -12,6 +12,7 @@ import Halogen as Halogen
 import NextjsApp.AppM (AppM)
 import Unsafe.Coerce (unsafeCoerce)
 import Web.XHR.XMLHttpRequest (withCredentials)
+import NextjsApp.Route as NextjsApp.Route
 
 -- in next.js pages have be 3 types
 -- | λ  (Server)  server-side renders at runtime (uses getInitialProps or getServerSideProps)
@@ -37,9 +38,9 @@ pageData_DynamicRequestOptions__To__RequestOptions =
            Nothing -> GraphQLClient.defaultRequestOptions
 
 data PageData_DynamicResponse input
-  = PageData_DynamicResponse__Error String -- TODO: request status?
+  = PageData_DynamicResponse__Error String -- TODO: add purs-hyper response status?
   | PageData_DynamicResponse__Redirect
-    { redirectToLocation :: String
+    { redirectToLocation :: NextjsApp.Route.Route
     , logout :: Boolean
     }
   | PageData_DynamicResponse__Success input
@@ -121,7 +122,7 @@ data PageToPageSpecWithInputBoxed_Response
   = PageToPageSpecWithInputBoxed_Response__Error String
   | PageToPageSpecWithInputBoxed_Response__Success PageSpecWithInputBoxed
   | PageToPageSpecWithInputBoxed_Response__Redirect
-    { redirectToLocation :: String
+    { redirectToLocation :: NextjsApp.Route.Route
     -- on client - ignored
     -- on server - Set-Cookie sessionId "" is set
     -- on mobile - jwt is removed from secure storage

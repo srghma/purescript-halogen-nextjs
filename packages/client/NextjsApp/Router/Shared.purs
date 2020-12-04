@@ -1,10 +1,12 @@
 module NextjsApp.Router.Shared where
 
 import Protolude
+
+import FRP.Event as Event
 import Halogen as H
 import Halogen.HTML as HH
-import NextjsApp.AppM (AppM)
 import Nextjs.Page as Nextjs.Page
+import NextjsApp.AppM (AppM)
 import NextjsApp.Manifest.ClientPagesManifest as NextjsApp.Manifest.ClientPagesManifest
 import NextjsApp.PageLoader as NextjsApp.PageLoader
 import NextjsApp.Route as NextjsApp.Route
@@ -30,7 +32,7 @@ type ServerState
 type ClientState
   = { currentPageInfo :: Maybe CurrentPageInfo
     , htmlContextInfo :: HtmlContextInfo
-    , pageRegisteredEvent :: NextjsApp.PageLoader.PageRegisteredEvent
+    , pageRegisteredEvent :: Event.Event NextjsApp.PageLoader.PageRegisteredEventData
     , clientPagesManifest :: NextjsApp.Manifest.ClientPagesManifest.ClientPagesManifest
     }
 

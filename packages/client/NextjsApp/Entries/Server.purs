@@ -164,7 +164,7 @@ renderPage
                     , "  " <> error
                     ]
             Nextjs.Page.PageData_DynamicResponse__Redirect { redirectToLocation, logout } -> IndexedMonad.do
-              Hyper.redirect redirectToLocation
+              Hyper.redirect (Routing.Duplex.print NextjsApp.RouteDuplexCodec.routeCodec redirectToLocation)
               if logout
                 then Hyper.setCookie ApiServerConfig.expressSessionMiddleware_cookieName "" (Hyper.defaultCookieAttributes { maxAge = Hyper.maxAge 0 })
                 else pure unit

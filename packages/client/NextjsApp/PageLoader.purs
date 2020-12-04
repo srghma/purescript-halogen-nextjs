@@ -27,8 +27,7 @@ import Data.Lens as Lens
 type PageCache
   = Array { routeId :: NextjsApp.Route.RouteId, page :: Nextjs.Page.Page }
 
-type PageRegisteredEvent
-  = Event.Event { route :: NextjsApp.Route.Route, page :: Nextjs.Page.Page }
+type PageRegisteredEventData = { route :: NextjsApp.Route.Route, page :: Nextjs.Page.Page }
 
 foreign import readPageCache :: Effect PageCache
 
@@ -40,7 +39,7 @@ findPageInCache :: NextjsApp.Route.Route -> PageCache -> Maybe { routeId :: Next
 findPageInCache route = Array.find (\info -> info.routeId == Lens.view NextjsApp.Route._routeToRouteIdIso route)
 
 -- | XXX: _setRegisterEventOnPageCacheBus should be called only once
-createPageRegisteredEvent :: Effect PageRegisteredEvent
+createPageRegisteredEvent :: Effect (Event.Event PageRegisteredEventData)
 createPageRegisteredEvent = do
   eventIO <- Event.create
   -- throw unless PageId is correct
@@ -151,7 +150,7 @@ appendPagePrefetch pageManifest document head = do
           -- | traceM $ "addPageScriptsToBodyIfNotYetAdded: appending " <> url
           appendCss document' head url
 
-loadPage :: NextjsApp.Manifest.ClientPagesManifest.ClientPagesManifest -> Web.HTML.HTMLDocument -> Web.HTML.HTMLElement -> Web.HTML.HTMLHeadElement -> PageRegisteredEvent -> NextjsApp.Route.Route -> Aff Nextjs.Page.Page
+loadPage :: NextjsApp.Manifest.ClientPagesManifest.ClientPagesManifest -> Web.HTML.HTMLDocument -> Web.HTML.HTMLElement -> Web.HTML.HTMLHeadElement -> Event.Event PageRegisteredEventData -> NextjsApp.Route.Route -> Aff Nextjs.Page.Page
 loadPage clientPagesManifest document body head pageRegisteredEvent route = do
   pageCache <- liftEffect readPageCache
   liftEffect $ appendPage (NextjsApp.Route.lookupFromRouteIdMapping route clientPagesManifest) document body head

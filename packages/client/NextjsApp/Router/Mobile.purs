@@ -2,7 +2,6 @@ module NextjsApp.Router.Mobile where
 
 import Protolude
 
-import Effect.Exception.Unsafe (unsafeThrowException)
 import Halogen as H
 import Nextjs.Page as Nextjs.Page
 import NextjsApp.AppM (AppM)
@@ -33,6 +32,12 @@ handleQuery = case _ of
 getMobileSessionHeaderFromSecureStorage :: Effect (Maybe (Tuple String String))
 getMobileSessionHeaderFromSecureStorage = throwError $ error "TODO"
 
+renderErrorPage :: forall action . String -> H.HalogenM MobileState action ChildSlots Void AppM Unit
+renderErrorPage str = H.liftEffect $ throwError $ error $ "PageToPageSpecWithInputBoxed_Response__Error (TODO: render error page): " <> str
+
+logoutByRemovingJwtFromSecureStorage :: Effect Unit
+logoutByRemovingJwtFromSecureStorage = throwError $ error $ "TODO: logout on mobile is not yet possible"
+
 mobileLoadAndPutNewPage :: forall action. MobileState -> NextjsApp.Route.Route -> H.HalogenM MobileState action ChildSlots Void AppM Unit
 mobileLoadAndPutNewPage currentState destRoute = do
   sessionHeader <- H.liftEffect getMobileSessionHeaderFromSecureStorage
@@ -46,8 +51,13 @@ mobileLoadAndPutNewPage currentState destRoute = do
       )
   )
     >>= case _ of
-        Nextjs.Page.PageToPageSpecWithInputBoxed_Response__Error str -> H.liftAff $ throwError $ error $ "PageToPageSpecWithInputBoxed_Response__Error (TODO: render error page): " <> str
-        Nextjs.Page.PageToPageSpecWithInputBoxed_Response__Redirect { redirectToLocation } -> H.liftAff $ throwError $ error $ "PageToPageSpecWithInputBoxed_Response__Redirect (TODO: render error page): " <> redirectToLocation
+        Nextjs.Page.PageToPageSpecWithInputBoxed_Response__Error x -> renderErrorPage x
+        Nextjs.Page.PageToPageSpecWithInputBoxed_Response__Redirect { redirectToLocation, logout } -> do
+           when logout (H.liftEffect logoutByRemovingJwtFromSecureStorage)
+
+           -- TODO: fix: infinite loop is possible (1st route redirects to 2nd, 2nd to 1st) (but this is not possible when one of routes is static)
+           -- TODO: feture: show redirect notice alert
+           mobileLoadAndPutNewPage currentState redirectToLocation
         Nextjs.Page.PageToPageSpecWithInputBoxed_Response__Success pageSpecWithInputBoxed ->
           H.put
             $ currentState

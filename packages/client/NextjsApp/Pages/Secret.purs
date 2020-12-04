@@ -11,6 +11,7 @@ import NextjsGraphqlApi.Object.User as NextjsGraphqlApi.Object.User
 import GraphQLClient (GraphQLError, Scope__RootMutation, Scope__RootQuery, SelectionSet(..))
 import GraphQLClient as GraphQLClient
 import NextjsApp.NodeEnv as NextjsApp.NodeEnv
+import NextjsApp.Route as NextjsApp.Route
 
 pageSpec :: PageSpec SecretPageUserData
 pageSpec =
@@ -32,7 +33,7 @@ pageSpec =
           (PageData_DynamicResponse__Error <<< GraphQLClient.printGraphQLError)
           (maybe
             ( PageData_DynamicResponse__Redirect
-              { redirectToLocation: "/login"
+              { redirectToLocation: NextjsApp.Route.Login
               , logout: true
               }
             )
