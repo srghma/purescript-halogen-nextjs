@@ -22,6 +22,8 @@ import Test.Spec
 import Unsafe.Coerce
 
 import CSS as CSS
+import CSS.Elements as CSS.Elements
+import Data.String (Pattern(..), contains)
 import Database.PostgreSQL as PostgreSQL
 import Effect.Aff.Retry as AffRetry
 import Effect.Ref as Ref
@@ -30,6 +32,7 @@ import Faker.Lorem as Faker.Lorem
 import Faker.Name as Faker.Name
 import FeatureTests.FeatureTestSpecUtils.Lunapark (runLunapark)
 import Lunapark as Lunapark
+import Lunapark.Endpoint (EndpointPart(..))
 import Lunapark.Types as Lunapark
 import Node.Encoding as Node.Encoding
 import Node.Process as Node.Process
@@ -39,7 +42,7 @@ import Run (Run)
 import Run as Run
 import Run.Except as Run
 import Run.Reader as Run
-import Test.Spec.Assertions (shouldEqual)
+import Test.Spec.Assertions (fail, shouldContain, shouldEqual)
 
 retryAction action =
   AffRetry.recovering
@@ -50,6 +53,16 @@ retryAction action =
 usernameOrEmailXpath = Lunapark.ByXPath """//div[@role="form"]//input[@aria-labelledby="usernameOrEmail"]"""
 
 passwordXpath = Lunapark.ByXPath """//div[@role="form"]//input[@aria-labelledby="password"]"""
+
+shouldContainString
+  :: forall m f
+   . MonadThrow Error m
+  => String
+  -> Pattern
+  -> m Unit
+shouldContainString e c =
+  unless (contains c e) $
+    fail $ (show c) <> " ∉ " <> (show e)
 
 spec :: ReaderT FeatureTestEnv Aff Unit
 spec = do
@@ -97,4 +110,12 @@ spec = do
 
   runLunapark $ Lunapark.findElement (Lunapark.ByXPath """//div[@role="form"]//button[text()="Submit"]""") >>= Lunapark.clickElement
 
-  pressEnterToContinue
+  retryAction $
+    ( getCurrentRoute
+      >>= \mRoute -> mRoute `shouldEqual` Just Secret
+    )
+
+  ( runLunapark $
+    (Lunapark.findElement $ Lunapark.ByCss $ CSS.Elements.body)
+    >>= Lunapark.getText
+  ) >>= \text -> text `shouldContainString` Pattern "You are on secret page"
