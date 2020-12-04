@@ -19,16 +19,18 @@ import Web.XHR.XMLHttpRequest (withCredentials)
 -- | ●  (SSG, server site generated)     automatically generated as static HTML + JSON (uses getStaticProps)
 
 data PageData_DynamicRequestOptions
-  = PageData_DynamicRequestOptions__Server { sessionHeader :: Tuple String String } -- session header from cookie
+  = PageData_DynamicRequestOptions__Server { sessionHeader :: Maybe (Tuple String String) } -- session header from cookie
   | PageData_DynamicRequestOptions__Client -- should map to { withCredentials = true }
-  | PageData_DynamicRequestOptions__Mobile { sessionHeader :: Tuple String String } -- session header from secure storage
+  | PageData_DynamicRequestOptions__Mobile { sessionHeader :: Maybe (Tuple String String) } -- session header from secure storage
 
 dynamicPageData__RequestOptions__To__RequestOptions :: PageData_DynamicRequestOptions -> GraphQLClient.RequestOptions
 dynamicPageData__RequestOptions__To__RequestOptions =
   case _ of
-       PageData_DynamicRequestOptions__Server { sessionHeader: (Tuple sessionHeaderKey sessionHeaderValue) } -> GraphQLClient.defaultRequestOptions { headers = [Affjax.RequestHeader sessionHeaderKey sessionHeaderValue] }
+       PageData_DynamicRequestOptions__Server { sessionHeader: Just (Tuple sessionHeaderKey sessionHeaderValue) } -> GraphQLClient.defaultRequestOptions { headers = [Affjax.RequestHeader sessionHeaderKey sessionHeaderValue] }
+       PageData_DynamicRequestOptions__Server { sessionHeader: Nothing } -> GraphQLClient.defaultRequestOptions
        PageData_DynamicRequestOptions__Client                                                                -> GraphQLClient.defaultRequestOptions { withCredentials = true }
-       PageData_DynamicRequestOptions__Mobile { sessionHeader: (Tuple sessionHeaderKey sessionHeaderValue) } -> GraphQLClient.defaultRequestOptions { headers = [Affjax.RequestHeader sessionHeaderKey sessionHeaderValue] }
+       PageData_DynamicRequestOptions__Mobile { sessionHeader: Just (Tuple sessionHeaderKey sessionHeaderValue) } -> GraphQLClient.defaultRequestOptions { headers = [Affjax.RequestHeader sessionHeaderKey sessionHeaderValue] }
+       PageData_DynamicRequestOptions__Mobile { sessionHeader: Nothing } -> GraphQLClient.defaultRequestOptions
 
 data PageData_DynamicResponse input
   = PageData_DynamicResponse__Error String -- TODO: request status?

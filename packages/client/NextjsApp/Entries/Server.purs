@@ -13,6 +13,7 @@ import Data.String.Yarn                       as Yarn
 import Effect.Class.Console                   as Console
 import Hyper.Conn                             as Hyper
 import Hyper.Middleware                       as Hyper
+import Hyper.Middleware.Class                 as Hyper
 import Hyper.Node.FileServer                  as Hyper.Node
 import Hyper.Node.Server                      as Hyper.Node
 import Hyper.Request                          as Hyper
@@ -38,6 +39,8 @@ import Protolude.Node                         as Protolude.Node
 import Routing.Duplex                         as Routing.Duplex
 import Routing.Duplex.Parser                  as Routing.Duplex
 import Data.MediaType.Common                  as Data.MediaType.Common
+import Data.NonEmpty as NonEmpty
+import Foreign.Object as Object
 
 data StaticOrDynamicPageData input
   = StaticOrDynamicPageData__Static input
@@ -121,8 +124,8 @@ renderPage ::
   Nextjs.Page.PageSpec input ->
   Hyper.Middleware
     Aff
-    (Hyper.Conn Hyper.Node.HttpRequest (Hyper.Node.HttpResponse Hyper.StatusLineOpen) c)
-    (Hyper.Conn Hyper.Node.HttpRequest (Hyper.Node.HttpResponse Hyper.ResponseEnded) c)
+    (Hyper.Conn Hyper.Node.HttpRequest (Hyper.Node.HttpResponse Hyper.StatusLineOpen) { cookies :: Unit | c })
+    (Hyper.Conn Hyper.Node.HttpRequest (Hyper.Node.HttpResponse Hyper.ResponseEnded) { cookies :: Unit | c })
     Unit
 renderPage
   { config
@@ -133,9 +136,24 @@ renderPage
   }
   page =
     case page.pageData of
-      Nextjs.Page.PageData__Dynamic pageData ->
-        Hyper.lift' (pageData.request (Nextjs.Page.PageData_DynamicRequestOptions__Server { sessionHeader: Tuple "" "" })) >>=
-          case _ of
+      Nextjs.Page.PageData__Dynamic pageData -> IndexedMonad.do
+        Hyper.cookies
+
+        conn <- Hyper.getConn
+
+        let (sessionHeaderValue :: Maybe String) =
+              case conn.components.cookies of
+                  Right cookies -> Object.lookup ApiServerConfig.expressSessionMiddleware_cookieName cookies <#> NonEmpty.head
+                  Left _ -> Nothing
+
+        Hyper.putConn conn { components { cookies = unit } }
+
+        (pageDataResponse :: Nextjs.Page.PageData_DynamicResponse input) <-
+          Hyper.lift'
+          $ pageData.request
+          $ Nextjs.Page.PageData_DynamicRequestOptions__Server { sessionHeader: Tuple ApiServerConfig.expressSessionMiddleware_cookieName <$> sessionHeaderValue }
+
+        case pageDataResponse of
             Nextjs.Page.PageData_DynamicResponse__Error error -> IndexedMonad.do
               Hyper.writeStatus Hyper.statusBadRequest
               Hyper.contentType Data.MediaType.Common.textPlain
@@ -182,8 +200,8 @@ app ::
   } ->
   Hyper.Middleware
     Aff
-    (Hyper.Conn Hyper.Node.HttpRequest (Hyper.Node.HttpResponse Hyper.StatusLineOpen) c)
-    (Hyper.Conn Hyper.Node.HttpRequest (Hyper.Node.HttpResponse Hyper.ResponseEnded) c)
+    (Hyper.Conn Hyper.Node.HttpRequest (Hyper.Node.HttpResponse Hyper.StatusLineOpen) { cookies :: Unit | c })
+    (Hyper.Conn Hyper.Node.HttpRequest (Hyper.Node.HttpResponse Hyper.ResponseEnded) { cookies :: Unit | c })
     Unit
 app { buildManifest, config } = IndexedMonad.do
   request <- Hyper.getRequestData
@@ -196,7 +214,6 @@ app { buildManifest, config } = IndexedMonad.do
       Console.log $ Ansi.withGraphics (Ansi.foreground Ansi.BrightYellow) $ "  Page requested: " <> show route
       let
         pageManifest = NextjsApp.Route.lookupFromRouteIdMapping route buildManifest.pages
-      let
         mergedPageManifest = NextjsApp.Manifest.PageManifest.mergePageManifests buildManifest.main pageManifest
       Nextjs.Page.unPage
         ( renderPage
@@ -224,5 +241,5 @@ main =
     liftEffect
       $ Hyper.Node.runServer
           (Hyper.Node.defaultOptionsWithLogging { port = Hyper.Node.Port config.port })
-          {}
+          { cookies: unit }
           (app { buildManifest, config } # Hyper.Node.fileServer rootPath')

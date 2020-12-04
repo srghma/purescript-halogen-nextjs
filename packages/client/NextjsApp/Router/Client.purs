@@ -47,7 +47,7 @@ clientLoadAndPutNewPage currentState destRoute = do
   -- | traceM { message: "clientLoadAndPutNewPage pageloaded", currentState, destRoute }
   (H.liftAff $ Nextjs.Page.pageToPageSpecWithInputBoxed page)
     >>= case _ of
-        Left error -> H.liftAff $ Nextjs.Api.throwApiError error -- TODO: show an error as alert
+        Left errorS -> H.liftAff $ throwError $ error errorS -- TODO: show an error as alert
         Right pageSpecWithInputBoxed -> do
           -- | traceM { message: "clientLoadAndPutNewPage put", pageSpecWithInputBoxed }
           H.put
