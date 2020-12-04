@@ -1,4 +1,4 @@
-module FeatureTests.Tests.Login.SuccessSpec where
+module FeatureTests.Tests.Register.SuccessSpec where
 
 import Control.Monad.Error.Class
 import Control.Monad.Reader.Trans
@@ -59,49 +59,6 @@ spec = do
       , email: "useremail1@mail.com"
       }
 
-  (newUserSecretId :: String) <- scalarOrThrowRequired (PostgreSQL.Query """
-      INSERT INTO app_private.user_secrets (password_hash)
-      VALUES (crypt($1, gen_salt('bf'))) RETURNING id;
-  """) (PostgreSQL.Row1 user.password)
+  goClientRoute Signup
 
-  (newUserId :: String) <- scalarOrThrowRequired (PostgreSQL.Query """
-      INSERT INTO app_public.users (username, user_secret_id)
-      VALUES ($1, $2) RETURNING id;
-  """) (PostgreSQL.Row2 user.username newUserSecretId)
-
-  executeOrThrow (PostgreSQL.Query """
-      INSERT INTO app_hidden.user_emails (user_id, email, is_verified)
-      VALUES ($1, $2, true)
-  """) (PostgreSQL.Row2 newUserId user.email)
-
-  goClientRoute Login
-
-  runLunapark $ inputField usernameOrEmailXpath "unknown@mail.com"
-
-  ( retryAction $ runLunapark $
-    (Lunapark.findElement $ Lunapark.ByCss $ CSS.Selector (CSS.Refinement [CSS.Id "usernameOrEmail-helper"]) CSS.Star)
-    >>= Lunapark.getText
-  ) >>= \text -> text `shouldEqual` "Username or email is not found"
-
-  runLunapark $ inputField usernameOrEmailXpath user.email
-  runLunapark $ inputField passwordXpath user.password
-
-  retryAction $
-    ( ( runLunapark $
-        Lunapark.findElement passwordXpath
-        >>= \e -> Lunapark.getAttribute e "value"
-      )
-      >>= \text -> text `shouldEqual` user.password
-    )
-
-  runLunapark $ Lunapark.findElement (Lunapark.ByXPath """//div[@role="form"]//button[text()="Submit"]""") >>= Lunapark.clickElement
-
-  retryAction $
-    ( getCurrentRoute
-      >>= \mRoute -> mRoute `shouldEqual` Just Secret
-    )
-
-  ( runLunapark $
-    (Lunapark.findElement $ Lunapark.ByCss $ CSS.Elements.body)
-    >>= Lunapark.getText
-  ) >>= \text -> text `shouldContainString` Pattern "You are on secret page"
+  pressEnterToContinue

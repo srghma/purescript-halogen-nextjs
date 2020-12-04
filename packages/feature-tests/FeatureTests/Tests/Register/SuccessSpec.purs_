@@ -1,8 +1,0 @@
-module FeatureTests.Tests.Register.SuccessSpec where
-
-import Prelude
-import Test.Spec (Spec, describe, it)
-import FeatureTest
-
-spec :: FeatureTestSpec Unit
-spec = pure unit
