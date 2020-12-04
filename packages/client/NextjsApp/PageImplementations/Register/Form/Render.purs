@@ -86,7 +86,7 @@ render state =
                 , errorToErrorText:
                     case _ of
                          NonUsedUsernameOrEmail__Error__Empty -> "Username or email is empty"
-                         NonUsedUsernameOrEmail__Error__NotNonUsed -> "Username or email is not found"
+                         NonUsedUsernameOrEmail__Error__InUse -> "Username or email is not found"
                 }
             }
         )

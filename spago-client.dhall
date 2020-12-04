@@ -21,7 +21,6 @@
   , "./packages/client-halogen-examples/lifecycle/**/*.purs"
   , "./packages/client-halogen-examples/deeply-nested/**/*.purs"
   , "./packages/client-halogen-examples/text-nodes/**/*.purs"
-  , "./packages/client-halogen-examples/dynamic-input/**/*.purs"
   , "./packages/client-halogen-examples/lazy/**/*.purs"
   ]
 }
