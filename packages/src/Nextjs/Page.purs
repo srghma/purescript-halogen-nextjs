@@ -23,8 +23,8 @@ data PageData_DynamicRequestOptions
   | PageData_DynamicRequestOptions__Client -- should map to { withCredentials = true }
   | PageData_DynamicRequestOptions__Mobile { sessionHeader :: Maybe (Tuple String String) } -- session header from secure storage
 
-dynamicPageData__RequestOptions__To__RequestOptions :: PageData_DynamicRequestOptions -> GraphQLClient.RequestOptions
-dynamicPageData__RequestOptions__To__RequestOptions =
+pageData_DynamicRequestOptions__To__RequestOptions :: PageData_DynamicRequestOptions -> GraphQLClient.RequestOptions
+pageData_DynamicRequestOptions__To__RequestOptions =
   case _ of
        PageData_DynamicRequestOptions__Server { sessionHeader } -> sessionHeaderToHeaders sessionHeader
        PageData_DynamicRequestOptions__Client -> GraphQLClient.defaultRequestOptions { withCredentials = true }

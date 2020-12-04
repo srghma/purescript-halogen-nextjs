@@ -22,7 +22,7 @@ import Web.HTML as Web.HTML
 import Web.HTML.HTMLDocument as Web.HTML.HTMLDocument
 
 onDocumentEvent ::
-  forall m e.
+  forall e.
   EventType ->
   Web.HTML.HTMLDocument ->
   Effect Unit ->
@@ -38,9 +38,7 @@ main = do
   -- first we'll get the route the user landed on
   let
     (route :: NextjsApp.Route.Route) = NextjsApp.Route.Index
-  let
     (page :: Nextjs.Page.Page) = NextjsApp.Route.lookupFromRouteIdMapping route NextjsApp.RouteToPageNonClient.routeIdMapping
-  let
     (env :: Env) =
       { navigate: NextjsApp.Navigate.Mobile.navigate newRouteEventIO
       , linkHandleActions: NextjsApp.Link.Mobile.mkLinkHandleActions
