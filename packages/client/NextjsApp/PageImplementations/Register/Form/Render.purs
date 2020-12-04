@@ -1,4 +1,4 @@
-module NextjsApp.PageImplementations.Signup.Form.Render where
+module NextjsApp.PageImplementations.Register.Form.Render where
 
 import Protolude
 
@@ -10,16 +10,16 @@ import Halogen.HTML.Properties as HP
 import Halogen.HTML.Properties.ARIA as Halogen.HTML.Properties.ARIA
 import HalogenMWC.Button as Button
 import HalogenMWC.TextField.Outlined as TextField.Outlined
-import NextjsApp.Data.InUseUsernameOrEmail (InUseUsernameOrEmail__Error(..))
+import NextjsApp.Data.NonUsedUsernameOrEmail (NonUsedUsernameOrEmail__Error(..))
 import NextjsApp.Data.Password (PasswordError(..))
-import NextjsApp.PageImplementations.Login.Css as NextjsApp.PageImplementations.Login.Css
-import NextjsApp.PageImplementations.Login.Form.Types (FormChildSlots, LoginForm, UserAction(..))
+import NextjsApp.PageImplementations.Register.Css as NextjsApp.PageImplementations.Register.Css
+import NextjsApp.PageImplementations.Register.Form.Types (FormChildSlots, RegisterForm, UserAction(..))
 
 prx ::
   { password :: SProxy "password"
   , usernameOrEmail :: SProxy "usernameOrEmail"
   }
-prx = F.mkSProxies (F.FormProxy :: F.FormProxy LoginForm)
+prx = F.mkSProxies (F.FormProxy :: F.FormProxy RegisterForm)
 
 isInvalid :: forall t42 t43. F.FormFieldResult t43 t42 -> Boolean
 isInvalid =
@@ -59,8 +59,8 @@ mkHelperText = \config ->
 
 render
   :: forall st
-   . F.PublicState LoginForm st
-  -> F.ComponentHTML LoginForm UserAction FormChildSlots Aff
+   . F.PublicState RegisterForm st
+  -> F.ComponentHTML RegisterForm UserAction FormChildSlots Aff
 render state =
   HH.div
     [ Halogen.HTML.Properties.ARIA.role "form" ]
@@ -77,7 +77,7 @@ render state =
               , labelText: "Username / email"
               }
             , value = field.input
-            , additionalClassesRoot = [ NextjsApp.PageImplementations.Login.Css.styles.input ]
+            , additionalClassesRoot = [ NextjsApp.PageImplementations.Register.Css.styles.input ]
             , invalid = isInvalid field.result
             , helperText =
                 mkHelperText
@@ -85,8 +85,8 @@ render state =
                 , id: "usernameOrEmail-helper"
                 , errorToErrorText:
                     case _ of
-                         InUseUsernameOrEmail__Error__Empty -> "Username or email is empty"
-                         InUseUsernameOrEmail__Error__NotInUse -> "Username or email is not found"
+                         NonUsedUsernameOrEmail__Error__Empty -> "Username or email is empty"
+                         NonUsedUsernameOrEmail__Error__NotNonUsed -> "Username or email is not found"
                 }
             }
         )
@@ -104,7 +104,7 @@ render state =
           in TextField.Outlined.defaultConfig
             { label = TextField.Outlined.LabelConfig__With { id: "password", labelText: "Password" }
             , value = field.input
-            , additionalClassesRoot = [ NextjsApp.PageImplementations.Login.Css.styles.input ]
+            , additionalClassesRoot = [ NextjsApp.PageImplementations.Register.Css.styles.input ]
             , invalid = isInvalid field.result
             , helperText =
                 mkHelperText
@@ -122,14 +122,14 @@ render state =
                TextField.Outlined.Message__Input string -> F.setValidate prx.password string
         )
     , HH.div
-      [ HP.class_ NextjsApp.PageImplementations.Login.Css.styles.buttons ]
+      [ HP.class_ NextjsApp.PageImplementations.Register.Css.styles.buttons ]
       [ HH.slot
           (SProxy :: SProxy "submit-button")
           unit
           Button.button
           { variant: Button.Raised
           , config: Button.defaultConfig
-            { additionalClasses = [ NextjsApp.PageImplementations.Login.Css.styles.buttons__button ]
+            { additionalClasses = [ NextjsApp.PageImplementations.Register.Css.styles.buttons__button ]
             , disabled =
               case state.validity of
                    F.Valid -> false
@@ -143,7 +143,7 @@ render state =
           unit
           Button.button
           { variant: Button.Text
-          , config: Button.defaultConfig { additionalClasses = [ NextjsApp.PageImplementations.Login.Css.styles.buttons__button ] }
+          , config: Button.defaultConfig { additionalClasses = [ NextjsApp.PageImplementations.Register.Css.styles.buttons__button ] }
           , content: [ HH.text "Go to sign up" ]
           }
           (inj (SProxy :: SProxy "userAction") <<< UserAction__RegisterButtonClick)

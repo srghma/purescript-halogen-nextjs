@@ -1,7 +1,7 @@
 module ApiServer.Postgraphile where
 
 import ApiServer.Config
-import ApiServer.PostgraphilePassportLoginPlugin
+import ApiServer.PostgraphilePassportAuthPlugin
 import Data.Function.Uncurried
 import Effect.Uncurried
 import Node.Express.Types

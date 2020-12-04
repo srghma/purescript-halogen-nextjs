@@ -4,7 +4,7 @@ import NextjsApp.Route as NextjsApp.Route
 import Nextjs.Page as Nextjs.Page
 import NextjsApp.Pages.Index as NextjsApp.Pages.Index
 import NextjsApp.Pages.Login as NextjsApp.Pages.Login
-import NextjsApp.Pages.Signup as NextjsApp.Pages.Signup
+import NextjsApp.Pages.Register as NextjsApp.Pages.Register
 import NextjsApp.Pages.Secret as NextjsApp.Pages.Secret
 import NextjsApp.Pages.Examples.Ace as NextjsApp.Pages.Examples.Ace
 import NextjsApp.Pages.Examples.Basic as NextjsApp.Pages.Examples.Basic
@@ -26,7 +26,7 @@ routeIdMapping :: NextjsApp.Route.RouteIdMapping Nextjs.Page.Page
 routeIdMapping =
   { "Index": NextjsApp.Pages.Index.page
   , "Login": NextjsApp.Pages.Login.page
-  , "Signup": NextjsApp.Pages.Signup.page
+  , "Register": NextjsApp.Pages.Register.page
   , "Secret": NextjsApp.Pages.Secret.page
   -- XXX: the manifest id separator is __ !!!!
   , "Examples__Ace": NextjsApp.Pages.Examples.Ace.page

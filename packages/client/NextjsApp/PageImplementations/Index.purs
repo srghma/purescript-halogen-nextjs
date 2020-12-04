@@ -12,7 +12,7 @@ allRoutes :: Array Route
 allRoutes =
   [ Index
   , Login
-  , Signup
+  , Register
   , Secret
   ]
   <>

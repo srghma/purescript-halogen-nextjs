@@ -12,7 +12,7 @@ routeCodec =
     $ Routing.Duplex.sum
         { "Index": Routing.Duplex.noArgs
         , "Login": "login" / Routing.Duplex.noArgs
-        , "Signup": "signup" / Routing.Duplex.noArgs
+        , "Register": "register" / Routing.Duplex.noArgs
         , "Secret": "secret" / Routing.Duplex.noArgs
         , "RouteExamples": "examples" / routesexamplesCodec
         }

@@ -3,7 +3,7 @@
 , packages = ./packages.dhall
 , sources =
   [ "./packages/client/**/*.purs"
-  , "./packages/client-test/**/*.purs"
+  , "./packages/client-tests/**/*.purs"
   , "./packages/client-webpack/**/*.purs"
   , "./packages/src/**/*.purs"
   , "./packages/api-server-exceptions/**/*.purs"

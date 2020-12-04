@@ -1,7 +1,7 @@
-module NextjsApp.PageImplementations.Signup.Form.Types where
+module NextjsApp.PageImplementations.Register.Form.Types where
 
 import NextjsApp.Data.Password (Password, PasswordError)
-import NextjsApp.Data.InUseUsernameOrEmail (InUseUsernameOrEmail, InUseUsernameOrEmail__Error)
+import NextjsApp.Data.NonUsedUsernameOrEmail (NonUsedUsernameOrEmail, NonUsedUsernameOrEmail__Error)
 import Protolude
 
 import Formless as F
@@ -12,17 +12,17 @@ import HalogenMWC.TextField.Outlined as TextField.Outlined
 data UserAction
   = UserAction__RegisterButtonClick Button.Message
 
-type LoginFormRow f =
-  ( usernameOrEmail :: f InUseUsernameOrEmail__Error String InUseUsernameOrEmail
+type RegisterFormRow f =
+  ( usernameOrEmail :: f NonUsedUsernameOrEmail__Error String NonUsedUsernameOrEmail
   , password :: f PasswordError String Password
   )
 
-newtype LoginForm r f = LoginForm (r (LoginFormRow f))
+newtype RegisterForm r f = RegisterForm (r (RegisterFormRow f))
 
-derive instance newtypeLoginForm :: Newtype (LoginForm r f) _
+derive instance newtypeRegisterForm :: Newtype (RegisterForm r f) _
 
 -- equivalent to { email :: Email, ... }
-type LoginDataValidated = { | LoginFormRow F.OutputType }
+type RegisterDataValidated = { | RegisterFormRow F.OutputType }
 
 type FormChildSlots =
   ( usernameOrEmail :: H.Slot (Const Void) TextField.Outlined.Message Unit

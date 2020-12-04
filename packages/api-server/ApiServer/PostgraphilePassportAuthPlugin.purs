@@ -1,6 +1,6 @@
-module ApiServer.PostgraphilePassportLoginPlugin where
+module ApiServer.PostgraphilePassportAuthPlugin where
 
-import ApiServerExceptions.PostgraphilePassportLoginPlugin
+import ApiServerExceptions.PostgraphilePassportAuthPlugin
 import Control.Promise
 import Data.Function.Uncurried
 import Effect.Uncurried

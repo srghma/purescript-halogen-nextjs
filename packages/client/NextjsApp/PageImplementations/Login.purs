@@ -45,7 +45,7 @@ import NextjsApp.NodeEnv as NextjsApp.NodeEnv
 import NextjsApp.Data.InUseUsernameOrEmail (InUseUsernameOrEmail)
 import NextjsApp.Data.InUseUsernameOrEmail as NextjsApp.Data.InUseUsernameOrEmail
 import NextjsApp.Route as NextjsApp.Route
-import ApiServerExceptions.PostgraphilePassportLoginPlugin as ApiServerExceptions.PostgraphilePassportLoginPlugin
+import ApiServerExceptions.PostgraphilePassportAuthPlugin as ApiServerExceptions.PostgraphilePassportAuthPlugin
 import NextjsApp.Queries.Utils
 import NextjsGraphqlApi.Object.User as NextjsGraphqlApi.Object.User
 import NextjsGraphqlApi.Object.WebLoginPayload as NextjsGraphqlApi.Object.WebLoginPayload
@@ -93,10 +93,10 @@ component =
                                             maybe
                                             (LoginError__UnknownError "unknown error")
                                             (case _ of
-                                                  ApiServerExceptions.PostgraphilePassportLoginPlugin.WebLoginExceptionsClient__Internal -> LoginError__UnknownError "internal error"
-                                                  ApiServerExceptions.PostgraphilePassportLoginPlugin.WebLoginExceptionsClient__LoginFailed -> LoginError__LoginFailed
+                                                  ApiServerExceptions.PostgraphilePassportAuthPlugin.WebLoginExceptionsClient__Internal -> LoginError__UnknownError "internal error"
+                                                  ApiServerExceptions.PostgraphilePassportAuthPlugin.WebLoginExceptionsClient__LoginFailed -> LoginError__LoginFailed
                                             )
-                                            $ ApiServerExceptions.PostgraphilePassportLoginPlugin.webLoginExceptionsClientFromString
+                                            $ ApiServerExceptions.PostgraphilePassportAuthPlugin.webLoginExceptionsClientFromString
                                             $ _.message
                                             $ unwrap
                                             $ NonEmptyArray.head details

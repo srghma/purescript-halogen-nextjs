@@ -54,7 +54,7 @@ instance decodeJsonRoutesExamples :: DecodeJson RouteExamples where
 data Route
   = Index
   | Login
-  | Signup
+  | Register
   | Secret
   | RouteExamples RouteExamples
 
@@ -97,7 +97,7 @@ routeIdArrayToArrayString = unsafeCoerce
 type RouteIdMappingRow' a r
   = ( "Index" :: a
     , "Login" :: a
-    , "Signup" :: a
+    , "Register" :: a
     , "Secret" :: a
     -- is using routeIdSeparator
     , "Examples__Ace" :: a
@@ -133,7 +133,7 @@ routeIdToRouteMapping :: RouteIdMapping Route
 routeIdToRouteMapping =
   { "Index": Index
   , "Login": Login
-  , "Signup": Signup
+  , "Register": Register
   , "Secret": Secret
   -- is using routeIdSeparator
   , "Examples__Ace": RouteExamples RouteExamples__Ace
@@ -157,7 +157,7 @@ lookupFromRouteIdMapping :: forall a. Route -> RouteIdMapping a -> a
 lookupFromRouteIdMapping = case _ of
   Index -> _."Index"
   Login -> _."Login"
-  Signup -> _."Signup"
+  Register -> _."Register"
   Secret -> _."Secret"
   RouteExamples routesexamples -> case routesexamples of
     RouteExamples__Ace -> _."Examples__Ace"

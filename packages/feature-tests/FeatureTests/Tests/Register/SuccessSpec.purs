@@ -59,6 +59,6 @@ spec = do
       , email: "useremail1@mail.com"
       }
 
-  goClientRoute Signup
+  goClientRoute Register
 
   pressEnterToContinue

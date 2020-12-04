@@ -1,4 +1,4 @@
-module ApiServerExceptions.PostgraphilePassportLoginPlugin where
+module ApiServerExceptions.PostgraphilePassportAuthPlugin where
 
 import Database.PostgreSQL
 
