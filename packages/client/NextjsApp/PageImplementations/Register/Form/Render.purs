@@ -23,6 +23,19 @@ import NextjsApp.PageImplementations.Register.Form.Types (FormChildSlots, Regist
 import FormlessExtra
 import NextjsApp.Route as NextjsApp.Route
 
+renderUsernameHelper =
+  case _ of
+       NonUsedUsername__Error__Empty -> "Should not be empty"
+       NonUsedUsername__Error__BadLength l -> "Should be between " <> show NonUsedUsername.minUsernameLength <> " and " <> show NonUsedUsername.maxUsernameLength <> " (currently " <> show l <> ")"
+       NonUsedUsername__Error__BadFormat -> "Should contain only numbers, letter and underscore"
+       NonUsedUsername__Error__InUse -> "Already in use"
+
+renderEmailHelper =
+  case _ of
+       NonUsedEmail__Error__Empty -> "Should not be empty"
+       NonUsedEmail__Error__BadFormat -> "Bad format"
+       NonUsedEmail__Error__InUse -> "Already in use"
+
 render
   :: forall st
    . F.PublicState RegisterForm st
@@ -36,7 +49,7 @@ render state =
         TextField.Outlined.outlined
         (
           let
-            field = F.getField prx.username state.form
+            field = spy "rendering username field" $ F.getField prx.username state.form
           in TextField.Outlined.defaultConfig
             { label = TextField.Outlined.LabelConfig__With
               { id: "username"
@@ -49,12 +62,7 @@ render state =
                 mkHelperText
                 { result: field.result
                 , id: "username-helper"
-                , errorToErrorText:
-                    case _ of
-                         NonUsedUsername__Error__Empty -> "Should not be empty"
-                         NonUsedUsername__Error__BadLength l -> "Should be between " <> show NonUsedUsername.minUsernameLength <> " and " <> show NonUsedUsername.maxUsernameLength <> " (currently " <> show l <> ")"
-                         NonUsedUsername__Error__BadFormat -> "Should contain only numbers, letter and underscore"
-                         NonUsedUsername__Error__InUse -> "Already in use"
+                , errorToErrorText: renderUsernameHelper
                 }
             }
         )
@@ -81,11 +89,7 @@ render state =
                 mkHelperText
                 { result: field.result
                 , id: "email-helper"
-                , errorToErrorText:
-                    case _ of
-                         NonUsedEmail__Error__Empty -> "Should not be empty"
-                         NonUsedEmail__Error__BadFormat -> "Bad format"
-                         NonUsedEmail__Error__InUse -> "Already in use"
+                , errorToErrorText: renderEmailHelper
                 }
             }
         )
@@ -151,13 +155,13 @@ render state =
           , config: Button.defaultConfig
             { additionalClasses = [ NextjsApp.PageImplementations.Register.Css.styles.buttons__button ]
             , disabled =
-              case state.validity of
+              case spy "rendering state.validity" state.validity of
                    F.Valid -> false
-                   _       -> true
+                   _       -> trace state $ const true
             }
           , content: [ HH.text "Submit" ]
           }
-          (\(_ :: Button.Message) -> spy "submit" (F.submit))
+          (\(_ :: Button.Message) -> F.submit)
       , HH.slot
           (SProxy :: SProxy "login-button")
           unit

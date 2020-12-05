@@ -28,11 +28,15 @@ toString = unsafeCoerce
 
 fromString :: String -> Aff (Either NonUsedEmail__Error NonUsedEmail)
 fromString = \str -> runExceptT do
+  traceM { m: "NonUsedEmail", str }
+
   nstr <- NonEmptyString.fromString str # maybe (throwError NonUsedEmail__Error__Empty) pure
 
   email <- Email.fromNonEmptyString nstr # maybe (throwError NonUsedEmail__Error__BadFormat) pure
 
   unlessM (liftAff $ validNotInUse email) (throwError NonUsedEmail__Error__InUse)
+
+  traceM { m: "NonUsedEmail responding", str }
 
   pure $ NonUsedEmail email
 

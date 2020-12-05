@@ -67,12 +67,29 @@ spec = do
   goClientRoute Register
 
   runLunapark $ inputField usernameXpath user.username
-  runLunapark $ inputField emailXpath user.email
-  runLunapark $ inputField passwordXpath user.password
-  runLunapark $ inputField passwordConfirmationXpath user.password
+  waitForInputValueToEqual usernameXpath user.username
 
+  runLunapark $ inputField emailXpath user.email
+  waitForInputValueToEqual emailXpath user.email
+
+  runLunapark $ inputField passwordXpath user.password
+  waitForInputValueToEqual passwordXpath user.password
+
+  runLunapark $ inputField passwordConfirmationXpath user.password
   waitForInputValueToEqual passwordConfirmationXpath user.password
 
-  runLunapark $ Lunapark.findElement (Lunapark.ByXPath """//div[@role="form"]//button[text()="Submit"]""") >>= Lunapark.clickElement
+  runLunapark $
+    Lunapark.findElement (Lunapark.ByXPath """//div[@role="form"]//button[text()="Submit"]""")
+    >>= Lunapark.clickElement
 
   pressEnterToContinue
+
+  retryAction $
+    ( getCurrentRoute
+      >>= \mRoute -> mRoute `shouldEqual` Just Secret
+    )
+
+  ( runLunapark $
+    (Lunapark.findElement $ Lunapark.ByCss $ CSS.Elements.body)
+    >>= Lunapark.getText
+  ) >>= \text -> text `shouldContainString` Pattern "You are on secret page"
