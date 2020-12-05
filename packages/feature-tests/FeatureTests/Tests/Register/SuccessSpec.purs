@@ -97,6 +97,7 @@ spec = do
     Lunapark.findElement (Lunapark.ByXPath """//div[@role="form"]//button[text()="Submit"]""")
     >>= Lunapark.clickElement
 
+  -- because it is still validating
   runLunapark $
     Lunapark.findElement (Lunapark.ByXPath """//div[@role="form"]//button[text()="Submit"]""")
     >>= Lunapark.clickElement
