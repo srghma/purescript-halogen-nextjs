@@ -9,21 +9,24 @@ import Data.Time.Duration
 import Effect
 import Effect.Aff
 import Effect.Class
-import Effect.Console
 import Effect.Exception
 import FeatureTests.FeatureTestSpec
+import FeatureTests.FeatureTestSpecUtils.AffRetry
 import FeatureTests.FeatureTestSpecUtils.Db
 import FeatureTests.FeatureTestSpecUtils.DebuggingAndTdd
 import FeatureTests.FeatureTestSpecUtils.GoClientRoute
+import FeatureTests.FeatureTestSpecUtils.LunaparkUtils
 import LunaparkExtra
 import NextjsApp.Route
 import Protolude
+import SpecAssertsExtra
 import Test.Spec
 import Unsafe.Coerce
-import FeatureTests.FeatureTestSpecUtils.AffRetry
 
 import CSS as CSS
 import CSS.Elements as CSS.Elements
+import Data.Argonaut as Json
+import Data.Argonaut.Decode as Json
 import Data.String (Pattern(..), contains)
 import Database.PostgreSQL as PostgreSQL
 import Effect.Aff.Retry as AffRetry
@@ -44,8 +47,6 @@ import Run as Run
 import Run.Except as Run
 import Run.Reader as Run
 import Test.Spec.Assertions (fail, shouldContain, shouldEqual)
-import SpecAssertsExtra
-import FeatureTests.FeatureTestSpecUtils.LunaparkUtils
 
 usernameXpath = Lunapark.ByXPath """//div[@role="form"]//input[@aria-labelledby="username"]"""
 
@@ -66,6 +67,9 @@ spec = do
 
   goClientRoute Register
 
+  runLunapark $ inputField usernameXpath "1"
+  waitForInputValueToEqual usernameXpath "1"
+
   runLunapark $ inputField usernameXpath user.username
   waitForInputValueToEqual usernameXpath user.username
 
@@ -78,11 +82,24 @@ spec = do
   runLunapark $ inputField passwordConfirmationXpath user.password
   waitForInputValueToEqual passwordConfirmationXpath user.password
 
+  -- TODO: inputtig second time because of some ...
+  runLunapark $ inputField usernameXpath user.username
+  waitForInputValueToEqual usernameXpath user.username
+
+  ( runLunapark $
+    (Lunapark.findElement $ Lunapark.ByXPath """//div[@role="form"]//button[text()="Submit"]""")
+    >>= \element -> Lunapark.getProperty element "disabled"
+  ) >>= \json -> do
+     boolean <- (Json.decodeJson json :: Either Json.JsonDecodeError Boolean) # either (throwError <<< error <<< Json.printJsonDecodeError) pure
+     boolean `shouldEqual` false
+
   runLunapark $
     Lunapark.findElement (Lunapark.ByXPath """//div[@role="form"]//button[text()="Submit"]""")
     >>= Lunapark.clickElement
 
-  pressEnterToContinue
+  runLunapark $
+    Lunapark.findElement (Lunapark.ByXPath """//div[@role="form"]//button[text()="Submit"]""")
+    >>= Lunapark.clickElement
 
   retryAction $
     ( getCurrentRoute
