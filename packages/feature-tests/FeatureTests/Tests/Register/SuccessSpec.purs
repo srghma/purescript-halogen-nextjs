@@ -80,8 +80,8 @@ spec = do
   waitForInputValueToEqual passwordConfirmationXpath user.password
 
   -- TODO: inputtig second time because of some ...
-  runLunapark $ inputField usernameXpath user.username
-  waitForInputValueToEqual usernameXpath user.username
+  -- | runLunapark $ inputField usernameXpath user.username
+  -- | waitForInputValueToEqual usernameXpath user.username
 
   ( runLunapark $
     (Lunapark.findElement $ Lunapark.ByXPath """//div[@role="form"]//button[text()="Submit"]""")
@@ -94,7 +94,9 @@ spec = do
     Lunapark.findElement (Lunapark.ByXPath """//div[@role="form"]//button[text()="Submit"]""")
     >>= Lunapark.clickElement
 
-  -- because it is still validating
+  pressEnterToContinue
+
+  -- TODO: hack, probalby because it is still validating
   runLunapark $
     Lunapark.findElement (Lunapark.ByXPath """//div[@role="form"]//button[text()="Submit"]""")
     >>= Lunapark.clickElement
