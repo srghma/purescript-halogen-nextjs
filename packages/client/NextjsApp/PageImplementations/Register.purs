@@ -1,55 +1,58 @@
 module NextjsApp.PageImplementations.Register (component) where
 
-import NextjsGraphqlApi.Scalars
 import Material.Classes.LayoutGrid
 import NextjsApp.PageImplementations.Register.Form
 import NextjsApp.PageImplementations.Register.Render
 import NextjsApp.PageImplementations.Register.Types
+import NextjsApp.Queries.Utils
+import NextjsGraphqlApi.Scalars
 import Protolude
 
-import Affjax                                                 as Affjax
-import NextjsGraphqlApi.InputObject                           as NextjsGraphqlApi.InputObject
-import NextjsGraphqlApi.Mutation                              as NextjsGraphqlApi.Mutation
-import NextjsGraphqlApi.Object.User                           as NextjsGraphqlApi.Object.User
-import NextjsGraphqlApi.Query                                 as NextjsGraphqlApi.Query
-import Browser.Cookie                                         as Browser.Cookie
-import Data.Argonaut.Decode                                   as Data.Argonaut.Decode
-import Data.Array                                             as Array
-import Data.Array.NonEmpty                                    as NonEmptyArray
-import Data.Either                                            (Either(..))
-import Data.Email                                             (Email)
-import Data.Email                                             as Email
-import Data.Int                                               as Int
-import Data.Lens.Record                                       as Lens
-import Data.Maybe                                             (Maybe(..))
-import Data.Maybe                                             as Maybe
-import Data.String.NonEmpty                                   (NonEmptyString)
-import Data.String.NonEmpty                                   as NonEmptyString
-import Data.Variant                                           (Variant, inj)
-import Formless                                               as F
-import GraphQLClient                                          (GraphQLError, Scope__RootMutation, SelectionSet(..))
-import GraphQLClient                                          as GraphQLClient
-import Halogen                                                as H
-import Halogen.Component                                      as Halogen.Component
-import Halogen.HTML                                           as HH
-import Halogen.HTML.Properties                                as HP
-import HalogenMWC.Button                                      as Button
-import HalogenMWC.TextField.Outlined                          as TextField.Outlined
-import HalogenMWC.Utils                                       (setEfficiently)
-import NextjsApp.AppM                                         (AppM)
-import NextjsApp.Blocks.PurescriptLogo                        (purescriptLogoSrc)
-import NextjsApp.Data.Password                                (Password)
-import NextjsApp.Data.Password                                as NextjsApp.Data.Password
-import NextjsApp.Navigate                                     as NextjsApp.Navigate
-import NextjsApp.NodeEnv                                      as NextjsApp.NodeEnv
-import NextjsApp.Data.NonUsedUsername                  (NonUsedUsername)
-import NextjsApp.Data.NonUsedUsername                  as NextjsApp.Data.NonUsedUsername
-import NextjsApp.Route                                        as NextjsApp.Route
+import Affjax as Affjax
 import ApiServerExceptions.PostgraphilePassportAuthPlugin.Register as ApiServerExceptions.PostgraphilePassportAuthPlugin.Register
-import NextjsApp.Queries.Utils
-import NextjsGraphqlApi.Object.User                           as NextjsGraphqlApi.Object.User
-import NextjsGraphqlApi.Object.WebRegisterPayload             as NextjsGraphqlApi.Object.WebRegisterPayload
-import NextjsGraphqlApi.Scalars                               as NextjsGraphqlApi.Scalars
+import Browser.Cookie as Browser.Cookie
+import Data.Argonaut.Decode as Data.Argonaut.Decode
+import Data.Array as Array
+import Data.Array.NonEmpty as NonEmptyArray
+import Data.Either (Either(..))
+import Data.Email (Email)
+import Data.Email as Email
+import Data.Int as Int
+import Data.Lens.Record as Lens
+import Data.Maybe (Maybe(..))
+import Data.Maybe as Maybe
+import Data.String.NonEmpty (NonEmptyString)
+import Data.String.NonEmpty as NonEmptyString
+import Data.Variant (Variant, inj)
+import Formless as F
+import GraphQLClient (GraphQLError, Optional(..), Scope__RootMutation, SelectionSet(..))
+import GraphQLClient as GraphQLClient
+import Halogen as H
+import Halogen.Component as Halogen.Component
+import Halogen.HTML as HH
+import Halogen.HTML.Properties as HP
+import HalogenMWC.Button as Button
+import HalogenMWC.TextField.Outlined as TextField.Outlined
+import HalogenMWC.Utils (setEfficiently)
+import NextjsApp.AppM (AppM)
+import NextjsApp.Blocks.PurescriptLogo (purescriptLogoSrc)
+import NextjsApp.Data.MatchingPassword (MatchingPassword)
+import NextjsApp.Data.MatchingPassword as NextjsApp.Data.MatchingPassword
+import NextjsApp.Data.NonUsedEmail as NextjsApp.Data.NonUsedEmail
+import NextjsApp.Data.NonUsedUsername (NonUsedUsername)
+import NextjsApp.Data.NonUsedUsername as NextjsApp.Data.NonUsedUsername
+import NextjsApp.Data.Password (Password)
+import NextjsApp.Data.Password as NextjsApp.Data.Password
+import NextjsApp.Navigate as NextjsApp.Navigate
+import NextjsApp.NodeEnv as NextjsApp.NodeEnv
+import NextjsApp.Route as NextjsApp.Route
+import NextjsGraphqlApi.InputObject as NextjsGraphqlApi.InputObject
+import NextjsGraphqlApi.Mutation as NextjsGraphqlApi.Mutation
+import NextjsGraphqlApi.Object.User as NextjsGraphqlApi.Object.User
+import NextjsGraphqlApi.Object.User as NextjsGraphqlApi.Object.User
+import NextjsGraphqlApi.Object.WebRegisterPayload as NextjsGraphqlApi.Object.WebRegisterPayload
+import NextjsGraphqlApi.Query as NextjsGraphqlApi.Query
+import NextjsGraphqlApi.Scalars as NextjsGraphqlApi.Scalars
 
 component ::
   forall m r.
@@ -74,7 +77,10 @@ component =
                                   NextjsGraphqlApi.Mutation.webRegister
                                     { input: NextjsGraphqlApi.InputObject.WebRegisterInput
                                       { username: NextjsApp.Data.NonUsedUsername.toString registerDataValidated.username
-                                      , password: NextjsApp.Data.Password.toString registerDataValidated.password
+                                      , email: NextjsApp.Data.NonUsedEmail.toString registerDataValidated.email
+                                      , password: NextjsApp.Data.MatchingPassword.toString registerDataValidated.password
+                                      , avatarUrl: GraphQLClient.Absent
+                                      , name: GraphQLClient.Absent
                                       }
                                     }
                                     (NextjsGraphqlApi.Object.WebRegisterPayload.user NextjsGraphqlApi.Object.User.id)

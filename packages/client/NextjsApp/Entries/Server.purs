@@ -215,7 +215,7 @@ app { buildManifest, config } = IndexedMonad.do
       let
         pageManifest = NextjsApp.Route.lookupFromRouteIdMapping route buildManifest.pages
         mergedPageManifest = NextjsApp.Manifest.PageManifest.mergePageManifests buildManifest.main pageManifest
-      Nextjs.Page.unPage
+      Nextjs.Page.unPageSpecBoxed
         ( renderPage
             { config
             , buildManifest

@@ -10,6 +10,9 @@ import Unsafe.Coerce (unsafeCoerce)
 
 newtype MatchingPassword = MatchingPassword Password
 
+toString :: MatchingPassword -> String
+toString = unsafeCoerce
+
 data MatchingPasswordError
   = MatchingPasswordError__Invalid PasswordError
   | MatchingPasswordError__DoesntMatch { current :: Password, expectedToEqualTo :: String }
