@@ -67,9 +67,6 @@ spec = do
 
   goClientRoute Register
 
-  runLunapark $ inputField usernameXpath "1"
-  waitForInputValueToEqual usernameXpath "1"
-
   runLunapark $ inputField usernameXpath user.username
   waitForInputValueToEqual usernameXpath user.username
 
