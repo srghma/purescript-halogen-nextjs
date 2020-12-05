@@ -281,6 +281,8 @@ CREATE FUNCTION app_private.really_create_user(username text, email text, email_
     AS $$
 declare
   v_user app_public.users;
+  v_user_secret_id uuid;
+  v_password text;
   v_username text = username;
 begin
   -- Sanitise the username, and make it unique if necessary.
@@ -310,22 +312,26 @@ begin
   )
   limit 1;
 
+  -- Store the password
+  if password is null then
+    v_password = null;
+  else
+    v_password = crypt(v_password, gen_salt('bf'));
+  end if;
+
+  insert into app_private.user_secrets (password_hash) values
+    (v_password)
+    returning id into v_user_secret_id;
+
   -- Insert the new user
-  insert into app_public.users (username, name, avatar_url) values
-    (v_username, name, avatar_url)
+  insert into app_public.users (user_secret_id, username, name, avatar_url) values
+    (v_user_secret_id, v_username, name, avatar_url)
     returning * into v_user;
 
   -- Add the user's email
   if email is not null then
     insert into app_hidden.user_emails (user_id, email, is_verified)
     values (v_user.id, email, email_is_verified);
-  end if;
-
-  -- Store the password
-  if password is not null then
-    update app_private.user_secrets
-    set password_hash = crypt(password, gen_salt('bf'))
-    where user_id = v_user.id;
   end if;
 
   return v_user;
