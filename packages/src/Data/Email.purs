@@ -14,8 +14,11 @@ toNonEmptyString = unsafeCoerce
 toString :: Email -> String
 toString = unsafeCoerce
 
-fromString :: String -> Maybe Email
-fromString = NonEmptyString.fromString >>= \email ->
+fromNonEmptyString :: NonEmptyString -> Maybe Email
+fromNonEmptyString email =
   if emailValidate (NonEmptyString.toString email)
-    then Just email
+    then Just (Email email)
     else Nothing
+
+fromString :: String -> Maybe Email
+fromString = NonEmptyString.fromString >=> fromNonEmptyString

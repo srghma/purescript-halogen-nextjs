@@ -25,17 +25,17 @@ import Data.Lens as Lens
 -- https://github.com/vercel/next.js/blob/7dbdf1d89eef004170d8f2661b4b3c299962b1f8/packages/next/client/page-loader.js#L177
 -- XXX: we ASSUME isomorphic-client-pages-loader was implemented in type safe manner AND we verify it
 type PageCache
-  = Array { routeId :: NextjsApp.Route.RouteId, page :: Nextjs.Page.Page }
+  = Array { routeId :: NextjsApp.Route.RouteId, page :: Nextjs.Page.PageSpecBoxed }
 
-type PageRegisteredEventData = { route :: NextjsApp.Route.Route, page :: Nextjs.Page.Page }
+type PageRegisteredEventData = { route :: NextjsApp.Route.Route, page :: Nextjs.Page.PageSpecBoxed }
 
 foreign import readPageCache :: Effect PageCache
 
-foreign import _setRegisterEventOnPageCacheBus :: EFn.EffectFn1 (EFn.EffectFn1 { routeId :: String, page :: Nextjs.Page.Page } Unit) Unit
+foreign import _setRegisterEventOnPageCacheBus :: EFn.EffectFn1 (EFn.EffectFn1 { routeId :: String, page :: Nextjs.Page.PageSpecBoxed } Unit) Unit
 
 foreign import supportedPrefetchRel :: String
 
-findPageInCache :: NextjsApp.Route.Route -> PageCache -> Maybe { routeId :: NextjsApp.Route.RouteId, page :: Nextjs.Page.Page }
+findPageInCache :: NextjsApp.Route.Route -> PageCache -> Maybe { routeId :: NextjsApp.Route.RouteId, page :: Nextjs.Page.PageSpecBoxed }
 findPageInCache route = Array.find (\info -> info.routeId == Lens.view NextjsApp.Route._routeToRouteIdIso route)
 
 -- | XXX: _setRegisterEventOnPageCacheBus should be called only once
@@ -150,7 +150,7 @@ appendPagePrefetch pageManifest document head = do
           -- | traceM $ "addPageScriptsToBodyIfNotYetAdded: appending " <> url
           appendCss document' head url
 
-loadPage :: NextjsApp.Manifest.ClientPagesManifest.ClientPagesManifest -> Web.HTML.HTMLDocument -> Web.HTML.HTMLElement -> Web.HTML.HTMLHeadElement -> Event.Event PageRegisteredEventData -> NextjsApp.Route.Route -> Aff Nextjs.Page.Page
+loadPage :: NextjsApp.Manifest.ClientPagesManifest.ClientPagesManifest -> Web.HTML.HTMLDocument -> Web.HTML.HTMLElement -> Web.HTML.HTMLHeadElement -> Event.Event PageRegisteredEventData -> NextjsApp.Route.Route -> Aff Nextjs.Page.PageSpecBoxed
 loadPage clientPagesManifest document body head pageRegisteredEvent route = do
   pageCache <- liftEffect readPageCache
   liftEffect $ appendPage (NextjsApp.Route.lookupFromRouteIdMapping route clientPagesManifest) document body head

@@ -42,8 +42,8 @@ import NextjsApp.Data.Password                                (Password)
 import NextjsApp.Data.Password                                as NextjsApp.Data.Password
 import NextjsApp.Navigate                                     as NextjsApp.Navigate
 import NextjsApp.NodeEnv                                      as NextjsApp.NodeEnv
-import NextjsApp.Data.NonUsedUsernameOrEmail                  (NonUsedUsernameOrEmail)
-import NextjsApp.Data.NonUsedUsernameOrEmail                  as NextjsApp.Data.NonUsedUsernameOrEmail
+import NextjsApp.Data.NonUsedUsername                  (NonUsedUsername)
+import NextjsApp.Data.NonUsedUsername                  as NextjsApp.Data.NonUsedUsername
 import NextjsApp.Route                                        as NextjsApp.Route
 import ApiServerExceptions.PostgraphilePassportAuthPlugin.Register as ApiServerExceptions.PostgraphilePassportAuthPlugin.Register
 import NextjsApp.Queries.Utils
@@ -73,7 +73,7 @@ component =
                           let (query :: SelectionSet Scope__RootMutation (Maybe NextjsGraphqlApi.Scalars.Id)) =
                                   NextjsGraphqlApi.Mutation.webRegister
                                     { input: NextjsGraphqlApi.InputObject.WebRegisterInput
-                                      { username: NextjsApp.Data.NonUsedUsernameOrEmail.toString registerDataValidated.usernameOrEmail
+                                      { username: NextjsApp.Data.NonUsedUsername.toString registerDataValidated.username
                                       , password: NextjsApp.Data.Password.toString registerDataValidated.password
                                       }
                                     }

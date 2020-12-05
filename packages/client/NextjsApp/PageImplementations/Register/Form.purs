@@ -5,7 +5,7 @@ module NextjsApp.PageImplementations.Register.Form
   where
 
 import NextjsApp.Data.Password as NextjsApp.Data.Password
-import NextjsApp.Data.NonUsedUsernameOrEmail as NextjsApp.Data.NonUsedUsernameOrEmail
+import NextjsApp.Data.NonUsedUsername as NextjsApp.Data.NonUsedUsername
 import Protolude
 
 import Formless as F
@@ -13,7 +13,9 @@ import Halogen.Component as Halogen.Component
 import NextjsApp.Navigate as NextjsApp.Navigate
 import NextjsApp.Route as NextjsApp.Route
 import NextjsApp.PageImplementations.Register.Form.Render (render)
-import NextjsApp.PageImplementations.Register.Form.Types (FormChildSlots, RegisterDataValidated, RegisterForm(..), RegisterFormRow, UserAction(..))
+import NextjsApp.PageImplementations.Register.Form.Types (FormChildSlots, RegisterDataValidated, RegisterForm(..), RegisterFormRow, UserAction(..), prx)
+import NextjsApp.Data.MatchingPassword as NextjsApp.Data.MatchingPassword
+import NextjsApp.Data.NonUsedEmail as NextjsApp.Data.NonUsedEmail
 
 formComponent ::
   forall m r.
@@ -27,9 +29,11 @@ formComponent = F.component (const formInput) formSpec
     formInput =
       { initialInputs: Nothing -- same as: Just (F.wrapInputFields { name: "", age: "" })
       , validators: RegisterForm
-          { password: F.hoistFnE_ $ NextjsApp.Data.Password.fromString
-          , usernameOrEmail: F.hoistFnME_ (\s -> liftAff $ NextjsApp.Data.NonUsedUsernameOrEmail.fromString s)
-          }
+        { password:             F.hoistFnE \form input -> NextjsApp.Data.MatchingPassword.fromString { current: input, expectedToEqualTo: F.getInput prx.passwordConfirmation form }
+        , passwordConfirmation: F.hoistFnE \form input -> NextjsApp.Data.MatchingPassword.fromString { current: input, expectedToEqualTo: F.getInput prx.password form }
+        , username:             F.hoistFnME_ \s -> liftAff $ NextjsApp.Data.NonUsedUsername.fromString s
+        , email:                F.hoistFnME_ \s -> liftAff $ NextjsApp.Data.NonUsedEmail.fromString s
+        }
       }
 
     formSpec :: forall input st . F.Spec RegisterForm st (Const Void) UserAction FormChildSlots input RegisterDataValidated m
@@ -45,4 +49,4 @@ formComponent = F.component (const formInput) formSpec
         F.HalogenM RegisterForm st UserAction FormChildSlots RegisterDataValidated m Unit
       handleAction =
         case _ of
-             UserAction__RegisterButtonClick _ -> NextjsApp.Navigate.navigate NextjsApp.Route.Register
+             UserAction__Navigate route -> NextjsApp.Navigate.navigate route

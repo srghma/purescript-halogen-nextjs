@@ -45,5 +45,5 @@ pageSpec =
   , title: "Secret"
   }
 
-page :: Page
-page = mkPage pageSpec
+page :: PageSpecBoxed
+page = mkPageSpecBoxed pageSpec

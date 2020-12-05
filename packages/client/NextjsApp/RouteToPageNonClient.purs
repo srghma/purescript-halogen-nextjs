@@ -22,7 +22,7 @@ import NextjsApp.Pages.Examples.TextNodes as NextjsApp.Pages.Examples.TextNodes
 import NextjsApp.Pages.Examples.Lazy as NextjsApp.Pages.Examples.Lazy
 
 -- XXX: you should NOT IMPORT this module from client
-routeIdMapping :: NextjsApp.Route.RouteIdMapping Nextjs.Page.Page
+routeIdMapping :: NextjsApp.Route.RouteIdMapping Nextjs.Page.PageSpecBoxed
 routeIdMapping =
   { "Index": NextjsApp.Pages.Index.page
   , "Login": NextjsApp.Pages.Login.page

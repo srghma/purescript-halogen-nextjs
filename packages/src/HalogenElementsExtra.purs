@@ -1,4 +1,4 @@
-module Nextjs.HalogenElements where
+module HalogenElementsExtra where
 
 import Halogen.HTML as Halogen.HTML
 import Halogen.HTML.Properties as Halogen.HTML.Properties

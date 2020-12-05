@@ -1,6 +1,6 @@
 module NextjsApp.Pages.Examples.Ace (page) where
 
-import Nextjs.Page (Page, PageData(..), PageSpec, mkPage)
+import Nextjs.Page (PageSpecBoxed, PageData(..), PageSpec, mkPageSpecBoxed)
 import Protolude
 import Halogen as H
 import Example.Ace.Container as Example.Ace.Container
@@ -12,5 +12,5 @@ pageSpec =
   , title: "Halogen Example - Ace button"
   }
 
-page :: Page
-page = mkPage pageSpec
+page :: PageSpecBoxed
+page = mkPageSpecBoxed pageSpec

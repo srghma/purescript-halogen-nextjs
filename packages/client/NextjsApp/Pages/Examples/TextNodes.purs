@@ -2,7 +2,7 @@ module NextjsApp.Pages.Examples.TextNodes (page) where
 
 import Protolude
 import Example.TextNodes.Main as Example.TextNodes.Main
-import Nextjs.Page (Page, PageData(..), PageSpec, mkPage)
+import Nextjs.Page (PageSpecBoxed, PageData(..), PageSpec, mkPageSpecBoxed)
 import Halogen as H
 
 pageSpec :: PageSpec Unit
@@ -12,5 +12,5 @@ pageSpec =
   , title: "Halogen Example - Text nodes"
   }
 
-page :: Page
-page = mkPage pageSpec
+page :: PageSpecBoxed
+page = mkPageSpecBoxed pageSpec

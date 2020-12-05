@@ -43,12 +43,12 @@ clientLoadAndPutNewPage currentState destRoute = do
           currentState.htmlContextInfo.head
           currentState.pageRegisteredEvent
           destRoute
-  (H.liftAff $ Nextjs.Page.pageToPageSpecWithInputBoxed_request Nextjs.Page.PageData_DynamicRequestOptions__Client page)
+  (H.liftAff $ Nextjs.Page.pageSpecBoxed_to_PageSpecWithInputBoxed_request Nextjs.Page.PageData_DynamicRequestOptions__Client page)
     >>= case _ of
-        Nextjs.Page.PageToPageSpecWithInputBoxed_Response__Error str -> H.liftEffect $ throwError $ error $ "PageToPageSpecWithInputBoxed_Response__Error (TODO: render error page): " <> str
-        Nextjs.Page.PageToPageSpecWithInputBoxed_Response__Redirect { redirectToLocation } ->
+        Nextjs.Page.PageSpecBoxed_To_PageSpecWithInputBoxed_Response__Error str -> H.liftEffect $ throwError $ error $ "PageSpecBoxed_To_PageSpecWithInputBoxed_Response__Error (TODO: render error page): " <> str
+        Nextjs.Page.PageSpecBoxed_To_PageSpecWithInputBoxed_Response__Redirect { redirectToLocation } ->
           clientLoadAndPutNewPage currentState redirectToLocation
-        Nextjs.Page.PageToPageSpecWithInputBoxed_Response__Success pageSpecWithInputBoxed -> do
+        Nextjs.Page.PageSpecBoxed_To_PageSpecWithInputBoxed_Response__Success pageSpecWithInputBoxed -> do
           -- | traceM { message: "clientLoadAndPutNewPage put", pageSpecWithInputBoxed }
           H.put
             $ currentState

@@ -45,11 +45,11 @@ goToRoute
   → Aff Unit
 goToRoute input@{ document, newRouteEventIO, env, sessionHeader, htmlContextInfo, route } = do
   let
-    (page :: Nextjs.Page.Page) = NextjsApp.Route.lookupFromRouteIdMapping route NextjsApp.RouteToPageNonClient.routeIdMapping
+    (page :: Nextjs.Page.PageSpecBoxed) = NextjsApp.Route.lookupFromRouteIdMapping route NextjsApp.RouteToPageNonClient.routeIdMapping
 
-  Nextjs.Page.pageToPageSpecWithInputBoxed_request (Nextjs.Page.PageData_DynamicRequestOptions__Mobile { sessionHeader }) page
+  Nextjs.Page.pageSpecBoxed_to_PageSpecWithInputBoxed_request (Nextjs.Page.PageData_DynamicRequestOptions__Mobile { sessionHeader }) page
     >>= case _ of
-      Nextjs.Page.PageToPageSpecWithInputBoxed_Response__Error x -> do
+      Nextjs.Page.PageSpecBoxed_To_PageSpecWithInputBoxed_Response__Error x -> do
          let
             initialState :: MobileState
             initialState =
@@ -62,11 +62,11 @@ goToRoute input@{ document, newRouteEventIO, env, sessionHeader, htmlContextInfo
 
          unsafeThrowException $ error "TODO"
          -- | NextjsApp.Router.Mobile.renderErrorPage initialState x
-      Nextjs.Page.PageToPageSpecWithInputBoxed_Response__Redirect { redirectToLocation, logout } -> do
+      Nextjs.Page.PageSpecBoxed_To_PageSpecWithInputBoxed_Response__Redirect { redirectToLocation, logout } -> do
         when logout (liftEffect NextjsApp.Router.Mobile.logoutByRemovingJwtFromSecureStorage)
 
         goToRoute (input { route = redirectToLocation })
-      Nextjs.Page.PageToPageSpecWithInputBoxed_Response__Success pageSpecWithInputBoxed -> do
+      Nextjs.Page.PageSpecBoxed_To_PageSpecWithInputBoxed_Response__Success pageSpecWithInputBoxed -> do
         let
           component = H.hoist (runAppM env) NextjsApp.Router.Mobile.component
 

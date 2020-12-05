@@ -3,7 +3,7 @@ pages-create () {
   cat > ~/projects/purescript-halogen-nextjs/client/Nextjs/Pages/$1/$2.purs <<- EOM
 module Nextjs.Pages.$1.$2 (page) where
 
-import Nextjs.Lib.Page (Page, PageData(..), PageSpec, mkPage)
+import Nextjs.Lib.PageSpecBoxed (PageSpecBoxed, PageData(..), PageSpec, mkPageSpecBoxed)
 import Protolude (Unit, liftAff, unit, ($))
 import Halogen as H
 import Nextjs.PageImplementations.$1.$2 as Implementation
@@ -15,8 +15,8 @@ pageSpec =
   , title: "Halogen MWC - $1 $2"
   }
 
-page :: Page
-page = mkPage pageSpec
+page :: PageSpecBoxed
+page = mkPageSpecBoxed pageSpec
 EOM
 
   mkdir -p ~/projects/purescript-halogen-nextjs/client/Nextjs/Pages/$1

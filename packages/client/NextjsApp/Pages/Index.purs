@@ -2,7 +2,7 @@ module NextjsApp.Pages.Index (page) where
 
 import Protolude
 import NextjsApp.PageImplementations.Index as NextjsApp.PageImplementations.Index
-import Nextjs.Page (Page, PageData(..), PageSpec, mkPage)
+import Nextjs.Page (PageSpecBoxed, PageData(..), PageSpec, mkPageSpecBoxed)
 
 pageSpec :: PageSpec Unit
 pageSpec =
@@ -11,5 +11,5 @@ pageSpec =
   , title: "Index"
   }
 
-page :: Page
-page = mkPage pageSpec
+page :: PageSpecBoxed
+page = mkPageSpecBoxed pageSpec

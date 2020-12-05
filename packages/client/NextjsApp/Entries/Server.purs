@@ -211,7 +211,7 @@ app { buildManifest, config } = IndexedMonad.do
       Hyper.closeHeaders
       Hyper.respond $ "Cannot find route: " <> show error
     Right route -> IndexedMonad.do
-      Console.log $ Ansi.withGraphics (Ansi.foreground Ansi.BrightYellow) $ "  Page requested: " <> show route
+      Console.log $ Ansi.withGraphics (Ansi.foreground Ansi.BrightYellow) $ "  PageSpecBoxed requested: " <> show route
       let
         pageManifest = NextjsApp.Route.lookupFromRouteIdMapping route buildManifest.pages
         mergedPageManifest = NextjsApp.Manifest.PageManifest.mergePageManifests buildManifest.main pageManifest

@@ -12,50 +12,13 @@ import HalogenMWC.Button as Button
 import HalogenMWC.TextField.Outlined as TextField.Outlined
 import NextjsApp.Data.InUseUsernameOrEmail (InUseUsernameOrEmail__Error(..))
 import NextjsApp.Data.Password (PasswordError(..))
+import NextjsApp.Data.Password as Password
+import NextjsApp.Data.MatchingPassword (MatchingPasswordError(..))
+import NextjsApp.Data.MatchingPassword as MatchingPassword
 import NextjsApp.PageImplementations.Login.Css as NextjsApp.PageImplementations.Login.Css
-import NextjsApp.PageImplementations.Login.Form.Types (FormChildSlots, LoginForm, UserAction(..))
-
-prx ::
-  { password :: SProxy "password"
-  , usernameOrEmail :: SProxy "usernameOrEmail"
-  }
-prx = F.mkSProxies (F.FormProxy :: F.FormProxy LoginForm)
-
-isInvalid :: forall t42 t43. F.FormFieldResult t43 t42 -> Boolean
-isInvalid =
-  case _ of
-    F.Error _ -> true
-    _ -> false
-
-mkHelperText :: forall t23 t24 t26 t36.
-  { errorToErrorText :: t24 -> String
-  , id :: t26
-  , result :: F.FormFieldResult t24 t23
-  }
-  -> Maybe
-       { id :: t26
-       , persistent :: Boolean
-       , text :: String
-       , validation :: Boolean
-       }
-mkHelperText = \config ->
-   case config.result of
-       F.Validating -> Just
-         { id: config.id
-         , persistent
-         , text: "...Validating" -- TODO: slow down change using "on change: set opacity 0, change text, opacity 1"
-         , validation: false
-         }
-       F.Error error -> Just
-         { id: config.id
-         , persistent
-         , text: config.errorToErrorText error
-         , validation: true
-         }
-       F.NotValidated -> Nothing
-       F.Success _ -> Nothing
-  where
-    persistent = true
+import NextjsApp.PageImplementations.Login.Form.Types (FormChildSlots, LoginForm, UserAction(..), prx)
+import FormlessExtra
+import NextjsApp.Route as NextjsApp.Route
 
 render
   :: forall st
@@ -78,7 +41,7 @@ render state =
               }
             , value = field.input
             , additionalClassesRoot = [ NextjsApp.PageImplementations.Login.Css.styles.input ]
-            , invalid = isInvalid field.result
+            , invalid = isErrorFormFieldResult field.result
             , helperText =
                 mkHelperText
                 { result: field.result
@@ -105,15 +68,12 @@ render state =
             { label = TextField.Outlined.LabelConfig__With { id: "password", labelText: "Password" }
             , value = field.input
             , additionalClassesRoot = [ NextjsApp.PageImplementations.Login.Css.styles.input ]
-            , invalid = isInvalid field.result
+            , invalid = isErrorFormFieldResult field.result
             , helperText =
                 mkHelperText
                 { result: field.result
                 , id: "password-helper"
-                , errorToErrorText:
-                    case _ of
-                         PasswordError__TooShort -> "Password is too short"
-                         PasswordError__TooLong -> "Password is too long"
+                , errorToErrorText: Password.printPasswordError
                 }
             }
         )
@@ -144,8 +104,8 @@ render state =
           Button.button
           { variant: Button.Text
           , config: Button.defaultConfig { additionalClasses = [ NextjsApp.PageImplementations.Login.Css.styles.buttons__button ] }
-          , content: [ HH.text "Go to sign up" ]
+          , content: [ HH.text "Go to login page" ]
           }
-          (inj (SProxy :: SProxy "userAction") <<< UserAction__RegisterButtonClick)
+          (\_ -> inj (SProxy :: SProxy "userAction") $ UserAction__Navigate NextjsApp.Route.Register)
       ]
     ]

@@ -45,4 +45,4 @@ formComponent = F.component (const formInput) formSpec
         F.HalogenM LoginForm st UserAction FormChildSlots LoginDataValidated m Unit
       handleAction =
         case _ of
-             UserAction__RegisterButtonClick _ -> NextjsApp.Navigate.navigate NextjsApp.Route.Register
+             UserAction__Navigate route -> NextjsApp.Navigate.navigate route

@@ -77,23 +77,23 @@ type PageSpecRows input
 type PageSpec input
   = Record (PageSpecRows input)
 
-newtype Page
-  = Page (forall input. PageSpec input)
+newtype PageSpecBoxed
+  = PageSpecBoxed (forall input. PageSpec input)
 
-mkPage ::
+mkPageSpecBoxed ::
   forall input.
   ArgonautCodecs.EncodeJson input =>
   ArgonautCodecs.DecodeJson input =>
   PageSpec input ->
-  Page
-mkPage = unsafeCoerce
+  PageSpecBoxed
+mkPageSpecBoxed = unsafeCoerce
 
-unPage ::
+unPageSpecBoxed ::
   forall r.
   (forall input. PageSpec input -> r) ->
-  Page ->
+  PageSpecBoxed ->
   r
-unPage f (Page r) = f r
+unPageSpecBoxed f (PageSpecBoxed r) = f r
 
 ---------------
 type PageSpecWithInput input
@@ -118,10 +118,10 @@ unPageSpecWithInputBoxed ::
   r
 unPageSpecWithInputBoxed f (PageSpecWithInputBoxed r) = f r
 
-data PageToPageSpecWithInputBoxed_Response
-  = PageToPageSpecWithInputBoxed_Response__Error String
-  | PageToPageSpecWithInputBoxed_Response__Success PageSpecWithInputBoxed
-  | PageToPageSpecWithInputBoxed_Response__Redirect
+data PageSpecBoxed_To_PageSpecWithInputBoxed_Response
+  = PageSpecBoxed_To_PageSpecWithInputBoxed_Response__Error String
+  | PageSpecBoxed_To_PageSpecWithInputBoxed_Response__Success PageSpecWithInputBoxed
+  | PageSpecBoxed_To_PageSpecWithInputBoxed_Response__Redirect
     { redirectToLocation :: NextjsApp.Route.Route
     -- on client - ignored
     -- on server - Set-Cookie sessionId "" is set
@@ -129,18 +129,18 @@ data PageToPageSpecWithInputBoxed_Response
     , logout :: Boolean
     }
 
-pageToPageSpecWithInputBoxed_request :: PageData_DynamicRequestOptions -> Page -> Aff PageToPageSpecWithInputBoxed_Response
-pageToPageSpecWithInputBoxed_request requestOptions =
-  unPage
+pageSpecBoxed_to_PageSpecWithInputBoxed_request :: PageData_DynamicRequestOptions -> PageSpecBoxed -> Aff PageSpecBoxed_To_PageSpecWithInputBoxed_Response
+pageSpecBoxed_to_PageSpecWithInputBoxed_request requestOptions =
+  unPageSpecBoxed
     ( \page ->
         case page.pageData of
              PageData__Dynamic { request } ->
                request requestOptions
                  <#> case _ of
-                         PageData_DynamicResponse__Error error -> PageToPageSpecWithInputBoxed_Response__Error error
-                         PageData_DynamicResponse__Redirect x -> PageToPageSpecWithInputBoxed_Response__Redirect x
+                         PageData_DynamicResponse__Error error -> PageSpecBoxed_To_PageSpecWithInputBoxed_Response__Error error
+                         PageData_DynamicResponse__Redirect x -> PageSpecBoxed_To_PageSpecWithInputBoxed_Response__Redirect x
                          PageData_DynamicResponse__Success input ->
-                           PageToPageSpecWithInputBoxed_Response__Success
+                           PageSpecBoxed_To_PageSpecWithInputBoxed_Response__Success
                            $ mkPageSpecWithInputBoxed
                              { input
                              , component: page.component
@@ -148,7 +148,7 @@ pageToPageSpecWithInputBoxed_request requestOptions =
                              }
              PageData__Static input ->
                pure
-               $ PageToPageSpecWithInputBoxed_Response__Success
+               $ PageSpecBoxed_To_PageSpecWithInputBoxed_Response__Success
                $ mkPageSpecWithInputBoxed
                  { input
                  , component: page.component
@@ -156,9 +156,9 @@ pageToPageSpecWithInputBoxed_request requestOptions =
                  }
     )
 
-pageToPageSpecWithInputBoxed_GivenInitialJson_Client :: Aff ArgonautCore.Json -> Page -> Aff (Either ArgonautCodecs.JsonDecodeError PageSpecWithInputBoxed)
-pageToPageSpecWithInputBoxed_GivenInitialJson_Client loadJson =
-  unPage
+pageSpecBoxed_to_PageSpecWithInputBoxed_givenInitialJson :: Aff ArgonautCore.Json -> PageSpecBoxed -> Aff (Either ArgonautCodecs.JsonDecodeError PageSpecWithInputBoxed)
+pageSpecBoxed_to_PageSpecWithInputBoxed_givenInitialJson loadJson =
+  unPageSpecBoxed
     ( \page ->
         case page.pageData of
           PageData__Dynamic { codec } -> do

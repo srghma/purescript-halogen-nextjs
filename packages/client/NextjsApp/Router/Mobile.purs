@@ -33,7 +33,7 @@ getMobileSessionHeaderFromSecureStorage :: Effect (Maybe (Tuple String String))
 getMobileSessionHeaderFromSecureStorage = throwError $ error "TODO"
 
 renderErrorPage :: forall action . String -> H.HalogenM MobileState action ChildSlots Void AppM Unit
-renderErrorPage str = H.liftEffect $ throwError $ error $ "PageToPageSpecWithInputBoxed_Response__Error (TODO: render error page): " <> str
+renderErrorPage str = H.liftEffect $ throwError $ error $ "PageSpecBoxed_To_PageSpecWithInputBoxed_Response__Error (TODO: render error page): " <> str
 
 logoutByRemovingJwtFromSecureStorage :: Effect Unit
 logoutByRemovingJwtFromSecureStorage = throwError $ error $ "TODO: logout on mobile is not yet possible"
@@ -43,7 +43,7 @@ mobileLoadAndPutNewPage currentState destRoute = do
   sessionHeader <- H.liftEffect getMobileSessionHeaderFromSecureStorage
 
   ( H.liftAff
-    $ Nextjs.Page.pageToPageSpecWithInputBoxed_request
+    $ Nextjs.Page.pageSpecBoxed_to_PageSpecWithInputBoxed_request
       ( Nextjs.Page.PageData_DynamicRequestOptions__Mobile { sessionHeader })
       ( NextjsApp.Route.lookupFromRouteIdMapping
         destRoute
@@ -51,14 +51,14 @@ mobileLoadAndPutNewPage currentState destRoute = do
       )
   )
     >>= case _ of
-        Nextjs.Page.PageToPageSpecWithInputBoxed_Response__Error x -> renderErrorPage x
-        Nextjs.Page.PageToPageSpecWithInputBoxed_Response__Redirect { redirectToLocation, logout } -> do
+        Nextjs.Page.PageSpecBoxed_To_PageSpecWithInputBoxed_Response__Error x -> renderErrorPage x
+        Nextjs.Page.PageSpecBoxed_To_PageSpecWithInputBoxed_Response__Redirect { redirectToLocation, logout } -> do
            when logout (H.liftEffect logoutByRemovingJwtFromSecureStorage)
 
            -- TODO: fix: infinite loop is possible (1st route redirects to 2nd, 2nd to 1st) (but this is not possible when one of routes is static)
            -- TODO: feture: show redirect notice alert
            mobileLoadAndPutNewPage currentState redirectToLocation
-        Nextjs.Page.PageToPageSpecWithInputBoxed_Response__Success pageSpecWithInputBoxed ->
+        Nextjs.Page.PageSpecBoxed_To_PageSpecWithInputBoxed_Response__Success pageSpecWithInputBoxed ->
           H.put
             $ currentState
                 { currentPageInfo =

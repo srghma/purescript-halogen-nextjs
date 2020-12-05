@@ -10,52 +10,18 @@ import Halogen.HTML.Properties as HP
 import Halogen.HTML.Properties.ARIA as Halogen.HTML.Properties.ARIA
 import HalogenMWC.Button as Button
 import HalogenMWC.TextField.Outlined as TextField.Outlined
-import NextjsApp.Data.NonUsedUsernameOrEmail (NonUsedUsernameOrEmail__Error(..))
+import NextjsApp.Data.NonUsedUsername (NonUsedUsername__Error(..))
+import NextjsApp.Data.NonUsedUsername as NonUsedUsername
+import NextjsApp.Data.NonUsedEmail (NonUsedEmail__Error(..))
+import NextjsApp.Data.NonUsedEmail as NonUsedEmail
 import NextjsApp.Data.Password (PasswordError(..))
+import NextjsApp.Data.Password as Password
+import NextjsApp.Data.MatchingPassword (MatchingPasswordError(..))
+import NextjsApp.Data.MatchingPassword as MatchingPassword
 import NextjsApp.PageImplementations.Register.Css as NextjsApp.PageImplementations.Register.Css
-import NextjsApp.PageImplementations.Register.Form.Types (FormChildSlots, RegisterForm, UserAction(..))
-
-prx ::
-  { password :: SProxy "password"
-  , usernameOrEmail :: SProxy "usernameOrEmail"
-  }
-prx = F.mkSProxies (F.FormProxy :: F.FormProxy RegisterForm)
-
-isInvalid :: forall t42 t43. F.FormFieldResult t43 t42 -> Boolean
-isInvalid =
-  case _ of
-    F.Error _ -> true
-    _ -> false
-
-mkHelperText :: forall t23 t24 t26 t36.
-  { errorToErrorText :: t24 -> String
-  , id :: t26
-  , result :: F.FormFieldResult t24 t23
-  }
-  -> Maybe
-       { id :: t26
-       , persistent :: Boolean
-       , text :: String
-       , validation :: Boolean
-       }
-mkHelperText = \config ->
-   case config.result of
-       F.Validating -> Just
-         { id: config.id
-         , persistent
-         , text: "...Validating" -- TODO: slow down change using "on change: set opacity 0, change text, opacity 1"
-         , validation: false
-         }
-       F.Error error -> Just
-         { id: config.id
-         , persistent
-         , text: config.errorToErrorText error
-         , validation: true
-         }
-       F.NotValidated -> Nothing
-       F.Success _ -> Nothing
-  where
-    persistent = true
+import NextjsApp.PageImplementations.Register.Form.Types (FormChildSlots, RegisterForm, UserAction(..), prx)
+import FormlessExtra
+import NextjsApp.Route as NextjsApp.Route
 
 render
   :: forall st
@@ -65,34 +31,67 @@ render state =
   HH.div
     [ Halogen.HTML.Properties.ARIA.role "form" ]
     [ HH.slot
-        prx.usernameOrEmail
+        prx.username
         unit
         TextField.Outlined.outlined
         (
           let
-            field = F.getField prx.usernameOrEmail state.form
+            field = F.getField prx.username state.form
           in TextField.Outlined.defaultConfig
             { label = TextField.Outlined.LabelConfig__With
-              { id: "usernameOrEmail"
-              , labelText: "Username / email"
+              { id: "username"
+              , labelText: "Username"
               }
             , value = field.input
             , additionalClassesRoot = [ NextjsApp.PageImplementations.Register.Css.styles.input ]
-            , invalid = isInvalid field.result
+            , invalid = isErrorFormFieldResult field.result
             , helperText =
                 mkHelperText
                 { result: field.result
-                , id: "usernameOrEmail-helper"
+                , id: "username-helper"
                 , errorToErrorText:
                     case _ of
-                         NonUsedUsernameOrEmail__Error__Empty -> "Username or email is empty"
-                         NonUsedUsernameOrEmail__Error__InUse -> "Username or email is not found"
+                         NonUsedUsername__Error__Empty -> "Should not be empty"
+                         NonUsedUsername__Error__BadLength l -> "Should be between " <> show NonUsedUsername.minUsernameLength <> " and " <> show NonUsedUsername.maxUsernameLength <> " (currently " <> show l <> ")"
+                         NonUsedUsername__Error__BadFormat -> "Should contain only numbers, letter and underscore"
+                         NonUsedUsername__Error__InUse -> "Already in use"
                 }
             }
         )
         (\(message :: TextField.Outlined.Message) ->
           case message of
-               TextField.Outlined.Message__Input string -> F.asyncSetValidate (Milliseconds 300.0) prx.usernameOrEmail string
+               TextField.Outlined.Message__Input string -> F.asyncSetValidate (Milliseconds 300.0) prx.username string
+        )
+    , HH.slot
+        prx.email
+        unit
+        TextField.Outlined.outlined
+        (
+          let
+            field = F.getField prx.email state.form
+          in TextField.Outlined.defaultConfig
+            { label = TextField.Outlined.LabelConfig__With
+              { id: "email"
+              , labelText: "Email"
+              }
+            , value = field.input
+            , additionalClassesRoot = [ NextjsApp.PageImplementations.Register.Css.styles.input ]
+            , invalid = isErrorFormFieldResult field.result
+            , helperText =
+                mkHelperText
+                { result: field.result
+                , id: "email-helper"
+                , errorToErrorText:
+                    case _ of
+                         NonUsedEmail__Error__Empty -> "Should not be empty"
+                         NonUsedEmail__Error__BadFormat -> "Bad format"
+                         NonUsedEmail__Error__InUse -> "Already in use"
+                }
+            }
+        )
+        (\(message :: TextField.Outlined.Message) ->
+          case message of
+               TextField.Outlined.Message__Input string -> F.asyncSetValidate (Milliseconds 300.0) prx.email string
         )
     , HH.slot
         prx.password
@@ -105,21 +104,42 @@ render state =
             { label = TextField.Outlined.LabelConfig__With { id: "password", labelText: "Password" }
             , value = field.input
             , additionalClassesRoot = [ NextjsApp.PageImplementations.Register.Css.styles.input ]
-            , invalid = isInvalid field.result
+            , invalid = isErrorFormFieldResult field.result
             , helperText =
                 mkHelperText
                 { result: field.result
                 , id: "password-helper"
-                , errorToErrorText:
-                    case _ of
-                         PasswordError__TooShort -> "Password is too short"
-                         PasswordError__TooLong -> "Password is too long"
+                , errorToErrorText: MatchingPassword.printMatchingPasswordError
                 }
             }
         )
         (\(message :: TextField.Outlined.Message) ->
           case message of
                TextField.Outlined.Message__Input string -> F.setValidate prx.password string
+        )
+    , HH.slot
+        prx.passwordConfirmation
+        unit
+        TextField.Outlined.outlined
+        (
+          let
+            field = F.getField prx.passwordConfirmation state.form
+          in TextField.Outlined.defaultConfig
+            { label = TextField.Outlined.LabelConfig__With { id: "passwordConfirmation", labelText: "PasswordConfirmation" }
+            , value = field.input
+            , additionalClassesRoot = [ NextjsApp.PageImplementations.Register.Css.styles.input ]
+            , invalid = isErrorFormFieldResult field.result
+            , helperText =
+                mkHelperText
+                { result: field.result
+                , id: "password-helper"
+                , errorToErrorText: MatchingPassword.printMatchingPasswordError
+                }
+            }
+        )
+        (\(message :: TextField.Outlined.Message) ->
+          case message of
+               TextField.Outlined.Message__Input string -> F.setValidate prx.passwordConfirmation string
         )
     , HH.div
       [ HP.class_ NextjsApp.PageImplementations.Register.Css.styles.buttons ]
@@ -139,13 +159,13 @@ render state =
           }
           (\(_ :: Button.Message) -> spy "submit" (F.submit))
       , HH.slot
-          (SProxy :: SProxy "register-button")
+          (SProxy :: SProxy "login-button")
           unit
           Button.button
           { variant: Button.Text
           , config: Button.defaultConfig { additionalClasses = [ NextjsApp.PageImplementations.Register.Css.styles.buttons__button ] }
           , content: [ HH.text "Go to sign up" ]
           }
-          (inj (SProxy :: SProxy "userAction") <<< UserAction__RegisterButtonClick)
+          (const $ inj (SProxy :: SProxy "userAction") $ UserAction__Navigate NextjsApp.Route.Login)
       ]
     ]

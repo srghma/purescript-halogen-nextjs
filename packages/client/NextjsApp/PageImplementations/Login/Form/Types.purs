@@ -8,9 +8,10 @@ import Formless as F
 import Halogen as H
 import HalogenMWC.Button as Button
 import HalogenMWC.TextField.Outlined as TextField.Outlined
+import NextjsApp.Route as NextjsApp.Route
 
 data UserAction
-  = UserAction__RegisterButtonClick Button.Message
+  = UserAction__Navigate NextjsApp.Route.Route
 
 type LoginFormRow f =
   ( usernameOrEmail :: f InUseUsernameOrEmail__Error String InUseUsernameOrEmail
@@ -25,9 +26,14 @@ derive instance newtypeLoginForm :: Newtype (LoginForm r f) _
 type LoginDataValidated = { | LoginFormRow F.OutputType }
 
 type FormChildSlots =
-  ( usernameOrEmail :: H.Slot (Const Void) TextField.Outlined.Message Unit
-  , password :: H.Slot (Const Void) TextField.Outlined.Message Unit
+  ( usernameOrEmail   :: H.Slot (Const Void) TextField.Outlined.Message Unit
+  , password          :: H.Slot (Const Void) TextField.Outlined.Message Unit
   , "register-button" :: H.Slot (Const Void) Button.Message Unit
-  , "submit-button" :: H.Slot (Const Void) Button.Message Unit
+  , "submit-button"   :: H.Slot (Const Void) Button.Message Unit
   )
 
+prx ::
+  { password :: SProxy "password"
+  , usernameOrEmail :: SProxy "usernameOrEmail"
+  }
+prx = F.mkSProxies (F.FormProxy :: F.FormProxy LoginForm)

@@ -2,7 +2,7 @@ module NextjsApp.Pages.Examples.Basic (page) where
 
 import Protolude
 import Example.Basic.Button as Example.Basic.Button
-import Nextjs.Page (Page, PageData(..), PageSpec, mkPage)
+import Nextjs.Page (PageSpecBoxed, PageData(..), PageSpec, mkPageSpecBoxed)
 import Halogen as H
 
 pageSpec :: PageSpec Unit
@@ -12,5 +12,5 @@ pageSpec =
   , title: "Halogen Example - Basic button"
   }
 
-page :: Page
-page = mkPage pageSpec
+page :: PageSpecBoxed
+page = mkPageSpecBoxed pageSpec

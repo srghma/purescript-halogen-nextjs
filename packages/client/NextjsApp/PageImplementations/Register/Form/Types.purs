@@ -1,20 +1,24 @@
 module NextjsApp.PageImplementations.Register.Form.Types where
 
-import NextjsApp.Data.Password (Password, PasswordError)
-import NextjsApp.Data.NonUsedUsernameOrEmail (NonUsedUsernameOrEmail, NonUsedUsernameOrEmail__Error)
+import NextjsApp.Data.MatchingPassword
+import NextjsApp.Data.NonUsedUsername
+import NextjsApp.Data.NonUsedEmail
 import Protolude
 
 import Formless as F
 import Halogen as H
 import HalogenMWC.Button as Button
 import HalogenMWC.TextField.Outlined as TextField.Outlined
+import NextjsApp.Route as NextjsApp.Route
 
 data UserAction
-  = UserAction__RegisterButtonClick Button.Message
+  = UserAction__Navigate NextjsApp.Route.Route
 
 type RegisterFormRow f =
-  ( usernameOrEmail :: f NonUsedUsernameOrEmail__Error String NonUsedUsernameOrEmail
-  , password :: f PasswordError String Password
+  ( username             :: f NonUsedUsername__Error String NonUsedUsername
+  , email                :: f NonUsedEmail__Error String NonUsedEmail
+  , password             :: f MatchingPasswordError String MatchingPassword
+  , passwordConfirmation :: f MatchingPasswordError String MatchingPassword
   )
 
 newtype RegisterForm r f = RegisterForm (r (RegisterFormRow f))
@@ -25,9 +29,19 @@ derive instance newtypeRegisterForm :: Newtype (RegisterForm r f) _
 type RegisterDataValidated = { | RegisterFormRow F.OutputType }
 
 type FormChildSlots =
-  ( usernameOrEmail :: H.Slot (Const Void) TextField.Outlined.Message Unit
-  , password :: H.Slot (Const Void) TextField.Outlined.Message Unit
-  , "register-button" :: H.Slot (Const Void) Button.Message Unit
+  ( username             :: H.Slot (Const Void) TextField.Outlined.Message Unit
+  , email                :: H.Slot (Const Void) TextField.Outlined.Message Unit
+  , password             :: H.Slot (Const Void) TextField.Outlined.Message Unit
+  , passwordConfirmation :: H.Slot (Const Void) TextField.Outlined.Message Unit
+
+  , "login-button"  :: H.Slot (Const Void) Button.Message Unit
   , "submit-button" :: H.Slot (Const Void) Button.Message Unit
   )
 
+prx ::
+  { username             :: SProxy "username"
+  , email                :: SProxy "email"
+  , password             :: SProxy "password"
+  , passwordConfirmation :: SProxy "passwordConfirmation"
+  }
+prx = F.mkSProxies (F.FormProxy :: F.FormProxy RegisterForm)

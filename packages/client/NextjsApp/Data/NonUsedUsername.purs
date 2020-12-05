@@ -14,7 +14,7 @@ import NextjsGraphqlApi.Query as NextjsGraphqlApi.Query
 
 data NonUsedUsername__Error
   = NonUsedUsername__Error__Empty
-  | NonUsedUsername__Error__BadLength
+  | NonUsedUsername__Error__BadLength Int
   | NonUsedUsername__Error__BadFormat
   | NonUsedUsername__Error__InUse
 
@@ -24,7 +24,7 @@ toString :: NonUsedUsername -> String
 toString (NonUsedUsername s) = NonEmptyString.toString s
 
 minUsernameLength :: Int
-minUsernameLength = 1
+minUsernameLength = 2
 
 maxUsernameLength :: Int
 maxUsernameLength = 24
@@ -33,7 +33,7 @@ fromString :: String -> Aff (Either NonUsedUsername__Error NonUsedUsername)
 fromString = \str -> runExceptT do
   nstr <- NonEmptyString.fromString str # maybe (throwError NonUsedUsername__Error__Empty) pure
 
-  unless (validLength nstr) (throwError NonUsedUsername__Error__BadLength)
+  unless (validLength nstr) (throwError $ NonUsedUsername__Error__BadLength (NonEmptyString.length nstr))
   unless (validFormat nstr) (throwError NonUsedUsername__Error__BadFormat)
 
   unlessM (liftAff $ validNotInUse nstr) (throwError NonUsedUsername__Error__InUse)

@@ -41,7 +41,7 @@ It is using not yet published features/packages:
 
 1. js and css is split per page using webpack machinery
 1. when `Nextjs.Lib.Link.component` appears in the viewport - the page dependencies are prefetched
-1. on initial rendering the `Nextjs.Lib.Page.PageData__Dynamic` is fetched on server side and result in
+1. on initial rendering the `Nextjs.Lib.PageSpecBoxed.PageData__Dynamic` is fetched on server side and result in
 inserted into the page into the `<script id="__PAGE_DATA__">JSON<script>`
 
 ### How it works
@@ -60,9 +60,9 @@ yarn build && yarn serve
 
 2. Where pages are stored?
 
-Page is a top level purescript file in the `packages/client/pages` directory (e.g. `packages/client/pages/Foo.purs`)
+PageSpecBoxed is a top level purescript file in the `packages/client/pages` directory (e.g. `packages/client/pages/Foo.purs`)
 
-Page should export the `page :: Page` object (which is a `PageSpec` object, but with existentially hidden `input` type
+PageSpecBoxed should export the `page :: PageSpecBoxed` object (which is a `PageSpec` object, but with existentially hidden `input` type
 argument)
 
 3. What is a meaning of `.deps.js` files?
