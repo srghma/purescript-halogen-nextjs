@@ -97,7 +97,7 @@ render state =
             }
           , content: [ HH.text "Submit" ]
           }
-          (\(_ :: Button.Message) -> spy "submit" (F.submit))
+          (\(_ :: Button.Message) -> F.submit)
       , HH.slot
           (SProxy :: SProxy "register-button")
           unit
