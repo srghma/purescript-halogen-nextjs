@@ -115,7 +115,7 @@ render state =
         )
         (\(message :: TextField.Outlined.Message) ->
           case message of
-               TextField.Outlined.Message__Input string -> F.setValidate prx.password string
+               TextField.Outlined.Message__Input string -> F.injAction $ UserAction__PasswordUpdated string
         )
     , HH.slot
         prx.passwordConfirmation
@@ -139,7 +139,7 @@ render state =
         )
         (\(message :: TextField.Outlined.Message) ->
           case message of
-               TextField.Outlined.Message__Input string -> F.setValidate prx.passwordConfirmation string
+               TextField.Outlined.Message__Input string -> F.injAction $ UserAction__PasswordConfirmationUpdated string
         )
     , HH.div
       [ HP.class_ NextjsApp.PageImplementations.Register.Css.styles.buttons ]

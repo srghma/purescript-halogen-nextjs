@@ -46,9 +46,13 @@ import Run.Reader as Run
 import Test.Spec.Assertions (fail, shouldContain, shouldEqual)
 import SpecAssertsExtra
 
-usernameOrEmailXpath = Lunapark.ByXPath """//div[@role="form"]//input[@aria-labelledby="usernameOrEmail"]"""
+usernameXpath = Lunapark.ByXPath """//div[@role="form"]//input[@aria-labelledby="username"]"""
+
+emailXpath = Lunapark.ByXPath """//div[@role="form"]//input[@aria-labelledby="email"]"""
 
 passwordXpath = Lunapark.ByXPath """//div[@role="form"]//input[@aria-labelledby="password"]"""
+
+passwordConfirmationXpath = Lunapark.ByXPath """//div[@role="form"]//input[@aria-labelledby="passwordConfirmation"]"""
 
 spec :: ReaderT FeatureTestEnv Aff Unit
 spec = do
@@ -60,5 +64,10 @@ spec = do
       }
 
   goClientRoute Register
+
+  runLunapark $ inputField usernameXpath user.username
+  runLunapark $ inputField emailXpath user.email
+  runLunapark $ inputField passwordXpath user.password
+  runLunapark $ inputField passwordConfirmationXpath user.password
 
   pressEnterToContinue

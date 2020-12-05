@@ -13,6 +13,8 @@ import NextjsApp.Route as NextjsApp.Route
 
 data UserAction
   = UserAction__Navigate NextjsApp.Route.Route
+  | UserAction__PasswordUpdated String
+  | UserAction__PasswordConfirmationUpdated String
 
 type RegisterFormRow f =
   ( username             :: f NonUsedUsername__Error String NonUsedUsername

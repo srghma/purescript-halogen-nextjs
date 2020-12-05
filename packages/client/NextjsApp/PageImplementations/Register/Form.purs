@@ -27,7 +27,7 @@ formComponent = F.component (const formInput) formSpec
   where
     formInput :: F.Input' RegisterForm m
     formInput =
-      { initialInputs: Nothing -- same as: Just (F.wrapInputFields { name: "", age: "" })
+      { initialInputs: Nothing
       , validators: RegisterForm
         { password:             F.hoistFnE \form input -> NextjsApp.Data.MatchingPassword.fromString { current: input, expectedToEqualTo: F.getInput prx.passwordConfirmation form }
         , passwordConfirmation: F.hoistFnE \form input -> NextjsApp.Data.MatchingPassword.fromString { current: input, expectedToEqualTo: F.getInput prx.password form }
@@ -36,17 +36,30 @@ formComponent = F.component (const formInput) formSpec
         }
       }
 
-    formSpec :: forall input st . F.Spec RegisterForm st (Const Void) UserAction FormChildSlots input RegisterDataValidated m
+    formSpec :: forall input . F.Spec RegisterForm _ (Const Void) UserAction FormChildSlots input RegisterDataValidated m
     formSpec = F.defaultSpec
       { render = render >>> lmap (Halogen.Component.hoistSlot liftAff)
-      , handleEvent = F.raiseResult
+      , handleEvent = handleEvent
       , handleAction = handleAction
       }
       where
 
+      handleEvent :: F.Event RegisterForm _ -> F.HalogenM RegisterForm _ UserAction FormChildSlots _ m Unit
+      handleEvent = F.raiseResult
+
       handleAction ::
         UserAction ->
-        F.HalogenM RegisterForm st UserAction FormChildSlots RegisterDataValidated m Unit
+        F.HalogenM RegisterForm _ UserAction FormChildSlots RegisterDataValidated m Unit
       handleAction =
         case _ of
              UserAction__Navigate route -> NextjsApp.Navigate.navigate route
+             UserAction__PasswordUpdated string -> do
+                eval $ F.setValidate prx.password string
+                eval $ F.validate prx.passwordConfirmation
+             UserAction__PasswordConfirmationUpdated string -> do
+                eval $ F.setValidate prx.passwordConfirmation string
+                eval $ F.validate prx.password
+
+        where
+        eval :: F.Action RegisterForm UserAction -> _
+        eval act = F.handleAction handleAction handleEvent act
