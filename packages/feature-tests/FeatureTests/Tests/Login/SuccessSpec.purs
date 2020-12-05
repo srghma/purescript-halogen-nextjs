@@ -21,6 +21,7 @@ import Protolude
 import Test.Spec
 import Unsafe.Coerce
 import FeatureTests.FeatureTestSpecUtils.AffRetry
+import FeatureTests.FeatureTestSpecUtils.LunaparkUtils
 
 import CSS as CSS
 import CSS.Elements as CSS.Elements
@@ -86,13 +87,7 @@ spec = do
   runLunapark $ inputField usernameOrEmailXpath user.email
   runLunapark $ inputField passwordXpath user.password
 
-  retryAction $
-    ( ( runLunapark $
-        Lunapark.findElement passwordXpath
-        >>= \e -> Lunapark.getAttribute e "value"
-      )
-      >>= \text -> text `shouldEqual` user.password
-    )
+  waitForInputValueToEqual passwordXpath user.password
 
   runLunapark $ Lunapark.findElement (Lunapark.ByXPath """//div[@role="form"]//button[text()="Submit"]""") >>= Lunapark.clickElement
 

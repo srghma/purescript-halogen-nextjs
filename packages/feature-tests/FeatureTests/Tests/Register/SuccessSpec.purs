@@ -45,6 +45,7 @@ import Run.Except as Run
 import Run.Reader as Run
 import Test.Spec.Assertions (fail, shouldContain, shouldEqual)
 import SpecAssertsExtra
+import FeatureTests.FeatureTestSpecUtils.LunaparkUtils
 
 usernameXpath = Lunapark.ByXPath """//div[@role="form"]//input[@aria-labelledby="username"]"""
 
@@ -69,5 +70,9 @@ spec = do
   runLunapark $ inputField emailXpath user.email
   runLunapark $ inputField passwordXpath user.password
   runLunapark $ inputField passwordConfirmationXpath user.password
+
+  waitForInputValueToEqual passwordConfirmationXpath user.password
+
+  runLunapark $ Lunapark.findElement (Lunapark.ByXPath """//div[@role="form"]//button[text()="Submit"]""") >>= Lunapark.clickElement
 
   pressEnterToContinue
