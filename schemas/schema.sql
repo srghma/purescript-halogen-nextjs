@@ -289,56 +289,60 @@ CREATE FUNCTION app_private.really_create_user(username text, email text, email_
 declare
   v_user app_public.users;
   v_user_secret_id uuid;
-  v_password text;
-  v_username text = username;
+  v_user_email_id uuid;
 begin
-  -- Sanitise the username, and make it unique if necessary.
-  if v_username is null then
-    v_username = coalesce(name, 'user');
-  end if;
-  v_username = regexp_replace(v_username, '^[^a-z]+', '', 'i');
-  v_username = regexp_replace(v_username, '[^a-z0-9]+', '_', 'i');
-  if v_username is null or length(v_username) < 3 then
-    v_username = 'user';
-  end if;
-  select (
-    case
-    when i = 0 then v_username
-    else v_username || i::text
-    end
-  ) into v_username from generate_series(0, 1000) i
-  where not exists(
-    select 1
-    from app_public.users
-    where users.username = (
+  -- Store the password
+  insert into app_private.user_secrets (password_hash) values
+    (
       case
-      when i = 0 then v_username
-      else v_username || i::text
+      when password is null
+      then null
+      else crypt(password, gen_salt('bf'))
       end
     )
-  )
-  limit 1;
-
-  -- Store the password
-  if password is null then
-    v_password = null;
-  else
-    v_password = crypt(v_password, gen_salt('bf'));
-  end if;
-
-  insert into app_private.user_secrets (password_hash) values
-    (v_password)
     returning id into v_user_secret_id;
 
   -- Insert the new user
   insert into app_public.users (user_secret_id, username, name, avatar_url) values
-    (v_user_secret_id, v_username, name, avatar_url)
+    (v_user_secret_id, username, name, avatar_url)
     returning * into v_user;
 
   -- Add the user's email
   if email is not null then
-    insert into app_hidden.user_emails (user_id, email, is_verified)
-    values (v_user.id, email, email_is_verified);
+    insert into app_hidden.user_emails
+      (
+        user_id,
+        email,
+        is_verified,
+        verification_token,
+        verification_email_sent_at
+      )
+    values
+      (
+        v_user.id,
+        email,
+        email_is_verified,
+        case
+          when email_is_verified = true
+          then null
+          else encode(gen_random_bytes(4), 'hex')
+        end,
+        case
+          when email_is_verified = true
+          then null
+          else now()
+        end
+      )
+    returning id into v_user_email_id;
+
+    if email_is_verified = true then
+      perform graphile_worker.add_job(
+        'sendVerificationEmailForUserEmail',
+        json_build_object(
+          'id', v_user_email_id
+        )
+      );
+    end if;
   end if;
 
   return v_user;
@@ -794,8 +798,13 @@ CREATE TABLE app_hidden.user_emails (
     user_id uuid NOT NULL,
     email public.citext NOT NULL,
     is_verified boolean DEFAULT false NOT NULL,
+    verification_token text,
+    verification_email_sent_at timestamp with time zone,
+    password_reset_email_sent_at timestamp with time zone,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT user_emails_check CHECK (app_hidden.biconditional_statement((is_verified = true), (verification_token IS NULL))),
+    CONSTRAINT user_emails_check1 CHECK (app_hidden.biconditional_statement((is_verified = true), (verification_email_sent_at IS NULL))),
     CONSTRAINT user_emails_email_check CHECK ((email OPERATOR(public.~) '[^@]+@[^@]+\.[^@]+'::public.citext))
 );
 
@@ -1279,39 +1288,6 @@ CREATE TABLE app_private.user_authentication_secrets (
 
 
 --
--- Name: user_email_secrets; Type: TABLE; Schema: app_private; Owner: -
---
-
-CREATE TABLE app_private.user_email_secrets (
-    user_email_id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
-    verification_token text,
-    verification_email_sent_at timestamp with time zone,
-    password_reset_email_sent_at timestamp with time zone
-);
-
-
---
--- Name: TABLE user_email_secrets; Type: COMMENT; Schema: app_private; Owner: -
---
-
-COMMENT ON TABLE app_private.user_email_secrets IS 'The contents of this table should never be visible to the user. Contains data mostly related to email verification and avoiding spamming users.';
-
-
---
--- Name: COLUMN user_email_secrets.verification_email_sent_at; Type: COMMENT; Schema: app_private; Owner: -
---
-
-COMMENT ON COLUMN app_private.user_email_secrets.verification_email_sent_at IS 'We store the time the last verification email was sent to this email to prevent the email getting flooded.';
-
-
---
--- Name: COLUMN user_email_secrets.password_reset_email_sent_at; Type: COMMENT; Schema: app_private; Owner: -
---
-
-COMMENT ON COLUMN app_private.user_email_secrets.password_reset_email_sent_at IS 'We store the time the last password reset was sent to this email to prevent the email getting flooded.';
-
-
---
 -- Name: user_secrets; Type: TABLE; Schema: app_private; Owner: -
 --
 
@@ -1501,14 +1477,6 @@ ALTER TABLE ONLY app_private.user_sessions
 
 ALTER TABLE ONLY app_private.user_authentication_secrets
     ADD CONSTRAINT user_authentication_secrets_pkey PRIMARY KEY (user_authentication_id);
-
-
---
--- Name: user_email_secrets user_email_secrets_pkey; Type: CONSTRAINT; Schema: app_private; Owner: -
---
-
-ALTER TABLE ONLY app_private.user_email_secrets
-    ADD CONSTRAINT user_email_secrets_pkey PRIMARY KEY (user_email_id);
 
 
 --
@@ -1728,14 +1696,6 @@ ALTER TABLE ONLY app_private.user_authentication_secrets
 
 
 --
--- Name: user_email_secrets user_email_secrets_user_email_id_fkey; Type: FK CONSTRAINT; Schema: app_private; Owner: -
---
-
-ALTER TABLE ONLY app_private.user_email_secrets
-    ADD CONSTRAINT user_email_secrets_user_email_id_fkey FOREIGN KEY (user_email_id) REFERENCES app_hidden.user_emails(id) ON DELETE CASCADE;
-
-
---
 -- Name: posts posts_user_id_fkey; Type: FK CONSTRAINT; Schema: app_public; Owner: -
 --
 
@@ -1791,12 +1751,6 @@ ALTER TABLE app_hidden.user_emails ENABLE ROW LEVEL SECURITY;
 --
 
 ALTER TABLE app_private.user_authentication_secrets ENABLE ROW LEVEL SECURITY;
-
---
--- Name: user_email_secrets; Type: ROW SECURITY; Schema: app_private; Owner: -
---
-
-ALTER TABLE app_private.user_email_secrets ENABLE ROW LEVEL SECURITY;
 
 --
 -- Name: user_secrets; Type: ROW SECURITY; Schema: app_private; Owner: -

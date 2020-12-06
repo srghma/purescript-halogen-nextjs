@@ -2,9 +2,16 @@ create table app_hidden.user_emails (
   id uuid not null primary key default uuid_generate_v4(),
   user_id uuid not null references app_public.users on delete cascade,
   email citext not null check (email ~ '[^@]+@[^@]+\.[^@]+'),
+
   is_verified boolean not null default false,
+
+  verification_token text check (app_hidden.biconditional_statement(is_verified = true, verification_token IS NULL)),
+  verification_email_sent_at timestamptz check (app_hidden.biconditional_statement(is_verified = true, verification_email_sent_at IS NULL)),
+  password_reset_email_sent_at timestamptz,
+
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
+
   unique(user_id, email)
 );
 

@@ -57,17 +57,3 @@ create trigger _100_timestamps
   before update on app_public.users
   for each row
   execute function app_private.tg__set_updated_at();
-
-/* create function app_private.tg_users__make_first_user_admin() returns trigger as $$ */
-/* begin */
-/*   if not exists(select 1 from app_public.users limit 1) then */
-/*     NEW.is_admin = true; */
-/*   end if; */
-/*   return NEW; */
-/* end; */
-/* $$ language plpgsql volatile set search_path from current; */
-
-/* create trigger _200_make_first_user_admin */
-/*   before insert on app_public.users */
-/*   for each row */
-/*   execute function app_private.tg_users__make_first_user_admin(); */

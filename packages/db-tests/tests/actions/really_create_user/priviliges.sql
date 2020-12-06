@@ -1,6 +1,7 @@
+
 \set schema $$'app_private'$$
-\set func $$'web_login'$$
-\set args $$'{"text", "text"}'$$::text[]
+\set func $$'really_create_user'$$
+\set args $$'{"text", "text", "bool", "text", "text", "text"}'$$::text[]
 
 begin;
 

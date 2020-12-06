@@ -9,7 +9,7 @@ nix-shell-with-gc
 generate-halogen-css-modules -d ./packages/client
 ./gen-migrations.hs
 
-drmaci && dev__db__drop && dev__up_detach && dev__db__migrate && dev__db__dump_schema && dev__db_tests && dev__api_server
+drmaci && dev__db__drop && dev__up_detach && ./gen-migrations.hs && dev__db__migrate && dev__db__dump_schema && dev__db_tests && dev__api_server
 # or
 drmaci && dev__db__drop && dev__up_detach && dev__db__migrate && dev__db__dump_schema && dev__api_server
 # or

@@ -9,7 +9,6 @@ select tables_are(
   :schema,
   array[
     'user_authentication_secrets',
-    'user_email_secrets',
     'user_secrets',
     'user_sessions'
   ]::text[]

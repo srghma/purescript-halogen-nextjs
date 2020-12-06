@@ -675,9 +675,12 @@ type UserEmail {
   True if the user has is_verified their email address (by clicking the link in the email we sent them, or logging in with a social login provider), false otherwise.
   """
   isVerified: Boolean!
+  passwordResetEmailSentAt: Datetime
   rowId: UUID!
   updatedAt: Datetime!
   userId: UUID!
+  verificationEmailSentAt: Datetime
+  verificationToken: String
 }
 
 """Represents an update to a `User`. Fields that are set will be updated."""
