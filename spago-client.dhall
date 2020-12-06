@@ -1,4 +1,4 @@
-{ name = "halogen-mdl-client"
+{ name = "client"
 , dependencies = ./dependencies.dhall
 , packages = ./packages.dhall
 , sources =

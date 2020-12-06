@@ -77,7 +77,7 @@ main = do
   runEffectFn2 Postgraphile.enhanceHttpServerWithSubscriptions httpServer postgraphileMiddleware
 
   -- | case config.target of
-  -- |      ApiServer.Config.Development developmentConfig -> do
+  -- |      ApiServer.Config.ConfigTarget__Development developmentConfig -> do
   -- |        let url = "http://localhost:" <> show developmentConfig.clientPort
   -- |        log $ "Proxying client on " <> url
   -- |        ApiServer.FrontendServerHttpProxy.installFrontendServerProxy httpServer expressApp url

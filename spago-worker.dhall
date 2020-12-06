@@ -1,7 +1,8 @@
-{ name = "all"
+{ name = "worker"
 , dependencies = ./dependencies.dhall
 , packages = ./packages.dhall
 , sources =
-  [ "./packages/**/*.purs"
+  [ "./packages/src/**/*.purs"
+  , "./packages/worker/**/*.purs"
   ]
 }

@@ -1,4 +1,4 @@
-{ name = "halogen-mdl-api-server"
+{ name = "api-server"
 , dependencies = ./dependencies.dhall
 , packages = ./packages.dhall
 , sources =

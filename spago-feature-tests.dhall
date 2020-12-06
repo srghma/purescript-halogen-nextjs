@@ -1,4 +1,4 @@
-{ name = "halogen-mdl-feature-tests"
+{ name = "feature-tests"
 , dependencies = ./dependencies.dhall
 , packages = ./packages.dhall
 , sources =

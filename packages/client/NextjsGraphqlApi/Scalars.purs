@@ -5,20 +5,20 @@ import Prelude (class Eq, class Ord, class Show)
 import GraphQLClient
   (class GraphQLDefaultResponseScalarDecoder, class ToGraphQLArgumentValue)
 
--- | original name - ID
-newtype Id = Id String
+-- | original name - Cursor
+newtype Cursor = Cursor String
 
-derive instance newtypeId :: Newtype Id _
+derive instance newtypeCursor :: Newtype Cursor _
 
-derive newtype instance eqId :: Eq Id
+derive newtype instance eqCursor :: Eq Cursor
 
-derive newtype instance ordId :: Ord Id
+derive newtype instance ordCursor :: Ord Cursor
 
-derive newtype instance showId :: Show Id
+derive newtype instance showCursor :: Show Cursor
 
-derive newtype instance graphQlDefaultResponseScalarDecoderId :: GraphQLDefaultResponseScalarDecoder Id
+derive newtype instance graphQlDefaultResponseScalarDecoderCursor :: GraphQLDefaultResponseScalarDecoder Cursor
 
-derive newtype instance toGraphQlArgumentValueId :: ToGraphQLArgumentValue Id
+derive newtype instance toGraphQlArgumentValueCursor :: ToGraphQLArgumentValue Cursor
 
 -- | original name - Datetime
 newtype Datetime = Datetime String
@@ -35,20 +35,20 @@ derive newtype instance graphQlDefaultResponseScalarDecoderDatetime :: GraphQLDe
 
 derive newtype instance toGraphQlArgumentValueDatetime :: ToGraphQLArgumentValue Datetime
 
--- | original name - Cursor
-newtype Cursor = Cursor String
+-- | original name - ID
+newtype Id = Id String
 
-derive instance newtypeCursor :: Newtype Cursor _
+derive instance newtypeId :: Newtype Id _
 
-derive newtype instance eqCursor :: Eq Cursor
+derive newtype instance eqId :: Eq Id
 
-derive newtype instance ordCursor :: Ord Cursor
+derive newtype instance ordId :: Ord Id
 
-derive newtype instance showCursor :: Show Cursor
+derive newtype instance showId :: Show Id
 
-derive newtype instance graphQlDefaultResponseScalarDecoderCursor :: GraphQLDefaultResponseScalarDecoder Cursor
+derive newtype instance graphQlDefaultResponseScalarDecoderId :: GraphQLDefaultResponseScalarDecoder Id
 
-derive newtype instance toGraphQlArgumentValueCursor :: ToGraphQLArgumentValue Cursor
+derive newtype instance toGraphQlArgumentValueId :: ToGraphQLArgumentValue Id
 
 -- | original name - UUID
 newtype Uuid = Uuid String

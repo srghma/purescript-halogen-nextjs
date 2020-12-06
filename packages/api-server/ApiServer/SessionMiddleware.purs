@@ -33,7 +33,7 @@ sessionMiddleware config = do
 
   let isProduction =
         case config.target of
-            Production -> true
+            ConfigTarget__Production -> true
             _ -> false
 
   -- https://github.com/graphile/bootstrap-react-apollo/blob/fbeab7b9c2/server/middleware/installSession.js

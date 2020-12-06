@@ -51,7 +51,7 @@ postgraphileOptions config =
 
   , graphiql:
       case config.target of
-           Development _ -> true
+           ConfigTarget__Development _ -> true
            _ -> false
   , enhanceGraphiql: true
 
@@ -68,7 +68,7 @@ postgraphileOptions config =
 
   , extendedErrors:
       case config.target of
-           Development _ ->
+           ConfigTarget__Development _ ->
              [ "errcode"
              , "severity"
              , "detail"
@@ -90,23 +90,23 @@ postgraphileOptions config =
 
   , showErrorStack:
       case config.target of
-           Development _ -> true
+           ConfigTarget__Development _ -> true
            _ -> false
 
   , watchPg:
       case config.target of
-           Development _ -> true
+           ConfigTarget__Development _ -> true
            _ -> false
 
   , sortExport: true
   , exportGqlSchemaPath:
       case config.target of
-           Production -> Nullable.null
-           Development developmentConfigTarget -> Nullable.notNull $ either printPathPosixSandboxAny printPathPosixSandboxAny developmentConfigTarget.exportGqlSchemaPath
+           ConfigTarget__Production -> Nullable.null
+           ConfigTarget__Development developmentConfigTarget -> Nullable.notNull $ either printPathPosixSandboxAny printPathPosixSandboxAny developmentConfigTarget.exportGqlSchemaPath
   , exportJsonSchemaPath:
       case config.target of
-           Production -> Nullable.null
-           Development developmentConfigTarget -> Nullable.notNull $ either printPathPosixSandboxAny printPathPosixSandboxAny developmentConfigTarget.exportJsonSchemaPath
+           ConfigTarget__Production -> Nullable.null
+           ConfigTarget__Development developmentConfigTarget -> Nullable.notNull $ either printPathPosixSandboxAny printPathPosixSandboxAny developmentConfigTarget.exportJsonSchemaPath
 
   , appendPlugins:
       [ pgSimplifyInflectorPlugin

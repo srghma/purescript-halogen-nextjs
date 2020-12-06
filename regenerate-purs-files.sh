@@ -20,4 +20,5 @@ update-module-name-purs \
   -d ./packages/client-webpack \
   -d ./packages/db-tests \
   -d ./packages/feature-tests \
-  -d ./packages/src
+  -d ./packages/src \
+  -d ./packages/worker

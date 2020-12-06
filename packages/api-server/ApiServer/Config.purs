@@ -26,8 +26,8 @@ type DevelopmentConfig =
   }
 
 data ConfigTarget
-  = Production
-  | Development DevelopmentConfig
+  = ConfigTarget__Production
+  | ConfigTarget__Development DevelopmentConfig
 
 -- from args
 type Config =
@@ -58,8 +58,8 @@ config = do
   envConfig <- ApiServer.Config.FromEnv.envConfig
 
   target <-
-    if cliConfig.isProdunction
-      then pure Production
+    if cliConfig.isProduction
+      then pure ConfigTarget__Production
       else do
         let
             (developmentConfigTarget :: Maybe DevelopmentConfig) =
@@ -71,7 +71,7 @@ config = do
               <*> cliConfig.exportJsonSchemaPath
               <*> cliConfig.clientPort
 
-        maybe (throwError $ error "invalid developmentConfigTarget") (pure <<< Development) developmentConfigTarget
+        maybe (throwError $ error "invalid developmentConfigTarget") (pure <<< ConfigTarget__Development) developmentConfigTarget
 
   pure
     { target

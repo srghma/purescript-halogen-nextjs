@@ -4,6 +4,7 @@ import GraphQLClient
   (SelectionSet, selectionForField, graphqlDefaultResponseScalarDecoder)
 import NextjsGraphqlApi.Scopes (Scope__UserEmail)
 import NextjsGraphqlApi.Scalars (Datetime, Uuid)
+import Data.Maybe (Maybe)
 
 createdAt :: SelectionSet Scope__UserEmail Datetime
 createdAt = selectionForField "createdAt" [] graphqlDefaultResponseScalarDecoder
@@ -17,6 +18,12 @@ isVerified = selectionForField
              []
              graphqlDefaultResponseScalarDecoder
 
+passwordResetEmailSentAt :: SelectionSet Scope__UserEmail (Maybe Datetime)
+passwordResetEmailSentAt = selectionForField
+                           "passwordResetEmailSentAt"
+                           []
+                           graphqlDefaultResponseScalarDecoder
+
 rowId :: SelectionSet Scope__UserEmail Uuid
 rowId = selectionForField "rowId" [] graphqlDefaultResponseScalarDecoder
 
@@ -25,3 +32,15 @@ updatedAt = selectionForField "updatedAt" [] graphqlDefaultResponseScalarDecoder
 
 userId :: SelectionSet Scope__UserEmail Uuid
 userId = selectionForField "userId" [] graphqlDefaultResponseScalarDecoder
+
+verificationEmailSentAt :: SelectionSet Scope__UserEmail (Maybe Datetime)
+verificationEmailSentAt = selectionForField
+                          "verificationEmailSentAt"
+                          []
+                          graphqlDefaultResponseScalarDecoder
+
+verificationToken :: SelectionSet Scope__UserEmail (Maybe String)
+verificationToken = selectionForField
+                    "verificationToken"
+                    []
+                    graphqlDefaultResponseScalarDecoder

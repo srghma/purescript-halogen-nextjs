@@ -20,7 +20,7 @@ type CliConfig =
   , databaseHost              :: String
   , databasePort              :: Maybe Int
 
-  , isProdunction        :: Boolean
+  , isProduction        :: Boolean
   , oauthGithubClientID :: String
   }
 
@@ -40,7 +40,7 @@ configParser = ado
 
   oauthGithubClientID <- option str $ long "oauth-github-client-id" <> metavar "CLIENTID"
 
-  isProdunction <- switch $ long "produnction"
+  isProduction <- switch $ long "production"
 
   in
     { exportGqlSchemaPath
@@ -52,7 +52,7 @@ configParser = ado
     , databaseName
     , databaseHost
     , databasePort
-    , isProdunction
+    , isProduction
     , oauthGithubClientID
     }
 

@@ -62,4 +62,6 @@
 , "node-readline"
 , "faker"
 , "aff-retry"
+, "nodemailer"
+, "websocket-simple"
 ]
