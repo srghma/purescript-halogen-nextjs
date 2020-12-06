@@ -221,8 +221,7 @@ type Mutation {
   ): DeleteUserPayload
 
   """
-  If you've forgotten your password, give us one of your email addresses and we'
-  send you a reset token. Note this only works if you have added an email address!
+  If you've forgotten your password, give us one of your email addresses and we' send you a reset token. Note this only works if you have added an email address!
   """
   forgotPassword(
     """
@@ -232,8 +231,7 @@ type Mutation {
   ): ForgotPasswordPayload
 
   """
-  After triggering forgotPassword, you'll be sent a reset token. Combine this
-  with your user ID and a new password to reset your password.
+  After triggering forgotPassword, you'll be sent a reset token. Combine this with your user ID and a new password to reset your password.
   """
   resetPassword(
     """
@@ -267,8 +265,7 @@ type Mutation {
   ): UpdateUserPayload
 
   """
-  After you add an email address, you will receive an email with a verification
-  token. Give us the verification token to mark that email as verified!
+  After you add an email address, you will receive an email with a verification token. Give us the verification token to mark that email as verified!
   """
   verifyUserEmail(
     """
@@ -675,8 +672,7 @@ type UserEmail {
   email: String!
 
   """
-  True if the user has is_verified their email address (by clicking the link in
-  the email we sent them, or logging in with a social login provider), false otherwise.
+  True if the user has is_verified their email address (by clicking the link in the email we sent them, or logging in with a social login provider), false otherwise.
   """
   isVerified: Boolean!
   rowId: UUID!

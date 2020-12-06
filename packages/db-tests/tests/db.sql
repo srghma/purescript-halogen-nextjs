@@ -16,7 +16,8 @@ select schemas_are(array[
   'app_public',
   'app_hidden',
   'app_private',
-  'postgraphile_watch'
+  'postgraphile_watch',
+  'graphile_worker'
 ]);
 
 select roles_are(array[

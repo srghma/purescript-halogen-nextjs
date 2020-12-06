@@ -77,6 +77,8 @@ config.mkScripts {
       -P $POSTGRES_PORT \
       -d $DATABASE_NAME \
       migrate
+
+    ${pkgs.rootProjectDir}/node_modules/.bin/graphile-worker --connection "postgres://app_owner:$DATABASE_OWNER_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$DATABASE_NAME" --schema-only
   '';
 
   dev__api_server = config.mkCommand lib.serverEnv ''
