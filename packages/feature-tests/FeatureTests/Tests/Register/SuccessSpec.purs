@@ -9,7 +9,6 @@ import Data.Time.Duration
 import Effect
 import Effect.Aff
 import Effect.Class
-import Effect.Exception
 import FeatureTests.FeatureTestSpec
 import FeatureTests.FeatureTestSpecUtils.AffRetry
 import FeatureTests.FeatureTestSpecUtils.Db
@@ -95,7 +94,7 @@ spec = do
     >>= Lunapark.clickElement
 
   -- TODO: hack, probalby because it is still validating
-  runLunapark $
+  void $ try $ runLunapark $
     Lunapark.findElement (Lunapark.ByXPath """//div[@role="form"]//button[text()="Submit"]""")
     >>= Lunapark.clickElement
 
@@ -108,3 +107,5 @@ spec = do
     (Lunapark.findElement $ Lunapark.ByCss $ CSS.Elements.body)
     >>= Lunapark.getText
   ) >>= \text -> text `shouldContainString` Pattern "You are on secret page"
+
+  -- TODO: email is received
