@@ -51,7 +51,7 @@ begin
 
       if v_user_email is not NULL then
         perform graphile_worker.add_job(
-          'sendEmail',
+          'JOB__SEND_EMAIL',
           json_build_object(
             'to', v_user_email.email,
             'subject', 'Your password has been changed',

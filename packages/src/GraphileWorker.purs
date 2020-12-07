@@ -7,11 +7,13 @@ import Data.JSDate
 import Data.Nullable
 import Database.PostgreSQL
 import Effect.Uncurried
-import Foreign.Object
+import Foreign.Object (Object)
+import Foreign.Object as Object
 import Protolude
 
 import Control.Promise as Promise
 import Foreign (Foreign)
+import Type.Row.Homogeneous (class Homogeneous)
 import Unsafe.Coerce (unsafeCoerce)
 
 data GraphileWorkerRunner
@@ -75,17 +77,42 @@ runWithPgClient withPgClientBoxed f = Promise.toAffE $ runEffectFn1 withPgClient
 
 foreign import _run ::
   EffectFn1
-  { connectionString :: String
-  , concurrency :: Int
-  , noHandleSignals :: Boolean
-  , pollInterval :: Int
+  { pgPool :: Pool
   , taskList :: Object (EffectFn2 Foreign JobHelpers Unit)
+  -- | , concurrency :: Int -- default 1
+  -- | , noHandleSignals :: Boolean -- false
+  -- | , pollInterval :: Int -- 2000
   }
   (Promise GraphileWorkerRunner)
 
+run :: forall taskListRow .
+  Homogeneous taskListRow (Foreign -> JobHelpers -> Effect Unit) =>
+  { pgPool :: Pool
+  , taskList :: Record taskListRow
+  -- | , concurrency :: Int
+  -- | , noHandleSignals :: Boolean
+  -- | , pollInterval :: Int
+  }
+  -> Aff GraphileWorkerRunner
+run
+  { pgPool
+  , taskList
+  -- | , concurrency
+  -- | , noHandleSignals
+  -- | , pollInterval
+  } = Promise.toAffE
+      $ runEffectFn1 _run
+        { pgPool
+        , taskList: map mkEffectFn2 $ Object.fromHomogeneous taskList
+        -- | , concurrency
+        -- | , noHandleSignals
+        -- | , pollInterval
+        }
+
+
 foreign import _quickAddJob ::
   EffectFn3
-  { connectionString :: String
+  { pgPool :: Pool
   }
   String
   Foreign

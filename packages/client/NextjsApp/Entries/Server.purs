@@ -21,7 +21,7 @@ import Hyper.Response                         as Hyper
 import Hyper.Status                           as Hyper
 import Hyper.Cookies                          as Hyper
 import Nextjs.Page                            as Nextjs.Page
-import Nextjs.RenderComponent                 as Nextjs.RenderComponent
+import HalogenVdomStringRendererHalogenComponent                 as HalogenVdomStringRendererHalogenComponent
 import NextjsApp.Manifest.ClientPagesManifest as NextjsApp.Manifest.ClientPagesManifest
 import NextjsApp.Manifest.PageManifest        as NextjsApp.Manifest.PageManifest
 import NextjsApp.Manifest.ServerBuildManifest as NextjsApp.Manifest.ServerBuildManifest
@@ -93,8 +93,8 @@ renderPageToString
 
   component :: String
   component = case pageData of
-    StaticOrDynamicPageData__Static input -> Nextjs.RenderComponent.renderComponent NextjsApp.Router.serverComponent (routerInput input)
-    StaticOrDynamicPageData__Dynamic { input } -> Nextjs.RenderComponent.renderComponent NextjsApp.Router.serverComponent (routerInput input)
+    StaticOrDynamicPageData__Static input -> HalogenVdomStringRendererHalogenComponent.renderComponent NextjsApp.Router.serverComponent (routerInput input)
+    StaticOrDynamicPageData__Dynamic { input } -> HalogenVdomStringRendererHalogenComponent.renderComponent NextjsApp.Router.serverComponent (routerInput input)
 
   pageData' :: NextjsApp.Server.PageTemplate.StaticOrDynamicPageData
   pageData' = case pageData of

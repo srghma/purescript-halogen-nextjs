@@ -32,7 +32,7 @@ set local role 'app_admin';
 
 select set_eq(
   'select task_identifier from "graphile_worker".jobs',
-  ARRAY['sendVerificationEmailForUserEmail']
+  ARRAY['JOB__SEND_VERIFICATION_EMAIL_FOR_USER_EMAIL']
 );
 
 select finish();

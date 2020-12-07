@@ -57,7 +57,7 @@ begin
 
     if email_is_verified = false then
       perform graphile_worker.add_job(
-        'sendVerificationEmailForUserEmail',
+        'JOB__SEND_VERIFICATION_EMAIL_FOR_USER_EMAIL',
         json_build_object(
           'id', v_user_email_id
         )

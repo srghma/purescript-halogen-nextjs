@@ -5,11 +5,19 @@ link-purescript-project $HOME/projects/purescript-halogen-nextjs halogen-materia
 
 nix-shell-with-gc
 
-./regenerate-purs-files.sh
-generate-halogen-css-modules -d ./packages/client
-./gen-migrations.hs
+./regenerate-graphql-api-purs-codegen.sh && ./regenerate-purs-files.sh
 
-drmaci && dev__db__drop && dev__up_detach && ./gen-migrations.hs && dev__db__migrate && dev__db__dump_schema && dev__db_tests && dev__api_server
+drmaci \
+  && dev__db__drop \
+  && dev__up_detach \
+  && ./gen-migrations.hs \
+  && dev__db__migrate \
+  && dev__db__dump_schema \
+  && ./gen-job-ids-from-migrations.hs \
+  && ./gen-api-server-exceptions-from-migrations.hs \
+  && dev__db_tests \
+  && dev__api_server
+
 # or
 drmaci && dev__db__drop && dev__up_detach && dev__db__migrate && dev__db__dump_schema && dev__api_server
 # or

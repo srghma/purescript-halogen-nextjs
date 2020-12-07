@@ -337,7 +337,7 @@ begin
 
     if email_is_verified = false then
       perform graphile_worker.add_job(
-        'sendVerificationEmailForUserEmail',
+        'JOB__SEND_VERIFICATION_EMAIL_FOR_USER_EMAIL',
         json_build_object(
           'id', v_user_email_id
         )
@@ -609,7 +609,7 @@ begin
 
     -- Trigger email send
     perform graphile_worker.add_job(
-      'sendPasswordResetEmail',
+      'JOB__SEND_PASSWORD_RESET_EMAIL',
       json_build_object(
         'id', v_user_email.id
       )
@@ -713,7 +713,7 @@ begin
 
       if v_user_email is not NULL then
         perform graphile_worker.add_job(
-          'sendEmail',
+          'JOB__SEND_EMAIL',
           json_build_object(
             'to', v_user_email.email,
             'subject', 'Your password has been changed',

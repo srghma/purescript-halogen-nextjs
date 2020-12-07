@@ -1,4 +1,4 @@
-module Nextjs.RenderComponent (renderComponent) where
+module HalogenVdomStringRendererHalogenComponent (renderComponent) where
 
 import Data.Newtype as Newtype
 import Halogen as Halogen

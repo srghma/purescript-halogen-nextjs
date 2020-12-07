@@ -45,7 +45,7 @@ begin
 
     -- Trigger email send
     perform graphile_worker.add_job(
-      'sendPasswordResetEmail',
+      'JOB__SEND_PASSWORD_RESET_EMAIL',
       json_build_object(
         'id', v_user_email.id
       )

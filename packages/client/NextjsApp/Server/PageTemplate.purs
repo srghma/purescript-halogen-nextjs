@@ -36,24 +36,25 @@ pageTemplate ::
   , pageSpecResolved :: PageSpecServerRendered
   } ->
   String
-pageTemplate { faviconsHtml
-, clientPagesManifest
-, currentPageManifest
-, pageSpecResolved
-} =
-  Template.template
-    { targetData:
-      Template.TargetData__Server
-        { prerenderedHtml: pageSpecResolved.component
-        , prerenderedPagesManifest: ArgonautCore.stringify (ArgonautCodecs.encodeJson clientPagesManifest)
-        , prerenderedPageData:
-          case pageSpecResolved.pageData of
-            StaticOrDynamicPageData__Static -> Nothing
-            StaticOrDynamicPageData__Dynamic json -> Just $ ArgonautCore.stringify json
-        , livereloadPort: pageSpecResolved.livereloadPort
-        , faviconsHtml
-        }
-    , headTags: (currentPageManifest.js <#> jsPreload) <> (currentPageManifest.css <#> css)
-    , bodyTags: currentPageManifest.js <#> jsAsync
-    , title: pageSpecResolved.title
-    }
+pageTemplate
+  { faviconsHtml
+  , clientPagesManifest
+  , currentPageManifest
+  , pageSpecResolved
+  } =
+    Template.template
+      { targetData:
+        Template.TargetData__Server
+          { prerenderedHtml: pageSpecResolved.component
+          , prerenderedPagesManifest: ArgonautCore.stringify (ArgonautCodecs.encodeJson clientPagesManifest)
+          , prerenderedPageData:
+            case pageSpecResolved.pageData of
+              StaticOrDynamicPageData__Static -> Nothing
+              StaticOrDynamicPageData__Dynamic json -> Just $ ArgonautCore.stringify json
+          , livereloadPort: pageSpecResolved.livereloadPort
+          , faviconsHtml
+          }
+      , headTags: (currentPageManifest.js <#> jsPreload) <> (currentPageManifest.css <#> css)
+      , bodyTags: currentPageManifest.js <#> jsAsync
+      , title: pageSpecResolved.title
+      }
