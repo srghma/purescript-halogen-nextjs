@@ -1,4 +1,4 @@
-module NextjsApp.RenderHtmlWithRawTextSupport where
+module HalogenVdomStringRendererRaw where
 
 import Protolude
 
@@ -8,10 +8,10 @@ import Halogen.VDom.DOM.StringRenderer  as HalogenVdomStringRenderer.DOM
 
 newtype RawTextWidget = RawTextWidget String
 
-rawText :: ∀ i . String -> Halogen.HTML.HTML (RawTextWidget) i
+rawText :: ∀ i . String -> Halogen.HTML.HTML RawTextWidget i
 rawText string = Halogen.HTML.Core.widget (RawTextWidget string)
 
-renderHtmlWithRawTextSupport :: ∀ i . Halogen.HTML.HTML (RawTextWidget) i -> String
+renderHtmlWithRawTextSupport :: ∀ i . Halogen.HTML.HTML RawTextWidget i -> String
 renderHtmlWithRawTextSupport html = HalogenVdomStringRenderer.DOM.render renderWidget (unwrap html)
   where
     renderWidget (RawTextWidget string) = string

@@ -7,12 +7,13 @@ import Data.JSDate
 import Data.Nullable
 import Database.PostgreSQL
 import Effect.Uncurried
-import Foreign.Object (Object)
-import Foreign.Object as Object
 import Protolude
 
 import Control.Promise as Promise
+import Data.Argonaut.Core (Json)
 import Foreign (Foreign)
+import Foreign.Object (Object)
+import Foreign.Object as Object
 import Type.Row.Homogeneous (class Homogeneous)
 import Unsafe.Coerce (unsafeCoerce)
 
@@ -78,7 +79,7 @@ runWithPgClient withPgClientBoxed f = Promise.toAffE $ runEffectFn1 withPgClient
 foreign import _run ::
   EffectFn1
   { pgPool :: Pool
-  , taskList :: Object (EffectFn2 Foreign JobHelpers Unit)
+  , taskList :: Object (EffectFn2 Json JobHelpers Unit)
   -- | , concurrency :: Int -- default 1
   -- | , noHandleSignals :: Boolean -- false
   -- | , pollInterval :: Int -- 2000
@@ -86,7 +87,7 @@ foreign import _run ::
   (Promise GraphileWorkerRunner)
 
 run :: forall taskListRow .
-  Homogeneous taskListRow (Foreign -> JobHelpers -> Effect Unit) =>
+  Homogeneous taskListRow (Json -> JobHelpers -> Effect Unit) =>
   { pgPool :: Pool
   , taskList :: Record taskListRow
   -- | , concurrency :: Int
@@ -115,5 +116,5 @@ foreign import _quickAddJob ::
   { pgPool :: Pool
   }
   String
-  Foreign
+  Json
   (Promise Unit)

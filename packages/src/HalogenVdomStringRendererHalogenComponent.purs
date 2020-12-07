@@ -39,8 +39,7 @@ renderWidget slot = case slot of
       (html :: Halogen.HTML.HTML (Halogen.ComponentSlot slots m action) action) = HalogenVDom.runThunk thunk
 
       (vdom :: HalogenVDom.VDom (Array (HalogenVDom.Prop (Halogen.Query.Input action))) (Halogen.ComponentSlot slots m action)) = Newtype.unwrap html
-    in
-      HalogenVdomStringRenderer.DOM.render renderWidget vdom
+    in HalogenVdomStringRenderer.DOM.render renderWidget vdom
 
 renderComponent :: ∀ input query output m. Halogen.Component query input output m -> input -> String
 renderComponent component input = renderComponentImpl input component
