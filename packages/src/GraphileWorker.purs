@@ -79,7 +79,7 @@ runWithPgClient withPgClientBoxed f = Promise.toAffE $ runEffectFn1 withPgClient
 foreign import _run ::
   EffectFn1
   { pgPool :: Pool
-  , taskList :: Object (EffectFn2 Json JobHelpers Unit)
+  , taskList :: Object (EffectFn2 Json JobHelpers (Promise Unit))
   -- | , concurrency :: Int -- default 1
   -- | , noHandleSignals :: Boolean -- false
   -- | , pollInterval :: Int -- 2000
@@ -87,7 +87,7 @@ foreign import _run ::
   (Promise GraphileWorkerRunner)
 
 run :: forall taskListRow .
-  Homogeneous taskListRow (Json -> JobHelpers -> Effect Unit) =>
+  Homogeneous taskListRow (Json -> JobHelpers -> Aff Unit) =>
   { pgPool :: Pool
   , taskList :: Record taskListRow
   -- | , concurrency :: Int
@@ -104,7 +104,7 @@ run
   } = Promise.toAffE
       $ runEffectFn1 _run
         { pgPool
-        , taskList: map mkEffectFn2 $ Object.fromHomogeneous taskList
+        , taskList: map ((\f json config -> Promise.fromAff $ f json config) >>> mkEffectFn2) $ Object.fromHomogeneous taskList
         -- | , concurrency
         -- | , noHandleSignals
         -- | , pollInterval

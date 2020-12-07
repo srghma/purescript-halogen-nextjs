@@ -23,7 +23,6 @@ import Halogen.HTML.Properties as HP
 import HalogenVdomStringRendererRaw as HalogenVdomStringRendererRaw
 import Mjml as Mjml
 import MjmlHalogenElements as MjmlHalogenElements
-import NextjsGraphqlApi.Object.UserEmail (verificationToken)
 import NodeMailer as NodeMailer
 import PostgreSQLExtra as PostgreSQLExtra
 
@@ -99,8 +98,17 @@ instance userDataFromDbFromSQLRow :: FromSQLRow UserDataFromDb where
         }
   fromSQLRow xs = Left $ "Row has " <> show (Array.length xs) <> " fields."
 
-job :: Json -> JobHelpers -> Effect Unit
-job json helpers = launchAff_ $ runWithPgClient helpers.withPgClient \connection -> do
+job ::
+  { json :: Json
+  , connection :: Connection
+  , transporter :: NodeMailer.Transporter
+  } ->
+  Aff Unit
+job
+  { json
+  , connection
+  , transporter
+  } = do
   (input :: Input) <- genericDecodeJson json
     # either (throwError <<< error <<< Argonaut.printJsonDecodeError) pure
 
@@ -125,10 +133,6 @@ job json helpers = launchAff_ $ runWithPgClient helpers.withPgClient \connection
     (HalogenVdomStringRendererRaw.renderHtmlWithRawTextSupport (html userData)
     )
     Mjml.defaultMjmlOptions
-
-  transportConfig <- NodeMailer.createTestAccount
-
-  transporter <- liftEffect $ NodeMailer.createTransporter transportConfig
 
   messageInfo <-
     NodeMailer.sendMail
