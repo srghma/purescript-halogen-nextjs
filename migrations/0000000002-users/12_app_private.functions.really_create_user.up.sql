@@ -47,11 +47,7 @@ begin
           then null
           else encode(gen_random_bytes(4), 'hex')
         end,
-        case
-          when email_is_verified = true
-          then null
-          else now()
-        end
+        null
       )
     returning id into v_user_email_id;
 

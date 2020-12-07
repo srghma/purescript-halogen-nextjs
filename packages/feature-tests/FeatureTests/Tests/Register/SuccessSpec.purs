@@ -109,3 +109,5 @@ spec = do
   ) >>= \text -> text `shouldContainString` Pattern "You are on secret page"
 
   -- TODO: email is received
+
+  pressEnterToContinue

@@ -33,7 +33,15 @@ withTransactionOrThrow dbConnection action = do
 
 withThuncateSchemas :: ∀ a. PostgreSQL.Connection -> Aff a → Aff a
 withThuncateSchemas dbConnection action = do
-  PostgreSQLTruncateSchemas.truncateSchemas dbConnection ["app_public", "app_private", "app_hidden"]
+  PostgreSQLTruncateSchemas.truncateSchemas dbConnection
+    -- ordinary tables
+    [ "app_public"
+    , "app_private"
+    , "app_hidden"
+    -- truncate OR it will retry jobs on errors
+    -- TODO: configure max_attempts from worker itself
+    , "graphile_worker"
+    ]
   action
 
 -- SpecT monadOfExample exampleConfig monadOfSpec a

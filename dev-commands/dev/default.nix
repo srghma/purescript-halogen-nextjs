@@ -94,16 +94,16 @@ config.mkScripts {
     databaseAnonymousPassword="${(import "${pkgs.rootProjectDir}/config/ignored/passwords.nix").DATABASE_ANONYMOUS_PASSWORD}" \
     oauthGithubClientSecret="${(import "${pkgs.rootProjectDir}/config/ignored/github-oauth.nix").CLIENT_SECRET}" \
       spago --config spago-api-server.dhall run --main ApiServer.Main --node-args '\
-        --export-gql-schema-path "${pkgs.rootProjectDir}/schemas/schema.graphql" \
-        --export-json-schema-path "${pkgs.rootProjectDir}/schemas/schema.json" \
+        --exportGqlSchemaPath "${pkgs.rootProjectDir}/schemas/schema.graphql" \
+        --exportJsonSchemaPath "${pkgs.rootProjectDir}/schemas/schema.json" \
         --port 3000 \
-        --client-port 3001 \
+        --clientPort 3001 \
         --hostname localhost \
         --rootUrl "http://localhost:3000" \
-        --database-name "${(import "${pkgs.rootProjectDir}/config/public/database.nix").DATABASE_NAME}" \
-        --database-hostname "$POSTGRES_HOST" \
-        --database-port "$POSTGRES_PORT" \
-        --oauth-github-client-id "${(import "${pkgs.rootProjectDir}/config/ignored/github-oauth.nix").CLIENT_ID}" \
+        --databaseName "${(import "${pkgs.rootProjectDir}/config/public/database.nix").DATABASE_NAME}" \
+        --databaseHost "$POSTGRES_HOST" \
+        --databasePort "$POSTGRES_PORT" \
+        --oauthGithubClientID "${(import "${pkgs.rootProjectDir}/config/ignored/github-oauth.nix").CLIENT_ID}" \
       '
   '';
 
@@ -132,5 +132,15 @@ config.mkScripts {
     remoteDownloadDirPath="$remoteDownloadDirPath" \
     chromeUserDataDirPath="$chromeUserDataDirPath" \
       exec spago --config spago-feature-tests.dhall run --main FeatureTests.Main
+  '';
+
+  dev__worker__run = config.mkCommand {} ''
+    databaseOwnerPassword="${(import "${pkgs.rootProjectDir}/config/ignored/passwords.nix").DATABASE_OWNER_PASSWORD}" \
+      spago --config spago-worker.dhall run --main Worker.Main --node-args '\
+        --transportType "nodemailer-test" \
+        --databaseName "${(import "${pkgs.rootProjectDir}/config/public/database.nix").DATABASE_NAME}" \
+        --databaseHost "${lib.config.POSTGRES_HOST}" \
+        --databasePort "${builtins.toString lib.config.POSTGRES_PORT}" \
+      '
   '';
 }

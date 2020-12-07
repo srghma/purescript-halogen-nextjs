@@ -327,11 +327,7 @@ begin
           then null
           else encode(gen_random_bytes(4), 'hex')
         end,
-        case
-          when email_is_verified = true
-          then null
-          else now()
-        end
+        null
       )
     returning id into v_user_email_id;
 
@@ -804,7 +800,8 @@ CREATE TABLE app_hidden.user_emails (
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
     CONSTRAINT user_emails_check CHECK (app_hidden.biconditional_statement((is_verified = true), (verification_token IS NULL))),
-    CONSTRAINT user_emails_check1 CHECK (app_hidden.biconditional_statement((is_verified = true), (verification_email_sent_at IS NULL))),
+    CONSTRAINT user_emails_check1 CHECK (app_hidden.implication((is_verified = true), (verification_email_sent_at IS NULL))),
+    CONSTRAINT user_emails_check2 CHECK (app_hidden.implication((is_verified = false), (password_reset_email_sent_at IS NULL))),
     CONSTRAINT user_emails_email_check CHECK ((email OPERATOR(public.~) '[^@]+@[^@]+\.[^@]+'::public.citext))
 );
 

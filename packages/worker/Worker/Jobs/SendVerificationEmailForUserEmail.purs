@@ -25,6 +25,8 @@ import Mjml as Mjml
 import MjmlHalogenElements as MjmlHalogenElements
 import NodeMailer as NodeMailer
 import PostgreSQLExtra as PostgreSQLExtra
+import Data.Codec.Argonaut as CA
+import Data.Codec.Argonaut.Record as CAR
 
 html
   :: forall w i
@@ -69,6 +71,13 @@ newtype Input = Input
 derive instance newtypeInput :: Newtype Input _
 derive instance genericInput :: Generic Input _
 
+inputCodec ∷ CA.JsonCodec { id :: String }
+inputCodec =
+  CA.object "Input" $
+    CAR.record
+      { id: CA.string
+      }
+
 newtype UserDataFromDb
   = UserDataFromDb
     { name :: Maybe String
@@ -109,24 +118,24 @@ job
   , connection
   , transporter
   } = do
-  (input :: Input) <- genericDecodeJson json
-    # either (throwError <<< error <<< Argonaut.printJsonDecodeError) pure
+  input <- CA.decode inputCodec json
+    # either (throwError <<< error <<< CA.printJsonDecodeError) pure
 
   (userData :: UserDataFromDb) <-
     PostgreSQLExtra.queryHeadOrThrow connection
       ( Query """
       SELECT
-        t_user_email.name AS name,
+        t_user.name AS name,
         t_user_email.email AS email,
         t_user_email.is_verified AS is_verified,
-        t_user_email_secret.verification_token AS verification_token
-      FROM app_public.user_emails AS t_user_email
-        JOIN app_private.user_email_secrets AS t_user_email_secret
-        ON t_user_email.id = t_user_email_secret.user_email_id
+        t_user_email.verification_token AS verification_token
+      FROM app_hidden.user_emails AS t_user_email
+        JOIN app_public.users AS t_user
+        ON t_user.id = t_user_email.user_id
       WHERE t_user_email.id = $1
       """
       )
-      (Row1 (unwrap input).id)
+      (Row1 input.id)
 
   emailBody <- liftEffect $
     Mjml.mjml2html
@@ -155,4 +164,4 @@ job
     WHERE t_user_email_secret.user_email_id = $1
     """
     )
-    (Row1 (unwrap input).id)
+    (Row1 input.id)

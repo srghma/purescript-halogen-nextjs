@@ -6,8 +6,14 @@ create table app_hidden.user_emails (
   is_verified boolean not null default false,
 
   verification_token text check (app_hidden.biconditional_statement(is_verified = true, verification_token IS NULL)),
-  verification_email_sent_at timestamptz check (app_hidden.biconditional_statement(is_verified = true, verification_email_sent_at IS NULL)),
-  password_reset_email_sent_at timestamptz,
+
+  -- if not yet verified - null (job didnt yet sent email) or not-null (job didnt yet process email sending request)
+  -- if verified - only null
+  verification_email_sent_at timestamptz check (app_hidden.implication(is_verified = true, verification_email_sent_at IS NULL)),
+
+  -- if not verified - only null (only verified users can change password)
+  -- if verified - null or not-null
+  password_reset_email_sent_at timestamptz check (app_hidden.implication(is_verified = false, password_reset_email_sent_at IS NULL)),
 
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
