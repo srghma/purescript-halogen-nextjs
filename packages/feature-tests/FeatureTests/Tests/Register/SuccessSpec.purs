@@ -126,11 +126,13 @@ spec = do
     <#> Web.DOM.Document.toParentNode
     >>= Web.DOM.ParentNode.querySelector (Web.DOM.ParentNode.QuerySelector "a")
     >>= maybe (throwError $ error $ "cannot find a") pure
+    -- TODO: it's anchor https://github.com/purescript-web/purescript-web-html/issues/8
     <#> unsafeCoerce
-    -- | <#> Web.HTML.HTMLLinkElement.fromElement
-    -- | >>= maybe (throwError $ error $ "cannot find convert to HTMLLinkElement") pure
+    -- | <#> Web.HTML.HTMLAnchorElement.fromElement
+    -- | >>= maybe (throwError $ error $ "cannot find convert to HTMLAnchorElement") pure
 
   traceM emailDomLink
+
   liftEffect $ Web.HTML.HTMLLinkElement.href emailDomLink >>= \x -> x `shouldEqual` "asdf"
   -- | liftEffect $ Web.HTML.HTMLLinkElement.text emailDomLink >>= \x -> x `shouldEqual` "asdf"
 
