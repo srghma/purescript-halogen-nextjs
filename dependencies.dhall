@@ -64,4 +64,5 @@
 , "aff-retry"
 , "nodemailer"
 , "websocket-simple"
+, "jsdom"
 ]

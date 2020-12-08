@@ -41,13 +41,18 @@ import Node.Encoding as Node.Encoding
 import Node.Process as Node.Process
 import Node.ReadLine as Node.ReadLine
 import Node.Stream as Node.Stream
-import Run (Run)
-import Run as Run
-import Run.Except as Run
-import Run.Reader as Run
 import Test.Spec.Assertions (fail, shouldContain, shouldEqual)
 import Effect.AVar (AVar)
 import Effect.Aff.AVar as AVar
+import FeatureTests.FeatureTestSpecUtils.EmailAVar
+import Web.DOM.Document as Web.DOM.Document
+import Web.DOM.Node as Web.DOM.Node
+import Web.HTML.HTMLDocument as Web.HTML.HTMLDocument
+import Web.HTML.Window as Web.HTML.Window
+import Web.HTML.HTMLLinkElement as Web.HTML.HTMLLinkElement
+import JSDOM as JSDOM
+import Web.DOM.NonElementParentNode as Web.DOM.NonElementParentNode
+import Web.DOM.ParentNode as Web.DOM.ParentNode
 
 usernameXpath = Lunapark.ByXPath """//div[@role="form"]//input[@aria-labelledby="username"]"""
 
@@ -110,8 +115,23 @@ spec = do
     >>= Lunapark.getText
   ) >>= \text -> text `shouldContainString` Pattern "You are on secret page"
 
-  email <- asks _.emailAVar >>= \avar -> liftAff $ AVar.take avar
+  email <- waitForEmail
 
-  traceM email
+  traceM email.text
+
+  (emailDomLink :: Web.HTML.HTMLLinkElement.HTMLLinkElement) <- liftEffect $
+    JSDOM.jsdom email.text JSDOM.defaultConstructorOptions
+    >>= JSDOM.window
+    >>= JSDOM.document
+    <#> Web.DOM.Document.toParentNode
+    >>= Web.DOM.ParentNode.querySelector (Web.DOM.ParentNode.QuerySelector "a")
+    >>= maybe (throwError $ error $ "cannot find a") pure
+    <#> unsafeCoerce
+    -- | <#> Web.HTML.HTMLLinkElement.fromElement
+    -- | >>= maybe (throwError $ error $ "cannot find convert to HTMLLinkElement") pure
+
+  traceM emailDomLink
+  liftEffect $ Web.HTML.HTMLLinkElement.href emailDomLink >>= \x -> x `shouldEqual` "asdf"
+  -- | liftEffect $ Web.HTML.HTMLLinkElement.text emailDomLink >>= \x -> x `shouldEqual` "asdf"
 
   pressEnterToContinue

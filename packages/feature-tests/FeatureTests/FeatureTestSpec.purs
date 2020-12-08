@@ -70,7 +70,7 @@ runFeatureTestWithEverythingElse spec = \config ->
       ]
 
     PostgreSQLTruncateSchemas.truncateTables connection
-      -- truncate OR it will retry jobs on errors
+      -- truncate all except migrations table OR it will retry jobs on errors
       [ Tuple "graphile_worker" "jobs"
       , Tuple "graphile_worker" "job_queues"
       ]
