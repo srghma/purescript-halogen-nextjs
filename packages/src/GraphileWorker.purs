@@ -86,6 +86,11 @@ foreign import _run ::
   }
   (Promise GraphileWorkerRunner)
 
+foreign import _stop :: EffectFn1 GraphileWorkerRunner (Promise Unit)
+
+stop :: GraphileWorkerRunner -> Aff Unit
+stop = Promise.toAffE <<< runEffectFn1 _stop
+
 run :: forall taskListRow .
   Homogeneous taskListRow (Json -> JobHelpers -> Aff Unit) =>
   { pgPool :: Pool

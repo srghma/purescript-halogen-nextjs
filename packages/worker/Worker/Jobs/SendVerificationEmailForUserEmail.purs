@@ -12,6 +12,7 @@ import Data.Argonaut as Argonaut
 import Data.Argonaut.Decode (class DecodeJson)
 import Data.Argonaut.Decode.Generic.Rep (genericDecodeJson)
 import Data.Array as Array
+import Data.Array.NonEmpty as NonEmptyArray
 import Data.Codec.Argonaut as CA
 import Data.Codec.Argonaut.Record as CAR
 import Database.PostgreSQL (class FromSQLRow, class FromSQLValue, class ToSQLRow, Connection, PGError, Query(..), Row1(..), Row3(..), fromSQLValue)
@@ -25,9 +26,9 @@ import Halogen.HTML.Properties as HP
 import HalogenVdomStringRendererRaw as HalogenVdomStringRendererRaw
 import Mjml as Mjml
 import MjmlHalogenElements as MjmlHalogenElements
-import NodeMailer (getTestMessageUrl) as   traceM (Nodemailer
 import NodeMailer as NodeMailer
 import PostgreSQLExtra as PostgreSQLExtra
+import Worker.Types
 
 html
   :: forall w i
@@ -103,24 +104,15 @@ instance userDataFromDbFromSQLRow :: FromSQLRow UserDataFromDb where
         , isVerified
         , verificationToken
         }
-  fromSQLRow xs = Left $ "Row has " <> show (Array.length xs) <> " fields."
+  fromSQLRow xs = Left $ "Row has only " <> show (Array.length xs) <> " fields."
 
-job ::
-  { json :: Json
-  , connection :: Connection
-  , transporter :: NodeMailer.Transporter
-  } ->
-  Aff Unit
-job
-  { json
-  , connection
-  , transporter
-  } = do
-  input <- CA.decode inputCodec json
+job :: EmailJobInput -> Aff Unit
+job jobInput = do
+  input <- CA.decode inputCodec jobInput.json
     # either (throwError <<< error <<< CA.printJsonDecodeError) pure
 
   (userData :: UserDataFromDb) <-
-    PostgreSQLExtra.queryHeadOrThrow connection
+    PostgreSQLExtra.queryHeadOrThrow jobInput.connection
       ( Query """
       SELECT
         t_user.name AS name,
@@ -137,27 +129,19 @@ job
 
   email <- liftEffect $
     Mjml.mjml2html
-    (HalogenVdomStringRendererRaw.renderHtmlWithRawTextSupport (html userData)
+    ( HalogenVdomStringRendererRaw.renderHtmlWithRawTextSupport (html userData)
     )
     Mjml.defaultMjmlOptions
 
   traceM email.errors
 
-  messageInfo <-
-    NodeMailer.sendMail
-    transporter
-    { from: "purescript-nextjs@gmail.com"
-    , to: [ "useremail@gmail.com" ]
-    , cc: []
-    , bcc: []
+  messageInfo <- jobInput.sendEmail
+    { to: NonEmptyArray.singleton "useremail@gmail.com"
     , subject: "Verify yourself"
     , text: email.html
-    , attachments: []
     }
 
-  traceM (Nodemailer.getTestMessageUrl messageInfo)
-
-  PostgreSQLExtra.executeOrThrow connection
+  PostgreSQLExtra.executeOrThrow jobInput.connection
     ( Query """
     UPDATE app_hidden.user_emails AS t_user_email
     SET verification_email_sent_at = now()

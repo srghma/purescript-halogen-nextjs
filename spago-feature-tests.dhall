@@ -4,6 +4,7 @@
 , sources =
   [ "./packages/src/**/*.purs"
   , "./packages/feature-tests/**/*.purs"
+  , "./packages/worker/**/*.purs"
   , "./packages/client/NextjsApp/AppM.purs"
   , "./packages/client/NextjsApp/Route.purs"
   , "./packages/client/NextjsApp/RouteDuplexCodec.purs"

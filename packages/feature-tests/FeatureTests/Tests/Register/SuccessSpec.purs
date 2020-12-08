@@ -46,6 +46,8 @@ import Run as Run
 import Run.Except as Run
 import Run.Reader as Run
 import Test.Spec.Assertions (fail, shouldContain, shouldEqual)
+import Effect.AVar (AVar)
+import Effect.Aff.AVar as AVar
 
 usernameXpath = Lunapark.ByXPath """//div[@role="form"]//input[@aria-labelledby="username"]"""
 
@@ -108,6 +110,8 @@ spec = do
     >>= Lunapark.getText
   ) >>= \text -> text `shouldContainString` Pattern "You are on secret page"
 
-  -- TODO: email is received
+  email <- asks _.emailAVar >>= \avar -> liftAff $ AVar.take avar
+
+  traceM email
 
   pressEnterToContinue

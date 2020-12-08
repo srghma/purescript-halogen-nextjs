@@ -11,7 +11,6 @@ import Foreign.Object (Object)
 type EnvConfig =
   { nodemailerRealPass :: Maybe String
   , nodemailerRealUser :: Maybe String
-  , websocketUrl :: Maybe String
   , databaseOwnerPassword :: String
   }
 
@@ -19,12 +18,10 @@ envConfig :: Effect EnvConfig
 envConfig = Env.parse Env.defaultInfo $ ado
   nodemailerRealPass    <- Env.optionalVar Env.nonempty "nodemailerRealPass" (Env.defaultOptionalVarOptions { sensitive = true })
   nodemailerRealUser    <- Env.optionalVar Env.nonempty "nodemailerRealUser" (Env.defaultOptionalVarOptions { sensitive = true })
-  websocketUrl          <- Env.optionalVar Env.nonempty "websocketUrl" (Env.defaultOptionalVarOptions { sensitive = true })
   databaseOwnerPassword <- Env.var Env.nonempty "databaseOwnerPassword" (Env.defaultVarOptions { sensitive = true })
 
   in
     { nodemailerRealPass
     , nodemailerRealUser
-    , websocketUrl
     , databaseOwnerPassword
     }

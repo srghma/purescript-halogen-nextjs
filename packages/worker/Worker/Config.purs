@@ -29,7 +29,6 @@ type TransportConfig_Websocket =
 data TransportConfig
   = TransportConfig__NodemailerReal TransportConfig_NodemailerReal
   | TransportConfig__NodemailerTest
-  | TransportConfig__Websocket TransportConfig_Websocket
 
 -- from args
 type Config =
@@ -59,14 +58,6 @@ config = do
           <*> envConfig.nodemailerRealUser
         )
       Worker.Config.FromCli.TransportConfigType__NodemailerTest -> pure TransportConfig__NodemailerTest
-      Worker.Config.FromCli.TransportConfigType__Websocket ->
-        maybe
-        (throwError $ error "invalid TransportConfig__Websocket")
-        (pure <<< TransportConfig__Websocket)
-        ( { url: _
-          }
-          <$> envConfig.websocketUrl
-        )
 
   pure
     { transportConfig

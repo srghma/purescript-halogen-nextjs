@@ -63,12 +63,8 @@ import Node.Stream as Node.Stream
 import Data.Exists (Exists)
 import Data.Exists as Exists
 import FeatureTests.FeatureTestSpecUtils.Lunapark as FeatureTests.FeatureTestSpecUtils.Lunapark
-
-connectToDb :: Configuration -> Aff ConnectResult
-connectToDb poolConfiguration = do
-  pool :: Pool <- liftEffect $ Database.PostgreSQL.new poolConfiguration
-  connectionResult :: ConnectResult <- Database.PostgreSQL.connect pool >>= either (show >>> error >>> throwError) pure
-  pure connectionResult
+import FeatureTests.ChromeLunaparkOptions as FeatureTests.ChromeLunaparkOptions
+import Worker.Main as Worker.Main
 
 main :: Effect Unit
 main = do
@@ -81,60 +77,13 @@ main = do
      -- | so it's not instantiated and I dont have to handle Run.Reader on cleanup
 
     interpreter <-
-      Lunapark.init config.chromedriverUrl
-      { alwaysMatch:
-        -- based on https://www.w3.org/TR/webdriver1/ "Example 5"
-        -- chrome:browserOptions
-        [ Lunapark.CustomCapability "goog:chromeOptions" $ unsafeCoerce
-          { "binary": config.chromeBinaryPath
-          -- | , "debuggerAddress": "127.0.0.1:9222"
-          , "args":
-            -- disable chrome's wakiness
-            [ "--disable-infobars"
-            , "--disable-extensions"
-
-            -- allow http
-            , "--disable-web-security"
-
-            -- other
-            , "--lang=en"
-            , "--no-default-browser-check"
-            , "--no-sandbox"
-            , "--user-data-dir=" <> config.chromeUserDataDirPath
-            , "--profile-directory=tester"
-
-            -- CTRL-SHIFT-D to change dock placement
-            , "--auto-open-devtools-for-tabs"
-
-            -- not working
-            , "--start-maximized"
-            ]
-          , "prefs":
-            -- disable chrome's annoying password manager
-            { "profile.password_manager_enabled": false
-            , "credentials_enable_service":         false
-            , "password_manager_enabled":           false
-            , "download":
-              { "default_directory":   config.remoteDownloadDirPath
-              , "prompt_for_download": false
-              , "directory_upgrade":   true
-              , "extensions_to_open":  ""
-              }
-            , "plugins": { "plugins_disabled": ["Chrome PDF Viewer"] } -- disable viewing pdf files after download
-            }
-          }
-        ]
-      , firstMatch:
-        [ [ Lunapark.BrowserName Lunapark.Chrome
-          ]
-        ]
-      }
+      Lunapark.init config.chromedriverUrl (FeatureTests.ChromeLunaparkOptions.chromeLunaparkOptions config)
       >>=
         either
         (\e -> throwError $ error $ "An error during selenium session initialization occured: " <> Lunapark.printError e)
         pure
 
-    connectionResult <- connectToDb
+    (pool :: Pool) <- liftEffect $ Database.PostgreSQL.new
       { database:          config.databaseName
       , host:              Just config.databaseHost
       , idleTimeoutMillis: Nothing
@@ -149,13 +98,10 @@ main = do
         { clientRootUrl: config.clientRootUrl
         , interpreter
         , readLineInterface
-        , dbConnection: connectionResult.connection
+        , pool
         }
 
       onExit = do
-        -- throws error when releasing an already released
-        liftEffect $ void $ try $ connectionResult.done
-
         FeatureTests.FeatureTestSpecUtils.Lunapark.runLunaparkImplementation interpreter Lunapark.quit >>=
           either
           (\e -> throwError $ error $ "Error when quitting: " <> Lunapark.printError e)

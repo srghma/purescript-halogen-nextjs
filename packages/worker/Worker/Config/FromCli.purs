@@ -10,14 +10,12 @@ import Options.Applicative
 data TransportConfigType
   = TransportConfigType__NodemailerReal
   | TransportConfigType__NodemailerTest
-  | TransportConfigType__Websocket
 
 transportConfigTypeParser :: ReadM TransportConfigType
 transportConfigTypeParser = eitherReader
   \s -> case s of
       "nodemailer-real" -> Right TransportConfigType__NodemailerReal
       "nodemailer-test" -> Right TransportConfigType__NodemailerTest
-      "websocket" -> Right TransportConfigType__Websocket
       _ -> Left $ "Can't parse TransportConfigType: `" <> show s <> "`"
 
 type CliConfig =
