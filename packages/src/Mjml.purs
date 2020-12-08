@@ -2,6 +2,8 @@ module Mjml where
 
 import Protolude
 import Effect.Uncurried
+import Foreign
+import Foreign.Object
 
 data ValidationLevel
   = ValidationLevel__Strict
@@ -61,7 +63,21 @@ mjmlOptionsToInternal
     , validationLevel: printValidationLevel validationLevel
     }
 
-foreign import _mjml2html :: EffectFn2 String MjmlOptionsInternal String
+type Mjml2HtmlOutput =
+  { html :: String
+  , json ::
+    { file             :: String
+    , absoluteFilePath :: String
+    , line             :: Int
+    , includedIn       :: Array String
+    , tagName          :: String
+    , children         :: Foreign
+    , attributes       :: Object Foreign
+    }
+  , errors :: Array Foreign
+  }
 
-mjml2html :: String -> MjmlOptions -> Effect String
+foreign import _mjml2html :: EffectFn2 String MjmlOptionsInternal Mjml2HtmlOutput
+
+mjml2html :: String -> MjmlOptions -> Effect Mjml2HtmlOutput
 mjml2html input mjmlOptions = runEffectFn2 _mjml2html input (mjmlOptionsToInternal mjmlOptions)

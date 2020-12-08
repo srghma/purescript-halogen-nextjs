@@ -12,6 +12,8 @@ import Data.Argonaut as Argonaut
 import Data.Argonaut.Decode (class DecodeJson)
 import Data.Argonaut.Decode.Generic.Rep (genericDecodeJson)
 import Data.Array as Array
+import Data.Codec.Argonaut as CA
+import Data.Codec.Argonaut.Record as CAR
 import Database.PostgreSQL (class FromSQLRow, class FromSQLValue, class ToSQLRow, Connection, PGError, Query(..), Row1(..), Row3(..), fromSQLValue)
 import Database.PostgreSQL as PostgreSQL
 import Foreign as Foreign
@@ -23,10 +25,9 @@ import Halogen.HTML.Properties as HP
 import HalogenVdomStringRendererRaw as HalogenVdomStringRendererRaw
 import Mjml as Mjml
 import MjmlHalogenElements as MjmlHalogenElements
+import NodeMailer (getTestMessageUrl) as   traceM (Nodemailer
 import NodeMailer as NodeMailer
 import PostgreSQLExtra as PostgreSQLExtra
-import Data.Codec.Argonaut as CA
-import Data.Codec.Argonaut.Record as CAR
 
 html
   :: forall w i
@@ -38,26 +39,23 @@ html (UserDataFromDb user) =
     [ MjmlHalogenElements.mj_section
       [ prop (PropName "full-width") "full-width" ]
       [ MjmlHalogenElements.mj_column_
-        [ MjmlHalogenElements.mj_text_
+        [ MjmlHalogenElements.mj_text [ prop (PropName "padding-bottom") "10px" ]
           [ HH.text "Dear "
           , HH.strong_ [ HH.text (fromMaybe user.email user.name) ]
           , HH.text ","
           ]
-        , break
-        , MjmlHalogenElements.mj_text_
-          [ HH.text "Thanks for your interest in"
+        , MjmlHalogenElements.mj_text [ prop (PropName "padding-bottom") "10px" ]
+          [ HH.text "Thanks for your interest in "
           , HH.strong_ [ HH.text "Nextjs" ]
           , HH.text "."
           ]
         , MjmlHalogenElements.mj_text [ prop (PropName "padding-bottom") "10px" ]
-          [ HH.text "Click the link below to verify your email and get started using your"
+          [ HH.text "Click the link below to verify your email and get started using your "
           , HH.strong_ [ HH.text "Nextjs" ]
           , HH.text "account."
           ]
         , MjmlHalogenElements.mj_text [ prop (PropName "padding-bottom") "10px" ]
           [ link_to_styled "Get started" user.verificationToken
-          , HH.strong_ [ HH.text "Nextjs" ]
-          , HH.text "account."
           ]
         ]
       ]
@@ -137,11 +135,13 @@ job
       )
       (Row1 input.id)
 
-  emailBody <- liftEffect $
+  email <- liftEffect $
     Mjml.mjml2html
     (HalogenVdomStringRendererRaw.renderHtmlWithRawTextSupport (html userData)
     )
     Mjml.defaultMjmlOptions
+
+  traceM email.errors
 
   messageInfo <-
     NodeMailer.sendMail
@@ -151,17 +151,17 @@ job
     , cc: []
     , bcc: []
     , subject: "Verify yourself"
-    , text: emailBody
+    , text: email.html
     , attachments: []
     }
 
-  traceM messageInfo
+  traceM (Nodemailer.getTestMessageUrl messageInfo)
 
   PostgreSQLExtra.executeOrThrow connection
     ( Query """
-    UPDATE app_private.user_email_secrets AS t_user_email_secret
+    UPDATE app_hidden.user_emails AS t_user_email
     SET verification_email_sent_at = now()
-    WHERE t_user_email_secret.user_email_id = $1
+    WHERE t_user_email.id = $1
     """
     )
     (Row1 input.id)

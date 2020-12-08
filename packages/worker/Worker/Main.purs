@@ -31,6 +31,8 @@ main = launchAff_ do
 
   transportConfig <- NodeMailer.createTestAccount
 
+  traceM transportConfig
+
   transporter <- liftEffect $ NodeMailer.createTransporter transportConfig
 
   let

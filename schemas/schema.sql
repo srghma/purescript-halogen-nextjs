@@ -709,11 +709,9 @@ begin
 
       if v_user_email is not NULL then
         perform graphile_worker.add_job(
-          'JOB__SEND_EMAIL',
+          'JOB__SEND_PASSWORD_CHANGED_EMAIL',
           json_build_object(
-            'to', v_user_email.email,
-            'subject', 'Your password has been changed',
-            'text', 'Your password has been changed. If you didn''t do this, please contact support immediately.'
+            'email', v_user_email.email
           )
         );
       end if;
