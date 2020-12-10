@@ -20,6 +20,7 @@ import NextjsApp.Router.Client as NextjsApp.Router.Client
 import NextjsApp.Router.Shared as NextjsApp.Router.Shared
 import Protolude
 import Routing.Duplex as Routing.Duplex
+import Routing.Duplex.Parser as Routing.Duplex
 import Routing.PushState as Routing.PushState
 import Web.DOM.ParentNode as Web.DOM.ParentNode
 import Web.HTML as Web.HTML
@@ -32,11 +33,8 @@ import NextjsApp.RouteDuplexCodec as NextjsApp.RouteDuplexCodec
 getPrerenderedJson :: Aff ArgonautCore.Json
 getPrerenderedJson = findJsonFromScriptElement (Web.DOM.ParentNode.QuerySelector NextjsApp.Constants.pagesDataId)
 
-getInitialRouteFromLocation :: Aff NextjsApp.Route.Route
-getInitialRouteFromLocation = do
-  initialRoute <- hush <<< Routing.Duplex.parse NextjsApp.RouteDuplexCodec.routeCodec <$> liftEffect (Web.HTML.window >>= Web.HTML.Window.location >>= getPathWithoutOrigin)
-  initialRoute' <- maybe (throwError (error $ "Could not find initialRoute")) pure initialRoute
-  pure initialRoute'
+getInitialRouteFromLocation :: Effect (Either Routing.Duplex.RouteError NextjsApp.Route.Route)
+getInitialRouteFromLocation = Routing.Duplex.parse NextjsApp.RouteDuplexCodec.routeCodec <$> (Web.HTML.window >>= Web.HTML.Window.location >>= getPathWithoutOrigin)
 
 intersectionObserverEventAndCallback ::
   Effect
@@ -59,19 +57,46 @@ main = do
   { intersectionObserverEvent, intersectionObserverCallback } <- intersectionObserverEventAndCallback
   (intersectionObserver :: Web.IntersectionObserver.IntersectionObserver) <- Web.IntersectionObserver.create intersectionObserverCallback intersectionObserverOptions
   pageRegisteredEvent <- NextjsApp.PageLoader.createPageRegisteredEvent
+
   -- https://github.com/slamdata/purescript-routing/blob/v8.0.0/GUIDE.md
   -- https://github.com/natefaubion/purescript-routing-duplex/blob/v0.2.0/README.md
   pushStateInterface <- Routing.PushState.makeInterface
+
+  -- first we'll get the route the user landed on
+  maybeRoute <- getInitialRouteFromLocation <#> hush
+
   Effect.Aff.launchAff_ do
     (clientPagesManifest :: NextjsApp.Manifest.ClientPagesManifest.ClientPagesManifest) <- NextjsApp.Manifest.ClientPagesManifest.getBuildManifest
-    -- first we'll get the route the user landed on
-    route <- getInitialRouteFromLocation
-    page <- NextjsApp.PageLoader.loadPage clientPagesManifest document body head pageRegisteredEvent route
-    (pageSpecWithInputBoxed :: Nextjs.Page.PageSpecWithInputBoxed) <-
-      Nextjs.Page.pageSpecBoxed_to_PageSpecWithInputBoxed_givenInitialJson getPrerenderedJson page
-        >>= (throwError <<< error <<< ArgonautCodecs.printJsonDecodeError)
-        \/ pure
+
+    currentPageInfo <-
+      case maybeRoute of
+           Nothing -> pure Nothing
+           Just route -> do
+              page <- NextjsApp.PageLoader.loadPage clientPagesManifest document body head pageRegisteredEvent route
+
+              (pageSpecWithInputBoxed :: Nextjs.Page.PageSpecWithInputBoxed) <-
+                Nextjs.Page.pageSpecBoxed_to_PageSpecWithInputBoxed_givenInitialJson getPrerenderedJson page
+                  >>= (throwError <<< error <<< ArgonautCodecs.printJsonDecodeError)
+                  \/ pure
+
+              pure $ Just
+                  { pageSpecWithInputBoxed
+                  , route
+                  }
+
     let
+      initialState =
+        { pageRegisteredEvent
+        , clientPagesManifest
+        , htmlContextInfo:
+          { window
+          , document
+          , body
+          , head
+          }
+        , currentPageInfo
+        }
+
       (env :: Env) =
         { navigate: NextjsApp.Navigate.Client.navigate pushStateInterface
         , linkHandleActions:
@@ -83,24 +108,10 @@ main = do
             , head
             }
         }
-    let
-      initialState =
-        { pageRegisteredEvent
-        , clientPagesManifest
-        , htmlContextInfo:
-          { window
-          , document
-          , body
-          , head
-          }
-        , currentPageInfo:
-          Just
-            { pageSpecWithInputBoxed
-            , route
-            }
-        }
-    let
+
       component = H.hoist (runAppM env) NextjsApp.Router.Client.component
     rootElement <- Halogen.Aff.Util.awaitElement (Web.DOM.ParentNode.QuerySelector "#root")
+
     halogenIO <- Halogen.VDom.Driver.hydrateUI component initialState rootElement
+
     void $ liftEffect $ Routing.PushState.matchesWith (Routing.Duplex.parse NextjsApp.RouteDuplexCodec.routeCodec) (NextjsApp.Router.Shared.callNavigateQueryIfNew halogenIO) pushStateInterface

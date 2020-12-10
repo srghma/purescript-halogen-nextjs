@@ -2,8 +2,8 @@ module NextjsApp.RouteDuplexCodec where
 
 import NextjsApp.Route (Route, RouteExamples)
 import Protolude
-import Routing.Duplex (RouteDuplex', root) as Routing.Duplex
-import Routing.Duplex.Generic (noArgs, sum) as Routing.Duplex
+import Routing.Duplex as Routing.Duplex
+import Routing.Duplex.Generic as Routing.Duplex
 import Routing.Duplex.Generic.Syntax ((/))
 
 routeCodec :: Routing.Duplex.RouteDuplex' Route
@@ -14,6 +14,7 @@ routeCodec =
         , "Login": "login" / Routing.Duplex.noArgs
         , "Register": "register" / Routing.Duplex.noArgs
         , "Secret": "secret" / Routing.Duplex.noArgs
+        , "VerifyUserEmail": "verify-user-email" / Routing.Duplex.param "token"
         , "RouteExamples": "examples" / routesexamplesCodec
         }
   where

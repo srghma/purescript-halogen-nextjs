@@ -12,7 +12,7 @@ module NextjsWebpack.GetClientPagesEntrypoints where
 -- https://github.com/vercel/next.js/blob/42a328f3e44a560d45821a582beb257fdeea10af/packages/next/client/link.tsx#L204
 -- script prefetched https://github.com/vercel/next.js/blob/3036463080d7905aa22da46e63f6c50dd50adc3c/packages/next/client/page-loader.js#L36-L49
 -- script added https://github.com/vercel/next.js/blob/42a328f3e44a560d45821a582beb257fdeea10af/packages/next/client/page-loader.js#L254
-import ModuleName (ModuleName, printModuleName)
+import ModuleName
 import NextjsApp.Route (Route, RouteIdMapping)
 import Pathy (Abs, Dir, File, Name, Path, Rel, dir', file, file', joinName, (</>))
 import Protolude
@@ -63,7 +63,7 @@ foldAppendDirs :: Path Abs Dir -> Array (Path Rel Dir) -> Path Abs Dir
 foldAppendDirs = foldl (\acc dir -> acc </> dir)
 
 routeToModuleName :: NonEmptyArray NonEmptyString -> Route -> ModuleName
-routeToModuleName pagesModuleNamePrefix route = wrap (pagesModuleNamePrefix <> unwrap (Lens.view NextjsApp.Route._routeIdToRouteIdArrayIso (Lens.view NextjsApp.Route._routeToRouteIdIso route)))
+routeToModuleName pagesModuleNamePrefix route = ModuleName (pagesModuleNamePrefix <> unwrap (Lens.view NextjsApp.Route._routeIdToRouteIdArrayIso (Lens.view NextjsApp.Route._routeToRouteIdIso route)))
 
 -- | routeToModuleName pagesModuleNamePrefix
 getClientPagesEntrypoints :: { pagesModuleNamePrefix :: NonEmptyArray NonEmptyString, appDir :: Path Abs Dir, spagoAbsoluteOutputDir :: Path Abs Dir } -> Aff (RouteIdMapping ClientPagesLoaderOptions)

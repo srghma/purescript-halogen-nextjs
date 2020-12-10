@@ -56,6 +56,7 @@ data Route
   | Login
   | Register
   | Secret
+  | VerifyUserEmail String
   | RouteExamples RouteExamples
 
 derive instance genericRoute :: Generic Route _
@@ -99,6 +100,7 @@ type RouteIdMappingRow' a r
     , "Login" :: a
     , "Register" :: a
     , "Secret" :: a
+    , "VerifyUserEmail" :: a
     -- is using routeIdSeparator
     , "Examples__Ace" :: a
     , "Examples__Basic" :: a
@@ -135,6 +137,7 @@ routeIdToRouteMapping =
   , "Login": Login
   , "Register": Register
   , "Secret": Secret
+  , "VerifyUserEmail": VerifyUserEmail "" -- TODO
   -- is using routeIdSeparator
   , "Examples__Ace": RouteExamples RouteExamples__Ace
   , "Examples__Basic": RouteExamples RouteExamples__Basic
@@ -159,6 +162,7 @@ lookupFromRouteIdMapping = case _ of
   Login -> _."Login"
   Register -> _."Register"
   Secret -> _."Secret"
+  VerifyUserEmail _ -> _."VerifyUserEmail"
   RouteExamples routesexamples -> case routesexamples of
     RouteExamples__Ace -> _."Examples__Ace"
     RouteExamples__Basic -> _."Examples__Basic"

@@ -34,7 +34,7 @@ onDocumentEvent eventType document callback = do
   eventListener' <- eventListener \_ -> callback
   addEventListener eventType eventListener' false (Web.HTML.HTMLDocument.toEventTarget document)
 
-goToRoute
+goToRouteAndHandleRedirect
   :: { document ∷ Web.HTML.HTMLDocument
      , env ∷ Env
      , htmlContextInfo ∷ HtmlContextInfo
@@ -43,7 +43,7 @@ goToRoute
      , sessionHeader ∷ Maybe (Tuple String String)
      }
   → Aff Unit
-goToRoute input@{ document, newRouteEventIO, env, sessionHeader, htmlContextInfo, route } = do
+goToRouteAndHandleRedirect input@{ document, newRouteEventIO, env, sessionHeader, htmlContextInfo, route } = do
   let
     (page :: Nextjs.Page.PageSpecBoxed) = NextjsApp.Route.lookupFromRouteIdMapping route NextjsApp.RouteToPageNonClient.routeIdMapping
 
@@ -65,7 +65,7 @@ goToRoute input@{ document, newRouteEventIO, env, sessionHeader, htmlContextInfo
       Nextjs.Page.PageSpecBoxed_To_PageSpecWithInputBoxed_Response__Redirect { redirectToLocation, logout } -> do
         when logout (liftEffect NextjsApp.Router.Mobile.logoutByRemovingJwtFromSecureStorage)
 
-        goToRoute (input { route = redirectToLocation })
+        goToRouteAndHandleRedirect (input { route = redirectToLocation })
       Nextjs.Page.PageSpecBoxed_To_PageSpecWithInputBoxed_Response__Success pageSpecWithInputBoxed -> do
         let
           component = H.hoist (runAppM env) NextjsApp.Router.Mobile.component
@@ -79,7 +79,10 @@ goToRoute input@{ document, newRouteEventIO, env, sessionHeader, htmlContextInfo
             }
         rootElement <- selectElementRequired (Web.DOM.ParentNode.QuerySelector "#root") -- selectElement instead of awaitElement because there is no need to wait for window to load
         halogenIO <- Halogen.VDom.Driver.runUI component initialState rootElement
+
         void $ liftEffect $ FRP.Event.subscribe newRouteEventIO.event \newRoute -> NextjsApp.Router.Shared.callNavigateQuery halogenIO newRoute
+
+        -- TODO: go back in history
         void $ liftEffect $ onDocumentEvent Cordova.backbutton document (NextjsApp.Router.Shared.callNavigateQuery halogenIO NextjsApp.Route.Index)
 
 main :: Effect Unit
@@ -105,4 +108,4 @@ main = do
         , head
         }
 
-    goToRoute { document, newRouteEventIO, env, sessionHeader, htmlContextInfo, route }
+    goToRouteAndHandleRedirect { document, newRouteEventIO, env, sessionHeader, htmlContextInfo, route }
