@@ -20,7 +20,7 @@ renderError = maybe ""
 
 render ::
   forall m r.
-  MonadAsk { navigate :: NextjsApp.Route.Route -> Effect Unit | r } m =>
+  MonadAsk { navigate :: Variant NextjsApp.Route.WebRoutesWithParamRow -> Effect Unit | r } m =>
   MonadEffect m =>
   MonadAff m =>
   State ->

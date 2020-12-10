@@ -6,7 +6,7 @@ import Halogen as H
 import Nextjs.Page as Nextjs.Page
 import NextjsApp.AppM (AppM)
 import NextjsApp.Route as NextjsApp.Route
-import NextjsApp.RouteToPageNonClient as NextjsApp.RouteToPageNonClient
+import NextjsApp.WebRouteToPageServer as NextjsApp.WebRouteToPageServer
 import NextjsApp.Router.Shared (ChildSlots, MobileState, Query(..), renderPage)
 
 component :: H.Component Query MobileState Void AppM
@@ -38,16 +38,19 @@ renderErrorPage str = H.liftEffect $ throwError $ error $ "PageSpecBoxed_To_Page
 logoutByRemovingJwtFromSecureStorage :: Effect Unit
 logoutByRemovingJwtFromSecureStorage = throwError $ error $ "TODO: logout on mobile is not yet possible"
 
-mobileLoadAndPutNewPage :: forall action. MobileState -> NextjsApp.Route.Route -> H.HalogenM MobileState action ChildSlots Void AppM Unit
+mobileLoadAndPutNewPage
+  :: forall action
+   . MobileState
+  -> Variant NextjsApp.Route.WebRoutesWithParamRow
+  -> H.HalogenM MobileState action ChildSlots Void AppM Unit
 mobileLoadAndPutNewPage currentState destRoute = do
   sessionHeader <- H.liftEffect getMobileSessionHeaderFromSecureStorage
 
   ( H.liftAff
     $ Nextjs.Page.pageSpecBoxed_to_PageSpecWithInputBoxed_request
       ( Nextjs.Page.PageData_DynamicRequestOptions__Mobile { sessionHeader })
-      ( NextjsApp.Route.lookupFromRouteIdMapping
+      ( NextjsApp.WebRouteToPageServer.webRouteToPageSpecBoxed
         destRoute
-        NextjsApp.RouteToPageNonClient.routeIdMapping
       )
   )
     >>= case _ of

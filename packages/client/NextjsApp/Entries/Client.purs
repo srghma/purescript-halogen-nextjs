@@ -28,13 +28,13 @@ import Web.HTML.Window as Web.HTML.Window
 import Web.IntersectionObserver as Web.IntersectionObserver
 import Web.IntersectionObserverEntry as Web.IntersectionObserverEntry
 import NextjsApp.Link.Client as NextjsApp.Link.Client
-import NextjsApp.RouteDuplexCodec as NextjsApp.RouteDuplexCodec
+import NextjsApp.WebRouteDuplexCodec as NextjsApp.WebRouteDuplexCodec
 
 getPrerenderedJson :: Aff ArgonautCore.Json
 getPrerenderedJson = findJsonFromScriptElement (Web.DOM.ParentNode.QuerySelector NextjsApp.Constants.pagesDataId)
 
-getInitialRouteFromLocation :: Effect (Either Routing.Duplex.RouteError NextjsApp.Route.Route)
-getInitialRouteFromLocation = Routing.Duplex.parse NextjsApp.RouteDuplexCodec.routeCodec <$> (Web.HTML.window >>= Web.HTML.Window.location >>= getPathWithoutOrigin)
+getInitialRouteFromLocation :: Effect (Either Routing.Duplex.RouteError (Variant NextjsApp.Route.WebRoutesWithParamRow))
+getInitialRouteFromLocation = Routing.Duplex.parse NextjsApp.WebRouteDuplexCodec.routeCodec <$> (Web.HTML.window >>= Web.HTML.Window.location >>= getPathWithoutOrigin)
 
 intersectionObserverEventAndCallback ::
   Effect
@@ -114,4 +114,4 @@ main = do
 
     halogenIO <- Halogen.VDom.Driver.hydrateUI component initialState rootElement
 
-    void $ liftEffect $ Routing.PushState.matchesWith (Routing.Duplex.parse NextjsApp.RouteDuplexCodec.routeCodec) (NextjsApp.Router.Shared.callNavigateQueryIfNew halogenIO) pushStateInterface
+    void $ liftEffect $ Routing.PushState.matchesWith (Routing.Duplex.parse NextjsApp.WebRouteDuplexCodec.routeCodec) (NextjsApp.Router.Shared.callNavigateQueryIfNew halogenIO) pushStateInterface

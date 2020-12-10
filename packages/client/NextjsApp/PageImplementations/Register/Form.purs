@@ -4,22 +4,22 @@ module NextjsApp.PageImplementations.Register.Form
   )
   where
 
-import NextjsApp.Data.Password as NextjsApp.Data.Password
-import NextjsApp.Data.NonUsedUsername as NextjsApp.Data.NonUsedUsername
 import Protolude
 
 import Formless as F
 import Halogen.Component as Halogen.Component
-import NextjsApp.Navigate as NextjsApp.Navigate
-import NextjsApp.Route as NextjsApp.Route
-import NextjsApp.PageImplementations.Register.Form.Render (render)
-import NextjsApp.PageImplementations.Register.Form.Types (FormChildSlots, RegisterDataValidated, RegisterForm(..), RegisterFormRow, UserAction(..), prx)
 import NextjsApp.Data.MatchingPassword as NextjsApp.Data.MatchingPassword
 import NextjsApp.Data.NonUsedEmail as NextjsApp.Data.NonUsedEmail
+import NextjsApp.Data.NonUsedUsername as NextjsApp.Data.NonUsedUsername
+import NextjsApp.Data.Password as NextjsApp.Data.Password
+import NextjsApp.Navigate as NextjsApp.Navigate
+import NextjsApp.PageImplementations.Register.Form.Render (render)
+import NextjsApp.PageImplementations.Register.Form.Types (FormChildSlots, RegisterDataValidated, RegisterForm(..), RegisterFormRow, UserAction(..), prx)
+import NextjsApp.Route as NextjsApp.Route
 
 formComponent ::
   forall m r.
-  MonadAsk { navigate :: NextjsApp.Route.Route -> Effect Unit | r } m =>
+  MonadAsk { navigate :: Variant NextjsApp.Route.WebRoutesWithParamRow -> Effect Unit | r } m =>
   MonadEffect m =>
   MonadAff m =>
   F.Component RegisterForm (Const Void) FormChildSlots Unit RegisterDataValidated m

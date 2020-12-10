@@ -15,7 +15,7 @@ import Foreign.JsMap (JsMap)
 import Foreign.JsMap as JsMap
 import NextjsApp.Manifest.PageManifest as NextjsApp.Manifest.PageManifest
 import NextjsApp.Manifest.ServerBuildManifest (BuildManifest)
-import NextjsApp.Route (RouteIdMappingRow')
+import NextjsApp.Route
 import Record.Extra as Record.Extra
 import Record.ExtraSrghma as Record.ExtraSrghma
 import Type.Prelude (RProxy(..))

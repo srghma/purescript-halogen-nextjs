@@ -33,7 +33,7 @@ pageSpec =
           (PageData_DynamicResponse__Error <<< GraphQLClient.printGraphQLError)
           (maybe
             ( PageData_DynamicResponse__Redirect
-              { redirectToLocation: NextjsApp.Route.Login
+              { redirectToLocation: NextjsApp.Route.route__Login
               , logout: true
               }
             )

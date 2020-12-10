@@ -50,7 +50,7 @@ import NextjsGraphqlApi.Scalars as NextjsGraphqlApi.Scalars
 
 component ::
   forall m r.
-  MonadAsk { navigate :: NextjsApp.Route.Route -> Effect Unit | r } m =>
+  MonadAsk { navigate :: Variant NextjsApp.Route.WebRoutesWithParamRow -> Effect Unit | r } m =>
   MonadEffect m =>
   MonadAff m =>
   H.Component Query Input Message m
@@ -61,7 +61,7 @@ component =
     , eval:
       H.mkEval
         $ H.defaultEval
-            { initialize = Action__Initialize
+            { initialize = Just Action__Initialize
             , handleAction =
               case _ of
                   Action__Initialize -> traceM "Action__Initialize"

@@ -19,206 +19,221 @@ import Foreign.Object as Object
 import Record.ExtraSrghma as Record.ExtraSrghma
 import Type.Prelude (RProxy(..))
 import Unsafe.Coerce (unsafeCoerce)
+import Data.Variant
 
-data RouteExamples
-  = RouteExamples__Ace
-  | RouteExamples__Basic
-  | RouteExamples__Components
-  | RouteExamples__ComponentsInputs
-  | RouteExamples__ComponentsMultitype
-  | RouteExamples__EffectsAffAjax
-  | RouteExamples__EffectsEffectRandom
-  | RouteExamples__HigherOrderComponents
-  | RouteExamples__Interpret
-  | RouteExamples__KeyboardInput
-  | RouteExamples__Lifecycle
-  | RouteExamples__DeeplyNested
-  | RouteExamples__TextNodes
-  | RouteExamples__Lazy
+type WebRoutesVacantRow a =
+  ( route__Index                           :: a
+  , route__Login                           :: a
+  , route__Register                        :: a
+  , route__Secret                          :: a
+  , route__VerifyUserEmailWeb              :: a
+  , route__Examples__Ace                   :: a
+  , route__Examples__Basic                 :: a
+  , route__Examples__Components            :: a
+  , route__Examples__ComponentsInputs      :: a
+  , route__Examples__ComponentsMultitype   :: a
+  , route__Examples__EffectsAffAjax        :: a
+  , route__Examples__EffectsEffectRandom   :: a
+  , route__Examples__HigherOrderComponents :: a
+  , route__Examples__Interpret             :: a
+  , route__Examples__KeyboardInput         :: a
+  , route__Examples__Lifecycle             :: a
+  , route__Examples__DeeplyNested          :: a
+  , route__Examples__TextNodes             :: a
+  , route__Examples__Lazy                  :: a
+  )
 
-derive instance genericRoutesExamples :: Generic RouteExamples _
+-- | type WebRoutesProxiesRow =
+-- |   , route__Index                           :: SProxy "route__Index"
+-- |   , route__Login                           :: SProxy "route__Login"
+-- |   , route__Register                        :: SProxy "route__Register"
+-- |   , route__Secret                          :: SProxy "route__Secret"
+-- |   , route__VerifyUserEmailWeb              :: SProxy "route__VerifyUserEmailWeb"
+-- |   ( route__Examples__Ace                   :: SProxy "route__Examples__Ace"
+-- |   , route__Examples__Basic                 :: SProxy "route__Examples__Basic"
+-- |   , route__Examples__Components            :: SProxy "route__Examples__Components"
+-- |   , route__Examples__ComponentsInputs      :: SProxy "route__Examples__ComponentsInputs"
+-- |   , route__Examples__ComponentsMultitype   :: SProxy "route__Examples__ComponentsMultitype"
+-- |   , route__Examples__EffectsAffAjax        :: SProxy "route__Examples__EffectsAffAjax"
+-- |   , route__Examples__EffectsEffectRandom   :: SProxy "route__Examples__EffectsEffectRandom"
+-- |   , route__Examples__HigherOrderComponents :: SProxy "route__Examples__HigherOrderComponents"
+-- |   , route__Examples__Interpret             :: SProxy "route__Examples__Interpret"
+-- |   , route__Examples__KeyboardInput         :: SProxy "route__Examples__KeyboardInput"
+-- |   , route__Examples__Lifecycle             :: SProxy "route__Examples__Lifecycle"
+-- |   , route__Examples__DeeplyNested          :: SProxy "route__Examples__DeeplyNested"
+-- |   , route__Examples__TextNodes             :: SProxy "route__Examples__TextNodes"
+-- |   , route__Examples__Lazy                  :: SProxy "route__Examples__Lazy"
+-- |   )
 
-derive instance eqRoutesExamples :: Eq RouteExamples
+-- | webRoutesProxies :: Record WebRoutesProxiesRow
+-- | webRoutesProxies =
+-- |   , route__Index:                           SProxy
+-- |   , route__Login:                           SProxy
+-- |   , route__Register:                        SProxy
+-- |   , route__Secret:                          SProxy
+-- |   , route__VerifyUserEmailWeb:              SProxy
+-- |   { route__Examples__Ace:                   SProxy
+-- |   , route__Examples__Basic:                 SProxy
+-- |   , route__Examples__Components:            SProxy
+-- |   , route__Examples__ComponentsInputs:      SProxy
+-- |   , route__Examples__ComponentsMultitype:   SProxy
+-- |   , route__Examples__EffectsAffAjax:        SProxy
+-- |   , route__Examples__EffectsEffectRandom:   SProxy
+-- |   , route__Examples__HigherOrderComponents: SProxy
+-- |   , route__Examples__Interpret:             SProxy
+-- |   , route__Examples__KeyboardInput:         SProxy
+-- |   , route__Examples__Lifecycle:             SProxy
+-- |   , route__Examples__DeeplyNested:          SProxy
+-- |   , route__Examples__TextNodes:             SProxy
+-- |   , route__Examples__Lazy:                  SProxy
+-- |   }
 
-derive instance ordRoutesExamples :: Ord RouteExamples
+-- | webRoutes :: Record (WebRoutesVacantRow (Variant WebRoutesWithParamRow))
+-- | webRoutes =
+-- |   , route__Index
+-- |   , route__Login
+-- |   , route__Register
+-- |   , route__Secret
+-- |   , route__VerifyUserEmailWeb
+-- |   { route__Examples__Ace
+-- |   , route__Examples__Basic
+-- |   , route__Examples__Components
+-- |   , route__Examples__ComponentsInputs
+-- |   , route__Examples__ComponentsMultitype
+-- |   , route__Examples__EffectsAffAjax
+-- |   , route__Examples__EffectsEffectRandom
+-- |   , route__Examples__HigherOrderComponents
+-- |   , route__Examples__Interpret
+-- |   , route__Examples__KeyboardInput
+-- |   , route__Examples__Lifecycle
+-- |   , route__Examples__DeeplyNested
+-- |   , route__Examples__TextNodes
+-- |   , route__Examples__Lazy
+-- |   }
 
-instance showRoutesExamples :: Show RouteExamples where
-  show = genericShow
+type WebRoutesWithParamRow =
+  ( route__Index                           :: Unit
+  , route__Login                           :: Unit
+  , route__Register                        :: Unit
+  , route__Secret                          :: Unit
+  , route__VerifyUserEmailWeb              :: String
+  , route__Examples__Ace                   :: Unit
+  , route__Examples__Basic                 :: Unit
+  , route__Examples__Components            :: Unit
+  , route__Examples__ComponentsInputs      :: Unit
+  , route__Examples__ComponentsMultitype   :: Unit
+  , route__Examples__EffectsAffAjax        :: Unit
+  , route__Examples__EffectsEffectRandom   :: Unit
+  , route__Examples__HigherOrderComponents :: Unit
+  , route__Examples__Interpret             :: Unit
+  , route__Examples__KeyboardInput         :: Unit
+  , route__Examples__Lifecycle             :: Unit
+  , route__Examples__DeeplyNested          :: Unit
+  , route__Examples__TextNodes             :: Unit
+  , route__Examples__Lazy                  :: Unit
+  )
 
-instance encodeJsonRoutesExamples :: EncodeJson RouteExamples where
-  encodeJson = genericEncodeJson
-
-instance decodeJsonRoutesExamples :: DecodeJson RouteExamples where
-  decodeJson = genericDecodeJson
-
-data Route
-  = Index
-  | Login
-  | Register
-  | Secret
-  | VerifyUserEmail String
-  | RouteExamples RouteExamples
-
-derive instance genericRoute :: Generic Route _
-
-derive instance eqRoute :: Eq Route
-
-derive instance ordRoute :: Ord Route
-
-instance showRoute :: Show Route where
-  show = genericShow
-
-instance encodeJsonRoute :: EncodeJson Route where
-  encodeJson = genericEncodeJson
-
-instance decodeJsonRoute :: DecodeJson Route where
-  decodeJson = genericDecodeJson
-
-newtype RouteId
-  = RouteId NonEmptyString -- e.g. "Examples__Ace"
-
-derive instance newtypeRouteId :: Newtype RouteId _
-
-derive newtype instance eqRouteId :: Eq RouteId
-
-routeIdToString :: RouteId -> String
-routeIdToString = unsafeCoerce
-
-newtype RouteIdArray
-  = RouteIdArray (NonEmptyArray NonEmptyString) -- String repr of a route, e.g. ["Examples", "Ace"]
-
-derive instance newtypeRouteIdArray :: Newtype RouteIdArray _
-
-derive newtype instance eqRouteIdArray :: Eq RouteIdArray
-
-routeIdArrayToArrayString :: RouteIdArray -> Array String
-routeIdArrayToArrayString = unsafeCoerce
-
--- the key is a RouteId
-type RouteIdMappingRow' a r
-  = ( "Index" :: a
-    , "Login" :: a
-    , "Register" :: a
-    , "Secret" :: a
-    , "VerifyUserEmail" :: a
-    -- is using routeIdSeparator
-    , "Examples__Ace" :: a
-    , "Examples__Basic" :: a
-    , "Examples__Components" :: a
-    , "Examples__ComponentsInputs" :: a
-    , "Examples__ComponentsMultitype" :: a
-    , "Examples__EffectsAffAjax" :: a
-    , "Examples__EffectsEffectRandom" :: a
-    , "Examples__HigherOrderComponents" :: a
-    , "Examples__Interpret" :: a
-    , "Examples__KeyboardInput" :: a
-    , "Examples__Lifecycle" :: a
-    , "Examples__DeeplyNested" :: a
-    , "Examples__TextNodes" :: a
-    , "Examples__Lazy" :: a
-    | r
-    )
-
-type RouteIdMappingRow a
-  = RouteIdMappingRow' a ()
-
-type RouteIdMapping a
-  = Record (RouteIdMappingRow a)
-
--- THESE ARE THE 3 SOURCES OF TRUTH - separator and 2 *things* that define bidirectional total bijectional mapping `RouteId <-> Route`
--- EVERYTHING ELSE IS DERIVED FROM THEM
-routeIdSeparator :: SProxy "__"
-routeIdSeparator = SProxy
-
--- written as record for memoization AND to make `RouteIdMapping` total
-routeIdToRouteMapping :: RouteIdMapping Route
-routeIdToRouteMapping =
-  { "Index": Index
-  , "Login": Login
-  , "Register": Register
-  , "Secret": Secret
-  , "VerifyUserEmail": VerifyUserEmail "" -- TODO
-  -- is using routeIdSeparator
-  , "Examples__Ace": RouteExamples RouteExamples__Ace
-  , "Examples__Basic": RouteExamples RouteExamples__Basic
-  , "Examples__Components": RouteExamples RouteExamples__Components
-  , "Examples__ComponentsInputs": RouteExamples RouteExamples__ComponentsInputs
-  , "Examples__ComponentsMultitype": RouteExamples RouteExamples__ComponentsMultitype
-  , "Examples__EffectsAffAjax": RouteExamples RouteExamples__EffectsAffAjax
-  , "Examples__EffectsEffectRandom": RouteExamples RouteExamples__EffectsEffectRandom
-  , "Examples__HigherOrderComponents": RouteExamples RouteExamples__HigherOrderComponents
-  , "Examples__Interpret": RouteExamples RouteExamples__Interpret
-  , "Examples__KeyboardInput": RouteExamples RouteExamples__KeyboardInput
-  , "Examples__Lifecycle": RouteExamples RouteExamples__Lifecycle
-  , "Examples__DeeplyNested": RouteExamples RouteExamples__DeeplyNested
-  , "Examples__TextNodes": RouteExamples RouteExamples__TextNodes
-  , "Examples__Lazy": RouteExamples RouteExamples__Lazy
+webRoutesWithParamRowToString :: Variant WebRoutesWithParamRow -> String
+webRoutesWithParamRowToString = match
+  { route__Index:                           const "route__Index"
+  , route__Login:                           const "route__Login"
+  , route__Register:                        const "route__Register"
+  , route__Secret:                          const "route__Secret"
+  , route__VerifyUserEmailWeb:              const "route__VerifyUserEmailWeb"
+  , route__Examples__Ace:                   const "route__Examples__Ace"
+  , route__Examples__Basic:                 const "route__Examples__Basic"
+  , route__Examples__Components:            const "route__Examples__Components"
+  , route__Examples__ComponentsInputs:      const "route__Examples__ComponentsInputs"
+  , route__Examples__ComponentsMultitype:   const "route__Examples__ComponentsMultitype"
+  , route__Examples__EffectsAffAjax:        const "route__Examples__EffectsAffAjax"
+  , route__Examples__EffectsEffectRandom:   const "route__Examples__EffectsEffectRandom"
+  , route__Examples__HigherOrderComponents: const "route__Examples__HigherOrderComponents"
+  , route__Examples__Interpret:             const "route__Examples__Interpret"
+  , route__Examples__KeyboardInput:         const "route__Examples__KeyboardInput"
+  , route__Examples__Lifecycle:             const "route__Examples__Lifecycle"
+  , route__Examples__DeeplyNested:          const "route__Examples__DeeplyNested"
+  , route__Examples__TextNodes:             const "route__Examples__TextNodes"
+  , route__Examples__Lazy:                  const "route__Examples__Lazy"
   }
 
--- written as a accessor finder to make it total bidirectional mapping / bijection
-lookupFromRouteIdMapping :: forall a. Route -> RouteIdMapping a -> a
-lookupFromRouteIdMapping = case _ of
-  Index -> _."Index"
-  Login -> _."Login"
-  Register -> _."Register"
-  Secret -> _."Secret"
-  VerifyUserEmail _ -> _."VerifyUserEmail"
-  RouteExamples routesexamples -> case routesexamples of
-    RouteExamples__Ace -> _."Examples__Ace"
-    RouteExamples__Basic -> _."Examples__Basic"
-    RouteExamples__Components -> _."Examples__Components"
-    RouteExamples__ComponentsInputs -> _."Examples__ComponentsInputs"
-    RouteExamples__ComponentsMultitype -> _."Examples__ComponentsMultitype"
-    RouteExamples__EffectsAffAjax -> _."Examples__EffectsAffAjax"
-    RouteExamples__EffectsEffectRandom -> _."Examples__EffectsEffectRandom"
-    RouteExamples__HigherOrderComponents -> _."Examples__HigherOrderComponents"
-    RouteExamples__Interpret -> _."Examples__Interpret"
-    RouteExamples__KeyboardInput -> _."Examples__KeyboardInput"
-    RouteExamples__Lifecycle -> _."Examples__Lifecycle"
-    RouteExamples__DeeplyNested -> _."Examples__DeeplyNested"
-    RouteExamples__TextNodes -> _."Examples__TextNodes"
-    RouteExamples__Lazy -> _."Examples__Lazy"
+type MobileRoutesWithParamRow =
+  ( route__Index                           :: Unit
+  , route__Login                           :: Unit
+  , route__Register                        :: Unit
+  , route__Secret                          :: Unit
+  , route__VerifyUserEmailMobile           :: Unit
+  , route__Examples__Ace                   :: Unit
+  , route__Examples__Basic                 :: Unit
+  , route__Examples__Components            :: Unit
+  , route__Examples__ComponentsInputs      :: Unit
+  , route__Examples__ComponentsMultitype   :: Unit
+  , route__Examples__EffectsAffAjax        :: Unit
+  , route__Examples__EffectsEffectRandom   :: Unit
+  , route__Examples__HigherOrderComponents :: Unit
+  , route__Examples__Interpret             :: Unit
+  , route__Examples__KeyboardInput         :: Unit
+  , route__Examples__Lifecycle             :: Unit
+  , route__Examples__DeeplyNested          :: Unit
+  , route__Examples__TextNodes             :: Unit
+  , route__Examples__Lazy                  :: Unit
+  )
 
----------------------
-mapRouteIdMappingWithKey :: forall a b. (RouteId -> a -> b) -> RouteIdMapping a -> RouteIdMapping b
-mapRouteIdMappingWithKey f mapping = (unsafeCoerce :: Object b -> RouteIdMapping b) $ Object.mapWithKey ((unsafeCoerce :: (RouteId -> a -> b) -> String -> a -> b) f) $ Object.fromHomogeneous mapping
+route__Examples__Ace :: forall v . Variant ( route__Examples__Ace :: Unit | v )
+route__Examples__Ace = inj (SProxy :: SProxy "route__Examples__Ace") unit
 
--- |
--- | String  --stringToMaybeRoute-->  Route  <---_routeToRouteIdIso--->  RouteId  <---_routeIdToRouteIdArrayIso--->  RouteIdArray
--- |
-stringToMaybeRoute :: String -> Maybe Route
-stringToMaybeRoute field = Object.lookup field (Object.fromHomogeneous routeIdToRouteMapping)
+route__Examples__Basic :: forall v . Variant ( route__Examples__Basic :: Unit | v )
+route__Examples__Basic = inj (SProxy :: SProxy "route__Examples__Basic") unit
 
-stringToMaybeRouteId :: String -> Maybe RouteId
-stringToMaybeRouteId = stringToMaybeRoute >>> map (Lens.view _routeToRouteIdIso)
+route__Examples__Components :: forall v . Variant ( route__Examples__Components :: Unit | v )
+route__Examples__Components = inj (SProxy :: SProxy "route__Examples__Components") unit
 
-_routeToRouteIdIso :: Lens.Iso' Route RouteId
-_routeToRouteIdIso = Lens.iso to from
-  where
-  unsafeStringToRecordId :: String -> RouteId
-  unsafeStringToRecordId string = case NonEmptyString.fromString string of
-    Just string' -> RouteId string'
-    _ -> unsafeThrow $ "unsafeStringToRecordId: expected non-empty string, but got " <> string
+route__Examples__ComponentsInputs :: forall v . Variant ( route__Examples__ComponentsInputs :: Unit | v )
+route__Examples__ComponentsInputs = inj (SProxy :: SProxy "route__Examples__ComponentsInputs") unit
 
-  -- This is smart
-  reifiedRecordWhereKeyAndValueAreRecordId :: RouteIdMapping RouteId
-  reifiedRecordWhereKeyAndValueAreRecordId = Record.ExtraSrghma.mapIndex unsafeStringToRecordId (RProxy :: forall type_. RProxy (RouteIdMappingRow type_))
+route__Examples__ComponentsMultitype :: forall v . Variant ( route__Examples__ComponentsMultitype :: Unit | v )
+route__Examples__ComponentsMultitype = inj (SProxy :: SProxy "route__Examples__ComponentsMultitype") unit
 
-  -- Wow This is smart
-  to :: Route -> RouteId
-  to route = lookupFromRouteIdMapping route reifiedRecordWhereKeyAndValueAreRecordId
+route__Examples__EffectsAffAjax :: forall v . Variant ( route__Examples__EffectsAffAjax :: Unit | v )
+route__Examples__EffectsAffAjax = inj (SProxy :: SProxy "route__Examples__EffectsAffAjax") unit
 
-  ----------------------------
-  from :: RouteId -> Route
-  from (RouteId id) = case stringToMaybeRoute (NonEmptyString.toString id) of
-    Just route -> route
-    Nothing -> unsafeThrow $ "_routeToRouteIdIso -> from: impossible case, RouteId \"" <> (NonEmptyString.toString id) <> "\" is not valid, because cannot be found in routeIdToRouteMapping"
+route__Examples__EffectsEffectRandom :: forall v . Variant ( route__Examples__EffectsEffectRandom :: Unit | v )
+route__Examples__EffectsEffectRandom = inj (SProxy :: SProxy "route__Examples__EffectsEffectRandom") unit
 
-_routeIdToRouteIdArrayIso :: Lens.Iso' RouteId RouteIdArray
-_routeIdToRouteIdArrayIso = Lens.iso to from
-  where
-  to :: RouteId -> RouteIdArray
-  to = routeIdToString >>> String.split (String.Pattern (reflectSymbol routeIdSeparator)) >>> (unsafeCoerce :: Array String -> RouteIdArray)
+route__Examples__HigherOrderComponents :: forall v . Variant ( route__Examples__HigherOrderComponents :: Unit | v )
+route__Examples__HigherOrderComponents = inj (SProxy :: SProxy "route__Examples__HigherOrderComponents") unit
 
-  from :: RouteIdArray -> RouteId
-  from = routeIdArrayToArrayString >>> String.joinWith (reflectSymbol routeIdSeparator) >>> (unsafeCoerce :: String -> RouteId)
+route__Examples__Interpret :: forall v . Variant ( route__Examples__Interpret :: Unit | v )
+route__Examples__Interpret = inj (SProxy :: SProxy "route__Examples__Interpret") unit
+
+route__Examples__KeyboardInput :: forall v . Variant ( route__Examples__KeyboardInput :: Unit | v )
+route__Examples__KeyboardInput = inj (SProxy :: SProxy "route__Examples__KeyboardInput") unit
+
+route__Examples__Lifecycle :: forall v . Variant ( route__Examples__Lifecycle :: Unit | v )
+route__Examples__Lifecycle = inj (SProxy :: SProxy "route__Examples__Lifecycle") unit
+
+route__Examples__DeeplyNested :: forall v . Variant ( route__Examples__DeeplyNested :: Unit | v )
+route__Examples__DeeplyNested = inj (SProxy :: SProxy "route__Examples__DeeplyNested") unit
+
+route__Examples__TextNodes :: forall v . Variant ( route__Examples__TextNodes :: Unit | v )
+route__Examples__TextNodes = inj (SProxy :: SProxy "route__Examples__TextNodes") unit
+
+route__Examples__Lazy :: forall v . Variant ( route__Examples__Lazy :: Unit | v )
+route__Examples__Lazy = inj (SProxy :: SProxy "route__Examples__Lazy") unit
+
+route__Index :: forall v . Variant ( route__Index :: Unit | v )
+route__Index = inj (SProxy :: SProxy "route__Index") unit
+
+route__Login :: forall v . Variant ( route__Login :: Unit | v )
+route__Login = inj (SProxy :: SProxy "route__Login") unit
+
+route__Register :: forall v . Variant ( route__Register :: Unit | v )
+route__Register = inj (SProxy :: SProxy "route__Register") unit
+
+route__Secret :: forall v . Variant ( route__Secret :: Unit | v )
+route__Secret = inj (SProxy :: SProxy "route__Secret") unit
+
+route__VerifyUserEmailWeb :: forall v . String -> Variant ( route__VerifyUserEmailWeb :: String | v )
+route__VerifyUserEmailWeb = inj (SProxy :: SProxy "route__VerifyUserEmailWeb")
+
+route__VerifyUserEmailMobile :: forall v . Variant ( route__VerifyUserEmailMobile :: Unit | v )
+route__VerifyUserEmailMobile = inj (SProxy :: SProxy "route__VerifyUserEmailMobile") unit

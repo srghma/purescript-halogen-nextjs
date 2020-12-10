@@ -13,7 +13,7 @@ import Foreign.Object as Object
 import Heterogeneous.Mapping (hmap)
 import HeterogeneousExtraShow as HeterogeneousExtraShow
 import NextjsApp.NodeEnv as NextjsApp.NodeEnv
-import NextjsApp.Route (Route, RouteIdMapping)
+import NextjsApp.Route
 import NextjsApp.Route as NextjsApp.Route
 import NextjsApp.Template as NextjsApp.Template
 import NextjsWebpack.BuildManifestPlugin as NextjsWebpack.BuildManifestPlugin

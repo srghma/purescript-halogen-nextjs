@@ -40,7 +40,7 @@ pageData_DynamicRequestOptions__To__RequestOptions =
 data PageData_DynamicResponse input
   = PageData_DynamicResponse__Error String -- TODO: add purs-hyper response status?
   | PageData_DynamicResponse__Redirect
-    { redirectToLocation :: NextjsApp.Route.Route
+    { redirectToLocation :: (Variant NextjsApp.Route.WebRoutesWithParamRow)
     , logout :: Boolean
     }
   | PageData_DynamicResponse__Success input
@@ -122,7 +122,7 @@ data PageSpecBoxed_To_PageSpecWithInputBoxed_Response
   = PageSpecBoxed_To_PageSpecWithInputBoxed_Response__Error String
   | PageSpecBoxed_To_PageSpecWithInputBoxed_Response__Success PageSpecWithInputBoxed
   | PageSpecBoxed_To_PageSpecWithInputBoxed_Response__Redirect
-    { redirectToLocation :: NextjsApp.Route.Route
+    { redirectToLocation :: (Variant NextjsApp.Route.WebRoutesWithParamRow)
     -- on client - ignored
     -- on server - Set-Cookie sessionId "" is set
     -- on mobile - jwt is removed from secure storage

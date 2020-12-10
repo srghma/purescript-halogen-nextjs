@@ -11,7 +11,7 @@ data Action
   | LinkIsInViewport H.SubscriptionId
 
 type State
-  = { route :: NextjsApp.Route.Route
+  = { route :: (Variant NextjsApp.Route.WebRoutesWithParamRow)
     , text :: String
     }
 

@@ -14,7 +14,7 @@ import Web.HTML as Web.HTML
 
 type CurrentPageInfo
   = { pageSpecWithInputBoxed :: Nextjs.Page.PageSpecWithInputBoxed
-    , route :: NextjsApp.Route.Route
+    , route :: (Variant NextjsApp.Route.WebRoutesWithParamRow)
     }
 
 type HtmlContextInfo
@@ -42,10 +42,10 @@ type MobileState
     }
 
 data Query a
-  = Navigate NextjsApp.Route.Route a
+  = Navigate (Variant NextjsApp.Route.WebRoutesWithParamRow) a
 
 type ChildSlots
-  = ( page :: H.Slot (Const Void) Void NextjsApp.Route.Route -- the index here (NextjsApp.Route.Route) is very important, the page won't just update if we replace it with Unit
+  = ( page :: H.Slot (Const Void) Void (Variant NextjsApp.Route.WebRoutesWithParamRow) -- the index here ((Variant NextjsApp.Route.WebRoutesWithParamRow)) is very important, the page won't just update if we replace it with Unit
     )
 
 renderPage :: forall action. CurrentPageInfo -> H.ComponentHTML action ChildSlots AppM
@@ -59,8 +59,8 @@ maybeRenderPage { currentPageInfo } = case currentPageInfo of
   Nothing -> HH.div_ [ HH.text "Oh no! That page wasn't found." ]
   Just currentPageInfo' -> renderPage currentPageInfo'
 
-callNavigateQueryIfNew :: forall output. H.HalogenIO Query output Aff -> Maybe NextjsApp.Route.Route -> NextjsApp.Route.Route -> Effect Unit
+callNavigateQueryIfNew :: forall output. H.HalogenIO Query output Aff -> Maybe (Variant NextjsApp.Route.WebRoutesWithParamRow) -> (Variant NextjsApp.Route.WebRoutesWithParamRow) -> Effect Unit
 callNavigateQueryIfNew halogenIO oldRoute newRoute = when (oldRoute /= Just newRoute) (callNavigateQuery halogenIO newRoute)
 
-callNavigateQuery :: forall output. H.HalogenIO Query output Aff -> NextjsApp.Route.Route -> Effect Unit
+callNavigateQuery :: forall output. H.HalogenIO Query output Aff -> (Variant NextjsApp.Route.WebRoutesWithParamRow) -> Effect Unit
 callNavigateQuery halogenIO newRoute = launchAff_ $ halogenIO.query $ H.mkTell $ Navigate newRoute

@@ -14,7 +14,7 @@ import NextjsApp.AppM (Env, runAppM)
 import NextjsApp.Link.Mobile as NextjsApp.Link.Mobile
 import NextjsApp.Navigate.Mobile as NextjsApp.Navigate.Mobile
 import NextjsApp.Route as NextjsApp.Route
-import NextjsApp.RouteToPageNonClient as NextjsApp.RouteToPageNonClient
+import NextjsApp.WebRouteToPageServer as NextjsApp.WebRouteToPageServer
 import NextjsApp.Router.Mobile as NextjsApp.Router.Mobile
 import NextjsApp.Router.Shared (MobileState, HtmlContextInfo)
 import NextjsApp.Router.Shared as NextjsApp.Router.Shared
@@ -38,14 +38,14 @@ goToRouteAndHandleRedirect
   :: { document ∷ Web.HTML.HTMLDocument
      , env ∷ Env
      , htmlContextInfo ∷ HtmlContextInfo
-     , newRouteEventIO ∷ FRP.Event.EventIO NextjsApp.Route.Route
-     , route ∷ NextjsApp.Route.Route
+     , newRouteEventIO ∷ FRP.Event.EventIO (Variant NextjsApp.Route.WebRoutesWithParamRow)
+     , route ∷ (Variant NextjsApp.Route.WebRoutesWithParamRow)
      , sessionHeader ∷ Maybe (Tuple String String)
      }
   → Aff Unit
 goToRouteAndHandleRedirect input@{ document, newRouteEventIO, env, sessionHeader, htmlContextInfo, route } = do
   let
-    (page :: Nextjs.Page.PageSpecBoxed) = NextjsApp.Route.lookupFromRouteIdMapping route NextjsApp.RouteToPageNonClient.routeIdMapping
+    (page :: Nextjs.Page.PageSpecBoxed) = NextjsApp.WebRouteToPageServer.webRouteToPageSpecBoxed route NextjsApp.WebRouteToPageServer.routeIdMapping
 
   Nextjs.Page.pageSpecBoxed_to_PageSpecWithInputBoxed_request (Nextjs.Page.PageData_DynamicRequestOptions__Mobile { sessionHeader }) page
     >>= case _ of
@@ -83,15 +83,15 @@ goToRouteAndHandleRedirect input@{ document, newRouteEventIO, env, sessionHeader
         void $ liftEffect $ FRP.Event.subscribe newRouteEventIO.event \newRoute -> NextjsApp.Router.Shared.callNavigateQuery halogenIO newRoute
 
         -- TODO: go back in history
-        void $ liftEffect $ onDocumentEvent Cordova.backbutton document (NextjsApp.Router.Shared.callNavigateQuery halogenIO NextjsApp.Route.Index)
+        void $ liftEffect $ onDocumentEvent Cordova.backbutton document (NextjsApp.Router.Shared.callNavigateQuery halogenIO NextjsApp.Route.route__Index)
 
 main :: Effect Unit
 main = do
   { window, document, body, head } <- getHtmlEntities
-  (newRouteEventIO :: FRP.Event.EventIO NextjsApp.Route.Route) <- FRP.Event.create
+  (newRouteEventIO :: FRP.Event.EventIO (Variant NextjsApp.Route.WebRoutesWithParamRow)) <- FRP.Event.create
   -- first we'll get the route the user landed on
   let
-    (route :: NextjsApp.Route.Route) = NextjsApp.Route.Index
+    (route :: (Variant NextjsApp.Route.WebRoutesWithParamRow)) = NextjsApp.Route.route__Index
     (env :: Env) =
       { navigate: NextjsApp.Navigate.Mobile.navigate newRouteEventIO
       , linkHandleActions: NextjsApp.Link.Mobile.mkLinkHandleActions

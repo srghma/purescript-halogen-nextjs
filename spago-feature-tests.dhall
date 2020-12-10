@@ -7,7 +7,7 @@
   , "./packages/worker/**/*.purs"
   , "./packages/client/NextjsApp/AppM.purs"
   , "./packages/client/NextjsApp/Route.purs"
-  , "./packages/client/NextjsApp/RouteDuplexCodec.purs"
+  , "./packages/client/NextjsApp/WebRouteDuplexCodec.purs"
   , "./packages/client/NextjsApp/Link/Types.purs"
   ]
 }

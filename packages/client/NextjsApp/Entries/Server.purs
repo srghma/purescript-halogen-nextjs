@@ -26,8 +26,8 @@ import NextjsApp.Manifest.ClientPagesManifest as NextjsApp.Manifest.ClientPagesM
 import NextjsApp.Manifest.PageManifest        as NextjsApp.Manifest.PageManifest
 import NextjsApp.Manifest.ServerBuildManifest as NextjsApp.Manifest.ServerBuildManifest
 import NextjsApp.Route                        as NextjsApp.Route
-import NextjsApp.RouteDuplexCodec             as NextjsApp.RouteDuplexCodec
-import NextjsApp.RouteToPageNonClient         as NextjsApp.RouteToPageNonClient
+import NextjsApp.WebRouteDuplexCodec             as NextjsApp.WebRouteDuplexCodec
+import NextjsApp.WebRouteToPageServer         as NextjsApp.WebRouteToPageServer
 import NextjsApp.Router.Server                as NextjsApp.Router
 import NextjsApp.Router.Shared                as NextjsApp.Router
 import NextjsApp.Server.Config                as NextjsApp.Server.Config
@@ -49,7 +49,7 @@ data StaticOrDynamicPageData input
 renderPageToString
   :: forall input
    . { page :: Nextjs.Page.PageSpec input
-     , route :: NextjsApp.Route.Route
+     , route :: (Variant NextjsApp.Route.WebRoutesWithParamRow)
      , buildManifest :: NextjsApp.Manifest.ServerBuildManifest.BuildManifest
      , clientPagesManifest :: NextjsApp.Manifest.ClientPagesManifest.ClientPagesManifest
      , pageManifest :: NextjsApp.Manifest.PageManifest.PageManifest
@@ -117,7 +117,7 @@ renderPage ::
   forall c input.
   { config :: NextjsApp.Server.Config.Config
   , buildManifest :: NextjsApp.Manifest.ServerBuildManifest.BuildManifest
-  , route :: NextjsApp.Route.Route
+  , route :: (Variant NextjsApp.Route.WebRoutesWithParamRow)
   , clientPagesManifest :: NextjsApp.Manifest.ClientPagesManifest.ClientPagesManifest
   , pageManifest :: NextjsApp.Manifest.PageManifest.PageManifest
   } ->
@@ -164,7 +164,7 @@ renderPage
                     , "  " <> error
                     ]
             Nextjs.Page.PageData_DynamicResponse__Redirect { redirectToLocation, logout } -> IndexedMonad.do
-              Hyper.redirect (Routing.Duplex.print NextjsApp.RouteDuplexCodec.routeCodec redirectToLocation)
+              Hyper.redirect (Routing.Duplex.print NextjsApp.WebRouteDuplexCodec.routeCodec redirectToLocation)
               if logout
                 then Hyper.setCookie ApiServerConfig.expressSessionMiddleware_cookieName "" (Hyper.defaultCookieAttributes { maxAge = Hyper.maxAge 0 })
                 else pure unit
@@ -205,7 +205,7 @@ app ::
     Unit
 app { buildManifest, config } = IndexedMonad.do
   request <- Hyper.getRequestData
-  case Routing.Duplex.parse NextjsApp.RouteDuplexCodec.routeCodec request.url of
+  case Routing.Duplex.parse NextjsApp.WebRouteDuplexCodec.routeCodec request.url of
     Left (error :: Routing.Duplex.RouteError) -> IndexedMonad.do
       Hyper.writeStatus Hyper.statusBadRequest
       Hyper.closeHeaders
@@ -213,7 +213,7 @@ app { buildManifest, config } = IndexedMonad.do
     Right route -> IndexedMonad.do
       Console.log $ Ansi.withGraphics (Ansi.foreground Ansi.BrightYellow) $ "  PageSpecBoxed requested: " <> show route
       let
-        pageManifest = NextjsApp.Route.lookupFromRouteIdMapping route buildManifest.pages
+        pageManifest = NextjsApp.WebRouteToPageServer.webRouteToPageSpecBoxed route buildManifest.pages
         mergedPageManifest = NextjsApp.Manifest.PageManifest.mergePageManifests buildManifest.main pageManifest
       Nextjs.Page.unPageSpecBoxed
         ( renderPage
@@ -224,7 +224,7 @@ app { buildManifest, config } = IndexedMonad.do
             , pageManifest: mergedPageManifest
             }
         )
-        (NextjsApp.Route.lookupFromRouteIdMapping route NextjsApp.RouteToPageNonClient.routeIdMapping)
+        (NextjsApp.WebRouteToPageServer.webRouteToPageSpecBoxed route NextjsApp.WebRouteToPageServer.routeIdMapping)
 
 main :: Effect Unit
 main =

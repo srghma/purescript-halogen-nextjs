@@ -32,16 +32,17 @@ handleQuery = case _ of
       Nothing -> clientLoadAndPutNewPage currentState destRoute
     pure (Just a)
 
-clientLoadAndPutNewPage :: forall action. ClientState -> NextjsApp.Route.Route -> H.HalogenM ClientState action ChildSlots Void AppM Unit
+clientLoadAndPutNewPage :: forall action. ClientState -> (Variant NextjsApp.Route.WebRoutesWithParamRow) -> H.HalogenM ClientState action ChildSlots Void AppM Unit
 clientLoadAndPutNewPage currentState destRoute = do
   page <-
     H.liftAff
       $ NextjsApp.PageLoader.loadPage
-          currentState.clientPagesManifest
-          currentState.htmlContextInfo.document
-          currentState.htmlContextInfo.body
-          currentState.htmlContextInfo.head
-          currentState.pageRegisteredEvent
+          { clientPagesManifest: currentState.clientPagesManifest
+          , document: currentState.htmlContextInfo.document
+          , body: currentState.htmlContextInfo.body
+          , head: currentState.htmlContextInfo.head
+          , pageRegisteredEvent: currentState.pageRegisteredEvent
+          }
           destRoute
   (H.liftAff $ Nextjs.Page.pageSpecBoxed_to_PageSpecWithInputBoxed_request Nextjs.Page.PageData_DynamicRequestOptions__Client page)
     >>= case _ of

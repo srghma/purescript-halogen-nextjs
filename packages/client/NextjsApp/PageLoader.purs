@@ -1,15 +1,20 @@
 module NextjsApp.PageLoader where
 
 import Protolude
+
 import Data.Array as Array
+import Data.Lens as Lens
 import Effect.Aff as Aff
 import Effect.Uncurried as EFn
 import FRP.Event as Event
+import Foreign.Object (Object)
+import Foreign.Object as Object
 import Halogen.VDom.Util as Halogen.VDom.Util
 import Nextjs.Page as Nextjs.Page
 import NextjsApp.Manifest.ClientPagesManifest as NextjsApp.Manifest.ClientPagesManifest
 import NextjsApp.Manifest.PageManifest as NextjsApp.Manifest.PageManifest
 import NextjsApp.Route as NextjsApp.Route
+import NextjsWebpack.IsomorphicClientPagesLoader (PageWithRouteId)
 import Web.DOM as Web.DOM
 import Web.DOM.Document as Web.DOM.Document
 import Web.DOM.Node as Web.DOM.Node
@@ -20,36 +25,33 @@ import Web.HTML.HTMLElement as Web.HTML.HTMLElement
 import Web.HTML.HTMLHeadElement as Web.HTML.HTMLHeadElement
 import Web.HTML.HTMLLinkElement as Web.HTML.HTMLLinkElement
 import Web.HTML.HTMLScriptElement as Web.HTML.HTMLScriptElement
-import Data.Lens as Lens
 
 -- https://github.com/vercel/next.js/blob/7dbdf1d89eef004170d8f2661b4b3c299962b1f8/packages/next/client/page-loader.js#L177
 -- XXX: we ASSUME isomorphic-client-pages-loader was implemented in type safe manner AND we verify it
-type PageCache
-  = Array { routeId :: NextjsApp.Route.RouteId, page :: Nextjs.Page.PageSpecBoxed }
+type PageCache = Array (PageWithRouteId String Nextjs.Page.PageSpecBoxed)
 
-type PageRegisteredEventData = { route :: NextjsApp.Route.Route, page :: Nextjs.Page.PageSpecBoxed }
+type PageRegisteredEventData = PageWithRouteId String Nextjs.Page.PageSpecBoxed
 
 foreign import readPageCache :: Effect PageCache
 
-foreign import _setRegisterEventOnPageCacheBus :: EFn.EffectFn1 (EFn.EffectFn1 { routeId :: String, page :: Nextjs.Page.PageSpecBoxed } Unit) Unit
+foreign import _setRegisterEventOnPageCacheBus ::
+  EFn.EffectFn1
+  (EFn.EffectFn1 PageRegisteredEventData Unit)
+  Unit
 
 foreign import supportedPrefetchRel :: String
 
-findPageInCache :: NextjsApp.Route.Route -> PageCache -> Maybe { routeId :: NextjsApp.Route.RouteId, page :: Nextjs.Page.PageSpecBoxed }
-findPageInCache route = Array.find (\info -> info.routeId == Lens.view NextjsApp.Route._routeToRouteIdIso route)
+findPageInCache
+  :: String
+  -> PageCache
+  -> Maybe PageRegisteredEventData
+findPageInCache route = Array.find (\info -> info.routeId == route)
 
 -- | XXX: _setRegisterEventOnPageCacheBus should be called only once
 createPageRegisteredEvent :: Effect (Event.Event PageRegisteredEventData)
 createPageRegisteredEvent = do
   eventIO <- Event.create
-  -- throw unless PageId is correct
-  -- TODO: enable only in development
-  EFn.runEffectFn1 _setRegisterEventOnPageCacheBus
-    $ EFn.mkEffectFn1 \{ routeId, page } -> do
-        (route :: NextjsApp.Route.Route) <- case NextjsApp.Route.stringToMaybeRoute routeId of
-          Just route -> pure route
-          _ -> throwError $ error $ "impossible case, isomorphic-client-pages-loader implemented incorrectly, received invalid PageId: " <> routeId
-        eventIO.push { route, page }
+  EFn.runEffectFn1 _setRegisterEventOnPageCacheBus $ EFn.mkEffectFn1 eventIO.push
   pure eventIO.event
 
 scriptElementSetOnError :: Effect Unit -> Web.HTML.HTMLScriptElement -> Effect Unit
@@ -150,11 +152,25 @@ appendPagePrefetch pageManifest document head = do
           -- | traceM $ "addPageScriptsToBodyIfNotYetAdded: appending " <> url
           appendCss document' head url
 
-loadPage :: NextjsApp.Manifest.ClientPagesManifest.ClientPagesManifest -> Web.HTML.HTMLDocument -> Web.HTML.HTMLElement -> Web.HTML.HTMLHeadElement -> Event.Event PageRegisteredEventData -> NextjsApp.Route.Route -> Aff Nextjs.Page.PageSpecBoxed
-loadPage clientPagesManifest document body head pageRegisteredEvent route = do
+loadPage ::
+  { clientPagesManifest :: NextjsApp.Manifest.ClientPagesManifest.ClientPagesManifest
+  , document :: Web.HTML.HTMLDocument
+  , body :: Web.HTML.HTMLElement
+  , head :: Web.HTML.HTMLHeadElement
+  , pageRegisteredEvent :: Event.Event PageRegisteredEventData
+  }
+  -> Variant NextjsApp.Route.WebRoutesWithParamRow
+  -> Aff Nextjs.Page.PageSpecBoxed
+loadPage { clientPagesManifest, document, body, head, pageRegisteredEvent } route = do
   pageCache <- liftEffect readPageCache
-  liftEffect $ appendPage (NextjsApp.Route.lookupFromRouteIdMapping route clientPagesManifest) document body head
-  case findPageInCache route pageCache of
+
+  let route' = NextjsApp.Route.webRoutesWithParamRowToString route
+
+  case Object.lookup route' (Object.fromHomogeneous clientPagesManifest) of
+       Nothing -> throwError $ error $ "Route " <> route' <> " was not found in client manifest"
+       Just pageManifest -> liftEffect $ appendPage pageManifest document body head
+
+  case findPageInCache route' pageCache of
     Just info -> pure info.page
     -- TODO
     -- how to always "unsubscribe" on completion (mainly on "resolve")?
@@ -162,8 +178,8 @@ loadPage clientPagesManifest document body head pageRegisteredEvent route = do
     Nothing ->
       Aff.makeAff \resolve -> do
         unsubscribe <-
-          Event.subscribe pageRegisteredEvent \info -> do
-            if info.route == route then
+          Event.subscribe pageRegisteredEvent \info ->
+            if info.routeId == route' then
               resolve $ Right info.page
             else
               pure unit

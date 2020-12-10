@@ -13,7 +13,7 @@ module NextjsWebpack.GetClientPagesEntrypoints where
 -- script prefetched https://github.com/vercel/next.js/blob/3036463080d7905aa22da46e63f6c50dd50adc3c/packages/next/client/page-loader.js#L36-L49
 -- script added https://github.com/vercel/next.js/blob/42a328f3e44a560d45821a582beb257fdeea10af/packages/next/client/page-loader.js#L254
 import ModuleName
-import NextjsApp.Route (Route, RouteIdMapping)
+import NextjsApp.Route
 import Pathy (Abs, Dir, File, Name, Path, Rel, dir', file, file', joinName, (</>))
 import Protolude
 import Data.Array.NonEmpty (NonEmptyArray)

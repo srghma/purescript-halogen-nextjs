@@ -75,7 +75,7 @@ spec = do
       VALUES ($1, $2, true)
   """) (PostgreSQL.Row2 newUserId user.email)
 
-  goClientRoute Login
+  goClientRoute route__Register
 
   runLunapark $ inputField usernameOrEmailXpath "unknown@mail.com"
 
@@ -93,7 +93,7 @@ spec = do
 
   retryAction $
     ( getCurrentRoute
-      >>= \mRoute -> mRoute `shouldEqual` Just Secret
+      >>= \mRoute -> mRoute `shouldEqual` Just route__Secret
     )
 
   ( runLunapark $

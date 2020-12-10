@@ -17,7 +17,7 @@ import NextjsApp.PageImplementations.Login.Form.Types (FormChildSlots, LoginData
 
 formComponent ::
   forall m r.
-  MonadAsk { navigate :: NextjsApp.Route.Route -> Effect Unit | r } m =>
+  MonadAsk { navigate :: Variant NextjsApp.Route.WebRoutesWithParamRow -> Effect Unit | r } m =>
   MonadEffect m =>
   MonadAff m =>
   F.Component LoginForm (Const Void) FormChildSlots Unit LoginDataValidated m

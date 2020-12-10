@@ -14,7 +14,7 @@ import Pathy (file, (<.>), (</>))
 import PathyExtra (printPathPosixSandboxAny)
 
 type BuildManifest
-  = { pages :: NextjsApp.Route.RouteIdMapping NextjsApp.Manifest.PageManifest.PageManifest
+  = { pages :: Record (NextjsApp.Route.WebRoutesVacantRow NextjsApp.Manifest.PageManifest.PageManifest)
     , main :: NextjsApp.Manifest.PageManifest.PageManifest
     , faviconsHtml :: Array String
     }

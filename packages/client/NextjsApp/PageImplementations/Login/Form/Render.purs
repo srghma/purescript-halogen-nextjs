@@ -106,6 +106,6 @@ render state =
           , config: Button.defaultConfig { additionalClasses = [ NextjsApp.PageImplementations.Login.Css.styles.buttons__button ] }
           , content: [ HH.text "Go to login page" ]
           }
-          (\_ -> inj (SProxy :: SProxy "userAction") $ UserAction__Navigate NextjsApp.Route.Register)
+          (\_ -> inj (SProxy :: SProxy "userAction") $ UserAction__Navigate NextjsApp.Route.route__Register)
       ]
     ]

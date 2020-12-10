@@ -56,7 +56,7 @@ import NextjsGraphqlApi.Scalars as NextjsGraphqlApi.Scalars
 
 component ::
   forall m r.
-  MonadAsk { navigate :: NextjsApp.Route.Route -> Effect Unit | r } m =>
+  MonadAsk { navigate :: Variant NextjsApp.Route.WebRoutesWithParamRow -> Effect Unit | r } m =>
   MonadEffect m =>
   MonadAff m =>
   H.Component Query Input Message m
@@ -110,6 +110,6 @@ component =
 
                       case response' of
                           Just error -> H.modify_ _ { registerError = Just error }
-                          Nothing -> NextjsApp.Navigate.navigate NextjsApp.Route.Secret
+                          Nothing -> NextjsApp.Navigate.navigate NextjsApp.Route.route__Secret
             }
     }

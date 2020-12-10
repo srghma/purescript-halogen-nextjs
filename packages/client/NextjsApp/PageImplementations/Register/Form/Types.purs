@@ -1,18 +1,19 @@
 module NextjsApp.PageImplementations.Register.Form.Types where
 
 import NextjsApp.Data.MatchingPassword
-import NextjsApp.Data.NonUsedUsername
 import NextjsApp.Data.NonUsedEmail
+import NextjsApp.Data.NonUsedUsername
 import Protolude
 
 import Formless as F
 import Halogen as H
 import HalogenMWC.Button as Button
 import HalogenMWC.TextField.Outlined as TextField.Outlined
+
 import NextjsApp.Route as NextjsApp.Route
 
 data UserAction
-  = UserAction__Navigate NextjsApp.Route.Route
+  = UserAction__Navigate (Variant NextjsApp.Route.WebRoutesWithParamRow)
   | UserAction__PasswordUpdated String
   | UserAction__PasswordConfirmationUpdated String
 

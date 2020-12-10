@@ -1,17 +1,18 @@
 module NextjsApp.PageImplementations.Login.Form.Types where
 
-import NextjsApp.Data.Password (Password, PasswordError)
-import NextjsApp.Data.InUseUsernameOrEmail (InUseUsernameOrEmail, InUseUsernameOrEmail__Error)
 import Protolude
 
 import Formless as F
 import Halogen as H
 import HalogenMWC.Button as Button
 import HalogenMWC.TextField.Outlined as TextField.Outlined
+import NextjsApp.Data.InUseUsernameOrEmail (InUseUsernameOrEmail, InUseUsernameOrEmail__Error)
+import NextjsApp.Data.Password (Password, PasswordError)
+
 import NextjsApp.Route as NextjsApp.Route
 
 data UserAction
-  = UserAction__Navigate NextjsApp.Route.Route
+  = UserAction__Navigate (Variant NextjsApp.Route.WebRoutesWithParamRow)
 
 type LoginFormRow f =
   ( usernameOrEmail :: f InUseUsernameOrEmail__Error String InUseUsernameOrEmail

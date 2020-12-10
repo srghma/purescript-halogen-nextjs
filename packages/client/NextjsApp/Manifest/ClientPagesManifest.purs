@@ -9,7 +9,7 @@ import Data.Argonaut.Decode as ArgonautCodecs
 import NextjsApp.Constants as NextjsApp.Constants
 
 type ClientPagesManifest
-  = NextjsApp.Route.RouteIdMapping NextjsApp.Manifest.PageManifest.PageManifest
+  = Record (NextjsApp.Route.WebRoutesVacantRow NextjsApp.Manifest.PageManifest.PageManifest)
 
 getBuildManifest :: Aff ClientPagesManifest
 getBuildManifest = do

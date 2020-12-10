@@ -13,7 +13,7 @@ type EnvLinkHandleActions
     }
 
 type Env
-  = { navigate :: NextjsApp.Route.Route -> Effect Unit
+  = { navigate :: Variant NextjsApp.Route.WebRoutesWithParamRow -> Effect Unit
     , linkHandleActions :: EnvLinkHandleActions -- TODO: this thing doesn't make sense for mobile, only for client
     }
 

@@ -13,6 +13,7 @@ import FeatureTests.FeatureTestSpec
 import FeatureTests.FeatureTestSpecUtils.AffRetry
 import FeatureTests.FeatureTestSpecUtils.Db
 import FeatureTests.FeatureTestSpecUtils.DebuggingAndTdd
+import FeatureTests.FeatureTestSpecUtils.EmailAVar
 import FeatureTests.FeatureTestSpecUtils.GoClientRoute
 import FeatureTests.FeatureTestSpecUtils.LunaparkUtils
 import LunaparkExtra
@@ -28,12 +29,15 @@ import Data.Argonaut as Json
 import Data.Argonaut.Decode as Json
 import Data.String (Pattern(..), contains)
 import Database.PostgreSQL as PostgreSQL
+import Effect.AVar (AVar)
+import Effect.Aff.AVar as AVar
 import Effect.Aff.Retry as AffRetry
 import Effect.Ref as Ref
 import Faker as Faker
 import Faker.Lorem as Faker.Lorem
 import Faker.Name as Faker.Name
 import FeatureTests.FeatureTestSpecUtils.Lunapark (runLunapark)
+import JSDOM as JSDOM
 import Lunapark as Lunapark
 import Lunapark.Endpoint (EndpointPart(..))
 import Lunapark.Types as Lunapark
@@ -42,17 +46,13 @@ import Node.Process as Node.Process
 import Node.ReadLine as Node.ReadLine
 import Node.Stream as Node.Stream
 import Test.Spec.Assertions (fail, shouldContain, shouldEqual)
-import Effect.AVar (AVar)
-import Effect.Aff.AVar as AVar
-import FeatureTests.FeatureTestSpecUtils.EmailAVar
 import Web.DOM.Document as Web.DOM.Document
 import Web.DOM.Node as Web.DOM.Node
-import Web.HTML.HTMLDocument as Web.HTML.HTMLDocument
-import Web.HTML.Window as Web.HTML.Window
-import Web.HTML.HTMLLinkElement as Web.HTML.HTMLLinkElement
-import JSDOM as JSDOM
 import Web.DOM.NonElementParentNode as Web.DOM.NonElementParentNode
 import Web.DOM.ParentNode as Web.DOM.ParentNode
+import Web.HTML.HTMLDocument as Web.HTML.HTMLDocument
+import Web.HTML.HTMLLinkElement as Web.HTML.HTMLLinkElement
+import Web.HTML.Window as Web.HTML.Window
 
 usernameXpath = Lunapark.ByXPath """//div[@role="form"]//input[@aria-labelledby="username"]"""
 
@@ -71,7 +71,7 @@ spec = do
       , email: "useremail1@mail.com"
       }
 
-  goClientRoute Register
+  goClientRoute route__Register
 
   runLunapark $ inputField usernameXpath user.username
   waitForInputValueToEqual usernameXpath user.username
@@ -107,7 +107,7 @@ spec = do
 
   retryAction $
     ( getCurrentRoute
-      >>= \mRoute -> mRoute `shouldEqual` Just Secret
+      >>= \mRoute -> mRoute `shouldEqual` Just route__Secret
     )
 
   ( runLunapark $
