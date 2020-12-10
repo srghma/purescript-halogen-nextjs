@@ -7,35 +7,29 @@ import NextjsApp.Link.Types as NextjsApp.Link.Types
 import NextjsApp.Route as NextjsApp.Route
 import Type.Equality (class TypeEquals, from)
 
-type EnvLinkHandleActions
-  = { handleInitialize :: H.HalogenM NextjsApp.Link.Types.State NextjsApp.Link.Types.Action () Void AppM Unit
-    , handleLinkIsInViewport :: H.SubscriptionId -> H.HalogenM NextjsApp.Link.Types.State NextjsApp.Link.Types.Action () Void AppM Unit
+type Env routes
+  = { navigate :: Variant routes -> Effect Unit
     }
 
-type Env
-  = { navigate :: Variant NextjsApp.Route.WebRoutesWithParamRow -> Effect Unit
-    , linkHandleActions :: EnvLinkHandleActions -- TODO: this thing doesn't make sense for mobile, only for client
-    }
+newtype AppM routes a
+  = AppM (ReaderT (Env routes) Aff a)
 
-newtype AppM a
-  = AppM (ReaderT Env Aff a)
-
-runAppM :: Env -> AppM ~> Aff
+runAppM :: forall routes . Env routes -> AppM routes ~> Aff
 runAppM env (AppM m) = runReaderT m env
 
-derive newtype instance functorAppM :: Functor AppM
+derive newtype instance functorAppM :: Functor (AppM routes)
 
-derive newtype instance applyAppM :: Apply AppM
+derive newtype instance applyAppM :: Apply (AppM routes)
 
-derive newtype instance applicativeAppM :: Applicative AppM
+derive newtype instance applicativeAppM :: Applicative (AppM routes)
 
-derive newtype instance bindAppM :: Bind AppM
+derive newtype instance bindAppM :: Bind (AppM routes)
 
-derive newtype instance monadAppM :: Monad AppM
+derive newtype instance monadAppM :: Monad (AppM routes)
 
-derive newtype instance monadEffectAppM :: MonadEffect AppM
+derive newtype instance monadEffectAppM :: MonadEffect (AppM routes)
 
-derive newtype instance monadAffAppM :: MonadAff AppM
+derive newtype instance monadAffAppM :: MonadAff (AppM routes)
 
-instance monadAskAppM :: TypeEquals e Env => MonadAsk e AppM where
+instance monadAskAppM :: TypeEquals e (Env routes) => MonadAsk e (AppM routes) where
   ask = AppM $ asks from

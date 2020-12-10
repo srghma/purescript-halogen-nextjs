@@ -37,17 +37,17 @@ pageData_DynamicRequestOptions__To__RequestOptions =
            Just (Tuple sessionHeaderKey sessionHeaderValue) -> GraphQLClient.defaultRequestOptions { headers = [Affjax.RequestHeader sessionHeaderKey sessionHeaderValue] }
            Nothing -> GraphQLClient.defaultRequestOptions
 
-data PageData_DynamicResponse input
+data PageData_DynamicResponse routes input
   = PageData_DynamicResponse__Error String -- TODO: add purs-hyper response status?
   | PageData_DynamicResponse__Redirect
-    { redirectToLocation :: (Variant NextjsApp.Route.WebRoutesWithParamRow)
+    { redirectToLocation :: Variant routes
     , logout :: Boolean
     }
   | PageData_DynamicResponse__Success input
 
-data PageData input
+data PageData routes input
   = PageData__Dynamic
-    { request :: PageData_DynamicRequestOptions -> Aff (PageData_DynamicResponse input)
+    { request :: PageData_DynamicRequestOptions -> Aff (PageData_DynamicResponse routes input)
     , codec :: PageData_DynamicCodec input
     }
   | PageData__Static input
@@ -68,68 +68,72 @@ mkPageData_DynamicCodec ::
   PageData_DynamicCodec input
 mkPageData_DynamicCodec = { encoder: ArgonautCodecs.encodeJson, decoder: ArgonautCodecs.decodeJson }
 
-type PageSpecRows input
-  = ( pageData :: PageData input
-    , component :: Halogen.Component (Const Void) input Void AppM
+type PageSpecRows routes m input
+  = ( pageData :: PageData routes input
+    , component :: Halogen.Component (Const Void) input Void m
     , title :: String
     )
 
-type PageSpec input
-  = Record (PageSpecRows input)
+type PageSpec routes m input
+  = Record (PageSpecRows routes m input)
 
-newtype PageSpecBoxed
-  = PageSpecBoxed (forall input. PageSpec input)
+newtype PageSpecBoxed routes m
+  = PageSpecBoxed (forall input. PageSpec routes m input)
 
 mkPageSpecBoxed ::
-  forall input.
+  forall input routes m.
   ArgonautCodecs.EncodeJson input =>
   ArgonautCodecs.DecodeJson input =>
-  PageSpec input ->
-  PageSpecBoxed
+  PageSpec routes m input ->
+  PageSpecBoxed routes m
 mkPageSpecBoxed = unsafeCoerce
 
 unPageSpecBoxed ::
-  forall r.
-  (forall input. PageSpec input -> r) ->
-  PageSpecBoxed ->
+  forall r routes m.
+  (forall input. PageSpec routes m input -> r) ->
+  PageSpecBoxed routes m ->
   r
 unPageSpecBoxed f (PageSpecBoxed r) = f r
 
 ---------------
-type PageSpecWithInput input
+type PageSpecWithInput m input
   = { input :: input
-    , component :: Halogen.Component (Const Void) input Void AppM
+    , component :: Halogen.Component (Const Void) input Void m
     , title :: String
     }
 
-newtype PageSpecWithInputBoxed
-  = PageSpecWithInputBoxed (forall input. PageSpecWithInput input)
+newtype PageSpecWithInputBoxed m
+  = PageSpecWithInputBoxed (forall input. PageSpecWithInput m input)
 
 mkPageSpecWithInputBoxed ::
-  forall input.
-  PageSpecWithInput input ->
-  PageSpecWithInputBoxed
+  forall input m.
+  PageSpecWithInput m input ->
+  PageSpecWithInputBoxed m
 mkPageSpecWithInputBoxed = unsafeCoerce
 
 unPageSpecWithInputBoxed ::
-  forall r.
-  (forall input. PageSpecWithInput input -> r) ->
-  PageSpecWithInputBoxed ->
+  forall r m.
+  (forall input. PageSpecWithInput m input -> r) ->
+  PageSpecWithInputBoxed m ->
   r
 unPageSpecWithInputBoxed f (PageSpecWithInputBoxed r) = f r
 
-data PageSpecBoxed_To_PageSpecWithInputBoxed_Response
+data PageSpecBoxed_To_PageSpecWithInputBoxed_Response routes m
   = PageSpecBoxed_To_PageSpecWithInputBoxed_Response__Error String
-  | PageSpecBoxed_To_PageSpecWithInputBoxed_Response__Success PageSpecWithInputBoxed
+  | PageSpecBoxed_To_PageSpecWithInputBoxed_Response__Success (PageSpecWithInputBoxed m)
   | PageSpecBoxed_To_PageSpecWithInputBoxed_Response__Redirect
-    { redirectToLocation :: (Variant NextjsApp.Route.WebRoutesWithParamRow)
+    { redirectToLocation :: Variant routes
     -- on client - ignored
     -- on server - Set-Cookie sessionId "" is set
     -- on mobile - jwt is removed from secure storage
     , logout :: Boolean
     }
 
-pageSpecBoxed_to_PageSpecWithInputBoxed_request :: PageData_DynamicRequestOptions -> PageSpecBoxed -> Aff PageSpecBoxed_To_PageSpecWithInputBoxed_Response
+pageSpecBoxed_to_PageSpecWithInputBoxed_request
+  :: forall routes m
+   . PageData_DynamicRequestOptions
+  -> PageSpecBoxed routes m
+  -> Aff (PageSpecBoxed_To_PageSpecWithInputBoxed_Response routes m)
 pageSpecBoxed_to_PageSpecWithInputBoxed_request requestOptions =
   unPageSpecBoxed
     ( \page ->
@@ -156,7 +160,11 @@ pageSpecBoxed_to_PageSpecWithInputBoxed_request requestOptions =
                  }
     )
 
-pageSpecBoxed_to_PageSpecWithInputBoxed_givenInitialJson :: Aff ArgonautCore.Json -> PageSpecBoxed -> Aff (Either ArgonautCodecs.JsonDecodeError PageSpecWithInputBoxed)
+pageSpecBoxed_to_PageSpecWithInputBoxed_givenInitialJson
+  :: forall routes m
+   . Aff ArgonautCore.Json
+  -> PageSpecBoxed routes m
+  -> Aff (Either ArgonautCodecs.JsonDecodeError (PageSpecWithInputBoxed m))
 pageSpecBoxed_to_PageSpecWithInputBoxed_givenInitialJson loadJson =
   unPageSpecBoxed
     ( \page ->

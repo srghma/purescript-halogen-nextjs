@@ -7,10 +7,10 @@ import Control.Monad.Reader (asks)
 import NextjsApp.Route as NextjsApp.Route
 
 navigate ::
-  forall r m.
+  forall r m routes.
   MonadEffect m =>
-  MonadAsk { navigate :: Variant NextjsApp.Route.WebRoutesWithParamRow -> Effect Unit | r } m =>
-  Variant NextjsApp.Route.WebRoutesWithParamRow ->
+  MonadAsk { navigate :: Variant routes -> Effect Unit | r } m =>
+  Variant routes ->
   m Unit
 navigate route = do
   navigate' <- asks _.navigate
