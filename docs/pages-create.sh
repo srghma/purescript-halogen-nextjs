@@ -8,14 +8,14 @@ import Protolude (Unit, liftAff, unit, ($))
 import Halogen as H
 import Nextjs.PageImplementations.$1.$2 as Implementation
 
-pageSpec :: PageSpec Unit
+pageSpec :: PageSpec NextjsApp.Route.WebRoutesWithParamRow (AppM NextjsApp.Route.WebRoutesWithParamRow) Unit
 pageSpec =
   { pageData: PageData__Static unit
   , component: H.hoist liftAff $ Implementation.component
   , title: "Halogen MWC - $1 $2"
   }
 
-page :: PageSpecBoxed
+page :: PageSpecBoxed NextjsApp.Route.WebRoutesWithParamRow (AppM NextjsApp.Route.WebRoutesWithParamRow)
 page = mkPageSpecBoxed pageSpec
 EOM
 

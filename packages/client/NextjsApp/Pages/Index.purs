@@ -4,6 +4,8 @@ import Protolude
 import NextjsApp.PageImplementations.Index as NextjsApp.PageImplementations.Index
 import Nextjs.Page (PageSpecBoxed, PageData(..), PageSpec, mkPageSpecBoxed)
 import NextjsApp.Link.Client as NextjsApp.Link.Client
+import NextjsApp.AppM (AppM(..))
+import NextjsApp.Route as NextjsApp.Route
 
 allRoutesWeb :: Array (Variant WebRoutesWithParamRow)
 allRoutesWeb =
@@ -51,7 +53,7 @@ allRoutesMobile =
   , route__VerifyUserEmailMobile
   ]
 
-pageSpec :: PageSpec Unit
+pageSpec :: PageSpec NextjsApp.Route.WebRoutesWithParamRow (AppM NextjsApp.Route.WebRoutesWithParamRow) Unit
 pageSpec =
   { pageData: PageData__Static unit
   , component: NextjsApp.PageImplementations.Index.component
@@ -61,5 +63,5 @@ pageSpec =
   , title: "Index"
   }
 
-page :: PageSpecBoxed
+page :: PageSpecBoxed NextjsApp.Route.WebRoutesWithParamRow (AppM NextjsApp.Route.WebRoutesWithParamRow)
 page = mkPageSpecBoxed pageSpec

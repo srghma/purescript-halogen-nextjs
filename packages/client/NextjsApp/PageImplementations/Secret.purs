@@ -5,6 +5,7 @@ import Protolude
 import Halogen as H
 import Halogen.HTML as HH
 import NextjsApp.AppM (AppM)
+import NextjsApp.Route as NextjsApp.Route
 
 type Query
   = Const Void

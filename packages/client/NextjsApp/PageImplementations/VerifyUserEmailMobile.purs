@@ -50,7 +50,7 @@ import NextjsGraphqlApi.Scalars as NextjsGraphqlApi.Scalars
 
 component ::
   forall m r.
-  MonadAsk { navigate :: Variant NextjsApp.Route.WebRoutesWithParamRow -> Effect Unit | r } m =>
+  MonadAsk { navigate :: Variant NextjsApp.Route.MobileRoutesWithParamRow -> Effect Unit | r } m =>
   MonadEffect m =>
   MonadAff m =>
   H.Component Query Input Message m

@@ -11,6 +11,7 @@ import Foreign.Object (Object)
 import Foreign.Object as Object
 import Halogen.VDom.Util as Halogen.VDom.Util
 import Nextjs.Page as Nextjs.Page
+import NextjsApp.AppM (AppM(..))
 import NextjsApp.Manifest.ClientPagesManifest as NextjsApp.Manifest.ClientPagesManifest
 import NextjsApp.Manifest.PageManifest as NextjsApp.Manifest.PageManifest
 import NextjsApp.Route as NextjsApp.Route
@@ -28,9 +29,22 @@ import Web.HTML.HTMLScriptElement as Web.HTML.HTMLScriptElement
 
 -- https://github.com/vercel/next.js/blob/7dbdf1d89eef004170d8f2661b4b3c299962b1f8/packages/next/client/page-loader.js#L177
 -- XXX: we ASSUME isomorphic-client-pages-loader was implemented in type safe manner AND we verify it
-type PageCache = Array (PageWithRouteId String Nextjs.Page.PageSpecBoxed)
+type PageCache = Array
+  ( PageWithRouteId
+    String
+    ( Nextjs.Page.PageSpecBoxed
+      NextjsApp.Route.WebRoutesWithParamRow
+      (AppM NextjsApp.Route.WebRoutesWithParamRow)
+    )
+  )
 
-type PageRegisteredEventData = PageWithRouteId String Nextjs.Page.PageSpecBoxed
+type PageRegisteredEventData =
+  PageWithRouteId
+  String
+  ( Nextjs.Page.PageSpecBoxed
+    NextjsApp.Route.WebRoutesWithParamRow
+    (AppM NextjsApp.Route.WebRoutesWithParamRow)
+  )
 
 foreign import readPageCache :: Effect PageCache
 
@@ -160,7 +174,11 @@ loadPage ::
   , pageRegisteredEvent :: Event.Event PageRegisteredEventData
   }
   -> Variant NextjsApp.Route.WebRoutesWithParamRow
-  -> Aff Nextjs.Page.PageSpecBoxed
+  -> Aff
+      ( Nextjs.Page.PageSpecBoxed
+        NextjsApp.Route.WebRoutesWithParamRow
+        (AppM NextjsApp.Route.WebRoutesWithParamRow)
+      )
 loadPage { clientPagesManifest, document, body, head, pageRegisteredEvent } route = do
   pageCache <- liftEffect readPageCache
 

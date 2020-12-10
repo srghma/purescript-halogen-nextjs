@@ -12,6 +12,7 @@ import GraphQLClient (GraphQLError, Scope__RootMutation, Scope__RootQuery, Selec
 import GraphQLClient as GraphQLClient
 import NextjsApp.NodeEnv as NextjsApp.NodeEnv
 import NextjsApp.Route as NextjsApp.Route
+import NextjsApp.AppM (AppM(..))
 
 pageSpec :: PageSpec SecretPageUserData
 pageSpec =
@@ -45,5 +46,5 @@ pageSpec =
   , title: "Secret"
   }
 
-page :: PageSpecBoxed
+page :: PageSpecBoxed NextjsApp.Route.WebRoutesWithParamRow (AppM NextjsApp.Route.WebRoutesWithParamRow)
 page = mkPageSpecBoxed pageSpec

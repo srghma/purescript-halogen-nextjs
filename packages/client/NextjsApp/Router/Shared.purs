@@ -14,7 +14,7 @@ import Web.HTML as Web.HTML
 
 type CurrentPageInfo
   = { pageSpecWithInputBoxed :: Nextjs.Page.PageSpecWithInputBoxed
-    , route :: (Variant NextjsApp.Route.WebRoutesWithParamRow)
+    , route :: Variant NextjsApp.Route.WebRoutesWithParamRow
     }
 
 type HtmlContextInfo
@@ -26,7 +26,7 @@ type HtmlContextInfo
 
 ----------------------
 type ServerState
-  = { currentPageInfo :: Maybe CurrentPageInfo
+  = { currentPageInfo :: Maybe CurrentPageInfo -- todo: render not found page on nothing, remove maybe
     }
 
 type ClientState
@@ -45,7 +45,8 @@ data Query a
   = Navigate (Variant NextjsApp.Route.WebRoutesWithParamRow) a
 
 type ChildSlots
-  = ( page :: H.Slot (Const Void) Void (Variant NextjsApp.Route.WebRoutesWithParamRow) -- the index here ((Variant NextjsApp.Route.WebRoutesWithParamRow)) is very important, the page won't just update if we replace it with Unit
+    -- the index here ((Variant NextjsApp.Route.WebRoutesWithParamRow)) is very important, the page won't just update if we replace it with Unit
+  = ( page :: H.Slot (Const Void) Void (Variant NextjsApp.Route.WebRoutesWithParamRow)
     )
 
 renderPage :: forall action. CurrentPageInfo -> H.ComponentHTML action ChildSlots AppM
