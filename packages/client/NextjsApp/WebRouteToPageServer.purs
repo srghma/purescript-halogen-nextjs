@@ -21,7 +21,7 @@ import NextjsApp.Pages.Index as NextjsApp.Pages.Index
 import NextjsApp.Pages.Login as NextjsApp.Pages.Login
 import NextjsApp.Pages.Register as NextjsApp.Pages.Register
 import NextjsApp.Pages.Secret as NextjsApp.Pages.Secret
-import NextjsApp.Pages.VerifyUserEmail as NextjsApp.Pages.VerifyUserEmail
+import NextjsApp.Pages.VerifyUserEmailWeb as NextjsApp.Pages.VerifyUserEmailWeb
 import NextjsApp.Route as NextjsApp.Route
 
 -- XXX: you should NOT IMPORT this module from client
@@ -32,7 +32,7 @@ import NextjsApp.Route as NextjsApp.Route
 -- |   , route__Login:                           NextjsApp.Pages.Login.page
 -- |   , route__Register:                        NextjsApp.Pages.Register.page
 -- |   , route__Secret:                          NextjsApp.Pages.Secret.page
--- |   , route__VerifyUserEmailWeb:              NextjsApp.Pages.VerifyUserEmail.page
+-- |   , route__VerifyUserEmailWeb:              NextjsApp.Pages.VerifyUserEmailWeb.page
 -- |   , route__Examples__Ace:                   NextjsApp.Pages.Examples.Ace.page
 -- |   , route__Examples__Basic:                 NextjsApp.Pages.Examples.Basic.page
 -- |   , route__Examples__Components:            NextjsApp.Pages.Examples.Components.page
@@ -55,7 +55,7 @@ webRouteToPageSpecBoxed = match
   , route__Login:                           const NextjsApp.Pages.Login.page
   , route__Register:                        const NextjsApp.Pages.Register.page
   , route__Secret:                          const NextjsApp.Pages.Secret.page
-  , route__VerifyUserEmailWeb:              const NextjsApp.Pages.VerifyUserEmail.page
+  , route__VerifyUserEmailWeb:              const NextjsApp.Pages.VerifyUserEmailWeb.page
   , route__Examples__Ace:                   const NextjsApp.Pages.Examples.Ace.page
   , route__Examples__Basic:                 const NextjsApp.Pages.Examples.Basic.page
   , route__Examples__Components:            const NextjsApp.Pages.Examples.Components.page

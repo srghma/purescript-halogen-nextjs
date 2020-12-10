@@ -1,4 +1,4 @@
-module NextjsApp.PageImplementations.VerifyUserEmail.Types where
+module NextjsApp.PageImplementations.VerifyUserEmailMobile.Types where
 
 import Protolude
 

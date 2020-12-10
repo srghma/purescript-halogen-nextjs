@@ -1,9 +1,9 @@
-module NextjsApp.PageImplementations.VerifyUserEmail (component) where
+module NextjsApp.PageImplementations.VerifyUserEmailWeb (component) where
 
 import NextjsGraphqlApi.Scalars
 import Material.Classes.LayoutGrid
-import NextjsApp.PageImplementations.VerifyUserEmail.Render
-import NextjsApp.PageImplementations.VerifyUserEmail.Types
+import NextjsApp.PageImplementations.VerifyUserEmailWeb.Render
+import NextjsApp.PageImplementations.VerifyUserEmailWeb.Types
 import Protolude
 
 import Affjax as Affjax
