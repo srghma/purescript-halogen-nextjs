@@ -1,7 +1,21 @@
 let upstream =
-      https://github.com/purescript/package-sets/releases/download/psc-0.13.8-20210118/packages.dhall sha256:a59c5c93a68d5d066f3815a89f398bcf00e130a51cb185b2da29b20e2d8ae115
+      /home/srghma/projects/package-sets/src/packages.dhall
 
-in  (   upstream
-    //  /home/srghma/projects/my-purescript-package-sets/packages.dhall
-          upstream.(/home/srghma/projects/my-purescript-package-sets/upstreamTypeChunk.dhall)
-  ) with affjax.version = "v11.0.0"
+let myupstream =
+          upstream
+      //  /home/srghma/projects/my-purescript-package-sets/packages.dhall
+            upstream.(/home/srghma/projects/my-purescript-package-sets/upstreamTypeChunk.dhall)
+
+in  myupstream
+  with event.version = "master"
+  with event.repo = "https://github.com/thomashoneyman/purescript-event"
+  with filterable.version = "master"
+  with filterable.repo
+       = "https://github.com/thomashoneyman/purescript-filterable"
+  with freeap.version = "master"
+  with freeap.repo = "https://github.com/thomashoneyman/purescript-freeap"
+  with quickcheck-laws.version = "master"
+  with quickcheck-laws.repo
+       = "https://github.com/thomashoneyman/purescript-quickcheck-laws"
+  with halogen-vdom.version = "master"
+  with halogen-vdom.repo = "https://github.com/srghma/purescript-halogen-vdom"

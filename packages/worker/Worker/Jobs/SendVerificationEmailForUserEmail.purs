@@ -10,7 +10,7 @@ import Worker.EmailUI
 import Data.Argonaut (Json, JsonDecodeError)
 import Data.Argonaut as Argonaut
 import Data.Argonaut.Decode (class DecodeJson)
-import Data.Argonaut.Decode.Generic.Rep (genericDecodeJson)
+import Data.Argonaut.Decode.Generic (genericDecodeJson)
 import Data.Array as Array
 import Data.Array.NonEmpty as NonEmptyArray
 import Data.Codec.Argonaut as CA

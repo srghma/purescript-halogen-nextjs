@@ -11,7 +11,6 @@
 , "effect"
 , "event"
 , "filterable"
-, "generics-rep"
 , "halogen"
 , "halogen-css"
 , "halogen-select"

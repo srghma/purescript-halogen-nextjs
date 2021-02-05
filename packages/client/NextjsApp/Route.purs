@@ -4,11 +4,11 @@ import Data.Symbol (reflectSymbol)
 import Effect.Exception.Unsafe (unsafeThrow)
 import Protolude
 import Data.Argonaut.Decode (class DecodeJson)
-import Data.Argonaut.Decode.Generic.Rep (genericDecodeJson)
+import Data.Argonaut.Decode.Generic (genericDecodeJson)
 import Data.Argonaut.Encode (class EncodeJson)
-import Data.Argonaut.Encode.Generic.Rep (genericEncodeJson)
+import Data.Argonaut.Encode.Generic (genericEncodeJson)
 import Data.Array.NonEmpty (NonEmptyArray)
-import Data.Generic.Rep.Show (genericShow)
+import Data.Show.Generic (genericShow)
 import Data.Lens (view) as Lens
 import Data.Lens.Iso (Iso', iso) as Lens
 import Data.String as String
