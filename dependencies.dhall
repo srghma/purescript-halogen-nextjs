@@ -47,6 +47,7 @@
 , "record-extra-srghma"
 , "node-url"
 , "foreign-generic"
+, "unicode"
 , "stringutils"
 , "foreign-js-map"
 , "node-child-process"
