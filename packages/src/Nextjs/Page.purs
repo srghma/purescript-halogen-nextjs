@@ -7,7 +7,7 @@ import Affjax.RequestHeader as Affjax
 import Data.Argonaut.Core as ArgonautCore
 import Data.Argonaut.Decode (class DecodeJson, JsonDecodeError, decodeJson) as ArgonautCodecs
 import Data.Argonaut.Encode (class EncodeJson, encodeJson) as ArgonautCodecs
-import GraphQLClient as GraphQLClient
+import Dillonkearns.GraphQLClient as GraphQLClient
 import Halogen as Halogen
 import NextjsApp.AppM (AppM)
 import Unsafe.Coerce (unsafeCoerce)

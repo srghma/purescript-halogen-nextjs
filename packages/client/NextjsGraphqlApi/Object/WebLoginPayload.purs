@@ -1,6 +1,6 @@
 module NextjsGraphqlApi.Object.WebLoginPayload where
 
-import GraphQLClient
+import Dillonkearns.GraphQLClient
   ( SelectionSet
   , selectionForCompositeField
   , graphqlDefaultResponseFunctorOrScalarDecoderTransformer

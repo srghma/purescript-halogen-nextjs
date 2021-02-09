@@ -51,7 +51,7 @@
 , "stringutils"
 , "foreign-js-map"
 , "node-child-process"
-, "graphql-client"
+, "dillonkearns-graphql-client"
 , "browser-cookies"
 , "express"
 , "express-passport"

@@ -1,5 +1,5 @@
 ```
-link-purescript-project $HOME/projects/purescript-halogen-nextjs hyper $HOME/projects/hyper
+link-purescript-project $HOME/projects/purescript-halogen-nextjs hyper TO="$HOME/projects/hyper"
 link-purescript-project $HOME/projects/purescript-halogen-nextjs halogen-material-components-web
 
 nix-shell-with-gc

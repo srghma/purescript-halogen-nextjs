@@ -2,7 +2,7 @@ module NextjsGraphqlApi.Scalars where
 
 import Data.Newtype (class Newtype)
 import Prelude (class Eq, class Ord, class Show)
-import GraphQLClient
+import Dillonkearns.GraphQLClient
   (class GraphQLDefaultResponseScalarDecoder, class ToGraphQLArgumentValue)
 
 -- | original name - Cursor

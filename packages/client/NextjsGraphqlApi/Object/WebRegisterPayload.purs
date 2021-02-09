@@ -1,6 +1,6 @@
 module NextjsGraphqlApi.Object.WebRegisterPayload where
 
-import GraphQLClient
+import Dillonkearns.GraphQLClient
   ( SelectionSet
   , selectionForCompositeField
   , graphqlDefaultResponseFunctorOrScalarDecoderTransformer

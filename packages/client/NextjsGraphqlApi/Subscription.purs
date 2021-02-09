@@ -1,7 +1,7 @@
 module NextjsGraphqlApi.Subscription where
 
 import Type.Row (type (+))
-import GraphQLClient
+import Dillonkearns.GraphQLClient
   ( SelectionSet
   , Scope__RootSubscription
   , selectionForCompositeField

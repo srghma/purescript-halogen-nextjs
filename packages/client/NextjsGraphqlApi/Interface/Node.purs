@@ -1,6 +1,6 @@
 module NextjsGraphqlApi.Interface.Node where
 
-import GraphQLClient
+import Dillonkearns.GraphQLClient
   ( SelectionSet
   , selectionForField
   , graphqlDefaultResponseScalarDecoder

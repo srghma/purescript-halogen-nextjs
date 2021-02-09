@@ -1,6 +1,6 @@
 module NextjsGraphqlApi.Object.ResetPasswordPayload where
 
-import GraphQLClient
+import Dillonkearns.GraphQLClient
   ( SelectionSet
   , selectionForField
   , graphqlDefaultResponseScalarDecoder

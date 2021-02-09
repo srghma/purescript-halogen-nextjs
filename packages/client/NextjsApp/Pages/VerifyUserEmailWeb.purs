@@ -5,8 +5,8 @@ import NextjsApp.PageImplementations.VerifyUserEmailWeb.Types
 import NextjsApp.Queries.Utils
 import Protolude
 
-import GraphQLClient (GraphQLError, Scope__RootMutation, Scope__RootQuery, SelectionSet(..))
-import GraphQLClient as GraphQLClient
+import Dillonkearns.GraphQLClient (GraphQLError, Scope__RootMutation, Scope__RootQuery, SelectionSet(..))
+import Dillonkearns.GraphQLClient as GraphQLClient
 import NextjsApp.AppM (AppM(..))
 import NextjsApp.NodeEnv as NextjsApp.NodeEnv
 import NextjsApp.PageImplementations.VerifyUserEmailWeb as NextjsApp.PageImplementations.VerifyUserEmailWeb

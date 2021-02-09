@@ -1,6 +1,6 @@
 module NextjsGraphqlApi.Object.PageInfo where
 
-import GraphQLClient
+import Dillonkearns.GraphQLClient
   (SelectionSet, selectionForField, graphqlDefaultResponseScalarDecoder)
 import NextjsGraphqlApi.Scopes (Scope__PageInfo)
 import Data.Maybe (Maybe)

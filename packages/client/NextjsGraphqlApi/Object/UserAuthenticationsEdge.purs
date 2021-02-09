@@ -1,6 +1,6 @@
 module NextjsGraphqlApi.Object.UserAuthenticationsEdge where
 
-import GraphQLClient
+import Dillonkearns.GraphQLClient
   ( SelectionSet
   , selectionForField
   , graphqlDefaultResponseScalarDecoder

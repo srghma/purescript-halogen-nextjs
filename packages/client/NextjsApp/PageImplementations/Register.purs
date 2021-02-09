@@ -25,8 +25,8 @@ import Data.String.NonEmpty (NonEmptyString)
 import Data.String.NonEmpty as NonEmptyString
 import Data.Variant (Variant, inj)
 import Formless as F
-import GraphQLClient (GraphQLError, Optional(..), Scope__RootMutation, SelectionSet(..))
-import GraphQLClient as GraphQLClient
+import Dillonkearns.GraphQLClient (GraphQLError, Optional(..), Scope__RootMutation, SelectionSet(..))
+import Dillonkearns.GraphQLClient as GraphQLClient
 import Halogen as H
 import Halogen.Component as Halogen.Component
 import Halogen.HTML as HH
