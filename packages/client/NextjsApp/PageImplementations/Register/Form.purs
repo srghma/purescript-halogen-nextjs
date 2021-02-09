@@ -6,7 +6,7 @@ module NextjsApp.PageImplementations.Register.Form
 
 import Protolude
 
-import Formless as F
+import Halogen.Hooks.Formless as F
 import Halogen.Component as Halogen.Component
 import NextjsApp.Data.MatchingPassword as NextjsApp.Data.MatchingPassword
 import NextjsApp.Data.NonUsedEmail as NextjsApp.Data.NonUsedEmail

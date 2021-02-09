@@ -8,7 +8,7 @@ import NextjsApp.Data.Password as NextjsApp.Data.Password
 import NextjsApp.Data.InUseUsernameOrEmail as NextjsApp.Data.InUseUsernameOrEmail
 import Protolude
 
-import Formless as F
+import Halogen.Hooks.Formless as F
 import Halogen.Component as Halogen.Component
 import NextjsApp.Navigate as NextjsApp.Navigate
 import NextjsApp.Route as NextjsApp.Route

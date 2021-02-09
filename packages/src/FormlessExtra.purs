@@ -1,7 +1,7 @@
-module FormlessExtra where
+module Halogen.Hooks.FormlessExtra where
 
 import Protolude
-import Formless as F
+import Halogen.Hooks.Formless as F
 
 isErrorFormFieldResult :: forall error output. F.FormFieldResult output error -> Boolean
 isErrorFormFieldResult =

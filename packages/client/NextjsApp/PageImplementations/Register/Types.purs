@@ -2,7 +2,7 @@ module NextjsApp.PageImplementations.Register.Types where
 
 import Protolude
 
-import Formless as F
+import Halogen.Hooks.Formless as F
 import Halogen as H
 import NextjsApp.PageImplementations.Register.Form (FormChildSlots, RegisterDataValidated, RegisterForm)
 

@@ -4,7 +4,7 @@ import Protolude
 
 import Data.Time.Duration (Milliseconds(..))
 import Data.Variant (inj)
-import Formless as F
+import Halogen.Hooks.Formless as F
 import Halogen.HTML as HH
 import Halogen.HTML.Properties as HP
 import Halogen.HTML.Properties.ARIA as Halogen.HTML.Properties.ARIA
@@ -20,7 +20,7 @@ import NextjsApp.Data.MatchingPassword (MatchingPasswordError(..))
 import NextjsApp.Data.MatchingPassword as MatchingPassword
 import NextjsApp.PageImplementations.Register.Css as NextjsApp.PageImplementations.Register.Css
 import NextjsApp.PageImplementations.Register.Form.Types (FormChildSlots, RegisterForm, UserAction(..), prx)
-import FormlessExtra
+import Halogen.Hooks.FormlessExtra
 import NextjsApp.Route as NextjsApp.Route
 
 renderUsernameHelper =

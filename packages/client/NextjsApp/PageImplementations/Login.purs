@@ -26,7 +26,7 @@ import Data.Maybe as Maybe
 import Data.String.NonEmpty (NonEmptyString)
 import Data.String.NonEmpty as NonEmptyString
 import Data.Variant (Variant, inj)
-import Formless as F
+import Halogen.Hooks.Formless as F
 import Dillonkearns.GraphQLClient (GraphQLError, Scope__RootMutation, SelectionSet(..))
 import Dillonkearns.GraphQLClient as GraphQLClient
 import Halogen as H

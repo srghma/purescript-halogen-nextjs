@@ -2,7 +2,7 @@ module NextjsApp.PageImplementations.Login.Types where
 
 import Protolude
 
-import Formless as F
+import Halogen.Hooks.Formless as F
 import Halogen as H
 import NextjsApp.PageImplementations.Login.Form (FormChildSlots, LoginDataValidated, LoginForm)
 

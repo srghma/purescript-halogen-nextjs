@@ -5,7 +5,7 @@ import NextjsApp.PageImplementations.Register.Types (Action(..), ChildSlots, Reg
 import Protolude
 import NextjsApp.PageImplementations.Register.Css as NextjsApp.PageImplementations.Register.Css
 
-import Formless as F
+import Halogen.Hooks.Formless as F
 import Halogen.HTML as HH
 import Halogen.HTML.Properties as HP
 import NextjsApp.Blocks.PurescriptLogo (purescriptLogoSrc)

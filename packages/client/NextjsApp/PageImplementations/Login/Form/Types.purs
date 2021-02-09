@@ -2,7 +2,7 @@ module NextjsApp.PageImplementations.Login.Form.Types where
 
 import Protolude
 
-import Formless as F
+import Halogen.Hooks.Formless as F
 import Halogen as H
 import HalogenMWC.Button as Button
 import HalogenMWC.TextField.Outlined as TextField.Outlined
