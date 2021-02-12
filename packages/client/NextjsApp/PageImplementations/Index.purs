@@ -1,12 +1,14 @@
 module NextjsApp.PageImplementations.Index (component) where
 
+import Data.Variant
+import NextjsApp.Route
 import Protolude
+
 import Halogen (Slot)
 import Halogen as H
 import Halogen.HTML as HH
 import NextjsApp.AppM (AppM)
-import NextjsApp.Route
-import Data.Variant
+import Type.Proxy (Proxy(..))
 
 type Query
   = Const Void
@@ -24,9 +26,9 @@ data Action
   = Void
 
 component ::
-  forall routes .
+  forall routes (output :: Type) .
   { allRoutes :: Array { route :: Variant routes, routeName :: String }
-  , linkComponent :: H.Component (Const Void) { route :: Variant routes, text :: String } Void AppM
+  , linkComponent :: H.Component (Const Void) { route :: Variant routes, text :: String } output AppM
   } ->
   H.Component Query Input Message AppM
 component { allRoutes, linkComponent } =

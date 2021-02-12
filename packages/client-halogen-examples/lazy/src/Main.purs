@@ -6,6 +6,7 @@ import Effect.Class.Console (log)
 import Example.Lazy.LazyLoadedImport as Example.Lazy.LazyLoadedImport
 import Halogen as H
 import Halogen.HTML as HH
+import Type.Proxy
 
 type ChildSlots =
   ( lazyChild :: H.Slot (Const Void) Void Unit

@@ -33,7 +33,13 @@ component =
     , eval: H.mkEval $ H.defaultEval
     }
 
-render :: State -> HH.ComponentHTML Action ChildSlots AppM
+render
+  :: forall (slots :: Row Type) routes
+   . State
+  -> HH.ComponentHTML
+     Action
+     (slots :: Row Type)
+     (AppM routes)
 render (SecretPageUserData input) =
   HH.div_
   [ HH.text "You are on secret page"

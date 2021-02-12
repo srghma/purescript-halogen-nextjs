@@ -10,7 +10,6 @@ import Effect.Aff
 import Effect.Class
 import Effect.Console
 import Effect.Exception
-import NextjsApp.Route as NextjsApp.Route
 import Protolude
 import Test.Spec
 import Unsafe.Coerce
@@ -22,6 +21,7 @@ import Data.Variant (Variant)
 import Effect.Ref as Ref
 import FeatureTests.FeatureTestSpecUtils.Lunapark (runLunapark)
 import Lunapark as Lunapark
+import NextjsApp.Route as NextjsApp.Route
 import NextjsApp.WebRouteDuplexCodec as NextjsApp.WebRouteDuplexCodec
 import Node.Encoding as Node.Encoding
 import Node.Process as Node.Process
@@ -37,7 +37,10 @@ goClientRoute
   => MonadThrow Error m
   => Variant NextjsApp.Route.WebRoutesWithParamRow
   -> m Unit
-goClientRoute route = ask >>= \config -> runLunapark $ Lunapark.go $ config.clientRootUrl <> Routing.Duplex.print NextjsApp.WebRouteDuplexCodec.routeCodec route
+goClientRoute route = ask >>= \config -> do
+  url <- Routing.Duplex.print NextjsApp.WebRouteDuplexCodec.routeCodec route
+    # either (\e -> throwError $ error $ "[goClientRoute]: " <> show e) pure
+  runLunapark $ Lunapark.go $ config.clientRootUrl <> url
 
 parseRouteImplementation :: String -> String -> Maybe (Variant NextjsApp.Route.WebRoutesWithParamRow)
 parseRouteImplementation clientRootUrl currentUrl =

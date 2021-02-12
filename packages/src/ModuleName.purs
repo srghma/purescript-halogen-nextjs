@@ -8,6 +8,7 @@ import Data.String as String
 import Data.String.NonEmpty (NonEmptyString)
 import Data.String.NonEmpty as NonEmptyString
 import Unsafe.Coerce (unsafeCoerce)
+import Type.Proxy (Proxy(..))
 
 newtype ModuleName
   = ModuleName (NonEmptyArray NonEmptyString) -- e.g. [ 'Data', 'String' ]

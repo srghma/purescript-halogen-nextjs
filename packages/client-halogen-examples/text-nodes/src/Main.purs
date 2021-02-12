@@ -6,6 +6,7 @@ import Halogen as H
 import Halogen.HTML as HH
 import Example.TextNodes.Elem as Example.TextNodes.Elem
 import Example.TextNodes.Keyed as Example.TextNodes.Keyed
+import Type.Proxy
 
 type ChildSlots =
   ( elem :: H.Slot (Const Void) Void Unit
