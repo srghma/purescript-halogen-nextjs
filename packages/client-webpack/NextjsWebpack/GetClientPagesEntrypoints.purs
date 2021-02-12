@@ -75,7 +75,7 @@ getClientPagesEntrypoints { pagesModuleNamePrefix, appDir, spagoAbsoluteOutputDi
             let
               moduleName = routeToModuleName pagesModuleNamePrefix route
             let
-              (absoluteCompiledPagePursPath :: Path Abs File) = spagoAbsoluteOutputDir </> dir' (moduleNameToName moduleName) </> file (SProxy :: SProxy "index.js") -- e.g. ".../output/Foo/index.js"
+              (absoluteCompiledPagePursPath :: Path Abs File) = spagoAbsoluteOutputDir </> dir' (moduleNameToName moduleName) </> file (Proxy :: Proxy "index.js") -- e.g. ".../output/Foo/index.js"
             -- | unlessM (Protolude.Node.filePathExistsAndIs Node.FS.Stats.isFile (printPathPosixSandboxAny absoluteCompiledPagePursPath)) $ do
             -- |   throwError $ error $ "spago output file doesn't exist: " <> printPathPosixSandboxAny absoluteCompiledPagePursPath
             let
@@ -85,7 +85,7 @@ getClientPagesEntrypoints { pagesModuleNamePrefix, appDir, spagoAbsoluteOutputDi
 
                   (disToFile :: Array (Path Rel Dir)) = map (nonEmptyStringToName >>> dir') init
                 in
-                  (foldAppendDirs appDir disToFile) </> (file' $ joinName { name: last, ext: Just (NonEmptyString.nes (SProxy :: SProxy "deps.js")) })
+                  (foldAppendDirs appDir disToFile) </> (file' $ joinName { name: last, ext: Just (NonEmptyString.nes (Proxy :: Proxy "deps.js")) })
             (absoluteJsDepsPathExists :: Boolean) <- Protolude.Node.filePathExistsAndIs Node.FS.Stats.isFile (printPathPosixSandboxAny absoluteJsDepsPath)
             pure
               { absoluteCompiledPagePursPath

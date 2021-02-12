@@ -40,7 +40,7 @@ component { allRoutes, linkComponent } =
               <#> \route ->
                   HH.li_
                     $ [ HH.slot
-                          (SProxy :: SProxy "mylink")
+                          (Proxy :: Proxy "mylink")
                           route.routeName
                           linkComponent
                           { route: route.route, text: route.routeName }

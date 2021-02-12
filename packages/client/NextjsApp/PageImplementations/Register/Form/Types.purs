@@ -42,9 +42,9 @@ type FormChildSlots =
   )
 
 prx ::
-  { username             :: SProxy "username"
-  , email                :: SProxy "email"
-  , password             :: SProxy "password"
-  , passwordConfirmation :: SProxy "passwordConfirmation"
+  { username             :: Proxy "username"
+  , email                :: Proxy "email"
+  , password             :: Proxy "password"
+  , passwordConfirmation :: Proxy "passwordConfirmation"
   }
 prx = F.mkSProxies (F.FormProxy :: F.FormProxy RegisterForm)

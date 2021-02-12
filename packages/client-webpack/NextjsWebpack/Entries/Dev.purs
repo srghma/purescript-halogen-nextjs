@@ -29,12 +29,12 @@ runWebpack { onSuccess } =
     let
       production = false
 
-      spagoOutput = root </> dir (SProxy :: SProxy "output")
+      spagoOutput = root </> dir (Proxy :: Proxy "output")
 
       pagesModuleNamePrefix :: NonEmptyArray NonEmptyString
       pagesModuleNamePrefix = unsafeCoerce [ "NextjsApp", "Pages" ]
 
-      appDir = root </> dir (SProxy :: SProxy "packages") </> dir (SProxy :: SProxy "client")
+      appDir = root </> dir (Proxy :: Proxy "packages") </> dir (Proxy :: Proxy "client")
     entrypointsObject <- NextjsWebpack.GetClientPagesEntrypoints.getClientPagesEntrypoints { pagesModuleNamePrefix, appDir, spagoAbsoluteOutputDir: spagoOutput }
     let
       clientConfig =

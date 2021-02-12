@@ -7,7 +7,7 @@ import Halogen.HTML as HH
 import Example.DeeplyNested.D as D
 import Example.DeeplyNested.E as E
 import Data.Const (Const)
-import Data.Symbol (SProxy(..))
+import Type.Proxy (Proxy(..))
 
 type State = Unit
 
@@ -18,11 +18,11 @@ type ChildSlots =
   , e :: H.Slot (Const Void) Void Unit
   )
 
-_d :: SProxy "d"
-_d = SProxy
+_d :: Proxy "d"
+_d = Proxy
 
-_e :: SProxy "e"
-_e = SProxy
+_e :: Proxy "e"
+_e = Proxy
 
 component :: forall q i o m. H.Component q i o m
 component =

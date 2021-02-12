@@ -19,7 +19,7 @@ derive newtype instance eqModuleName :: Eq ModuleName
 derive newtype instance ordModuleName :: Ord ModuleName
 
 printModuleName :: ModuleName -> NonEmptyString
-printModuleName (ModuleName m) = NonEmptyString.joinWith1 (NonEmptyString.nes (SProxy :: SProxy ".")) (map NonEmptyString.toString m)
+printModuleName (ModuleName m) = NonEmptyString.joinWith1 (NonEmptyString.nes (Proxy :: Proxy ".")) (map NonEmptyString.toString m)
 
 -- XXX: should be non empty
 unsafeModuleName :: Array String -> ModuleName

@@ -20,6 +20,7 @@ import Record.ExtraSrghma as Record.ExtraSrghma
 import Type.Prelude (RProxy(..))
 import Unsafe.Coerce (unsafeCoerce)
 import Data.Variant
+import Type.Proxy (Proxy(..))
 
 type WebRoutesVacantRow a =
   ( route__Index                           :: a

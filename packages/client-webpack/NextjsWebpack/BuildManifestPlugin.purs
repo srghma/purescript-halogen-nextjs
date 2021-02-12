@@ -64,7 +64,7 @@ buildManifestPlugin pluginOptions =
     (entrypointValues' :: { | EntrypointsRow WebpackEntrypont }) <- decodePages entrypointValues
     (entrypointValues'' :: { | EntrypointsRow NextjsApp.Manifest.PageManifest.PageManifest }) <- Record.Extra.sequenceRecord (Record.Extra.mapRecord (toCssAndJs publicPath') entrypointValues')
     let
-      main /\ pages = Record.ExtraSrghma.pop (SProxy :: SProxy "main") entrypointValues''
+      main /\ pages = Record.ExtraSrghma.pop (Proxy :: Proxy "main") entrypointValues''
     let
       (manifest :: BuildManifest) =
         { pages

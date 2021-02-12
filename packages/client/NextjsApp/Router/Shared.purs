@@ -52,7 +52,7 @@ type ChildSlots
 renderPage :: forall action. CurrentPageInfo -> H.ComponentHTML action ChildSlots AppM
 renderPage { route, pageSpecWithInputBoxed } =
   Nextjs.Page.unPageSpecWithInputBoxed
-    (\pageSpecWithInput -> HH.slot (SProxy :: SProxy "page") route pageSpecWithInput.component pageSpecWithInput.input absurd)
+    (\pageSpecWithInput -> HH.slot (Proxy :: Proxy "page") route pageSpecWithInput.component pageSpecWithInput.input absurd)
     pageSpecWithInputBoxed
 
 maybeRenderPage :: forall action r. { currentPageInfo :: Maybe CurrentPageInfo | r } -> H.ComponentHTML action ChildSlots AppM

@@ -50,6 +50,6 @@ component =
 render :: forall m query. Unit -> H.ComponentHTML query ChildSlots m
 render _ =
   HH.div_
-    [ HH.slot (SProxy :: _ "elem") unit Example.TextNodes.Elem.component unit absurd
-    , HH.slot (SProxy :: _ "keyed") unit Example.TextNodes.Keyed.component unit absurd
+    [ HH.slot (Proxy :: _ "elem") unit Example.TextNodes.Elem.component unit absurd
+    , HH.slot (Proxy :: _ "keyed") unit Example.TextNodes.Keyed.component unit absurd
     ]

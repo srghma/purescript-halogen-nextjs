@@ -27,13 +27,13 @@ main =
     let
       production = true
 
-      spagoOutput = root </> dir (SProxy :: SProxy "output")
+      spagoOutput = root </> dir (Proxy :: Proxy "output")
 
       pagesModuleNamePrefix :: NonEmptyArray NonEmptyString
       pagesModuleNamePrefix = unsafeCoerce [ "NextjsApp", "Pages" ]
 
-      appDir = root </> dir (SProxy :: SProxy "packages") </> dir (SProxy :: SProxy "client")
-    (faviconFileBuffer :: Buffer) <- Node.FS.Aff.readFile (printPathPosixSandboxAny (root </> file (SProxy :: SProxy "purescript-favicon-black.svg")))
+      appDir = root </> dir (Proxy :: Proxy "packages") </> dir (Proxy :: Proxy "client")
+    (faviconFileBuffer :: Buffer) <- Node.FS.Aff.readFile (printPathPosixSandboxAny (root </> file (Proxy :: Proxy "purescript-favicon-black.svg")))
     (favIconResponse :: Favicons.FavIconResponse) <- Favicons.favicons faviconFileBuffer (NextjsWebpack.FaviconsConfig.faviconsConfig production)
     entrypointsObject <- NextjsWebpack.GetClientPagesEntrypoints.getClientPagesEntrypoints { pagesModuleNamePrefix, appDir, spagoAbsoluteOutputDir: spagoOutput }
     let

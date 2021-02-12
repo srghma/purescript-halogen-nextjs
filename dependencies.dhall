@@ -65,4 +65,5 @@
 , "nodemailer"
 , "websocket-simple"
 , "jsdom"
+, "routing-duplex-variant"
 ]

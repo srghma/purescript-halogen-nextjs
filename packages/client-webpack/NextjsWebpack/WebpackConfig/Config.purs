@@ -58,13 +58,13 @@ config { target, watch, production, root, appDir, bundleAnalyze, spagoOutput } =
   , output:
     { path:
       let
-        outputDir = if production then dir (SProxy :: SProxy ".dist") else dir (SProxy :: SProxy ".dist-dev")
+        outputDir = if production then dir (Proxy :: Proxy ".dist") else dir (Proxy :: Proxy ".dist-dev")
       in
         printPathPosixSandboxAny
           $ case target of
-              Target__Browser _ -> root </> outputDir </> dir (SProxy :: SProxy "client")
-              Target__Server -> root </> outputDir </> dir (SProxy :: SProxy "server")
-              Target__Mobile _ -> root </> dir (SProxy :: SProxy "www")
+              Target__Browser _ -> root </> outputDir </> dir (Proxy :: Proxy "client")
+              Target__Server -> root </> outputDir </> dir (Proxy :: Proxy "server")
+              Target__Mobile _ -> root </> dir (Proxy :: Proxy "www")
     , filename:
       case target of
         Target__Browser _ -> if production then "[name]-[contenthash].js" else "[name].js"
@@ -91,7 +91,7 @@ config { target, watch, production, root, appDir, bundleAnalyze, spagoOutput } =
     case target of
       Target__Server ->
         Object.fromHomogeneous
-          { main: Array.singleton $ printPathPosixSandboxAny $ appDir </> file (SProxy :: SProxy "server.entry.js")
+          { main: Array.singleton $ printPathPosixSandboxAny $ appDir </> file (Proxy :: Proxy "server.entry.js")
           }
       Target__Browser { entrypointsObject } ->
         let
@@ -106,12 +106,12 @@ config { target, watch, production, root, appDir, bundleAnalyze, spagoOutput } =
                   , route
                   }
 
-                loaderPath = printPathPosixSandboxAny $ spagoOutput </> dir (SProxy :: SProxy "NextjsWebpack.IsomorphicClientPagesLoader") </> file (SProxy :: SProxy "index.js")
+                loaderPath = printPathPosixSandboxAny $ spagoOutput </> dir (Proxy :: Proxy "NextjsWebpack.IsomorphicClientPagesLoader") </> file (Proxy :: Proxy "index.js")
               in
                 Array.singleton $ loaderPath <> "?" <> Node.URL.toQueryString (Codec.Argonaut.encode NextjsWebpack.IsomorphicClientPagesLoader.optionsCodec options) <> "!"
 
           mainPage =
-            { main: Array.singleton $ printPathPosixSandboxAny $ appDir </> file (SProxy :: SProxy "client.entry.js")
+            { main: Array.singleton $ printPathPosixSandboxAny $ appDir </> file (Proxy :: Proxy "client.entry.js")
             }
         in
           Object.fromHomogeneous $ Record.union pages mainPage
@@ -119,7 +119,7 @@ config { target, watch, production, root, appDir, bundleAnalyze, spagoOutput } =
         let
           (absoluteJsDepsPaths :: Array (Path Abs File)) = Array.catMaybes $ map _.absoluteJsDepsPath $ Object.values $ Object.fromHomogeneous entrypointsObject
 
-          mainPath = appDir </> file (SProxy :: SProxy "mobile.entry.js")
+          mainPath = appDir </> file (Proxy :: Proxy "mobile.entry.js")
         in
           Object.fromHomogeneous { main: map printPathPosixSandboxAny $ absoluteJsDepsPaths <> [ mainPath ] }
   , node:

@@ -5,7 +5,7 @@
 function update {
   file="$1"
   thisrepo="$HOME/projects/purescript-halogen-nextjs/packages/client-halogen-examples"
-  homerepo="$HOME/projects/purescript-halogen/packages/client-halogen-examples"
+  homerepo="$HOME/projects/purescript-halogen/examples"
 
   rm -f $thisrepo/$file
   cp $homerepo/$file $thisrepo/$file

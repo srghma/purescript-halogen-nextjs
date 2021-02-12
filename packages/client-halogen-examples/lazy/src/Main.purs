@@ -42,7 +42,7 @@ render state =
     [ HH.text "I'm parent"
     , case state of
            Nothing -> HH.text "LOADING"
-           Just component' -> HH.slot (SProxy :: _ "lazyChild") unit component' unit absurd
+           Just component' -> HH.slot (Proxy :: _ "lazyChild") unit component' unit absurd
     ]
 
 handleAction :: forall o. Action -> H.HalogenM State Action ChildSlots o Aff Unit

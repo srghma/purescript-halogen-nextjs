@@ -84,7 +84,7 @@ render state =
     , HH.div
       [ HP.class_ NextjsApp.PageImplementations.Login.Css.styles.buttons ]
       [ HH.slot
-          (SProxy :: SProxy "submit-button")
+          (Proxy :: Proxy "submit-button")
           unit
           Button.button
           { variant: Button.Raised
@@ -99,13 +99,13 @@ render state =
           }
           (\(_ :: Button.Message) -> F.submit)
       , HH.slot
-          (SProxy :: SProxy "register-button")
+          (Proxy :: Proxy "register-button")
           unit
           Button.button
           { variant: Button.Text
           , config: Button.defaultConfig { additionalClasses = [ NextjsApp.PageImplementations.Login.Css.styles.buttons__button ] }
           , content: [ HH.text "Go to login page" ]
           }
-          (\_ -> inj (SProxy :: SProxy "userAction") $ UserAction__Navigate NextjsApp.Route.route__Register)
+          (\_ -> inj (Proxy :: Proxy "userAction") $ UserAction__Navigate NextjsApp.Route.route__Register)
       ]
     ]

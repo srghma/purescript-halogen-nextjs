@@ -11,8 +11,9 @@ import Prim.Row (class Cons) as Row
 import Run (Run, AFF)
 import Run as Run
 import Run.Except (EXCEPT)
-import Run.Except as Run.Except
 import Run.Except as Run
+import Run.Except as Run.Except
+import Type.Proxy (Proxy(..))
 import Unsafe.Coerce (unsafeCoerce)
 
 data Catch e a = Catch (Maybe e → a)

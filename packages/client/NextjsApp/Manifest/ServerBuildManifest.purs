@@ -25,7 +25,7 @@ decodeBuildManifest content = ArgonautCodecs.parseJson content >>= ArgonautCodec
 getBuildManifest :: NextjsApp.Server.Config.Config -> Effect BuildManifest
 getBuildManifest config = do
   let
-    manifestAbsPath = config.rootPath </> file (SProxy :: SProxy "build-manifest") <.> "json"
+    manifestAbsPath = config.rootPath </> file (Proxy :: Proxy "build-manifest") <.> "json"
   content <- Node.FS.Sync.readTextFile Node.Encoding.UTF8 (printPathPosixSandboxAny manifestAbsPath)
   case decodeBuildManifest content of
     Left decodeError -> do
