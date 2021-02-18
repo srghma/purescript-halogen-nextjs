@@ -1,6 +1,7 @@
 module NextjsApp.Manifest.ServerBuildManifest where
 
 import Protolude
+
 import Data.Argonaut.Decode (JsonDecodeError)
 import Data.Argonaut.Decode (decodeJson, printJsonDecodeError) as ArgonautCodecs
 import Data.Argonaut.Decode.Parser (parseJson) as ArgonautCodecs
@@ -12,6 +13,7 @@ import Node.Encoding as Node.Encoding
 import Node.FS.Sync as Node.FS.Sync
 import Pathy (file, (<.>), (</>))
 import PathyExtra (printPathPosixSandboxAny)
+import Type.Proxy (Proxy(..))
 
 type BuildManifest
   = { pages :: Record (NextjsApp.Route.WebRoutesVacantRow NextjsApp.Manifest.PageManifest.PageManifest)

@@ -1,7 +1,7 @@
 module NextjsApp.Link.Client where
 
 import Protolude
-import NextjsApp.AppM (EnvLinkHandleActions, AppM)
+import NextjsApp.AppM (AppM)
 import FRP.Event as FRP.Event
 import Halogen as H
 import NextjsApp.ElementIsInViewport as NextjsApp.ElementIsInViewport

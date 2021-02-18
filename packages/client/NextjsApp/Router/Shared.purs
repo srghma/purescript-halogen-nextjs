@@ -10,6 +10,7 @@ import NextjsApp.AppM (AppM)
 import NextjsApp.Manifest.ClientPagesManifest as NextjsApp.Manifest.ClientPagesManifest
 import NextjsApp.PageLoader as NextjsApp.PageLoader
 import NextjsApp.Route as NextjsApp.Route
+import Type.Proxy (Proxy(..))
 import Web.HTML as Web.HTML
 
 type CurrentPageInfo
