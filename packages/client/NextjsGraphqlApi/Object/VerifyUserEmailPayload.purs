@@ -1,6 +1,6 @@
 module NextjsGraphqlApi.Object.VerifyUserEmailPayload where
 
-import Dillonkearns.GraphQLClient
+import GraphQLClient
   ( SelectionSet
   , selectionForField
   , graphqlDefaultResponseScalarDecoder

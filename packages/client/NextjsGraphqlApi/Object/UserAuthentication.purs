@@ -1,6 +1,6 @@
 module NextjsGraphqlApi.Object.UserAuthentication where
 
-import Dillonkearns.GraphQLClient
+import GraphQLClient
   (SelectionSet, selectionForField, graphqlDefaultResponseScalarDecoder)
 import NextjsGraphqlApi.Scopes (Scope__UserAuthentication)
 import NextjsGraphqlApi.Scalars (Datetime, Id, Uuid)

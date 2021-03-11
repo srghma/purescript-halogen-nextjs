@@ -17,7 +17,7 @@ import NextjsGraphqlApi.InputObject
   , WebRegisterInput
   ) as NextjsGraphqlApi.InputObject
 import Type.Row (type (+))
-import Dillonkearns.GraphQLClient
+import GraphQLClient
   ( SelectionSet
   , Scope__RootMutation
   , selectionForCompositeField

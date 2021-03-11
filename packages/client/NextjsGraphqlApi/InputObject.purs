@@ -1,6 +1,6 @@
 module NextjsGraphqlApi.InputObject where
 
-import Dillonkearns.GraphQLClient
+import GraphQLClient
   (Optional, class ToGraphQLArgumentValue, toGraphQLArgumentValue)
 import NextjsGraphqlApi.Scalars (Id, Uuid)
 import Data.Generic.Rep (class Generic)

@@ -25,8 +25,8 @@ import Data.Maybe as Maybe
 import Data.String.NonEmpty (NonEmptyString)
 import Data.String.NonEmpty as NonEmptyString
 import Data.Variant (Variant, inj)
-import Dillonkearns.GraphQLClient (GraphQLError, Scope__RootMutation, SelectionSet(..))
-import Dillonkearns.GraphQLClient as GraphQLClient
+import GraphQLClient (GraphQLError, Scope__RootMutation, SelectionSet(..))
+import GraphQLClient as GraphQLClient
 import Halogen as H
 import Halogen.Component as Halogen.Component
 import Halogen.HTML as HH

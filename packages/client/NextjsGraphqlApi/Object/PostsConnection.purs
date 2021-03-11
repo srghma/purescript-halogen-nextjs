@@ -1,6 +1,6 @@
 module NextjsGraphqlApi.Object.PostsConnection where
 
-import Dillonkearns.GraphQLClient
+import GraphQLClient
   ( SelectionSet
   , selectionForCompositeField
   , graphqlDefaultResponseFunctorOrScalarDecoderTransformer

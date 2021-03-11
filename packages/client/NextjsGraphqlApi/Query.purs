@@ -1,6 +1,6 @@
 module NextjsGraphqlApi.Query where
 
-import Dillonkearns.GraphQLClient
+import GraphQLClient
   ( SelectionSet
   , Scope__RootQuery
   , selectionForCompositeField

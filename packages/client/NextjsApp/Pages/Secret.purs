@@ -8,8 +8,8 @@ import Nextjs.Page
 import NextjsApp.PageImplementations.Secret as NextjsApp.PageImplementations.Secret
 import NextjsGraphqlApi.Query as NextjsGraphqlApi.Query
 import NextjsGraphqlApi.Object.User as NextjsGraphqlApi.Object.User
-import Dillonkearns.GraphQLClient (GraphQLError, Scope__RootMutation, Scope__RootQuery, SelectionSet(..))
-import Dillonkearns.GraphQLClient as GraphQLClient
+import GraphQLClient (GraphQLError, Scope__RootMutation, Scope__RootQuery, SelectionSet(..))
+import GraphQLClient as GraphQLClient
 import NextjsApp.NodeEnv as NextjsApp.NodeEnv
 import NextjsApp.Route as NextjsApp.Route
 import NextjsApp.AppM (AppM(..))

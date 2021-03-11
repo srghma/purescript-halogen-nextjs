@@ -5,7 +5,7 @@ import Data.Show (class Show)
 import Data.Show.Generic (genericShow)
 import Prelude (class Eq, class Ord)
 import Data.Tuple (Tuple(..))
-import Dillonkearns.GraphQLClient
+import GraphQLClient
   ( class GraphQLDefaultResponseScalarDecoder
   , enumDecoder
   , class ToGraphQLArgumentValue

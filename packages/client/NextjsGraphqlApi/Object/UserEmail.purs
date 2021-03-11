@@ -1,6 +1,6 @@
 module NextjsGraphqlApi.Object.UserEmail where
 
-import Dillonkearns.GraphQLClient
+import GraphQLClient
   (SelectionSet, selectionForField, graphqlDefaultResponseScalarDecoder)
 import NextjsGraphqlApi.Scopes (Scope__UserEmail)
 import NextjsGraphqlApi.Scalars (Datetime, Uuid)
